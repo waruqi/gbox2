@@ -20,14 +20,15 @@
  * @file		prefix.h
  *
  */
-#ifndef GB2_PREFIX_PREFIX_H
-#define GB2_PREFIX_PREFIX_H
+#ifndef G2_PREFIX_PREFIX_H
+#define G2_PREFIX_PREFIX_H
 
 /* ///////////////////////////////////////////////////////////////////////
  * includes
  */
 #include "config.h"
 #include "type.h"
+#include "scalar.h"
 #include "version.h"
 
 

@@ -20,8 +20,8 @@
  * @file		config.h
  *
  */
-#ifndef GB2_PREFIX_CONFIG_H
-#define GB2_PREFIX_CONFIG_H
+#ifndef G2_PREFIX_CONFIG_H
+#define G2_PREFIX_CONFIG_H
 
 /* ///////////////////////////////////////////////////////////////////////
  * includes
@@ -35,7 +35,7 @@
 
 // is debug?
 #if gbox2_CONFIG_DEBUG
-# 	define GB2_DEBUG
+# 	define G2_DEBUG
 #endif
 
 

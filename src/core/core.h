@@ -17,26 +17,31 @@
  * Copyright (C) 2009 - 2012, ruki All rights reserved.
  *
  * @author		ruki
- * @file		version.h
+ * @file		core.h
  *
  */
-#ifndef G2_PREFIX_VERSION_H
-#define G2_PREFIX_VERSION_H
+#ifndef G2_CORE_H
+#define G2_CORE_H
+
+// c plus plus
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /* ///////////////////////////////////////////////////////////////////////
  * includes
  */
-#include "config.h"
+#include "painter.h"
 
 /* ///////////////////////////////////////////////////////////////////////
- * macros
+ * interfaces
  */
 
-// version: v1.0.0
-#define G2_VERSION_MAJOR 			(1)
-#define G2_VERSION_MINOR 			(0)
-#define G2_VERSION_ALTER 			(0)
 
+
+// c plus plus
+#ifdef __cplusplus
+}
 #endif
 
-
+#endif

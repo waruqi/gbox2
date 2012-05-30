@@ -17,31 +17,17 @@
  * Copyright (C) 2009 - 2012, ruki All rights reserved.
  *
  * @author		ruki
- * @file		painter.h
+ * @file		prefix.h
  *
  */
-#ifndef GB2_PAINTER_H
-#define GB2_PAINTER_H
+#ifndef G2_CORE_PREFIX_H
+#define G2_CORE_PREFIX_H
 
-// c plus plus
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-/* ///////////////////////////////////////////////////////////////////////
+/* /////////////////////////////////////////////////////////
  * includes
  */
-#include "prefix.h"
-
-/* ///////////////////////////////////////////////////////////////////////
- * interfaces
- */
-
-
-
-// c plus plus
-#ifdef __cplusplus
-}
-#endif
+#include "../prefix.h"
 
 #endif
+
+

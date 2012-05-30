@@ -30,27 +30,14 @@
  * implementation
  */
 
-tb_bool_t gb2_init()
-{
-	// ok
-	tb_trace("init: ok");
-	return TB_TRUE;
-}
-
-tb_void_t gb2_exit()
-{
-	// ok
-	tb_trace("exit: ok");
-}
-
-tb_char_t const* gb2_version()
+tb_char_t const* g2_version()
 {
 	static tb_char_t version_data[32] = {0};
 	static tb_size_t version_size = 0;
 	
 	if (!version_size)
 	{
-		version_size = tb_snprintf(version_data, 32, "gbox2-v%u.%u.%u", GB2_VERSION_MAJOR, GB2_VERSION_MINOR, GB2_VERSION_ALTER);
+		version_size = tb_snprintf(version_data, 32, "gbox2-v%u.%u.%u", G2_VERSION_MAJOR, G2_VERSION_MINOR, G2_VERSION_ALTER);
 		version_data[version_size] = '\0';
 	}
 	return version_data;

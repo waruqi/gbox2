@@ -20,8 +20,8 @@
  * @file		prefix.h
  *
  */
-#ifndef GB2_PAINTER_PREFIX_H
-#define GB2_PAINTER_PREFIX_H
+#ifndef G2_CORE_SKIA_PREFIX_H
+#define G2_CORE_SKIA_PREFIX_H
 
 /* /////////////////////////////////////////////////////////
  * includes

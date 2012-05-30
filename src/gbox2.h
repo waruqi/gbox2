@@ -20,8 +20,8 @@
  * @file		gbox2.h
  *
  */
-#ifndef GB2_GBOX2_H
-#define GB2_GBOX2_H
+#ifndef G2_GBOX2_H
+#define G2_GBOX2_H
 
 // c plus plus
 #ifdef __cplusplus
@@ -32,19 +32,14 @@ extern "C" {
  * includes
  */
 #include "prefix.h"
+#include "core/core.h"
 
 /* ///////////////////////////////////////////////////////////////////////
  * interfaces
  */
 
-/// init the gbox2 library
-tb_bool_t 			gb2_init();
-
-/// exit the gbox2 library
-tb_void_t 			gb2_exit();
-
 /// the gbox2 version string
-tb_char_t const* 	gb2_version();
+tb_char_t const* 	g2_version();
 
 
 // c plus plus

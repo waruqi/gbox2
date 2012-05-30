@@ -1,5 +1,5 @@
-#ifndef GB2_DEMO_H
-#define GB2_DEMO_H
+#ifndef G2_DEMO_H
+#define G2_DEMO_H
 
 /* ////////////////////////////////////////////////////////////////////////
  * includes
@@ -16,8 +16,8 @@
 /* ////////////////////////////////////////////////////////////////////////
  * macros
  */
-#define GB2_DEMO_WIDTH 		(640)
-#define GB2_DEMO_HEIGHT 	(480)
+#define G2_DEMO_WIDTH 		(640)
+#define G2_DEMO_HEIGHT 	(480)
 
 /* ////////////////////////////////////////////////////////////////////////
  * globals
@@ -34,31 +34,31 @@ static tb_hong_t 	g_fp = 0;
 /* ////////////////////////////////////////////////////////////////////////
  * callbacks
  */
-static tb_bool_t gb2_demo_init(tb_int_t argc, tb_char_t** argv);
-static tb_void_t gb2_demo_exit();
-static tb_void_t gb2_demo_render();
-static tb_void_t gb2_demo_move(tb_int_t x, tb_int_t y);
-static tb_void_t gb2_demo_drag(tb_int_t x, tb_int_t y);
-static tb_void_t gb2_demo_wheeldown(tb_int_t x, tb_int_t y);
-static tb_void_t gb2_demo_wheelup(tb_int_t x, tb_int_t y);
-static tb_void_t gb2_demo_lclickdown(tb_int_t x, tb_int_t y);
-static tb_void_t gb2_demo_lclickup(tb_int_t x, tb_int_t y);
-static tb_void_t gb2_demo_rclickdown(tb_int_t x, tb_int_t y);
-static tb_void_t gb2_demo_rclickup(tb_int_t x, tb_int_t y);
-static tb_void_t gb2_demo_key(tb_int_t key);
+static tb_bool_t g2_demo_init(tb_int_t argc, tb_char_t** argv);
+static tb_void_t g2_demo_exit();
+static tb_void_t g2_demo_render();
+static tb_void_t g2_demo_move(tb_int_t x, tb_int_t y);
+static tb_void_t g2_demo_drag(tb_int_t x, tb_int_t y);
+static tb_void_t g2_demo_wheeldown(tb_int_t x, tb_int_t y);
+static tb_void_t g2_demo_wheelup(tb_int_t x, tb_int_t y);
+static tb_void_t g2_demo_lclickdown(tb_int_t x, tb_int_t y);
+static tb_void_t g2_demo_lclickup(tb_int_t x, tb_int_t y);
+static tb_void_t g2_demo_rclickdown(tb_int_t x, tb_int_t y);
+static tb_void_t g2_demo_rclickup(tb_int_t x, tb_int_t y);
+static tb_void_t g2_demo_key(tb_int_t key);
 
 /* ////////////////////////////////////////////////////////////////////////
  * gl
  */
-static tb_void_t gb2_demo_gl_keyboard(tb_byte_t key, tb_int_t x, tb_int_t y)
+static tb_void_t g2_demo_gl_keyboard(tb_byte_t key, tb_int_t x, tb_int_t y)
 {
-	gb2_demo_key(key);
+	g2_demo_key(key);
 }
-static tb_void_t gb2_demo_gl_special(tb_int_t key, tb_int_t x, tb_int_t y)
+static tb_void_t g2_demo_gl_special(tb_int_t key, tb_int_t x, tb_int_t y)
 {
-	gb2_demo_key(key);
+	g2_demo_key(key);
 }
-static tb_void_t gb2_demo_gl_printf(tb_char_t const* fmt, ...)
+static tb_void_t g2_demo_gl_printf(tb_char_t const* fmt, ...)
 {
 	// format text
 	tb_char_t text[4096] = {0};
@@ -73,7 +73,7 @@ static tb_void_t gb2_demo_gl_printf(tb_char_t const* fmt, ...)
 	glMatrixMode(GL_MODELVIEW);
 	glPushMatrix();
 	glLoadIdentity();
-	glTranslatef(20., GB2_DEMO_HEIGHT - 20., 0);
+	glTranslatef(20., G2_DEMO_HEIGHT - 20., 0);
 	glScalef(0.12, 0.12, 0.12);
 
 	// render it
@@ -83,7 +83,7 @@ static tb_void_t gb2_demo_gl_printf(tb_char_t const* fmt, ...)
 
 	glPopMatrix();
 }
-static tb_void_t gb2_demo_gl_display()
+static tb_void_t g2_demo_gl_display()
 {
 	// clear
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -92,7 +92,7 @@ static tb_void_t gb2_demo_gl_display()
 	g_tb = tb_uclock();
 
 	// render 
-	gb2_demo_render();
+	g2_demo_render();
 
 	// stop clock
 	g_te = tb_uclock();
@@ -104,13 +104,13 @@ static tb_void_t gb2_demo_gl_display()
 	if (!g_bt) g_bt = g_tb;
 	tb_long_t fps = (tb_long_t)((1000000 * g_fp) / (g_ft + 1));
 	tb_long_t rps = (tb_long_t)((1000000 * g_fp) / (g_rt + 1));
-	gb2_demo_gl_printf("fps: %ld, rps: %ld, rpt: %ld us", fps, rps, (tb_long_t)(g_te - g_tb));
+	g2_demo_gl_printf("fps: %ld, rps: %ld, rpt: %ld us", fps, rps, (tb_long_t)(g_te - g_tb));
 
 	// flush
 	glutSwapBuffers();
 }
 #if 0
-static tb_void_t gb2_demo_gl_draw(gb2_vframe_t const* vframe)
+static tb_void_t g2_demo_gl_draw(g2_vframe_t const* vframe)
 {
 	if (vframe && vframe->data[0])
 	{
@@ -130,7 +130,7 @@ static tb_void_t gb2_demo_gl_draw(gb2_vframe_t const* vframe)
 	}
 }
 #endif
-static tb_void_t gb2_demo_gl_reshape(tb_int_t w, tb_int_t h)
+static tb_void_t g2_demo_gl_reshape(tb_int_t w, tb_int_t h)
 {
 	glViewport(0, 0, w, h);
 	glMatrixMode(GL_PROJECTION);
@@ -138,63 +138,63 @@ static tb_void_t gb2_demo_gl_reshape(tb_int_t w, tb_int_t h)
 	gluOrtho2D(0.0, (GLfloat)w, 0.0, (GLfloat)h);
 	glMatrixMode(GL_MODELVIEW);
 }
-static tb_void_t gb2_demo_gl_click(tb_int_t button, tb_int_t state, tb_int_t x, tb_int_t y)
+static tb_void_t g2_demo_gl_click(tb_int_t button, tb_int_t state, tb_int_t x, tb_int_t y)
 {
 	if (button == 0) // left
 	{
 		if (state == 0)
 		{
-			gb2_demo_lclickdown(x, y);
+			g2_demo_lclickdown(x, y);
 		}
 		else if (state == 1)
 		{
-			gb2_demo_lclickup(x, y);
+			g2_demo_lclickup(x, y);
 		}
 	}
 	else if (button == 2) // right
 	{	
 		if (state == 0)
 		{
-			gb2_demo_rclickdown(x, y);
+			g2_demo_rclickdown(x, y);
 		}
 		else if (state == 1)
 		{
-			gb2_demo_rclickup(x, y);
+			g2_demo_rclickup(x, y);
 		}
 	}
 	else if (button == 3) // wheelup
 	{	
 		if (state == 0) // down
 		{
-			gb2_demo_wheelup(x, y);
+			g2_demo_wheelup(x, y);
 		}
 	}
 	else if (button == 4) // wheeldown
 	{	
 		if (state == 0) // down
 		{
-			gb2_demo_wheeldown(x, y);
+			g2_demo_wheeldown(x, y);
 		}
 	}
 }
 
-static tb_bool_t gb2_demo_gl_init(tb_int_t argc, tb_char_t** argv)
+static tb_bool_t g2_demo_gl_init(tb_int_t argc, tb_char_t** argv)
 {
 	// init gl
 	glutInit (&argc, argv);
 	glutInitDisplayMode (GLUT_RGBA | GLUT_DOUBLE | GLUT_ALPHA | GLUT_STENCIL | GLUT_MULTISAMPLE);
 	//glutInitDisplayMode (GLUT_RGBA | GLUT_DOUBLE | GLUT_STENCIL);
 	glutInitWindowPosition (0, 0);
-	glutInitWindowSize (GB2_DEMO_WIDTH, GB2_DEMO_HEIGHT);
+	glutInitWindowSize (G2_DEMO_WIDTH, G2_DEMO_HEIGHT);
 	glutCreateWindow ("gbox2");
-	glutDisplayFunc(gb2_demo_gl_display);
-	glutIdleFunc(gb2_demo_gl_display);
-	glutReshapeFunc(gb2_demo_gl_reshape);
-	glutMouseFunc(gb2_demo_gl_click);
-	glutPassiveMotionFunc(gb2_demo_move);
-	glutMotionFunc(gb2_demo_drag);
-	glutKeyboardFunc(gb2_demo_gl_keyboard);
-	glutSpecialFunc(gb2_demo_gl_special);
+	glutDisplayFunc(g2_demo_gl_display);
+	glutIdleFunc(g2_demo_gl_display);
+	glutReshapeFunc(g2_demo_gl_reshape);
+	glutMouseFunc(g2_demo_gl_click);
+	glutPassiveMotionFunc(g2_demo_move);
+	glutMotionFunc(g2_demo_drag);
+	glutKeyboardFunc(g2_demo_gl_keyboard);
+	glutSpecialFunc(g2_demo_gl_special);
 
 	// ok
 	return TB_TRUE;
@@ -209,20 +209,20 @@ tb_int_t main(tb_int_t argc, tb_char_t** argv)
 	if (!tb_init(malloc(50 * 1024 * 1024), 50 * 1024 * 1024)) return TB_FALSE;
 
 	// init exit
-	atexit(gb2_demo_exit);
+	atexit(g2_demo_exit);
 
 	// init gl
-	if (!gb2_demo_gl_init(argc, argv)) return TB_FALSE;
+	if (!g2_demo_gl_init(argc, argv)) return TB_FALSE;
 
 	// init demo 
-	if (!gb2_demo_init(argc, argv)) return TB_FALSE;
+	if (!g2_demo_init(argc, argv)) return TB_FALSE;
 
 	// loop 
 	glutMainLoop();
 
 end:
 	// exit demo
-	gb2_demo_exit();
+	g2_demo_exit();
 
 	// exit tbox
 	tb_exit();

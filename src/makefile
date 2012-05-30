@@ -72,9 +72,9 @@ freetype_C_FILES 		= \
 freetype_INC_DIR 		:= libs/freetype/include
 freetype_CFLAGS 		:= -DFT2_BUILD_LIBRARY
 freetype_C_FILES 		:= $(addprefix libs/freetype/,$(freetype_C_FILES))
-gbox2_C_FILES-$(GB2_CONFIG_PAINTER_SKIA) 	+= $(freetype_C_FILES)
-gbox2_CFLAGS-$(GB2_CONFIG_PAINTER_SKIA) 	+= $(freetype_CFLAGS)
-gbox2_INC_DIR-$(GB2_CONFIG_PAINTER_SKIA) 	+= $(freetype_INC_DIR)
+gbox2_C_FILES-$(G2_CONFIG_PAINTER_SKIA) 	+= $(freetype_C_FILES)
+gbox2_CFLAGS-$(G2_CONFIG_PAINTER_SKIA) 	+= $(freetype_CFLAGS)
+gbox2_INC_DIR-$(G2_CONFIG_PAINTER_SKIA) 	+= $(freetype_INC_DIR)
 	
 # skia files
 skia_CPP_FILES 			= \
@@ -185,10 +185,10 @@ skia_CPP_FILES 			= \
 						core/SkXfermode 
 	
 skia_CPP_FILES 			:= $(addprefix libs/skia/,$(skia_CPP_FILES))
-gbox2_CPP_FILES-$(GB2_CONFIG_PAINTER_SKIA) += $(skia_CPP_FILES)
+gbox2_CPP_FILES-$(G2_CONFIG_PAINTER_SKIA) += $(skia_CPP_FILES)
 	
 # demo
-ifeq ($(GB2_CONFIG_DEMO),y)
+ifeq ($(G2_CONFIG_DEMO),y)
 SUB_PROS 				= demo
 endif
 

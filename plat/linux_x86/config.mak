@@ -3,12 +3,12 @@
 # #
 
 # demo
-GB2_CONFIG_DEMO 					= y
+G2_CONFIG_DEMO 					= y
 
-# painter
-GB2_CONFIG_PAINTER_SOFT 			= n
-GB2_CONFIG_PAINTER_SKIA 			= y
-GB2_CONFIG_PAINTER_GL 				= n
+# core
+G2_CONFIG_CORE_SOFT 				= n
+G2_CONFIG_CORE_SKIA 				= y
+G2_CONFIG_CORE_GL 					= n
 
 ###############################################################################
 # tbox
