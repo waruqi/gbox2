@@ -20,6 +20,18 @@
 #define GB2_DEMO_HEIGHT 	(480)
 
 /* ////////////////////////////////////////////////////////////////////////
+ * globals
+ */
+
+// clock
+static tb_hong_t 	g_bt = 0; 
+static tb_hong_t 	g_tb = 0;
+static tb_hong_t 	g_te = 0;
+static tb_hong_t 	g_rt = 0;
+static tb_hong_t 	g_ft = 0;
+static tb_hong_t 	g_fp = 0;
+
+/* ////////////////////////////////////////////////////////////////////////
  * callbacks
  */
 static tb_bool_t gb2_demo_init(tb_int_t argc, tb_char_t** argv);
@@ -46,13 +58,53 @@ static tb_void_t gb2_demo_gl_special(tb_int_t key, tb_int_t x, tb_int_t y)
 {
 	gb2_demo_key(key);
 }
+static tb_void_t gb2_demo_gl_printf(tb_char_t const* fmt, ...)
+{
+	// format text
+	tb_char_t text[4096] = {0};
+	tb_size_t size = 0;
+	tb_va_format(text, 4096, fmt, &size);
+
+	// the text color
+	GLfloat c[4] = {1., 1., 0., 1.};
+	glColor4fv(c);
+
+	// init position
+	glMatrixMode(GL_MODELVIEW);
+	glPushMatrix();
+	glLoadIdentity();
+	glTranslatef(20., GB2_DEMO_HEIGHT - 20., 0);
+	glScalef(0.12, 0.12, 0.12);
+
+	// render it
+	tb_int_t i = 0;
+	for (i = 0; i < size; ++i) 
+		glutStrokeCharacter(GLUT_STROKE_ROMAN, text[i]);
+
+	glPopMatrix();
+}
 static tb_void_t gb2_demo_gl_display()
 {
 	// clear
-	//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	
+	// start clock
+	g_tb = tb_uclock();
 
 	// render 
 	gb2_demo_render();
+
+	// stop clock
+	g_te = tb_uclock();
+
+	// render fps & rps
+	g_fp++;
+	g_rt += g_te - g_tb;
+	g_ft = g_te - g_bt;
+	if (!g_bt) g_bt = g_tb;
+	tb_long_t fps = (tb_long_t)((1000000 * g_fp) / (g_ft + 1));
+	tb_long_t rps = (tb_long_t)((1000000 * g_fp) / (g_rt + 1));
+	gb2_demo_gl_printf("fps: %ld, rps: %ld, rpt: %ld us", fps, rps, (tb_long_t)(g_te - g_tb));
 
 	// flush
 	glutSwapBuffers();
