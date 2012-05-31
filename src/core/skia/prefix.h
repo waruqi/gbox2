@@ -27,7 +27,7 @@
  * includes
  */
 #include "../prefix.h"
-#include "../../libs/skia/skia.h"
+#include "../../third/skia/skia.h"
 #include "color.h"
 #include "pixfmt.h"
 #include "memory.h"

@@ -20,8 +20,8 @@
  * @file		skia.h
  *
  */
-#ifndef G2_LIBS_SKIA_H
-#define G2_LIBS_SKIA_H
+#ifndef G2_THIRD_SKIA_H
+#define G2_THIRD_SKIA_H
 
 /* /////////////////////////////////////////////////////////
  * includes

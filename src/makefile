@@ -101,9 +101,9 @@ freetype_C_FILES 		= \
 						smooth/ftsmooth \
 						smooth/ftspic
 
-freetype_INC_DIR 		:= libs/freetype/include
+freetype_INC_DIR 		:= third/freetype/include
 freetype_CFLAGS 		:= -DFT2_BUILD_LIBRARY
-freetype_C_FILES 		:= $(addprefix libs/freetype/,$(freetype_C_FILES))
+freetype_C_FILES 		:= $(addprefix third/freetype/,$(freetype_C_FILES))
 gbox2_C_FILES-$(G2_CONFIG_CORE_SKIA) 	+= $(freetype_C_FILES)
 gbox2_CFLAGS-$(G2_CONFIG_CORE_SKIA) 	+= $(freetype_CFLAGS)
 gbox2_INC_DIR-$(G2_CONFIG_CORE_SKIA) 	+= $(freetype_INC_DIR)
@@ -240,7 +240,7 @@ skia_CPP_FILES 			+= \
 						opts/SkUtils_opts_SSE2
 endif
 	
-skia_CPP_FILES 			:= $(addprefix libs/skia/,$(skia_CPP_FILES))
+skia_CPP_FILES 			:= $(addprefix third/skia/,$(skia_CPP_FILES))
 gbox2_CPP_FILES-$(G2_CONFIG_CORE_SKIA) += $(skia_CPP_FILES)
 	
 # demo
