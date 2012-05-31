@@ -3,7 +3,7 @@
 # #
 
 # demo
-G2_CONFIG_DEMO 					= y
+G2_CONFIG_DEMO 						= y
 
 # core
 G2_CONFIG_CORE_SOFT 				= n

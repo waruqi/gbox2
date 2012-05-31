@@ -10,6 +10,9 @@
 #ifndef SkUserConfig_DEFINED
 #define SkUserConfig_DEFINED
 
+#include "../../prefix.h"
+#include "tbox/tbox.h"
+
 /*  SkTypes.h, the root of the public header files, does the following trick:
 
     #include "SkPreConfig.h"
@@ -44,6 +47,16 @@
 //#define SK_SCALAR_IS_FLOAT
 //#define SK_SCALAR_IS_FIXED
 
+#undef SK_SCALAR_IS_FLOAT
+#undef SK_SCALAR_IS_FIXED
+
+#ifdef G2_CONFIG_SCALAR_FIXED
+# 	define SK_SCALAR_IS_FIXED
+#endif
+
+#ifdef G2_CONFIG_SCALAR_FLOAT
+# 	define SK_SCALAR_IS_FLOAT
+#endif
 
 /*  Somewhat independent of how SkScalar is implemented, Skia also wants to know
     if it can use floats at all. Naturally, if SK_SCALAR_IS_FLOAT is defined,
@@ -51,6 +64,11 @@
     can go either way.
  */
 //#define SK_CAN_USE_FLOAT
+
+#undef SK_CAN_USE_FLOAT
+#ifdef TB_CONFIG_TYPE_FLOAT
+# 	define SK_CAN_USE_FLOAT
+#endif
 
 /*  For some performance-critical scalar operations, skia will optionally work
     around the standard float operators if it knows that the CPU does not have
@@ -72,6 +90,14 @@
 //#define SK_DEBUG
 //#define SK_RELEASE
 
+#undef SK_DEBUG
+#undef SK_RELEASE
+#ifdef G2_DEBUG
+# 	define SK_DEBUG
+#else
+# 	define SK_RELEASE
+#endif
+
 
 /*  If, in debugging mode, Skia needs to stop (presumably to invoke a debugger)
     it will call SK_CRASH(). If this is not defined it, it is defined in
@@ -85,6 +111,14 @@
  */
 //#define SK_CPU_BENDIAN
 //#define SK_CPU_LENDIAN
+
+#undef SK_CPU_BENDIAN
+#undef SK_CPU_LENDIAN
+#ifdef TB_WORDS_BIGENDIAN
+# 	define SK_CPU_BENDIAN
+#else
+# 	define SK_CPU_LENDIAN
+#endif
 
 /*  Most compilers use the same bit endianness for bit flags in a byte as the
     system byte endianness, and this is the default. If for some reason this
@@ -107,6 +141,7 @@
     this to something other than printf, define yours here
  */
 //#define SkDebugf(...)  MyFunction(__VA_ARGS__)
+#define SkDebugf(...)  tb_printf("[gbox2]: [skia]: " __VA_ARGS__)
 
 /*
  *  To specify a different default font cache limit, define this. If this is
@@ -170,7 +205,7 @@
 
 /*  Change the ordering to work in X windows.
  */
-#ifdef SK_SAMPLES_FOR_X
+#if 1//def SK_SAMPLES_FOR_X
         #define SK_R32_SHIFT    16
         #define SK_G32_SHIFT    8
         #define SK_B32_SHIFT    0

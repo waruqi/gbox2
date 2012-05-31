@@ -38,39 +38,39 @@ extern "C" {
  */
 
 // init & exit
-tb_handle_t 	g2_init(tb_handle_t hsurface);
-tb_void_t 		g2_exit(tb_handle_t hpainter);
+tb_handle_t 	g2_init(tb_handle_t surface);
+tb_void_t 		g2_exit(tb_handle_t painter);
 
 // save & load
-tb_void_t 		g2_save(tb_handle_t hpainter);
-tb_void_t 		g2_load(tb_handle_t hpainter);
+tb_void_t 		g2_save(tb_handle_t painter);
+tb_void_t 		g2_load(tb_handle_t painter);
 
-// draw
-tb_void_t 		g2_draw_clear(tb_handle_t hpainter);
-tb_void_t 		g2_draw_arc(tb_handle_t hpainter, 		g2_arc_t const* arc);
-tb_void_t 		g2_draw_pie(tb_handle_t hpainter, 		g2_pie_t const* pie);
-tb_void_t 		g2_draw_path(tb_handle_t hpainter, 		g2_path_t const* path);
-tb_void_t 		g2_draw_rect(tb_handle_t hpainter, 		g2_rect_t const* rect);
-tb_void_t 		g2_draw_line(tb_handle_t hpainter, 		g2_line_t const* line);
-tb_void_t 		g2_draw_text(tb_handle_t hpainter, 		g2_text_t const* text);
-tb_void_t 		g2_draw_lines(tb_handle_t hpainter, 	g2_lines_t const* lines);
-tb_void_t 		g2_draw_chord(tb_handle_t hpainter, 	g2_chord_t const* chord);
-tb_void_t 		g2_draw_curve1(tb_handle_t hpainter, 	g2_curve1_t const* curve1);
-tb_void_t 		g2_draw_curve2(tb_handle_t hpainter, 	g2_curve2_t const* curve2);
-tb_void_t 		g2_draw_circle(tb_handle_t hpainter, 	g2_circle_t const* circle);
-tb_void_t 		g2_draw_ellipse(tb_handle_t hpainter, 	g2_ellipse_t const* ellipse);
-tb_void_t 		g2_draw_polygon(tb_handle_t hpainter, 	g2_polygon_t const* polygon);
-tb_void_t 		g2_draw_triangle(tb_handle_t hpainter, 	g2_triangle_t const* triangle);
+// style
+tb_handle_t 	g2_style(tb_handle_t painter);
+tb_void_t 		g2_style_set(tb_handle_t painter, tb_handle_t style);
 
-// clip
-tb_void_t 		g2_clip_clear(tb_handle_t hpainter);
-tb_void_t 		g2_clip_pie(tb_handle_t hpainter, 		g2_pie_t const* pie);
-tb_void_t 		g2_clip_path(tb_handle_t hpainter, 		g2_path_t const* path);
-tb_void_t 		g2_clip_rect(tb_handle_t hpainter, 		g2_rect_t const* rect);
-tb_void_t 		g2_clip_circle(tb_handle_t hpainter, 	g2_circle_t const* circle);
-tb_void_t 		g2_clip_ellipse(tb_handle_t hpainter, 	g2_ellipse_t const* ellipse);
-tb_void_t 		g2_clip_polygon(tb_handle_t hpainter, 	g2_polygon_t const* polygon);
-tb_void_t 		g2_clip_triangle(tb_handle_t hpainter, 	g2_triangle_t const* triangle);
+// clipper
+tb_handle_t 	g2_clipper(tb_handle_t painter, tb_handle_t clipper);
+
+// path
+tb_handle_t 	g2_path(tb_handle_t painter, tb_handle_t path);
+
+// clear
+tb_void_t 		g2_clear(tb_handle_t painter);
+
+// draw 
+tb_void_t 		g2_draw(tb_handle_t painter);
+tb_void_t 		g2_draw_arc(tb_handle_t painter, 		g2_arc_t const* arc);
+tb_void_t 		g2_draw_pie(tb_handle_t painter, 		g2_pie_t const* pie);
+tb_void_t 		g2_draw_rect(tb_handle_t painter, 		g2_rect_t const* rect);
+tb_void_t 		g2_draw_line(tb_handle_t painter, 		g2_line_t const* line);
+tb_void_t 		g2_draw_chord(tb_handle_t painter, 		g2_chord_t const* chord);
+tb_void_t 		g2_draw_curve1(tb_handle_t painter, 	g2_curve1_t const* curve1);
+tb_void_t 		g2_draw_curve2(tb_handle_t painter, 	g2_curve2_t const* curve2);
+tb_void_t 		g2_draw_circle(tb_handle_t painter, 	g2_circle_t const* circle);
+tb_void_t 		g2_draw_ellipse(tb_handle_t painter, 	g2_ellipse_t const* ellipse);
+tb_void_t 		g2_draw_polygon(tb_handle_t painter, 	g2_polygon_t const* polygon);
+tb_void_t 		g2_draw_triangle(tb_handle_t painter, 	g2_triangle_t const* triangle);
 
 // c plus plus
 #ifdef __cplusplus

@@ -17,19 +17,21 @@
  * Copyright (C) 2009 - 2012, ruki All rights reserved.
  *
  * @author		ruki
- * @file		prefix.h
+ * @file		skia.h
  *
  */
-#ifndef G2_CORE_SKIA_PREFIX_H
-#define G2_CORE_SKIA_PREFIX_H
+#ifndef G2_LIBS_SKIA_H
+#define G2_LIBS_SKIA_H
 
 /* /////////////////////////////////////////////////////////
  * includes
  */
-#include "../prefix.h"
-#include "../../libs/skia/skia.h"
-#include "pixfmt.h"
-#include "memory.h"
+#include "./core/SkBitmap.h"
+#include "./core/SkCanvas.h"
+#include "./core/SkDevice.h"
+#include "./core/SkPaint.h"
+#include "./core/SkRect.h"
+#include "./core/SkColor.h"
 
 #endif
 

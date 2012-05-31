@@ -11,6 +11,13 @@ gbox2_TYPE 				= LIB
 gbox2_C_FILES 			+= \
 						gbox2 
 
+gbox2_CPP_FILES-$(G2_CONFIG_CORE_SKIA) += \
+						core/skia/path \
+						core/skia/style \
+						core/skia/bitmap \
+						core/skia/painter \
+						core/skia/clipper 
+
 # flags
 gbox2_CPPFLAGS 			+= -DTB_PRINT_TAG=\"gbox2\"
 gbox2_CPPFLAGS-$(DEBUG) += -DTB_TRACE_ENABLE -DTB_ASSERT_ENABLE
@@ -25,8 +32,12 @@ INC_FILES 				= \
 						prefix/prefix.h \
 						prefix/type.h \
 						prefix/version.h \
-						painter/prefix.h \
-						painter/painter.h
+						core/prefix.h \
+						core/path.h \
+						core/style.h \
+						core/bitmap.h \
+						core/clipper.h \
+						core/painter.h
 	
 	
 # freetype files
@@ -72,9 +83,9 @@ freetype_C_FILES 		= \
 freetype_INC_DIR 		:= libs/freetype/include
 freetype_CFLAGS 		:= -DFT2_BUILD_LIBRARY
 freetype_C_FILES 		:= $(addprefix libs/freetype/,$(freetype_C_FILES))
-gbox2_C_FILES-$(G2_CONFIG_PAINTER_SKIA) 	+= $(freetype_C_FILES)
-gbox2_CFLAGS-$(G2_CONFIG_PAINTER_SKIA) 	+= $(freetype_CFLAGS)
-gbox2_INC_DIR-$(G2_CONFIG_PAINTER_SKIA) 	+= $(freetype_INC_DIR)
+gbox2_C_FILES-$(G2_CONFIG_CORE_SKIA) 	+= $(freetype_C_FILES)
+gbox2_CFLAGS-$(G2_CONFIG_CORE_SKIA) 	+= $(freetype_CFLAGS)
+gbox2_INC_DIR-$(G2_CONFIG_CORE_SKIA) 	+= $(freetype_INC_DIR)
 	
 # skia files
 skia_CPP_FILES 			= \
@@ -185,7 +196,7 @@ skia_CPP_FILES 			= \
 						core/SkXfermode 
 	
 skia_CPP_FILES 			:= $(addprefix libs/skia/,$(skia_CPP_FILES))
-gbox2_CPP_FILES-$(G2_CONFIG_PAINTER_SKIA) += $(skia_CPP_FILES)
+gbox2_CPP_FILES-$(G2_CONFIG_CORE_SKIA) += $(skia_CPP_FILES)
 	
 # demo
 ifeq ($(G2_CONFIG_DEMO),y)

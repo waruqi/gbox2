@@ -17,20 +17,33 @@
  * Copyright (C) 2009 - 2012, ruki All rights reserved.
  *
  * @author		ruki
- * @file		prefix.h
+ * @file		path.h
  *
  */
-#ifndef G2_CORE_SKIA_PREFIX_H
-#define G2_CORE_SKIA_PREFIX_H
+#ifndef G2_CORE_PATH_H
+#define G2_CORE_PATH_H
 
-/* /////////////////////////////////////////////////////////
- * includes
- */
-#include "../prefix.h"
-#include "../../libs/skia/skia.h"
-#include "pixfmt.h"
-#include "memory.h"
-
+// c plus plus
+#ifdef __cplusplus
+extern "C" {
 #endif
 
+/* ///////////////////////////////////////////////////////////////////////
+ * includes
+ */
+#include "prefix.h"
 
+/* ///////////////////////////////////////////////////////////////////////
+ * interfaces
+ */
+
+// init & exit
+tb_handle_t 	g2_path_init();
+tb_void_t 		g2_path_exit(tb_handle_t path);
+
+// c plus plus
+#ifdef __cplusplus
+}
+#endif
+
+#endif

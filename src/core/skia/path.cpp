@@ -17,20 +17,20 @@
  * Copyright (C) 2009 - 2012, ruki All rights reserved.
  *
  * @author		ruki
- * @file		prefix.h
+ * @file		path.cpp
  *
  */
-#ifndef G2_CORE_SKIA_PREFIX_H
-#define G2_CORE_SKIA_PREFIX_H
 
-/* /////////////////////////////////////////////////////////
+/* ///////////////////////////////////////////////////////////////////////
  * includes
  */
-#include "../prefix.h"
-#include "../../libs/skia/skia.h"
-#include "pixfmt.h"
-#include "memory.h"
+#include "prefix.h"
 
-#endif
+/* ///////////////////////////////////////////////////////////////////////
+ * implementation
+ */
 
+/* ///////////////////////////////////////////////////////////////////////
+ * interfaces
+ */
 

@@ -27,6 +27,8 @@
  * includes
  */
 #include "config.h"
+#include "pixfmt.h"
+#include "color.h"
 
 /* ///////////////////////////////////////////////////////////////////////
  * macros
@@ -45,9 +47,6 @@ typedef tb_float_t 		g2_scalar_t;
 
 // the pixel type
 typedef tb_uint32_t 	g2_pixel_t;
-
-// the alpha type
-typedef tb_byte_t 		g2_alpha_t;
 
 // the point type
 typedef struct __g2_point_t
@@ -119,8 +118,8 @@ typedef struct __g2_irect_t
 
 }g2_irect_t;
 
-// the lines type
-typedef struct __g2_lines_t
+// the polygon type
+typedef struct __g2_polygon_t
 {
 	// the points data
 	g2_point_t* 		pts;
@@ -132,10 +131,10 @@ typedef struct __g2_lines_t
 	// the lines size
 	tb_size_t 			lnn;
 
-}g2_lines_t;
+}g2_polygon_t;
 
-// the ilines type
-typedef struct __g2_ilines_t
+// the ipolygon type
+typedef struct __g2_ipolygon_t
 {
 	// the points data
 	g2_ipoint_t* 		pts;
@@ -147,13 +146,7 @@ typedef struct __g2_ilines_t
 	// the lines size
 	tb_size_t 			lnn;
 
-}g2_ilines_t;
-
-// the polygon type
-typedef g2_lines_t 		g2_polygon_t;
-
-// the ipolygon type
-typedef g2_ilines_t 	g2_ipolygon_t;
+}g2_ipolygon_t;
 
 // the curve1 type
 typedef struct __g2_curve1_t
@@ -285,53 +278,6 @@ typedef g2_arc_t 		g2_chord_t;
 // the pie type
 typedef g2_arc_t 		g2_pie_t;
 
-// the text type
-typedef struct __g2_text_t
-{
-	// the postion 
-	g2_point_t 			pt;
-
-	// the text
-	tb_char_t const* 	data;
-	tb_size_t 			size;
-
-}g2_text_t;
-
-
-/*!the color type
- *
- * @code
- * union __g2_color2pixel_t
- * {
- * 		g2_color_t c;
- * 		g2_pixel_t p;
- *
- * 	}c2p;
- * 	c2p.c = c;
- * 	return c2p.p;
- * @endcode
- *
- */
-#ifdef TB_WORDS_BIGENDIAN
-typedef struct __g2_color_t
-{
-	tb_byte_t 			a;
-	tb_byte_t 			r;
-	tb_byte_t 			g;
-	tb_byte_t 			b;
-
-}g2_color_t;
-#else
-typedef struct __g2_color_t
-{
-	tb_byte_t 			b;
-	tb_byte_t 			g;
-	tb_byte_t 			r;
-	tb_byte_t 			a;
-
-}g2_color_t;
-#endif
-
 // the transforam matrix type
 typedef struct __g2_matrix_t
 {
@@ -340,9 +286,6 @@ typedef struct __g2_matrix_t
 	g2_scalar_t 		tx, ty;
 
 }g2_matrix_t;
-
-typedef int g2_path_t;
-
 
 #endif
 
