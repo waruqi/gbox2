@@ -46,7 +46,7 @@ tb_void_t 		g2_clipper_clear(tb_handle_t clipper);
 
 // clip
 tb_void_t 		g2_clipper_pie(tb_handle_t clipper, 		g2_pie_t const* pie);
-tb_void_t 		g2_clipper_path(tb_handle_t clipper, 		g2_path_t const* path);
+tb_void_t 		g2_clipper_path(tb_handle_t clipper, 		tb_handle_t path);
 tb_void_t 		g2_clipper_rect(tb_handle_t clipper, 		g2_rect_t const* rect);
 tb_void_t 		g2_clipper_circle(tb_handle_t clipper, 		g2_circle_t const* circle);
 tb_void_t 		g2_clipper_ellipse(tb_handle_t clipper, 	g2_ellipse_t const* ellipse);

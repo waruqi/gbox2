@@ -141,7 +141,7 @@
     this to something other than printf, define yours here
  */
 //#define SkDebugf(...)  MyFunction(__VA_ARGS__)
-#define SkDebugf(...)  tb_printf("[gbox2]: [skia]: " __VA_ARGS__)
+//#define SkDebugf(...)  tb_printf("[gbox2]: [skia]: " __VA_ARGS__)
 
 /*
  *  To specify a different default font cache limit, define this. If this is

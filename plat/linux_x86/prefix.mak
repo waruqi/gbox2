@@ -33,12 +33,14 @@ PWD 				= pwd
 
 # cppflags: c/c++ files
 CPPFLAGS_RELEASE 	= \
-					-DNDEBUG -O3 \
-					-march=i686 -fomit-frame-pointer -msse
+					-DNDEBUG -O3 
+					
 
 CPPFLAGS_DEBUG 		= -g
 CPPFLAGS 			= \
-					-c -Wall 
+					-c -Wall \
+					-march=i686 -fomit-frame-pointer -mssse3
+
 CPPFLAGS-I 			= -I
 CPPFLAGS-o 			= -o
 

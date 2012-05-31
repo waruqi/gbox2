@@ -98,28 +98,14 @@ static g2_color_t g2_skia_style_color(tb_handle_t style)
 	SkPaint* sstyle = static_cast<SkPaint*>(style);
 	tb_assert_and_check_return_val(sstyle, G2_COLOR_DEFAULT);
 
-	union __g2_p2c_t
-	{
-		g2_color_t c;
-		g2_pixel_t p;
-
-	}p2c;
-	p2c.p = sstyle->getColor();
-	return p2c.c;
+	return g2_skia_color_to_g2(sstyle->getColor());
 }
 static tb_void_t g2_skia_style_color_set(tb_handle_t style, g2_color_t color)
 {	
 	SkPaint* sstyle = static_cast<SkPaint*>(style);
 	tb_assert_and_check_return(sstyle);
 
-	union __g2_c2p_t
-	{
-		g2_color_t c;
-		g2_pixel_t p;
-
-	}c2p;
-	c2p.c = color;
-	sstyle->setColor(c2p.p);
+	sstyle->setColor(g2_skia_color_to_sk(color));
 }
 static tb_byte_t g2_skia_style_alpha(tb_handle_t style)
 {
@@ -151,21 +137,40 @@ static tb_void_t g2_skia_style_width_set(tb_handle_t style, g2_scalar_t width)
 }
 static tb_size_t g2_skia_style_cap(tb_handle_t style)
 {
+	SkPaint* sstyle = static_cast<SkPaint*>(style);
+	tb_assert_and_check_return_val(sstyle, G2_STYLE_CAP_NONE);
+
+	return sstyle->getStrokeCap() + 1;
 }
 static tb_void_t g2_skia_style_cap_set(tb_handle_t style, tb_size_t cap)
 {
+	SkPaint* sstyle = static_cast<SkPaint*>(style);
+	tb_assert_and_check_return(sstyle && cap != G2_STYLE_CAP_NONE);
+
+	sstyle->setStrokeCap(static_cast<SkPaint::Cap>(cap - 1));
 }
 static tb_size_t g2_skia_style_join(tb_handle_t style)
 {
+	SkPaint* sstyle = static_cast<SkPaint*>(style);
+	tb_assert_and_check_return_val(sstyle, G2_STYLE_JOIN_NONE);
+
+	return sstyle->getStrokeJoin() + 1;
 }
 static tb_void_t g2_skia_style_join_set(tb_handle_t style, tb_size_t join)
 {
+	SkPaint* sstyle = static_cast<SkPaint*>(style);
+	tb_assert_and_check_return(sstyle && join != G2_STYLE_JOIN_NONE);
+
+	sstyle->setStrokeJoin(static_cast<SkPaint::Join>(join - 1));
 }
 static tb_handle_t g2_skia_style_shader(tb_handle_t style)
 {
+	tb_trace_noimpl();
+	return TB_NULL;
 }
 static tb_void_t g2_skia_style_shader_set(tb_handle_t style, tb_handle_t shader)
 {
+	tb_trace_noimpl();
 }
 
 /* ///////////////////////////////////////////////////////////////////////

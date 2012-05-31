@@ -56,7 +56,7 @@ tb_handle_t 	g2_clipper(tb_handle_t painter, tb_handle_t clipper);
 tb_handle_t 	g2_path(tb_handle_t painter, tb_handle_t path);
 
 // clear
-tb_void_t 		g2_clear(tb_handle_t painter);
+tb_void_t 		g2_clear(tb_handle_t painter, g2_color_t color);
 
 // draw 
 tb_void_t 		g2_draw(tb_handle_t painter);
@@ -64,6 +64,7 @@ tb_void_t 		g2_draw_arc(tb_handle_t painter, 		g2_arc_t const* arc);
 tb_void_t 		g2_draw_pie(tb_handle_t painter, 		g2_pie_t const* pie);
 tb_void_t 		g2_draw_rect(tb_handle_t painter, 		g2_rect_t const* rect);
 tb_void_t 		g2_draw_line(tb_handle_t painter, 		g2_line_t const* line);
+tb_void_t 		g2_draw_point(tb_handle_t painter, 		g2_point_t const* point);
 tb_void_t 		g2_draw_chord(tb_handle_t painter, 		g2_chord_t const* chord);
 tb_void_t 		g2_draw_curve1(tb_handle_t painter, 	g2_curve1_t const* curve1);
 tb_void_t 		g2_draw_curve2(tb_handle_t painter, 	g2_curve2_t const* curve2);

@@ -42,6 +42,7 @@ INC_FILES 				= \
 	
 # freetype files
 freetype_C_FILES 		= \
+						base/ftinit \
 						base/ftadvanc \
 						base/ftcalc \
 						base/ftdbgmem \
@@ -53,6 +54,13 @@ freetype_C_FILES 		= \
 						base/ftstream \
 						base/fttrigon \
 						base/ftutil \
+						base/ftlcdfil \
+						base/ftfstype \
+						base/ftxf86 \
+						base/fttype1 \
+						base/ftbitmap \
+						base/ftapi \
+						base/ftsystem \
 						truetype/ttdriver \
 						truetype/ttgload \
 						truetype/ttgxvar \
@@ -78,7 +86,20 @@ freetype_C_FILES 		= \
 						cache/ftcimage \
 						cache/ftcmanag \
 						cache/ftcmru \
-						cache/ftcsbits
+						cache/ftcsbits \
+						sfnt/ttload \
+						sfnt/ttmtx \
+						sfnt/ttcmap \
+						sfnt/ttsbit \
+						sfnt/ttpost \
+						sfnt/ttkern \
+						sfnt/ttbdf \
+						sfnt/sfobjs \
+						sfnt/sfdriver \
+						sfnt/sfntpic \
+						smooth/ftgrays \
+						smooth/ftsmooth \
+						smooth/ftspic
 
 freetype_INC_DIR 		:= libs/freetype/include
 freetype_CFLAGS 		:= -DFT2_BUILD_LIBRARY
@@ -146,6 +167,7 @@ skia_CPP_FILES 			= \
 						core/SkMaskFilter \
 						core/SkMath \
 						core/SkMatrix \
+						core/SkMemory_stdlib \
 						core/SkMetaData \
 						core/SkMMapStream \
 						core/SkOrderedReadBuffer \
@@ -193,7 +215,30 @@ skia_CPP_FILES 			= \
 						core/SkUnPreMultiply \
 						core/SkUtils \
 						core/SkWriter32 \
-						core/SkXfermode 
+						core/SkXfermode \
+						ports/SkDebug_stdio \
+						ports/SkFontHost_sandbox_none \
+						ports/SkFontHost_FreeType \
+						ports/SkFontHost_gamma_none \
+						ports/SkFontHost_linux \
+						ports/SkGlobalInitialization_default \
+						ports/SkFontHost_tables \
+						ports/SkMemory_malloc \
+						ports/SkOSFile_stdio \
+						ports/SkThread_pthread \
+						ports/SkTime_Unix \
+						ports/SkXMLParser_empty \
+						utils/SkOSFile
+
+ifeq ($(TB_CONFIG_ARCH),x86)
+skia_CPP_FILES 			+= \
+						opts/opts_check_SSE2 \
+						opts/SkBitmapProcState_opts_SSE2 \
+						opts/SkBitmapProcState_opts_SSSE3 \
+						opts/SkBlitRow_opts_SSE2 \
+						opts/SkBlitRect_opts_SSE2 \
+						opts/SkUtils_opts_SSE2
+endif
 	
 skia_CPP_FILES 			:= $(addprefix libs/skia/,$(skia_CPP_FILES))
 gbox2_CPP_FILES-$(G2_CONFIG_CORE_SKIA) += $(skia_CPP_FILES)
