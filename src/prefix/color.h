@@ -114,6 +114,22 @@ G2_DEFINE_COLOR_CONST(orange, 		0, 		128, 	255, 	255)
 G2_DEFINE_COLOR_CONST(transparent, 	0, 		0, 		0, 		0)
 #endif
 
+/* ////////////////////////////////////////////////////////////////////////
+ * inline
+ */
+// make color
+static __tb_inline__ g2_color_t g2_color_make(tb_byte_t a, tb_byte_t r, tb_byte_t g, tb_byte_t b)
+{
+	g2_color_t c;
+
+	c.a = a;
+	c.r = r;
+	c.g = g;
+	c.b = b;
+
+	return c;
+}
+
 
 #endif
 

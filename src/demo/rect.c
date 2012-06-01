@@ -71,12 +71,7 @@ static tb_void_t g2_demo_exit()
 }
 static tb_void_t g2_demo_render()
 {
-//	g2_rect_t rt = {g_x0 - g_dx, g_y0 - g_dy, g_dx << 1, g_dy << 1};
-	g2_rect_t rt;
-	rt.x = g2_int_to_scalar(g_x0 - g_dx);
-	rt.y = g2_int_to_scalar(g_y0 - g_dy);
-	rt.w = g2_int_to_scalar(g_dx << 1);
-	rt.h = g2_int_to_scalar(g_dy << 1);
+	g2_rect_t rt = g2_rect_imake(g_x0 - g_dx, g_y0 - g_dy, g_dx << 1, g_dy << 1);
 
 	g2_style_mode_set(g_style, G2_STYLE_MODE_FILL);
 	g2_style_color_set(g_style, G2_COLOR_RED);

@@ -28,6 +28,7 @@
  */
 #include "config.h"
 #include "pixfmt.h"
+#include "scalar.h"
 #include "color.h"
 
 /* ///////////////////////////////////////////////////////////////////////
@@ -286,6 +287,49 @@ typedef struct __g2_matrix_t
 	g2_scalar_t 		tx, ty;
 
 }g2_matrix_t;
+
+/* ////////////////////////////////////////////////////////////////////////
+ * inline
+ */
+
+// make rect
+static __tb_inline__ g2_rect_t g2_rect_make(g2_scalar_t x, g2_scalar_t y, g2_scalar_t w, g2_scalar_t h)
+{
+	g2_rect_t r;
+
+	r.x = x;
+	r.y = y;
+	r.w = w;
+	r.h = h;
+
+	return r;
+}
+
+// make rect with integer
+static __tb_inline__ g2_rect_t g2_rect_imake(tb_long_t x, tb_long_t y, tb_size_t w, tb_size_t h)
+{
+	g2_rect_t r;
+
+	r.x = g2_int_to_scalar(x);
+	r.y = g2_int_to_scalar(y);
+	r.w = g2_int_to_scalar(w);
+	r.h = g2_int_to_scalar(h);
+
+	return r;
+}
+
+// make irect
+static __tb_inline__ g2_irect_t g2_irect_make(tb_long_t x, tb_long_t y, tb_size_t w, tb_size_t h)
+{
+	g2_irect_t r;
+
+	r.x = x;
+	r.y = y;
+	r.w = w;
+	r.h = h;
+
+	return r;
+}
 
 #endif
 

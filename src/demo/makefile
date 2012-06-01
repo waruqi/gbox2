@@ -1,7 +1,8 @@
 # sub-makefile
 include $(PRO_DIR)/prefix.mak
 
-NAMES 					= demo
+NAMES 					= \
+						rect
 
 ifeq ($(TB_CONFIG_PLAT),linux_x86)
 demo_LIBS 				= glut GLU z m dl pthread
