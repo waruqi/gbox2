@@ -240,6 +240,16 @@ skia_CPP_FILES 			+= \
 						opts/SkUtils_opts_SSE2
 endif
 	
+ifeq ($(TB_CONFIG_ARCH),x64)
+skia_CPP_FILES 			+= \
+						opts/opts_check_SSE2 \
+						opts/SkBitmapProcState_opts_SSE2 \
+						opts/SkBitmapProcState_opts_SSSE3 \
+						opts/SkBlitRow_opts_SSE2 \
+						opts/SkBlitRect_opts_SSE2 \
+						opts/SkUtils_opts_SSE2
+endif
+
 skia_CPP_FILES 			:= $(addprefix third/skia/,$(skia_CPP_FILES))
 gbox2_CPP_FILES-$(G2_CONFIG_CORE_SKIA) += $(skia_CPP_FILES)
 	

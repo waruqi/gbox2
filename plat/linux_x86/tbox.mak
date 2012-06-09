@@ -17,9 +17,9 @@ TB_CONFIG_API_THRD 				= unix
 TB_CONFIG_API_EVET 				= unix
 TB_CONFIG_API_ASIO 				= unix
 
-# libs
-TB_CONFIG_LIBS_ZLIB 			= y
+# third party
+TB_CONFIG_THIRD_ZLIB 			= y
 
 # memory
-TB_CONFIG_MEMORY_POOL_ENABLE 	= n
+TB_CONFIG_MEMORY_POOL 			= y
 
