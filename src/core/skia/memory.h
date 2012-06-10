@@ -29,25 +29,30 @@
 #include "prefix.h"
 
 /* /////////////////////////////////////////////////////////
+ * types
+ */
+typedef G2_CONFIG_SIZE_T 	sk_size_t;
+
+/* /////////////////////////////////////////////////////////
  * inlines
  */
 
 #ifdef TB_DEBUG
-__tb_inline__ tb_pointer_t operator new(tb_uint_t size, tb_char_t const* func, tb_size_t line, tb_char_t const* file) throw () 
+__tb_inline__ tb_pointer_t operator new(sk_size_t size, tb_char_t const* func, tb_size_t line, tb_char_t const* file) throw () 
 {
 	return tb_memory_malloc0_impl(size, func, line, file);
 }
 
-__tb_inline__ tb_pointer_t operator new[](tb_uint_t size, tb_char_t const* func, tb_size_t line, tb_char_t const* file) throw () 
+__tb_inline__ tb_pointer_t operator new[](sk_size_t size, tb_char_t const* func, tb_size_t line, tb_char_t const* file) throw () 
 { 
 	return tb_memory_malloc0_impl(size, func, line, file); 
 }
 #else
-__tb_inline__ tb_pointer_t operator new(tb_uint_t size) throw () 	
+__tb_inline__ tb_pointer_t operator new(sk_size_t size) throw () 	
 {
 	return tb_malloc0(size);
 }
-__tb_inline__ tb_pointer_t operator new[](tb_uint_t size) throw () 
+__tb_inline__ tb_pointer_t operator new[](sk_size_t size) throw () 
 { 
 	return tb_malloc0(size); 
 }

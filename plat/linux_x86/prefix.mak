@@ -48,9 +48,9 @@ CFLAGS 				= \
 					-Wno-parentheses \
 					-Wno-switch -Wno-format-zero-length -Wdisabled-optimization \
 					-Wpointer-arith -Wredundant-decls -Wno-pointer-sign -Wwrite-strings \
-					-Wtype-limits -Wundef -Wmissing-prototypes -Wno-pointer-to-int-cast \
+					-Wtype-limits -Wundef -Wno-pointer-to-int-cast \
 					-Wstrict-prototypes -fno-math-errno -fno-signed-zeros -fno-tree-vectorize \
-					-Werror=implicit-function-declaration -Werror=missing-prototypes 
+					-Werror=implicit-function-declaration
 
 # cxxflags: c++ files
 CXXFLAGS_RELEASE 	= -fno-rtti

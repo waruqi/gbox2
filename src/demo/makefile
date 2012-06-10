@@ -2,7 +2,13 @@
 include $(PRO_DIR)/prefix.mak
 
 NAMES 					= \
-						rect
+						arc \
+						line \
+						rect \
+						point \
+						circle \
+						ellipse \
+						triangle
 
 ifeq ($(TB_CONFIG_PLAT),linux_x86)
 demo_LIBS 				= glut GLU z m dl pthread

@@ -44,13 +44,14 @@ tb_void_t 		g2_clipper_exit(tb_handle_t clipper);
 // clear
 tb_void_t 		g2_clipper_clear(tb_handle_t clipper);
 
+// path
+tb_handle_t 	g2_clipper_path(tb_handle_t clipper, tb_handle_t path);
+
 // clip
-tb_void_t 		g2_clipper_pie(tb_handle_t clipper, 		g2_pie_t const* pie);
-tb_void_t 		g2_clipper_path(tb_handle_t clipper, 		tb_handle_t path);
+tb_void_t 		g2_clipper(tb_handle_t clipper);
 tb_void_t 		g2_clipper_rect(tb_handle_t clipper, 		g2_rect_t const* rect);
 tb_void_t 		g2_clipper_circle(tb_handle_t clipper, 		g2_circle_t const* circle);
 tb_void_t 		g2_clipper_ellipse(tb_handle_t clipper, 	g2_ellipse_t const* ellipse);
-tb_void_t 		g2_clipper_polygon(tb_handle_t clipper, 	g2_polygon_t const* polygon);
 tb_void_t 		g2_clipper_triangle(tb_handle_t clipper, 	g2_triangle_t const* triangle);
 
 // c plus plus
