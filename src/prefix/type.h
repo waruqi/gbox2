@@ -49,6 +49,12 @@ typedef tb_float_t 		g2_scalar_t;
 // the pixel type
 typedef tb_uint32_t 	g2_pixel_t;
 
+// the path type
+typedef tb_void_t 		g2_path_t;
+
+// the ipath type
+typedef tb_void_t 		g2_ipath_t;
+
 // the point type
 typedef struct __g2_point_t
 {

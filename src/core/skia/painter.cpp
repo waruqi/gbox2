@@ -123,9 +123,6 @@ static tb_void_t g2_skia_style_set(tb_handle_t painter, tb_handle_t style)
 static tb_handle_t g2_skia_clipper(tb_handle_t painter, tb_handle_t clipper)
 {
 }
-static tb_handle_t g2_skia_path(tb_handle_t painter, tb_handle_t path)
-{
-}
 static tb_void_t g2_skia_clear(tb_handle_t painter, g2_color_t color)
 {
 	g2_skia_painter_t* spainter = static_cast<g2_skia_painter_t*>(painter);
@@ -133,19 +130,12 @@ static tb_void_t g2_skia_clear(tb_handle_t painter, g2_color_t color)
 
 	spainter->canvas->clear(g2_skia_color_to_sk(color));
 }
-static tb_void_t g2_skia_draw(tb_handle_t painter)
-{
-	g2_skia_painter_t* spainter = static_cast<g2_skia_painter_t*>(painter);
-	tb_assert_and_check_return(spainter && spainter->canvas && spainter->style_usr);
-
-	spainter->canvas->drawPaint(*spainter->style_usr);
-}
 static tb_void_t g2_skia_draw_arc(tb_handle_t painter, g2_arc_t const* arc)
 {
 	g2_skia_painter_t* spainter = static_cast<g2_skia_painter_t*>(painter);
 	tb_assert_and_check_return(spainter && spainter->canvas && spainter->style_usr && arc);
 
-	spainter->canvas->drawArc(SkRect::MakeXYWH(arc->c0.x - arc->rx, arc->c0.y - arc->ry, arc->rx << 1, arc->ry << 1), arc->ab, arc->an, false, *spainter->style_usr);
+	spainter->canvas->drawArc(SkRect::MakeXYWH(arc->c0.x - arc->rx, arc->c0.y - arc->ry, SkScalarMul(arc->rx, 2), SkScalarMul(arc->ry, 2)), arc->ab, arc->an, false, *spainter->style_usr);
 }
 static tb_void_t g2_skia_draw_rect(tb_handle_t painter, g2_rect_t const* rect)
 {
@@ -160,6 +150,13 @@ static tb_void_t g2_skia_draw_line(tb_handle_t painter, g2_line_t const* line)
 	tb_assert_and_check_return(spainter && spainter->canvas && spainter->style_usr && line);
 
 	spainter->canvas->drawLine(line->p0.x, line->p0.y, line->p1.x, line->p1.y, *spainter->style_usr);
+}
+static tb_void_t g2_skia_draw_path(tb_handle_t painter, g2_path_t const* path)
+{
+	g2_skia_painter_t* spainter = static_cast<g2_skia_painter_t*>(painter);
+	tb_assert_and_check_return(spainter && spainter->canvas && spainter->style_usr && path);
+
+	spainter->canvas->drawPath(*((SkPath const*)path), *spainter->style_usr);
 }
 static tb_void_t g2_skia_draw_point(tb_handle_t painter, g2_point_t const* point)
 {
@@ -180,7 +177,7 @@ static tb_void_t g2_skia_draw_ellipse(tb_handle_t painter, g2_ellipse_t const* e
 	g2_skia_painter_t* spainter = static_cast<g2_skia_painter_t*>(painter);
 	tb_assert_and_check_return(spainter && spainter->canvas && spainter->style_usr && ellipse);
 
-	spainter->canvas->drawOval(SkRect::MakeXYWH(ellipse->c0.x - ellipse->rx, ellipse->c0.y - ellipse->ry, ellipse->rx << 1, ellipse->ry << 1), *spainter->style_usr);
+	spainter->canvas->drawOval(SkRect::MakeXYWH(ellipse->c0.x - ellipse->rx, ellipse->c0.y - ellipse->ry, SkScalarMul(ellipse->rx, 2), SkScalarMul(ellipse->ry, 2)), *spainter->style_usr);
 }
 static tb_void_t g2_skia_draw_triangle(tb_handle_t painter, g2_triangle_t const* triangle)
 {
@@ -231,17 +228,9 @@ extern "C"
 	{
 		return g2_skia_clipper(painter, clipper);
 	}
-	tb_handle_t g2_path(tb_handle_t painter, tb_handle_t path)
-	{
-		return g2_skia_path(painter, path);
-	}
 	tb_void_t g2_clear(tb_handle_t painter, g2_color_t color)
 	{
 		g2_skia_clear(painter, color);
-	}
-	tb_void_t g2_draw(tb_handle_t painter)
-	{
-		g2_skia_draw(painter);
 	}
 	tb_void_t g2_draw_arc(tb_handle_t painter, g2_arc_t const* arc)
 	{
@@ -254,6 +243,10 @@ extern "C"
 	tb_void_t g2_draw_line(tb_handle_t painter, g2_line_t const* line)
 	{
 		g2_skia_draw_line(painter, line);
+	}
+	tb_void_t g2_draw_path(tb_handle_t painter, g2_path_t const* path)
+	{
+		g2_skia_draw_path(painter, path);
 	}
 	tb_void_t g2_draw_point(tb_handle_t painter, g2_point_t const* point)
 	{

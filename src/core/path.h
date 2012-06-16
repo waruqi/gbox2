@@ -38,26 +38,29 @@ extern "C" {
  */
 
 // init & exit
-tb_handle_t 	g2_path_init();
-tb_void_t 		g2_path_exit(tb_handle_t path);
+g2_path_t* 		g2_path_init();
+tb_void_t 		g2_path_exit(g2_path_t* path);
 
 // clear
-tb_void_t 		g2_path_clear(tb_handle_t path);
+tb_void_t 		g2_path_clear(g2_path_t* path);
 
 // close
-tb_void_t 		g2_path_close(tb_handle_t path);
+tb_void_t 		g2_path_close(g2_path_t* path);
+
+// null?
+tb_bool_t 		g2_path_null(g2_path_t const* path);
 
 // move to
-tb_void_t 		g2_path_move_to(tb_handle_t path, g2_point_t const* pt);
+tb_void_t 		g2_path_move_to(g2_path_t* path, g2_point_t const* pt);
 
 // line to
-tb_void_t 		g2_path_line_to(tb_handle_t path, g2_point_t const* pt);
+tb_void_t 		g2_path_line_to(g2_path_t* path, g2_point_t const* pt);
 
 // quad to
-tb_void_t 		g2_path_quad_to(tb_handle_t path, g2_point_t const* pt, g2_point_t const* cp);
+tb_void_t 		g2_path_quad_to(g2_path_t* path, g2_point_t const* pt, g2_point_t const* cp);
 
 // cube to
-tb_void_t 		g2_path_cube_to(tb_handle_t path, g2_point_t const* pt, g2_point_t const* c0, g2_point_t const* c1);
+tb_void_t 		g2_path_cube_to(g2_path_t* path, g2_point_t const* pt, g2_point_t const* c0, g2_point_t const* c1);
 
 
 // c plus plus

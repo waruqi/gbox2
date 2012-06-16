@@ -5,6 +5,7 @@ NAMES 					= \
 						arc \
 						line \
 						rect \
+						path \
 						point \
 						circle \
 						ellipse \

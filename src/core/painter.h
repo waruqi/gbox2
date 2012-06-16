@@ -52,21 +52,27 @@ tb_void_t 		g2_style_set(tb_handle_t painter, tb_handle_t style);
 // clipper
 tb_handle_t 	g2_clipper(tb_handle_t painter, tb_handle_t clipper);
 
-// path
-tb_handle_t 	g2_path(tb_handle_t painter, tb_handle_t path);
-
 // clear
 tb_void_t 		g2_clear(tb_handle_t painter, g2_color_t color);
 
 // draw 
-tb_void_t 		g2_draw(tb_handle_t painter);
 tb_void_t 		g2_draw_arc(tb_handle_t painter, 			g2_arc_t const* arc);
 tb_void_t 		g2_draw_rect(tb_handle_t painter, 			g2_rect_t const* rect);
 tb_void_t 		g2_draw_line(tb_handle_t painter, 			g2_line_t const* line);
+tb_void_t 		g2_draw_path(tb_handle_t painter, 			g2_path_t const* path);
 tb_void_t 		g2_draw_point(tb_handle_t painter, 			g2_point_t const* point);
 tb_void_t 		g2_draw_circle(tb_handle_t painter, 		g2_circle_t const* circle);
 tb_void_t 		g2_draw_ellipse(tb_handle_t painter, 		g2_ellipse_t const* ellipse);
 tb_void_t 		g2_draw_triangle(tb_handle_t painter, 		g2_triangle_t const* triangle);
+
+tb_void_t 		g2_draw_iarc(tb_handle_t painter, 			g2_iarc_t const* arc);
+tb_void_t 		g2_draw_irect(tb_handle_t painter, 			g2_irect_t const* rect);
+tb_void_t 		g2_draw_iline(tb_handle_t painter, 			g2_iline_t const* line);
+tb_void_t 		g2_draw_ipath(tb_handle_t painter, 			g2_ipath_t const* path);
+tb_void_t 		g2_draw_ipoint(tb_handle_t painter, 		g2_ipoint_t const* point);
+tb_void_t 		g2_draw_icircle(tb_handle_t painter, 		g2_icircle_t const* circle);
+tb_void_t 		g2_draw_iellipse(tb_handle_t painter, 		g2_iellipse_t const* ellipse);
+tb_void_t 		g2_draw_itriangle(tb_handle_t painter, 		g2_itriangle_t const* triangle);
 
 // c plus plus
 #ifdef __cplusplus
