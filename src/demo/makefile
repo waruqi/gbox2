@@ -26,7 +26,7 @@ ifeq ($(TB_CONFIG_PLAT),solaris_x86)
 demo_LIBS 				= z m pthread
 endif
 
-ifeq ($(TB_CONFIG_PLAT),mac_x86)
+ifeq ($(TB_CONFIG_PLAT),mac_x64)
 demo_LIBS 				= z m dl pthread
 demo_LDFLAGS 			= -framework GLUT -framework OpenGL -framework Cocoa -framework CoreFoundation \
 						  -framework VideoDecodeAcceleration -framework QuartzCore

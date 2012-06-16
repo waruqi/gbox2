@@ -128,7 +128,7 @@ static tb_void_t g2_demo_gl_display()
 	if (g_surface)
 	{
 		glPixelZoom(1.0, -1.0);
-		glRasterPos2i(0, g_height - 1);
+		glRasterPos2i(0, g_height);
 		switch (g_pixfmt)
 		{
 		case G2_PIXFMT_RGB565:
