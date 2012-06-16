@@ -41,6 +41,25 @@ extern "C" {
 tb_handle_t 	g2_path_init();
 tb_void_t 		g2_path_exit(tb_handle_t path);
 
+// clear
+tb_void_t 		g2_path_clear(tb_handle_t path);
+
+// close
+tb_void_t 		g2_path_close(tb_handle_t path);
+
+// move to
+tb_void_t 		g2_path_move_to(tb_handle_t path, g2_point_t const* pt);
+
+// line to
+tb_void_t 		g2_path_line_to(tb_handle_t path, g2_point_t const* pt);
+
+// quad to
+tb_void_t 		g2_path_quad_to(tb_handle_t path, g2_point_t const* pt, g2_point_t const* cp);
+
+// cube to
+tb_void_t 		g2_path_cube_to(tb_handle_t path, g2_point_t const* pt, g2_point_t const* c0, g2_point_t const* c1);
+
+
 // c plus plus
 #ifdef __cplusplus
 }
