@@ -37,16 +37,6 @@ extern "C" {
  * types
  */
 
-// the matrix mode type
-typedef enum __g2_matrix_mode_t
-{
-	G2_MATRIX_MODE_IDENTITY 	= 0 //!< the matrix is identity
-,	G2_MATRIX_MODE_TRANSLATE 	= 1 //!< the matrix has translation
-,	G2_MATRIX_MODE_SCALE 		= 2 //!< the matrix has x or y scale
-,	G2_MATRIX_MODE_AFFINE 		= 4 //!< the matrix has skews or rotates
-
-}g2_matrix_mode_t;
-
 /*!the matrix type
  *
  * <pre>
@@ -88,6 +78,11 @@ typedef struct __g2_matrix_t
 
 // init & exit
 tb_void_t 		g2_matrix_init(g2_matrix_t* matrix, g2_scalar_t sx, g2_scalar_t kx, g2_scalar_t ky, g2_scalar_t sy, g2_scalar_t tx, g2_scalar_t ty);
+tb_void_t 		g2_matrix_init_rotate(g2_matrix_t* matrix, g2_scalar_t degrees);
+tb_void_t 		g2_matrix_init_sincos(g2_matrix_t* matrix, g2_scalar_t sin, g2_scalar_t cos);
+tb_void_t 		g2_matrix_init_skew(g2_matrix_t* matrix, g2_scalar_t kx, g2_scalar_t ky);
+tb_void_t 		g2_matrix_init_scale(g2_matrix_t* matrix, g2_scalar_t sx, g2_scalar_t sy);
+tb_void_t 		g2_matrix_init_translate(g2_matrix_t* matrix, g2_scalar_t tx, g2_scalar_t ty);
 tb_void_t 		g2_matrix_exit(g2_matrix_t* matrix);
 
 // clear
@@ -99,44 +94,23 @@ tb_bool_t 		g2_matrix_invert(g2_matrix_t* matrix);
 // identity?
 tb_bool_t 		g2_matrix_identity(g2_matrix_t const* matrix);
 
-// mode
-tb_size_t 		g2_matrix_mode(g2_matrix_t const* matrix);
-tb_void_t 		g2_matrix_mode_set(g2_matrix_t* matrix, tb_size_t mode);
-
 // rotate
 tb_bool_t 		g2_matrix_rotate_rhs(g2_matrix_t* matrix, g2_scalar_t degrees);
 tb_bool_t 		g2_matrix_rotate_lhs(g2_matrix_t* matrix, g2_scalar_t degrees);
-tb_void_t 		g2_matrix_rotate_set(g2_matrix_t* matrix, g2_scalar_t degrees);
 
 // scale
 tb_bool_t 		g2_matrix_scale_rhs(g2_matrix_t* matrix, g2_scalar_t sx, g2_scalar_t sy);
 tb_bool_t 		g2_matrix_scale_lhs(g2_matrix_t* matrix, g2_scalar_t sx, g2_scalar_t sy);
-tb_void_t 		g2_matrix_scale_set(g2_matrix_t* matrix, g2_scalar_t sx, g2_scalar_t sy);
-tb_void_t 		g2_matrix_scale_set_x(g2_matrix_t* matrix, g2_scalar_t sx);
-tb_void_t 		g2_matrix_scale_set_y(g2_matrix_t* matrix, g2_scalar_t sy);
-g2_scalar_t 	g2_matrix_scale_get_x(g2_matrix_t const* matrix);
-g2_scalar_t 	g2_matrix_scale_get_y(g2_matrix_t const* matrix);
 
 // translate
 tb_bool_t 		g2_matrix_translate_rhs(g2_matrix_t* matrix, g2_scalar_t dx, g2_scalar_t dy);
 tb_bool_t 		g2_matrix_translate_lhs(g2_matrix_t* matrix, g2_scalar_t dx, g2_scalar_t dy);
-tb_void_t 		g2_matrix_translate_set(g2_matrix_t* matrix, g2_scalar_t tx, g2_scalar_t ty);
-tb_void_t 		g2_matrix_translate_set_x(g2_matrix_t* matrix, g2_scalar_t tx);
-tb_void_t 		g2_matrix_translate_set_y(g2_matrix_t* matrix, g2_scalar_t ty);
-g2_scalar_t 	g2_matrix_translate_get_x(g2_matrix_t const* matrix);
-g2_scalar_t 	g2_matrix_translate_get_y(g2_matrix_t const* matrix);
 
 // skew
 tb_bool_t 		g2_matrix_skew_rhs(g2_matrix_t* matrix, g2_scalar_t kx, g2_scalar_t ky);
 tb_bool_t 		g2_matrix_skew_lhs(g2_matrix_t* matrix, g2_scalar_t kx, g2_scalar_t ky);
-tb_void_t 		g2_matrix_skew_set(g2_matrix_t* matrix, g2_scalar_t kx, g2_scalar_t ky);
-tb_void_t 		g2_matrix_skew_set_x(g2_matrix_t* matrix, g2_scalar_t kx);
-tb_void_t 		g2_matrix_skew_set_y(g2_matrix_t* matrix, g2_scalar_t ky);
-g2_scalar_t 	g2_matrix_skew_get_x(g2_matrix_t const* matrix);
-g2_scalar_t 	g2_matrix_skew_get_y(g2_matrix_t const* matrix);
 
 // multiply
-tb_bool_t 		g2_matrix_multiply_set(g2_matrix_t* matrix, g2_matrix_t const* mx, g2_matrix_t const* my);
 tb_bool_t 		g2_matrix_multiply_rhs(g2_matrix_t* matrix, g2_matrix_t const* mx);
 tb_bool_t 		g2_matrix_multiply_lhs(g2_matrix_t* matrix, g2_matrix_t const* mx);
 

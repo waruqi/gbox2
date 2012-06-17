@@ -39,6 +39,31 @@ tb_void_t g2_matrix_init(g2_matrix_t* matrix, g2_scalar_t sx, g2_scalar_t kx, g2
 	matrix->tx = tx;
 	matrix->ty = ty;
 }
+tb_void_t g2_matrix_init_rotate(g2_matrix_t* matrix, g2_scalar_t degrees)
+{
+#if 0
+	g2_scalar_t s;
+	g2_scalar_t c;
+	tb_trace_noimpl();
+	g2_matrix_init_sincos(matrix, s, c);
+#endif
+}
+tb_void_t g2_matrix_init_sincos(g2_matrix_t* matrix, g2_scalar_t sin, g2_scalar_t cos)
+{
+	g2_matrix_init(matrix, cos, -sin, sin, cos, 0, 0);	
+}
+tb_void_t g2_matrix_init_skew(g2_matrix_t* matrix, g2_scalar_t kx, g2_scalar_t ky)
+{
+	g2_matrix_init(matrix, G2_SCALAR_ONE, kx, ky, G2_SCALAR_ONE, 0, 0);
+}
+tb_void_t g2_matrix_init_scale(g2_matrix_t* matrix, g2_scalar_t sx, g2_scalar_t sy)
+{
+	g2_matrix_init(matrix, sx, 0, 0, sy, 0, 0);
+}
+tb_void_t g2_matrix_init_translate(g2_matrix_t* matrix, g2_scalar_t tx, g2_scalar_t ty)
+{
+	g2_matrix_init(matrix, G2_SCALAR_ONE, 0, 0, G2_SCALAR_ONE, tx, ty);
+}
 tb_void_t g2_matrix_exit(g2_matrix_t* matrix)
 {
 	g2_matrix_clear(matrix);
@@ -57,15 +82,6 @@ tb_bool_t g2_matrix_identity(g2_matrix_t const* matrix)
 	tb_trace_noimpl();
 	return TB_FALSE;
 }
-tb_size_t g2_matrix_mode(g2_matrix_t const* matrix)
-{
-	tb_trace_noimpl();
-	return 0;
-}
-tb_void_t g2_matrix_mode_set(g2_matrix_t* matrix, tb_size_t mode)
-{
-	tb_trace_noimpl();
-}
 tb_bool_t g2_matrix_rotate_rhs(g2_matrix_t* matrix, g2_scalar_t degrees)
 {
 	tb_trace_noimpl();
@@ -76,41 +92,35 @@ tb_bool_t g2_matrix_rotate_lhs(g2_matrix_t* matrix, g2_scalar_t degrees)
 	tb_trace_noimpl();
 	return TB_FALSE;
 }
-tb_void_t g2_matrix_rotate_set(g2_matrix_t* matrix, g2_scalar_t degrees)
-{
-	tb_trace_noimpl();
-}
 tb_bool_t g2_matrix_scale_rhs(g2_matrix_t* matrix, g2_scalar_t sx, g2_scalar_t sy)
 {
-	tb_trace_noimpl();
-	return TB_FALSE;
+	tb_assert_and_check_return_val(matrix, TB_FALSE);
+
+	// scale: 1/1 ?
+	tb_check_return_val(sx != G2_SCALAR_ONE || sy != G2_SCALAR_ONE, TB_TRUE);
+
+#if 0
+	g2_matrix_t mx;
+	g2_matrix_init_scale(&mx, sx, sy);
+	return g2_matrix_multiply_rhs(matrix, &mx);
+#else
+	matrix->sx = g2_scalar_mul(matrix->sx, sx);
+	matrix->kx = g2_scalar_mul(matrix->kx, sx);
+	matrix->ky = g2_scalar_mul(matrix->ky, sy);
+	matrix->sy = g2_scalar_mul(matrix->sy, sy);
+	return TB_TRUE;	
+#endif
 }
 tb_bool_t g2_matrix_scale_lhs(g2_matrix_t* matrix, g2_scalar_t sx, g2_scalar_t sy)
 {
-	tb_trace_noimpl();
-	return TB_FALSE;
-}
-tb_void_t g2_matrix_scale_set(g2_matrix_t* matrix, g2_scalar_t sx, g2_scalar_t sy)
-{
-	tb_trace_noimpl();
-}
-tb_void_t g2_matrix_scale_set_x(g2_matrix_t* matrix, g2_scalar_t sx)
-{
-	tb_trace_noimpl();
-}
-tb_void_t g2_matrix_scale_set_y(g2_matrix_t* matrix, g2_scalar_t sy)
-{
-	tb_trace_noimpl();
-}
-g2_scalar_t g2_matrix_scale_get_x(g2_matrix_t const* matrix)
-{
-	tb_trace_noimpl();
-	return G2_SCALAR_ONE;
-}
-g2_scalar_t g2_matrix_scale_get_y(g2_matrix_t const* matrix)
-{
-	tb_trace_noimpl();
-	return G2_SCALAR_ONE;
+	tb_assert_and_check_return_val(matrix, TB_FALSE);
+
+	// scale: 1/1 ?
+	tb_check_return_val(sx != G2_SCALAR_ONE || sy != G2_SCALAR_ONE, TB_TRUE);
+
+	g2_matrix_t mx;
+	g2_matrix_init_scale(&mx, sx, sy);
+	return g2_matrix_multiply_lhs(matrix, &mx);
 }
 tb_bool_t g2_matrix_translate_rhs(g2_matrix_t* matrix, g2_scalar_t dx, g2_scalar_t dy)
 {
@@ -119,67 +129,25 @@ tb_bool_t g2_matrix_translate_rhs(g2_matrix_t* matrix, g2_scalar_t dx, g2_scalar
 }
 tb_bool_t g2_matrix_translate_lhs(g2_matrix_t* matrix, g2_scalar_t dx, g2_scalar_t dy)
 {
+	tb_assert_and_check_return_val(matrix, TB_FALSE);
 	tb_trace_noimpl();
 	return TB_FALSE;
-}
-tb_void_t g2_matrix_translate_set(g2_matrix_t* matrix, g2_scalar_t tx, g2_scalar_t ty)
-{
-	tb_trace_noimpl();
-}
-tb_void_t g2_matrix_translate_set_x(g2_matrix_t* matrix, g2_scalar_t tx)
-{
-	tb_trace_noimpl();
-}
-tb_void_t g2_matrix_translate_set_y(g2_matrix_t* matrix, g2_scalar_t ty)
-{
-	tb_trace_noimpl();
-}
-g2_scalar_t g2_matrix_translate_get_x(g2_matrix_t const* matrix)
-{
-	tb_trace_noimpl();
-	return G2_SCALAR_ONE;
-}
-g2_scalar_t g2_matrix_translate_get_y(g2_matrix_t const* matrix)
-{
-	tb_trace_noimpl();
-	return G2_SCALAR_ONE;
 }
 tb_bool_t g2_matrix_skew_rhs(g2_matrix_t* matrix, g2_scalar_t kx, g2_scalar_t ky)
 {
-	tb_trace_noimpl();
-	return TB_FALSE;
+	tb_assert_and_check_return_val(matrix, TB_FALSE);	
+
+	g2_matrix_t mx;
+	g2_matrix_init_skew(&mx, kx, ky);
+	return g2_matrix_multiply_rhs(matrix, &mx);
 }
 tb_bool_t g2_matrix_skew_lhs(g2_matrix_t* matrix, g2_scalar_t kx, g2_scalar_t ky)
 {
-	tb_trace_noimpl();
-	return TB_FALSE;
-}
-tb_void_t g2_matrix_skew_set(g2_matrix_t* matrix, g2_scalar_t kx, g2_scalar_t ky)
-{
-	tb_trace_noimpl();
-}
-tb_void_t g2_matrix_skew_set_x(g2_matrix_t* matrix, g2_scalar_t kx)
-{
-	tb_trace_noimpl();
-}
-tb_void_t g2_matrix_skew_set_y(g2_matrix_t* matrix, g2_scalar_t ky)
-{
-	tb_trace_noimpl();
-}
-g2_scalar_t g2_matrix_skew_get_x(g2_matrix_t const* matrix)
-{
-	tb_trace_noimpl();
-	return G2_SCALAR_ONE;
-}
-g2_scalar_t g2_matrix_skew_get_y(g2_matrix_t const* matrix)
-{
-	tb_trace_noimpl();
-	return G2_SCALAR_ONE;
-}
-tb_bool_t g2_matrix_multiply_set(g2_matrix_t* matrix, g2_matrix_t const* mx, g2_matrix_t const* my)
-{
-	tb_trace_noimpl();
-	return TB_FALSE;
+	tb_assert_and_check_return_val(matrix, TB_FALSE);
+
+	g2_matrix_t mx;
+	g2_matrix_init_skew(&mx, kx, ky);
+	return g2_matrix_multiply_lhs(matrix, &mx);
 }
 tb_bool_t g2_matrix_multiply_rhs(g2_matrix_t* matrix, g2_matrix_t const* mx)
 {

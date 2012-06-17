@@ -152,9 +152,9 @@ static tb_void_t g2_skia_matrix_set(tb_handle_t painter, g2_matrix_t const* matr
 	if (matrix)
 	{
 		SkMatrix mx;
-		mx.setAll( 	g2_matrix_scale_get_x(matrix), 			g2_matrix_skew_get_x(matrix), 			g2_matrix_translate_get_x(matrix)
-				, 	g2_matrix_skew_get_y(matrix), 			g2_matrix_scale_get_y(matrix), 			g2_matrix_translate_get_y(matrix)
-				, 	0, 										0, 										kMatrix22Elem);
+		mx.setAll( 	matrix->sx, matrix->kx, matrix->tx
+				, 	matrix->ky, matrix->ky, matrix->ty
+				, 	0, 0, kMatrix22Elem);
 		spainter->canvas->setMatrix(mx);
 	}
 	else spainter->canvas->resetMatrix();
@@ -193,9 +193,9 @@ static tb_bool_t g2_skia_multiply(tb_handle_t painter, g2_matrix_t const* matrix
 	tb_assert_and_check_return_val(spainter && spainter->canvas && matrix, TB_FALSE);
 
 	SkMatrix mx;
-	mx.setAll( 	g2_matrix_scale_get_x(matrix), 			g2_matrix_skew_get_x(matrix), 			g2_matrix_translate_get_x(matrix)
-			, 	g2_matrix_skew_get_y(matrix), 			g2_matrix_scale_get_y(matrix), 			g2_matrix_translate_get_y(matrix)
-			, 	0, 										0, 										kMatrix22Elem);
+	mx.setAll( 	matrix->sx, matrix->kx, matrix->tx
+			, 	matrix->ky, matrix->ky, matrix->ty
+			, 	0, 0, kMatrix22Elem);
 	spainter->canvas->setMatrix(mx);
 	return spainter->canvas->concat(mx);
 }
