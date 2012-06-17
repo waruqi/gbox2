@@ -140,15 +140,33 @@ static tb_handle_t 		g_path[5] = {0};
  */
 static tb_void_t g2_demo_move(tb_int_t x, tb_int_t y)
 {
-	g_dx = (x - g_x0) << 1;
-	g_dy = (y - g_y0) << 1;
-	if (g_dx < 0) g_dx = -g_dx;
-	if (g_dy < 0) g_dy = -g_dy;
+	g_dx = x > g_x0? x - g_x0 : g_x0 - x;
+	g_dy = y > g_y0? y - g_y0 : g_y0 - y;
+
+	g2_scalar_t x0 = g2_int_to_scalar(g_x0);
+	g2_scalar_t y0 = g2_int_to_scalar(g_y0);
+	g2_scalar_t dx = g2_int_to_scalar(g_dx);
+	g2_scalar_t dy = g2_int_to_scalar(g_dy);
+	g2_scalar_t dw = g2_int_to_scalar(g_width);
+	g2_scalar_t dh = g2_int_to_scalar(g_height);
+
+	g2_scalar_t an = 0;
+	if (y == g_y0) an = 0;
+	else if (x == g_x0) an = g2_int_to_scalar(90);
+	else an = g2_scalar_div(g2_scalar_imul(g2_scalar_atan(g2_scalar_div(dy, dx)), 180), G2_SCALAR_PI);
+	if (y < g_y0 && x < g_x0) an = g2_int_to_scalar(180) - an;
+	if (y > g_y0 && x < g_x0) an += g2_int_to_scalar(180);
+	if (y > g_y0 && x > g_x0) an = g2_int_to_scalar(360) - an;
+	dx = g2_scalar_lsh(dx, 2);
+	dy = g2_scalar_lsh(dy, 2);
+
+	g2_matrix_set(g_painter, TB_NULL);
+	g2_translate(g_painter, x0, y0);
+	g2_scale(g_painter, g2_scalar_div(dx, dw), g2_scalar_div(-dy, dh));
+	g2_rotate(g_painter, an);
 }
 static tb_void_t g2_demo_drag(tb_int_t x, tb_int_t y)
 {
-	g_x0 = x;
-	g_y0 = y;
 }
 static tb_void_t g2_demo_wheeldown(tb_int_t x, tb_int_t y)
 {	
@@ -192,6 +210,9 @@ static tb_bool_t g2_demo_init(tb_int_t argc, tb_char_t** argv)
 	g2_style_width_set(g_style, g2_int_to_scalar(g_penw));
 	g2_style_cap_set(g_style, g_cap[g_capi]);
 	g2_style_join_set(g_style, g_join[g_joini]);
+
+	// init matrix
+	g2_translate(g_painter, g2_int_to_scalar(g_x0), g2_int_to_scalar(g_y0));
 
 	// init path
 	tb_size_t 	i = 0;

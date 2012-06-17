@@ -34,12 +34,10 @@ static tb_size_t 	g_height 	= 480;
 static tb_size_t 	g_pixfmt 	= G2_PIXFMT_XRGB8888;
 
 // clock
-static tb_hong_t 	g_bt 		= 0; 
-static tb_hong_t 	g_tb 		= 0;
-static tb_hong_t 	g_te 		= 0;
-static tb_hong_t 	g_rt 		= 0;
-static tb_hong_t 	g_ft 		= 0;
+static tb_hong_t 	g_bt 		= 0;
 static tb_hong_t 	g_fp 		= 0;
+static tb_hong_t 	g_rt 		= 0;
+static tb_hong_t 	g_fps 		= 0;
 
 // position
 static tb_long_t 	g_x0 		= 0;
@@ -116,13 +114,13 @@ static tb_void_t g2_demo_gl_display()
 	g2_clear(g_painter, G2_COLOR_BLACK);
 	
 	// start clock
-	g_tb = tb_uclock();
+	g_rt = tb_uclock();
 
 	// render 
 	g2_demo_render();
 
 	// stop clock
-	g_te = tb_uclock();
+	g_rt = tb_uclock() - g_rt;
 
 	// draw
 	if (g_surface)
@@ -142,14 +140,10 @@ static tb_void_t g2_demo_gl_display()
 		}
 	}
 
-	// render fps & rps
-	g_fp++;
-	g_rt += g_te - g_tb;
-	g_ft = g_te - g_bt;
-	if (!g_bt) g_bt = g_tb;
-	tb_long_t fps = (tb_long_t)((1000000 * g_fp) / (g_ft + 1));
-	tb_long_t rps = (tb_long_t)((1000000 * g_fp) / (g_rt + 1));
-	g2_demo_gl_printf("fps: %ld, rps: %ld, rpt: %ld us", fps, rps, (tb_long_t)(g_te - g_tb));
+	// render fps & rpt
+	if (!g_bt) g_bt = tb_uclock();
+	if (!(g_fp++ & 0x15)) g_fps = (1000000 * g_fp) / ((tb_uclock() - g_bt) + 1);
+	g2_demo_gl_printf("fps: %lld, rpt: %lld us", g_fps, g_rt);
 
 	// flush
 	glutSwapBuffers();

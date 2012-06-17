@@ -39,6 +39,9 @@ typedef struct __g2_skia_painter_t
 	// the canvas
 	SkCanvas* 			canvas;
 
+	// the matrix
+	g2_matrix_t 		matrix;
+
 	// the style
 	SkPaint* 			style_def;
 	SkPaint* 			style_usr;
@@ -122,6 +125,56 @@ static tb_void_t g2_skia_style_set(tb_handle_t painter, tb_handle_t style)
 }
 static tb_handle_t g2_skia_clipper(tb_handle_t painter, tb_handle_t clipper)
 {
+}
+static g2_matrix_t const* g2_skia_matrix(tb_handle_t painter)
+{
+	g2_skia_painter_t* spainter = static_cast<g2_skia_painter_t*>(painter);
+	tb_assert_and_check_return_val(spainter && spainter->canvas, TB_NULL);
+
+	SkMatrix const& mx = spainter->canvas->getTotalMatrix();
+	spainter->matrix.xx = mx.getScaleX();
+	spainter->matrix.yy = mx.getScaleY();
+	spainter->matrix.xy = mx.getSkewX();
+	spainter->matrix.yx = mx.getSkewY();
+	spainter->matrix.tx = mx.getTranslateX();
+	spainter->matrix.ty = mx.getTranslateY();
+	return &spainter->matrix;
+}
+static tb_void_t g2_skia_matrix_set(tb_handle_t painter, g2_matrix_t const* matrix)
+{
+	g2_skia_painter_t* spainter = static_cast<g2_skia_painter_t*>(painter);
+	tb_assert_and_check_return(spainter && spainter->canvas);
+
+	if (matrix)
+	{
+		SkMatrix mx;
+		mx.setAll( 	matrix->xx, matrix->xy, matrix->tx
+				, 	matrix->yx, matrix->yy, matrix->ty
+				, 	0, 0, SK_Scalar1);
+		spainter->canvas->setMatrix(mx);
+	}
+	else spainter->canvas->resetMatrix();
+}
+static tb_void_t g2_skia_rotate(tb_handle_t painter, g2_scalar_t degrees)
+{
+	g2_skia_painter_t* spainter = static_cast<g2_skia_painter_t*>(painter);
+	tb_assert_and_check_return(spainter && spainter->canvas);
+
+	spainter->canvas->rotate(degrees);
+}
+static tb_void_t g2_skia_scale(tb_handle_t painter, g2_scalar_t sx, g2_scalar_t sy)
+{
+	g2_skia_painter_t* spainter = static_cast<g2_skia_painter_t*>(painter);
+	tb_assert_and_check_return(spainter && spainter->canvas);
+
+	spainter->canvas->scale(sx, sy);
+}
+static tb_void_t g2_skia_translate(tb_handle_t painter, g2_scalar_t dx, g2_scalar_t dy)
+{
+	g2_skia_painter_t* spainter = static_cast<g2_skia_painter_t*>(painter);
+	tb_assert_and_check_return(spainter && spainter->canvas);
+
+	spainter->canvas->translate(dx, dy);
 }
 static tb_void_t g2_skia_clear(tb_handle_t painter, g2_color_t color)
 {
@@ -227,6 +280,26 @@ extern "C"
 	tb_handle_t g2_clipper(tb_handle_t painter, tb_handle_t clipper)
 	{
 		return g2_skia_clipper(painter, clipper);
+	}
+	g2_matrix_t const* g2_matrix(tb_handle_t painter)
+	{
+		return g2_skia_matrix(painter);				
+	}
+	tb_void_t g2_rotate(tb_handle_t painter, g2_scalar_t degrees)
+	{
+		g2_skia_rotate(painter, degrees);		
+	}
+	tb_void_t g2_scale(tb_handle_t painter, g2_scalar_t sx, g2_scalar_t sy)
+	{
+		g2_skia_scale(painter, sx, sy);
+	}
+	tb_void_t g2_translate(tb_handle_t painter, g2_scalar_t dx, g2_scalar_t dy)
+	{
+		g2_skia_translate(painter, dx, dy);		
+	}
+	tb_void_t g2_matrix_set(tb_handle_t painter, g2_matrix_t const* matrix)
+	{
+		g2_skia_matrix_set(painter, matrix);		
 	}
 	tb_void_t g2_clear(tb_handle_t painter, g2_color_t color)
 	{
