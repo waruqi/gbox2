@@ -11,6 +11,7 @@ gbox2_TYPE 				= LIB
 gbox2_C_FILES 			+= \
 						gbox2 \
 						core/path \
+						core/matrix \
 						core/painter 
 
 gbox2_CPP_FILES-$(G2_CONFIG_CORE_SKIA) += \
@@ -47,7 +48,6 @@ freetype_C_FILES 		= \
 						base/ftinit \
 						base/ftadvanc \
 						base/ftcalc \
-						base/ftdbgmem \
 						base/ftgloadr \
 						base/ftobjs \
 						base/ftoutln \
@@ -68,7 +68,6 @@ freetype_C_FILES 		= \
 						truetype/ttgxvar \
 						truetype/ttinterp \
 						truetype/ttobjs \
-						truetype/ttpic \
 						truetype/ttpload \
 						autofit/afangles \
 						autofit/afcjk \
@@ -79,8 +78,6 @@ freetype_C_FILES 		= \
 						autofit/aflatin \
 						autofit/afloader \
 						autofit/afmodule \
-						autofit/afpic \
-						autofit/afwarp \
 						cache/ftcbasic \
 						cache/ftccache \
 						cache/ftccmap \
@@ -98,10 +95,8 @@ freetype_C_FILES 		= \
 						sfnt/ttbdf \
 						sfnt/sfobjs \
 						sfnt/sfdriver \
-						sfnt/sfntpic \
 						smooth/ftgrays \
-						smooth/ftsmooth \
-						smooth/ftspic
+						smooth/ftsmooth
 
 freetype_INC_DIR 		:= third/freetype/include
 freetype_CFLAGS 		:= -DFT2_BUILD_LIBRARY
@@ -186,7 +181,6 @@ skia_CPP_FILES 			= \
 						core/SkPictureRecord \
 						core/SkPixelRef \
 						core/SkPoint \
-						core/SkProcSpriteBlitter \
 						core/SkPtrRecorder \
 						core/SkQuadClipper \
 						core/SkRasterClip \
@@ -223,7 +217,6 @@ skia_CPP_FILES 			= \
 						ports/SkFontHost_FreeType \
 						ports/SkFontHost_gamma_none \
 						ports/SkFontHost_linux \
-						ports/SkGlobalInitialization_default \
 						ports/SkFontHost_tables \
 						ports/SkMemory_malloc \
 						ports/SkOSFile_stdio \

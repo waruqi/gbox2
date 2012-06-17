@@ -251,15 +251,6 @@ typedef struct __g2_iarc_t
 
 }g2_iarc_t;
 
-// the transforam matrix type
-typedef struct __g2_matrix_t
-{
-	g2_scalar_t 		xx, xy;
-	g2_scalar_t 		yx, yy;
-	g2_scalar_t 		tx, ty;
-
-}g2_matrix_t;
-
 /* ////////////////////////////////////////////////////////////////////////
  * inline
  */

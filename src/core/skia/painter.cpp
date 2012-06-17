@@ -27,6 +27,15 @@
 #include "prefix.h"
 
 /* ///////////////////////////////////////////////////////////////////////
+ * macros
+ */
+#ifdef SK_SCALAR_IS_FLOAT
+# 	define kMatrix22Elem 	SK_Scalar1
+#else
+# 	define kMatrix22Elem 	SK_Fract1
+#endif
+
+/* ///////////////////////////////////////////////////////////////////////
  * types
  */
 
@@ -132,12 +141,7 @@ static g2_matrix_t const* g2_skia_matrix(tb_handle_t painter)
 	tb_assert_and_check_return_val(spainter && spainter->canvas, TB_NULL);
 
 	SkMatrix const& mx = spainter->canvas->getTotalMatrix();
-	spainter->matrix.xx = mx.getScaleX();
-	spainter->matrix.yy = mx.getScaleY();
-	spainter->matrix.xy = mx.getSkewX();
-	spainter->matrix.yx = mx.getSkewY();
-	spainter->matrix.tx = mx.getTranslateX();
-	spainter->matrix.ty = mx.getTranslateY();
+	g2_matrix_init(&spainter->matrix, mx.getScaleX(), mx.getScaleY(), mx.getSkewX(), mx.getSkewY(), mx.getTranslateX(), mx.getTranslateY());
 	return &spainter->matrix;
 }
 static tb_void_t g2_skia_matrix_set(tb_handle_t painter, g2_matrix_t const* matrix)
@@ -148,33 +152,52 @@ static tb_void_t g2_skia_matrix_set(tb_handle_t painter, g2_matrix_t const* matr
 	if (matrix)
 	{
 		SkMatrix mx;
-		mx.setAll( 	matrix->xx, matrix->xy, matrix->tx
-				, 	matrix->yx, matrix->yy, matrix->ty
-				, 	0, 0, SK_Scalar1);
+		mx.setAll( 	g2_matrix_scale_get_x(matrix), 			g2_matrix_skew_get_x(matrix), 			g2_matrix_translate_get_x(matrix)
+				, 	g2_matrix_skew_get_y(matrix), 			g2_matrix_scale_get_y(matrix), 			g2_matrix_translate_get_y(matrix)
+				, 	0, 										0, 										kMatrix22Elem);
 		spainter->canvas->setMatrix(mx);
 	}
 	else spainter->canvas->resetMatrix();
 }
-static tb_void_t g2_skia_rotate(tb_handle_t painter, g2_scalar_t degrees)
+static tb_bool_t g2_skia_rotate(tb_handle_t painter, g2_scalar_t degrees)
 {
 	g2_skia_painter_t* spainter = static_cast<g2_skia_painter_t*>(painter);
-	tb_assert_and_check_return(spainter && spainter->canvas);
+	tb_assert_and_check_return_val(spainter && spainter->canvas, TB_FALSE);
 
-	spainter->canvas->rotate(degrees);
+	return spainter->canvas->rotate(degrees);
 }
-static tb_void_t g2_skia_scale(tb_handle_t painter, g2_scalar_t sx, g2_scalar_t sy)
+static tb_bool_t g2_skia_scale(tb_handle_t painter, g2_scalar_t sx, g2_scalar_t sy)
 {
 	g2_skia_painter_t* spainter = static_cast<g2_skia_painter_t*>(painter);
-	tb_assert_and_check_return(spainter && spainter->canvas);
+	tb_assert_and_check_return_val(spainter && spainter->canvas, TB_FALSE);
 
-	spainter->canvas->scale(sx, sy);
+	return spainter->canvas->scale(sx, sy);
 }
-static tb_void_t g2_skia_translate(tb_handle_t painter, g2_scalar_t dx, g2_scalar_t dy)
+static tb_bool_t g2_skia_skew(tb_handle_t painter, g2_scalar_t kx, g2_scalar_t ky)
 {
 	g2_skia_painter_t* spainter = static_cast<g2_skia_painter_t*>(painter);
-	tb_assert_and_check_return(spainter && spainter->canvas);
+	tb_assert_and_check_return_val(spainter && spainter->canvas, TB_FALSE);
 
-	spainter->canvas->translate(dx, dy);
+	return spainter->canvas->skew(kx, ky);
+}
+static tb_bool_t g2_skia_translate(tb_handle_t painter, g2_scalar_t dx, g2_scalar_t dy)
+{
+	g2_skia_painter_t* spainter = static_cast<g2_skia_painter_t*>(painter);
+	tb_assert_and_check_return_val(spainter && spainter->canvas, TB_FALSE);
+
+	return spainter->canvas->translate(dx, dy);
+}
+static tb_bool_t g2_skia_multiply(tb_handle_t painter, g2_matrix_t const* matrix)
+{
+	g2_skia_painter_t* spainter = static_cast<g2_skia_painter_t*>(painter);
+	tb_assert_and_check_return_val(spainter && spainter->canvas && matrix, TB_FALSE);
+
+	SkMatrix mx;
+	mx.setAll( 	g2_matrix_scale_get_x(matrix), 			g2_matrix_skew_get_x(matrix), 			g2_matrix_translate_get_x(matrix)
+			, 	g2_matrix_skew_get_y(matrix), 			g2_matrix_scale_get_y(matrix), 			g2_matrix_translate_get_y(matrix)
+			, 	0, 										0, 										kMatrix22Elem);
+	spainter->canvas->setMatrix(mx);
+	return spainter->canvas->concat(mx);
 }
 static tb_void_t g2_skia_clear(tb_handle_t painter, g2_color_t color)
 {
@@ -285,17 +308,25 @@ extern "C"
 	{
 		return g2_skia_matrix(painter);				
 	}
-	tb_void_t g2_rotate(tb_handle_t painter, g2_scalar_t degrees)
+	tb_bool_t g2_rotate(tb_handle_t painter, g2_scalar_t degrees)
 	{
-		g2_skia_rotate(painter, degrees);		
+		return g2_skia_rotate(painter, degrees);		
 	}
-	tb_void_t g2_scale(tb_handle_t painter, g2_scalar_t sx, g2_scalar_t sy)
+	tb_bool_t g2_skew(tb_handle_t painter, g2_scalar_t kx, g2_scalar_t ky)
 	{
-		g2_skia_scale(painter, sx, sy);
+		return g2_skia_scale(painter, kx, ky);
 	}
-	tb_void_t g2_translate(tb_handle_t painter, g2_scalar_t dx, g2_scalar_t dy)
+	tb_bool_t g2_scale(tb_handle_t painter, g2_scalar_t sx, g2_scalar_t sy)
 	{
-		g2_skia_translate(painter, dx, dy);		
+		return g2_skia_scale(painter, sx, sy);
+	}
+	tb_bool_t g2_translate(tb_handle_t painter, g2_scalar_t dx, g2_scalar_t dy)
+	{
+		return g2_skia_translate(painter, dx, dy);		
+	}
+	tb_bool_t g2_multiply(tb_handle_t painter, g2_matrix_t const* matrix)
+	{
+		return g2_skia_multiply(painter, matrix);		
 	}
 	tb_void_t g2_matrix_set(tb_handle_t painter, g2_matrix_t const* matrix)
 	{

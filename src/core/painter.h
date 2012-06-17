@@ -32,6 +32,7 @@ extern "C" {
  * includes
  */
 #include "prefix.h"
+#include "matrix.h"
 
 /* ///////////////////////////////////////////////////////////////////////
  * interfaces
@@ -56,9 +57,11 @@ tb_handle_t 		g2_clipper(tb_handle_t painter, tb_handle_t clipper);
 g2_matrix_t const* 	g2_matrix(tb_handle_t painter);
 tb_void_t 			g2_matrix_set(tb_handle_t painter, g2_matrix_t const* matrix);
 
-tb_void_t 			g2_rotate(tb_handle_t painter, g2_scalar_t degrees);
-tb_void_t 			g2_scale(tb_handle_t painter, g2_scalar_t sx, g2_scalar_t sy);
-tb_void_t 			g2_translate(tb_handle_t painter, g2_scalar_t dx, g2_scalar_t dy);
+tb_bool_t 			g2_rotate(tb_handle_t painter, g2_scalar_t degrees);
+tb_bool_t 			g2_skew(tb_handle_t painter, g2_scalar_t kx, g2_scalar_t ky);
+tb_bool_t 			g2_scale(tb_handle_t painter, g2_scalar_t sx, g2_scalar_t sy);
+tb_bool_t 			g2_translate(tb_handle_t painter, g2_scalar_t dx, g2_scalar_t dy);
+tb_bool_t 			g2_multiply(tb_handle_t painter, g2_matrix_t const* matrix);
 
 // clear
 tb_void_t 			g2_clear(tb_handle_t painter, g2_color_t color);
