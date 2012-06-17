@@ -133,7 +133,7 @@ static tb_size_t 		g_cptn[] = 	{ 	0
 									, 	sizeof(cpts4) / sizeof(g2_point_t)
 									};
 static tb_size_t const 	g_ptm = 5;
-static g2_path_t const* g_path[5] = {0};
+static tb_handle_t 		g_path[5] = {0};
 
 /* ////////////////////////////////////////////////////////////////////////
  * events
@@ -194,8 +194,6 @@ static tb_bool_t g2_demo_init(tb_int_t argc, tb_char_t** argv)
 	g2_style_join_set(g_style, g_join[g_joini]);
 
 	// init path
-	g2_point_t 	pt;
-	g2_point_t 	cp;
 	tb_size_t 	i = 0;
 	tb_size_t 	j = 0;
 	for (i = 0; i < g_ptm; i++)
@@ -203,24 +201,15 @@ static tb_bool_t g2_demo_init(tb_int_t argc, tb_char_t** argv)
 		g_path[i] = g2_path_init();
 		if (g_cpts[i])
 		{
-			pt = g2_point_imake(g_pts[i][0].x, g_pts[i][0].y);
-			g2_path_move_to(g_path[i], &pt);
+			g2_path_movei_to(g_path[i], &g_pts[i][0]);
 			for (j = 1; j < g_ptn[i]; j++)
-			{
-				pt = g2_point_imake(g_pts[i][j].x, g_pts[i][j].y);
-				cp = g2_point_imake(g_cpts[i][j - 1].x, g_cpts[i][j - 1].y);
-				g2_path_quad_to(g_path[i], &pt, &cp);
-			}
+				g2_path_quadi_to(g_path[i], &g_pts[i][j], &g_cpts[i][j - 1]);
 		}
 		else
 		{
-			pt = g2_point_imake(g_pts[i][0].x, g_pts[i][0].y);
-			g2_path_move_to(g_path[i], &pt);
+			g2_path_movei_to(g_path[i], &g_pts[i][0]);
 			for (j = 1; j < g_ptn[i]; j++)
-			{
-				pt = g2_point_imake(g_pts[i][j].x, g_pts[i][j].y);
-				g2_path_line_to(g_path[i], &pt);
-			}
+				g2_path_linei_to(g_path[i], &g_pts[i][j]);
 		}
 	}
 

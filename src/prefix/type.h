@@ -49,12 +49,6 @@ typedef tb_float_t 		g2_scalar_t;
 // the pixel type
 typedef tb_uint32_t 	g2_pixel_t;
 
-// the path type
-typedef tb_void_t 		g2_path_t;
-
-// the ipath type
-typedef tb_void_t 		g2_ipath_t;
-
 // the point type
 typedef struct __g2_point_t
 {
@@ -303,6 +297,17 @@ static __tb_inline__ g2_ipoint_t g2_ipoint_make(tb_long_t x, tb_long_t y)
 	return pt;
 }
 
+// ipoint => point
+static __tb_inline__ g2_point_t g2_ipoint_to_point(g2_ipoint_t const* point)
+{
+	g2_point_t pt;
+	
+	pt.x = g2_int_to_scalar(point->x);
+	pt.y = g2_int_to_scalar(point->y);
+
+	return pt;
+}
+
 // make rect
 static __tb_inline__ g2_rect_t g2_rect_make(g2_scalar_t x, g2_scalar_t y, g2_scalar_t w, g2_scalar_t h)
 {
@@ -342,6 +347,19 @@ static __tb_inline__ g2_irect_t g2_irect_make(tb_long_t x, tb_long_t y, tb_size_
 	return r;
 }
 
+// irect => rect
+static __tb_inline__ g2_rect_t g2_irect_to_rect(g2_irect_t const* rect)
+{
+	g2_rect_t r;
+	
+	r.x = g2_int_to_scalar(rect->x);
+	r.y = g2_int_to_scalar(rect->y);
+	r.w = g2_int_to_scalar(rect->w);
+	r.h = g2_int_to_scalar(rect->h);
+
+	return r;
+}
+
 // make line
 static __tb_inline__ g2_line_t g2_line_make(g2_scalar_t x0, g2_scalar_t y0, g2_scalar_t x1, g2_scalar_t y1)
 {
@@ -377,6 +395,17 @@ static __tb_inline__ g2_iline_t g2_iline_make(tb_long_t x0, tb_long_t y0, tb_siz
 	l.p0.y = y0;
 	l.p1.x = x1;
 	l.p1.y = y1;
+
+	return l;
+}
+
+// iline => line
+static __tb_inline__ g2_line_t g2_iline_to_line(g2_iline_t const* line)
+{
+	g2_line_t l;
+
+	l.p0 = g2_ipoint_to_point(&line->p0);
+	l.p1 = g2_ipoint_to_point(&line->p1);
 
 	return l;
 }
@@ -425,6 +454,19 @@ static __tb_inline__ g2_itriangle_t g2_itriangle_make(tb_long_t x0, tb_long_t y0
 
 	return t;
 }
+
+// itriangle => triangle
+static __tb_inline__ g2_triangle_t g2_itriangle_to_triangle(g2_itriangle_t const* triangle)
+{
+	g2_triangle_t t;
+
+	t.p0 = g2_ipoint_to_point(&triangle->p0);
+	t.p1 = g2_ipoint_to_point(&triangle->p1);
+	t.p2 = g2_ipoint_to_point(&triangle->p2);
+
+	return t;
+}
+
 // make circle
 static __tb_inline__ g2_circle_t g2_circle_make(g2_scalar_t x0, g2_scalar_t y0, g2_scalar_t r)
 {
@@ -461,6 +503,16 @@ static __tb_inline__ g2_icircle_t g2_icircle_make(tb_long_t x0, tb_long_t y0, tb
 	return c;
 }
 
+// icircle => circle
+static __tb_inline__ g2_circle_t g2_icircle_to_circle(g2_icircle_t const* circle)
+{
+	g2_circle_t c;
+
+	c.c 	= g2_ipoint_to_point(&circle->c);
+	c.r 	= g2_int_to_scalar(circle->r);
+
+	return c;
+}
 
 // make ellipse
 static __tb_inline__ g2_ellipse_t g2_ellipse_make(g2_scalar_t x0, g2_scalar_t y0, g2_scalar_t rx, g2_scalar_t ry)
@@ -497,6 +549,18 @@ static __tb_inline__ g2_iellipse_t g2_iellipse_make(tb_long_t x0, tb_long_t y0, 
 	e.c0.y 	= y0;
 	e.rx 	= rx;
 	e.ry 	= ry;
+
+	return e;
+}
+
+// iellipse => ellipse
+static __tb_inline__ g2_ellipse_t g2_iellipse_to_ellipse(g2_iellipse_t const* ellipse)
+{
+	g2_ellipse_t e;
+
+	e.c0 	= g2_ipoint_to_point(&ellipse->c0);
+	e.rx 	= g2_int_to_scalar(ellipse->rx);
+	e.ry 	= g2_int_to_scalar(ellipse->ry);
 
 	return e;
 }
@@ -542,6 +606,20 @@ static __tb_inline__ g2_iarc_t g2_iarc_make(tb_long_t x0, tb_long_t y0, tb_size_
 	a.ry 	= ry;
 	a.ab 	= ab;
 	a.an 	= an;
+
+	return a;
+}
+
+// iarc => arc
+static __tb_inline__ g2_arc_t g2_iarc_to_arc(g2_iarc_t const* arc)
+{
+	g2_arc_t a;
+
+	a.c0 	= g2_ipoint_to_point(&arc->c0);
+	a.rx 	= g2_int_to_scalar(arc->rx);
+	a.ry 	= g2_int_to_scalar(arc->ry);
+	a.ab 	= g2_int_to_scalar(arc->ab);
+	a.an 	= g2_int_to_scalar(arc->an);
 
 	return a;
 }

@@ -9,7 +9,9 @@ gbox2_TYPE 				= LIB
 
 # basic files
 gbox2_C_FILES 			+= \
-						gbox2 
+						gbox2 \
+						core/path \
+						core/painter 
 
 gbox2_CPP_FILES-$(G2_CONFIG_CORE_SKIA) += \
 						core/skia/path \

@@ -71,13 +71,11 @@ static tb_void_t g2_demo_exit()
 }
 static tb_void_t g2_demo_render()
 {
-	g2_ellipse_t e = g2_ellipse_imake(g_x0, g_y0, g_dx, g_dy);
-
 	g2_style_mode_set(g_style, G2_STYLE_MODE_FILL);
 	g2_style_color_set(g_style, G2_COLOR_RED);
-	g2_draw_ellipse(g_painter, &e);
+	g2_draw2i_ellipse(g_painter, g_x0, g_y0, g_dx, g_dy);
 
 	g2_style_mode_set(g_style, G2_STYLE_MODE_STROKE);
 	g2_style_color_set(g_style, G2_COLOR_BLUE);
-	g2_draw_ellipse(g_painter, &e);
+	g2_draw2i_ellipse(g_painter, g_x0, g_y0, g_dx, g_dy);
 }

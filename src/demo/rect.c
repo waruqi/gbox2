@@ -71,13 +71,11 @@ static tb_void_t g2_demo_exit()
 }
 static tb_void_t g2_demo_render()
 {
-	g2_rect_t rt = g2_rect_imake(g_x0 - g_dx, g_y0 - g_dy, g_dx << 1, g_dy << 1);
-
 	g2_style_mode_set(g_style, G2_STYLE_MODE_FILL);
 	g2_style_color_set(g_style, G2_COLOR_RED);
-	g2_draw_rect(g_painter, &rt);
+	g2_draw2i_rect(g_painter, g_x0 - g_dx, g_y0 - g_dy, g_dx << 1, g_dy << 1);
 
 	g2_style_mode_set(g_style, G2_STYLE_MODE_STROKE);
 	g2_style_color_set(g_style, G2_COLOR_BLUE);
-	g2_draw_rect(g_painter, &rt);
+	g2_draw2i_rect(g_painter, g_x0 - g_dx, g_y0 - g_dy, g_dx << 1, g_dy << 1);
 }

@@ -68,6 +68,5 @@ static tb_void_t g2_demo_exit()
 }
 static tb_void_t g2_demo_render()
 {
-	g2_line_t ln = g2_line_imake(g_x0 - g_dx, g_y0 - g_dy, g_x0 + g_dx, g_y0 + g_dy);
-	g2_draw_line(g_painter, &ln);
+	g2_draw2i_line(g_painter, g_x0 - g_dx, g_y0 - g_dy, g_x0 + g_dx, g_y0 + g_dy);
 }

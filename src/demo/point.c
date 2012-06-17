@@ -68,6 +68,5 @@ static tb_void_t g2_demo_exit()
 }
 static tb_void_t g2_demo_render()
 {
-	g2_point_t pt = g2_point_imake(g_x, g_y);
-	g2_draw_point(g_painter, &pt);
+	g2_draw2i_point(g_painter, g_x, g_y);
 }

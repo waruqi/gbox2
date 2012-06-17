@@ -68,9 +68,7 @@ static tb_void_t g2_demo_exit()
 }
 static tb_void_t g2_demo_render()
 {
-	g2_arc_t a = g2_arc_imake(g_x0, g_y0, g_dx, g_dy, 0, 270);
-
 	g2_style_mode_set(g_style, G2_STYLE_MODE_STROKE);
 	g2_style_color_set(g_style, G2_COLOR_RED);
-	g2_draw_arc(g_painter, &a);
+	g2_draw2i_arc(g_painter, g_x0, g_y0, g_dx, g_dy, 0, 270);
 }
