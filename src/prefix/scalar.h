@@ -49,8 +49,8 @@
 # 	define g2_float_to_scalar(x) 	tb_float_to_fixed(x)
 #endif
 
-#define g2_int_to_scalar(x) 		tb_int_to_fixed(x)
-#define g2_scalar_to_int(x) 		tb_fixed_to_int(x)
+#define g2_long_to_scalar(x) 		tb_long_to_fixed(x)
+#define g2_scalar_to_long(x) 		tb_fixed_to_long(x)
 
 #define g2_fixed_to_scalar(x) 		(x)
 #define g2_scalar_to_fixed(x) 		(x)
@@ -89,29 +89,24 @@
 #define g2_scalar_exp(x) 			tb_fixed_exp(x)
 #define g2_scalar_exp1(x) 			tb_fixed_exp1(x)
 #define g2_scalar_expi(x) 			tb_fixed_expi(x)
-#define g2_scalar_ilog2(x) 			tb_fixed_ilog2(x)
-#define g2_scalar_iclog2(x) 		tb_fixed_iclog2(x)
-#define g2_scalar_irlog2(x) 		tb_fixed_irlog2(x)
 
 #elif defined(TB_CONFIG_TYPE_FLOAT)
 
-#define G2_SCALAR_ONE 				TB_FLOAT_ONE
-#define G2_SCALAR_HALF 				TB_FLOAT_HALF
-#define G2_SCALAR_MAX 				TB_FLOAT_MAX
-#define G2_SCALAR_MIN 				TB_FLOAT_MIN
-#define G2_SCALAR_NAN 				TB_FLOAT_NAN
-#define G2_SCALAR_INF 				TB_FLOAT_INF
-#define G2_SCALAR_PI 				TB_FLOAT_PI
-#define G2_SCALAR_SQRT2 			TB_FLOAT_SQRT2
+#define G2_SCALAR_ONE 				1.0f
+#define G2_SCALAR_HALF 				0.5f
+#define G2_SCALAR_MAX 				TB_MAF
+#define G2_SCALAR_MIN 				TB_MIF
+#define G2_SCALAR_NAN 				TB_NAN
+#define G2_SCALAR_INF 				TB_INF
+#define G2_SCALAR_PI 				TB_PI
+#define G2_SCALAR_SQRT2 			1.414213562
 
 // conversion
-#ifdef TB_CONFIG_TYPE_FLOAT
-# 	define g2_scalar_to_float(x) 	tb_float_to_float(x)
-# 	define g2_float_to_scalar(x) 	tb_float_to_float(x)
-#endif
+#define g2_scalar_to_float(x) 		(x)
+#define g2_float_to_scalar(x) 		(x)
 
-#define g2_int_to_scalar(x) 		tb_int_to_float(x)
-#define g2_scalar_to_int(x) 		tb_float_to_int(x)
+#define g2_long_to_scalar(x) 		(tb_float_t)(x)
+#define g2_scalar_to_long(x) 		(tb_long_t)(x)
 
 #define g2_fixed_to_scalar(x) 		tb_fixed_to_float(x)
 #define g2_scalar_to_fixed(x) 		tb_float_to_fixed(x)
@@ -123,36 +118,33 @@
 #define g2_scalar_to_fixed30(x) 	tb_float_to_fixed30(x)
 
 // round
-#define g2_scalar_round(x) 			tb_float_round(x)
-#define g2_scalar_ceil(x) 			tb_float_ceil(x)
-#define g2_scalar_floor(x) 			tb_float_floor(x)
+#define g2_scalar_round(x) 			tb_roundf(x)
+#define g2_scalar_ceil(x) 			tb_ceilf(x)
+#define g2_scalar_floor(x) 			tb_floorf(x)
 
 // functions
-#define g2_scalar_abs(x) 			tb_float_abs(x)
-#define g2_scalar_avg(x, y) 		tb_float_avg(x, y)
-#define g2_scalar_lsh(x, y) 		tb_float_lsh(x, y)
-#define g2_scalar_rsh(x, y) 		tb_float_rsh(x, y)
-#define g2_scalar_mul(x, y) 		tb_float_mul(x, y)
-#define g2_scalar_div(x, y) 		tb_float_div(x, y)
-#define g2_scalar_imul(x, y) 		tb_float_imul(x, y)
-#define g2_scalar_idiv(x, y) 		tb_float_idiv(x, y)
-#define g2_scalar_invert(x) 		tb_float_invert(x)
-#define g2_scalar_sqre(x) 			tb_float_sqre(x)
-#define g2_scalar_sqrt(x) 			tb_float_sqrt(x)
-#define g2_scalar_sin(x) 			tb_float_sin(x)
-#define g2_scalar_cos(x) 			tb_float_cos(x)
-#define g2_scalar_sincos(x, s, c) 	tb_float_sincos(x, s, c)
-#define g2_scalar_tan(x) 			tb_float_tan(x)
-#define g2_scalar_asin(x) 			tb_float_asin(x)
-#define g2_scalar_acos(x) 			tb_float_acos(x)
-#define g2_scalar_atan(x) 			tb_float_atan(x)
-#define g2_scalar_atan2(y, x) 		tb_float_atan2(y, x)
-#define g2_scalar_exp(x) 			tb_float_exp(x)
-#define g2_scalar_exp1(x) 			tb_float_exp1(x)
-#define g2_scalar_expi(x) 			tb_float_expi(x)
-#define g2_scalar_ilog2(x) 			tb_float_ilog2(x)
-#define g2_scalar_iclog2(x) 		tb_float_iclog2(x)
-#define g2_scalar_irlog2(x) 		tb_float_irlog2(x)
+#define g2_scalar_abs(x) 			tb_fabs(x)
+#define g2_scalar_avg(x, y) 		(((x) + (y)) * 0.5)
+#define g2_scalar_lsh(x, y) 		((x) * (tb_float_t)(1 << (y)))
+#define g2_scalar_rsh(x, y) 		((x) / (tb_float_t)(1 << (y)))
+#define g2_scalar_mul(x, y) 		((x) * (y))
+#define g2_scalar_div(x, y) 		((x) / (y))
+#define g2_scalar_imul(x, y) 		((x) * (tb_float_t)(y))
+#define g2_scalar_idiv(x, y) 		((x) / (tb_float_t)(y))
+#define g2_scalar_invert(x) 		(1. / (x))
+#define g2_scalar_sqre(x) 			((x) * (x))
+#define g2_scalar_sqrt(x) 			tb_sqrtf(x)
+#define g2_scalar_sin(x) 			tb_sinf(x)
+#define g2_scalar_cos(x) 			tb_cosf(x)
+#define g2_scalar_sincos(x, s, c) 	tb_sincosf(x, s, c)
+#define g2_scalar_tan(x) 			tb_tanf(x)
+#define g2_scalar_asin(x) 			tb_asinf(x)
+#define g2_scalar_acos(x) 			tb_acosf(x)
+#define g2_scalar_atan(x) 			tb_atanf(x)
+#define g2_scalar_atan2(y, x) 		tb_atan2f(y, x)
+#define g2_scalar_exp(x) 			tb_expf(x)
+#define g2_scalar_exp1(x) 			tb_exp1f(x)
+#define g2_scalar_expi(x) 			tb_expif(x)
 
 #else
 # 	error float is not supported.

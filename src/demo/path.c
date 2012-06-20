@@ -143,20 +143,20 @@ static tb_void_t g2_demo_move(tb_int_t x, tb_int_t y)
 	g_dx = x > g_x0? x - g_x0 : g_x0 - x;
 	g_dy = y > g_y0? y - g_y0 : g_y0 - y;
 
-	g2_scalar_t x0 = g2_int_to_scalar(g_x0);
-	g2_scalar_t y0 = g2_int_to_scalar(g_y0);
-	g2_scalar_t dx = g2_int_to_scalar(g_dx);
-	g2_scalar_t dy = g2_int_to_scalar(g_dy);
-	g2_scalar_t dw = g2_int_to_scalar(g_width);
-	g2_scalar_t dh = g2_int_to_scalar(g_height);
+	g2_scalar_t x0 = g2_long_to_scalar(g_x0);
+	g2_scalar_t y0 = g2_long_to_scalar(g_y0);
+	g2_scalar_t dx = g2_long_to_scalar(g_dx);
+	g2_scalar_t dy = g2_long_to_scalar(g_dy);
+	g2_scalar_t dw = g2_long_to_scalar(g_width);
+	g2_scalar_t dh = g2_long_to_scalar(g_height);
 
 	g2_scalar_t an = 0;
 	if (y == g_y0) an = 0;
-	else if (x == g_x0) an = g2_int_to_scalar(90);
+	else if (x == g_x0) an = g2_long_to_scalar(90);
 	else an = g2_scalar_div(g2_scalar_imul(g2_scalar_atan(g2_scalar_div(dy, dx)), 180), G2_SCALAR_PI);
-	if (y < g_y0 && x < g_x0) an = g2_int_to_scalar(180) - an;
-	if (y > g_y0 && x < g_x0) an += g2_int_to_scalar(180);
-	if (y > g_y0 && x > g_x0) an = g2_int_to_scalar(360) - an;
+	if (y < g_y0 && x < g_x0) an = g2_long_to_scalar(180) - an;
+	if (y > g_y0 && x < g_x0) an += g2_long_to_scalar(180);
+	if (y > g_y0 && x > g_x0) an = g2_long_to_scalar(360) - an;
 	dx = g2_scalar_lsh(dx, 2);
 	dy = g2_scalar_lsh(dy, 2);
 
@@ -172,13 +172,13 @@ static tb_void_t g2_demo_wheeldown(tb_int_t x, tb_int_t y)
 {	
 	if (g_penw > 1) g_penw--;
 	else g_penw = 1;
-	g2_style_width_set(g_style, g2_int_to_scalar(g_penw));
+	g2_style_width_set(g_style, g2_long_to_scalar(g_penw));
 }
 static tb_void_t g2_demo_wheelup(tb_int_t x, tb_int_t y)
 {
 	if (g_penw > 1000) g_penw = 1000;
 	else g_penw++;
-	g2_style_width_set(g_style, g2_int_to_scalar(g_penw));
+	g2_style_width_set(g_style, g2_long_to_scalar(g_penw));
 }
 static tb_void_t g2_demo_lclickdown(tb_int_t x, tb_int_t y)
 {
@@ -207,12 +207,12 @@ static tb_void_t g2_demo_key(tb_int_t key)
 static tb_bool_t g2_demo_init(tb_int_t argc, tb_char_t** argv)
 {
 	// init style
-	g2_style_width_set(g_style, g2_int_to_scalar(g_penw));
+	g2_style_width_set(g_style, g2_long_to_scalar(g_penw));
 	g2_style_cap_set(g_style, g_cap[g_capi]);
 	g2_style_join_set(g_style, g_join[g_joini]);
 
 	// init matrix
-	g2_translate(g_painter, g2_int_to_scalar(g_x0), g2_int_to_scalar(g_y0));
+	g2_translate(g_painter, g2_long_to_scalar(g_x0), g2_long_to_scalar(g_y0));
 
 	// init path
 	tb_size_t 	i = 0;

@@ -17,24 +17,38 @@
  * Copyright (C) 2009 - 2012, ruki All rights reserved.
  *
  * @author		ruki
- * @file		atomic.h
+ * @file		maf.h
+ * @ingroup 	libm
  *
  */
-#ifndef TB_PLATFORM_ARCH_ATOMIC_H
-#define TB_PLATFORM_ARCH_ATOMIC_H
-
+#ifndef TB_LIBM_MAF_H
+#define TB_LIBM_MAF_H
 
 /* ///////////////////////////////////////////////////////////////////////
  * includes
  */
 #include "prefix.h"
 
-#if defined(TB_ARCH_x86) || defined(TB_ARCH_x64)
-# 	include "x86/atomic.h"
-#elif defined(TB_ARCH_ARM)
-# 	include "arm/atomic.h"
-#elif defined(TB_ARCH_SH4)
-# 	include "sh4/atomic.h"
+/* ///////////////////////////////////////////////////////////////////////
+ * macros
+ */
+
+#if defined(TB_COMPILER_IS_GCC) && __GNUC__ >= 3 && __GNUC_MINOR__ >= 3
+# 	define TB_MAF 		(__builtin_huge_val())
+#elif defined(TB_COMPILER_IS_GCC) && __GNUC__ >= 2 && __GNUC_MINOR__ >= 96
+#	define TB_MAF 		(__extension__ 0x1.0p2047)
+#elif defined(TB_COMPILER_IS_GCC)
+# 	define TB_MAF 		(__extension__ ((union { unsigned __l __attribute__((__mode__(__DI__))); tb_double_t __d; }) { __l: 0x7ff0000000000000ULL }).__d)
+#else
+	typedef union { tb_byte_t __c[8]; tb_double_t __d; } __tb_maf_t;
+# 	ifdef TB_WORDS_BIGENDIAN
+# 		define __tb_maf_bytes	{ 0x7f, 0xf0, 0, 0, 0, 0, 0, 0 }
+# 	else
+# 		define __tb_maf_bytes	{ 0, 0, 0, 0, 0, 0, 0xf0, 0x7f }
+# 	endif
+	static __tb_maf_t __tb_maf = { __tb_maf_bytes };
+# 	define TB_MAF 		(__maf.__d)
 #endif
+
 
 #endif

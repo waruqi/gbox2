@@ -271,8 +271,8 @@ static __tb_inline__ g2_point_t g2_point_imake(tb_long_t x, tb_long_t y)
 {
 	g2_point_t pt;
 
-	pt.x = g2_int_to_scalar(x);
-	pt.y = g2_int_to_scalar(y);
+	pt.x = g2_long_to_scalar(x);
+	pt.y = g2_long_to_scalar(y);
 
 	return pt;
 }
@@ -293,8 +293,8 @@ static __tb_inline__ g2_point_t g2_ipoint_to_point(g2_ipoint_t const* point)
 {
 	g2_point_t pt;
 	
-	pt.x = g2_int_to_scalar(point->x);
-	pt.y = g2_int_to_scalar(point->y);
+	pt.x = g2_long_to_scalar(point->x);
+	pt.y = g2_long_to_scalar(point->y);
 
 	return pt;
 }
@@ -317,10 +317,10 @@ static __tb_inline__ g2_rect_t g2_rect_imake(tb_long_t x, tb_long_t y, tb_size_t
 {
 	g2_rect_t r;
 
-	r.x = g2_int_to_scalar(x);
-	r.y = g2_int_to_scalar(y);
-	r.w = g2_int_to_scalar(w);
-	r.h = g2_int_to_scalar(h);
+	r.x = g2_long_to_scalar(x);
+	r.y = g2_long_to_scalar(y);
+	r.w = g2_long_to_scalar(w);
+	r.h = g2_long_to_scalar(h);
 
 	return r;
 }
@@ -343,10 +343,10 @@ static __tb_inline__ g2_rect_t g2_irect_to_rect(g2_irect_t const* rect)
 {
 	g2_rect_t r;
 	
-	r.x = g2_int_to_scalar(rect->x);
-	r.y = g2_int_to_scalar(rect->y);
-	r.w = g2_int_to_scalar(rect->w);
-	r.h = g2_int_to_scalar(rect->h);
+	r.x = g2_long_to_scalar(rect->x);
+	r.y = g2_long_to_scalar(rect->y);
+	r.w = g2_long_to_scalar(rect->w);
+	r.h = g2_long_to_scalar(rect->h);
 
 	return r;
 }
@@ -369,10 +369,10 @@ static __tb_inline__ g2_line_t g2_line_imake(tb_long_t x0, tb_long_t y0, tb_size
 {
 	g2_line_t l;
 
-	l.p0.x = g2_int_to_scalar(x0);
-	l.p0.y = g2_int_to_scalar(y0);
-	l.p1.x = g2_int_to_scalar(x1);
-	l.p1.y = g2_int_to_scalar(y1);
+	l.p0.x = g2_long_to_scalar(x0);
+	l.p0.y = g2_long_to_scalar(y0);
+	l.p1.x = g2_long_to_scalar(x1);
+	l.p1.y = g2_long_to_scalar(y1);
 
 	return l;
 }
@@ -421,12 +421,12 @@ static __tb_inline__ g2_triangle_t g2_triangle_imake(tb_long_t x0, tb_long_t y0,
 {
 	g2_triangle_t t;
 
-	t.p0.x = g2_int_to_scalar(x0);
-	t.p0.y = g2_int_to_scalar(y0);
-	t.p1.x = g2_int_to_scalar(x1);
-	t.p1.y = g2_int_to_scalar(y1);
-	t.p2.x = g2_int_to_scalar(x2);
-	t.p2.y = g2_int_to_scalar(y2);
+	t.p0.x = g2_long_to_scalar(x0);
+	t.p0.y = g2_long_to_scalar(y0);
+	t.p1.x = g2_long_to_scalar(x1);
+	t.p1.y = g2_long_to_scalar(y1);
+	t.p2.x = g2_long_to_scalar(x2);
+	t.p2.y = g2_long_to_scalar(y2);
 
 	return t;
 }
@@ -475,9 +475,9 @@ static __tb_inline__ g2_circle_t g2_circle_imake(tb_long_t x0, tb_long_t y0, tb_
 {
 	g2_circle_t c;
 
-	c.c.x 	= g2_int_to_scalar(x0);
-	c.c.y 	= g2_int_to_scalar(y0);
-	c.r 	= g2_int_to_scalar(r);
+	c.c.x 	= g2_long_to_scalar(x0);
+	c.c.y 	= g2_long_to_scalar(y0);
+	c.r 	= g2_long_to_scalar(r);
 
 	return c;
 }
@@ -500,7 +500,7 @@ static __tb_inline__ g2_circle_t g2_icircle_to_circle(g2_icircle_t const* circle
 	g2_circle_t c;
 
 	c.c 	= g2_ipoint_to_point(&circle->c);
-	c.r 	= g2_int_to_scalar(circle->r);
+	c.r 	= g2_long_to_scalar(circle->r);
 
 	return c;
 }
@@ -523,10 +523,10 @@ static __tb_inline__ g2_ellipse_t g2_ellipse_imake(tb_long_t x0, tb_long_t y0, t
 {
 	g2_ellipse_t e;
 
-	e.c0.x 	= g2_int_to_scalar(x0);
-	e.c0.y 	= g2_int_to_scalar(y0);
-	e.rx 	= g2_int_to_scalar(rx);
-	e.ry 	= g2_int_to_scalar(ry);
+	e.c0.x 	= g2_long_to_scalar(x0);
+	e.c0.y 	= g2_long_to_scalar(y0);
+	e.rx 	= g2_long_to_scalar(rx);
+	e.ry 	= g2_long_to_scalar(ry);
 
 	return e;
 }
@@ -550,8 +550,8 @@ static __tb_inline__ g2_ellipse_t g2_iellipse_to_ellipse(g2_iellipse_t const* el
 	g2_ellipse_t e;
 
 	e.c0 	= g2_ipoint_to_point(&ellipse->c0);
-	e.rx 	= g2_int_to_scalar(ellipse->rx);
-	e.ry 	= g2_int_to_scalar(ellipse->ry);
+	e.rx 	= g2_long_to_scalar(ellipse->rx);
+	e.ry 	= g2_long_to_scalar(ellipse->ry);
 
 	return e;
 }
@@ -576,12 +576,12 @@ static __tb_inline__ g2_arc_t g2_arc_imake(tb_long_t x0, tb_long_t y0, tb_size_t
 {
 	g2_arc_t a;
 
-	a.c0.x 	= g2_int_to_scalar(x0);
-	a.c0.y 	= g2_int_to_scalar(y0);
-	a.rx 	= g2_int_to_scalar(rx);
-	a.ry 	= g2_int_to_scalar(ry);
-	a.ab 	= g2_int_to_scalar(ab);
-	a.an 	= g2_int_to_scalar(an);
+	a.c0.x 	= g2_long_to_scalar(x0);
+	a.c0.y 	= g2_long_to_scalar(y0);
+	a.rx 	= g2_long_to_scalar(rx);
+	a.ry 	= g2_long_to_scalar(ry);
+	a.ab 	= g2_long_to_scalar(ab);
+	a.an 	= g2_long_to_scalar(an);
 
 	return a;
 }
@@ -607,10 +607,10 @@ static __tb_inline__ g2_arc_t g2_iarc_to_arc(g2_iarc_t const* arc)
 	g2_arc_t a;
 
 	a.c0 	= g2_ipoint_to_point(&arc->c0);
-	a.rx 	= g2_int_to_scalar(arc->rx);
-	a.ry 	= g2_int_to_scalar(arc->ry);
-	a.ab 	= g2_int_to_scalar(arc->ab);
-	a.an 	= g2_int_to_scalar(arc->an);
+	a.rx 	= g2_long_to_scalar(arc->rx);
+	a.ry 	= g2_long_to_scalar(arc->ry);
+	a.ab 	= g2_long_to_scalar(arc->ab);
+	a.an 	= g2_long_to_scalar(arc->an);
 
 	return a;
 }

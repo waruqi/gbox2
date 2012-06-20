@@ -17,24 +17,35 @@
  * Copyright (C) 2009 - 2012, ruki All rights reserved.
  *
  * @author		ruki
- * @file		atomic.h
+ * @file		nan.h
+ * @ingroup 	libm
  *
  */
-#ifndef TB_PLATFORM_ARCH_ATOMIC_H
-#define TB_PLATFORM_ARCH_ATOMIC_H
-
+#ifndef TB_LIBM_NAN_H
+#define TB_LIBM_NAN_H
 
 /* ///////////////////////////////////////////////////////////////////////
  * includes
  */
 #include "prefix.h"
 
-#if defined(TB_ARCH_x86) || defined(TB_ARCH_x64)
-# 	include "x86/atomic.h"
-#elif defined(TB_ARCH_ARM)
-# 	include "arm/atomic.h"
-#elif defined(TB_ARCH_SH4)
-# 	include "sh4/atomic.h"
+/* ///////////////////////////////////////////////////////////////////////
+ * macros
+ */
+
+
+#if defined(TB_COMPILER_IS_GCC) && __GNUC__ >= 3 && __GNUC_MINOR__ >= 3
+# 	define TB_NAN	(__builtin_nanf (""))
+#elif defined(TB_COMPILER_IS_GCC)
+# 	define TB_NAN 	(__extension__ ((union { unsigned __l __attribute__ ((__mode__ (__SI__))); tb_float_t __d; }) { __l: 0x7fc00000UL }).__d)
+#else
+# 	ifdef TB_WORDS_BIGENDIAN
+# 		define __tb_nan_bytes		{ 0x7f, 0xc0, 0, 0 }
+# 	else
+# 		define __tb_nan_bytes		{ 0, 0, 0xc0, 0x7f }
+# 	endif
+	static union { tb_byte_t __c[4]; tb_float_t __d; } __tb_nan_union = { __tb_nan_bytes };
+# 	define TB_NAN 	(__tb_nan_union.__d)
 #endif
 
 #endif

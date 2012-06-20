@@ -40,12 +40,13 @@ extern "C" {
 #include "stream/stream.h"
 #include "string/string.h"
 #include "utils/utils.h"
+#include "third/third.h"
 #include "math/math.h"
 #include "libc/libc.h"
+#include "libm/libm.h"
 #include "aio/aio.h"
 #include "xml/xml.h"
 #include "zip/zip.h"
-#include "libs/libs.h"
 
 /* ///////////////////////////////////////////////////////////////////////
  * interfaces
@@ -53,8 +54,8 @@ extern "C" {
 
 /*!init the tbox library
  *
- * @param data 	the memory data, uses it when TB_CONFIG_MEMORY_POOL_ENABLE is enabled
- * @param size 	the memory size, uses it when TB_CONFIG_MEMORY_POOL_ENABLE is enabled
+ * @param data 	the memory data, uses it when TB_CONFIG_MEMORY_POOL is enabled
+ * @param size 	the memory size, uses it when TB_CONFIG_MEMORY_POOL is enabled
  *
  * @return ok: TB_TRUE, fail: TB_FALSE
  */

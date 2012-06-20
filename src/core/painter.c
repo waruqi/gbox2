@@ -145,12 +145,12 @@ tb_void_t g2_draw2i_arc(tb_handle_t painter, tb_long_t x0, tb_long_t y0, tb_size
 {
 	g2_arc_t a;
 
-	a.c0.x 	= g2_int_to_scalar(x0);
-	a.c0.y 	= g2_int_to_scalar(y0);
-	a.rx 	= g2_int_to_scalar(rx);
-	a.ry 	= g2_int_to_scalar(ry);
-	a.ab 	= g2_int_to_scalar(ab);
-	a.an 	= g2_int_to_scalar(an);
+	a.c0.x 	= g2_long_to_scalar(x0);
+	a.c0.y 	= g2_long_to_scalar(y0);
+	a.rx 	= g2_long_to_scalar(rx);
+	a.ry 	= g2_long_to_scalar(ry);
+	a.ab 	= g2_long_to_scalar(ab);
+	a.an 	= g2_long_to_scalar(an);
 
 	g2_draw_arc(painter, &a);
 }
@@ -158,10 +158,10 @@ tb_void_t g2_draw2i_rect(tb_handle_t painter, tb_long_t x, tb_long_t y, tb_size_
 {
 	g2_rect_t r;
 	
-	r.x = g2_int_to_scalar(x);
-	r.y = g2_int_to_scalar(y);
-	r.w = g2_int_to_scalar(w);
-	r.h = g2_int_to_scalar(h);
+	r.x = g2_long_to_scalar(x);
+	r.y = g2_long_to_scalar(y);
+	r.w = g2_long_to_scalar(w);
+	r.h = g2_long_to_scalar(h);
 
 	g2_draw_rect(painter, &r);
 }
@@ -169,10 +169,10 @@ tb_void_t g2_draw2i_line(tb_handle_t painter, tb_long_t x0, tb_long_t y0, tb_lon
 {
 	g2_line_t l;
 
-	l.p0.x = g2_int_to_scalar(x0);
-	l.p0.y = g2_int_to_scalar(y0);
-	l.p1.x = g2_int_to_scalar(x1);
-	l.p1.y = g2_int_to_scalar(y1);
+	l.p0.x = g2_long_to_scalar(x0);
+	l.p0.y = g2_long_to_scalar(y0);
+	l.p1.x = g2_long_to_scalar(x1);
+	l.p1.y = g2_long_to_scalar(y1);
 
 	g2_draw_line(painter, &l);
 }
@@ -180,8 +180,8 @@ tb_void_t g2_draw2i_point(tb_handle_t painter, tb_long_t x, tb_long_t y)
 {
 	g2_point_t p;
 	
-	p.x = g2_int_to_scalar(x);
-	p.y = g2_int_to_scalar(y);
+	p.x = g2_long_to_scalar(x);
+	p.y = g2_long_to_scalar(y);
 
 	g2_draw_point(painter, &p);
 }
@@ -189,9 +189,9 @@ tb_void_t g2_draw2i_circle(tb_handle_t painter, tb_long_t x0, tb_long_t y0, tb_s
 {
 	g2_circle_t c;
 
-	c.c.x 	= g2_int_to_scalar(x0);
-	c.c.y 	= g2_int_to_scalar(y0);
-	c.r 	= g2_int_to_scalar(r);
+	c.c.x 	= g2_long_to_scalar(x0);
+	c.c.y 	= g2_long_to_scalar(y0);
+	c.r 	= g2_long_to_scalar(r);
 
 	g2_draw_circle(painter, &c);
 }
@@ -199,10 +199,10 @@ tb_void_t g2_draw2i_ellipse(tb_handle_t painter, tb_long_t x0, tb_long_t y0, tb_
 {
 	g2_ellipse_t e;
 
-	e.c0.x 	= g2_int_to_scalar(x0);
-	e.c0.y 	= g2_int_to_scalar(y0);
-	e.rx 	= g2_int_to_scalar(rx);
-	e.ry 	= g2_int_to_scalar(ry);
+	e.c0.x 	= g2_long_to_scalar(x0);
+	e.c0.y 	= g2_long_to_scalar(y0);
+	e.rx 	= g2_long_to_scalar(rx);
+	e.ry 	= g2_long_to_scalar(ry);
 
 	g2_draw_ellipse(painter, &e);
 }
@@ -210,12 +210,12 @@ tb_void_t g2_draw2i_triangle(tb_handle_t painter, tb_long_t x0, tb_long_t y0, tb
 {
 	g2_triangle_t t;
 
-	t.p0.x = g2_int_to_scalar(x0);
-	t.p0.y = g2_int_to_scalar(y0);
-	t.p1.x = g2_int_to_scalar(x1);
-	t.p1.y = g2_int_to_scalar(y1);
-	t.p2.x = g2_int_to_scalar(x2);
-	t.p2.y = g2_int_to_scalar(y2);
+	t.p0.x = g2_long_to_scalar(x0);
+	t.p0.y = g2_long_to_scalar(y0);
+	t.p1.x = g2_long_to_scalar(x1);
+	t.p1.y = g2_long_to_scalar(y1);
+	t.p2.x = g2_long_to_scalar(x2);
+	t.p2.y = g2_long_to_scalar(y2);
 
 	g2_draw_triangle(painter, &t);
 }

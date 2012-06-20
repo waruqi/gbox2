@@ -17,24 +17,22 @@
  * Copyright (C) 2009 - 2012, ruki All rights reserved.
  *
  * @author		ruki
- * @file		atomic.h
+ * @file		mif.h
+ * @ingroup 	libm
  *
  */
-#ifndef TB_PLATFORM_ARCH_ATOMIC_H
-#define TB_PLATFORM_ARCH_ATOMIC_H
-
+#ifndef TB_LIBM_MIF_H
+#define TB_LIBM_MIF_H
 
 /* ///////////////////////////////////////////////////////////////////////
  * includes
  */
 #include "prefix.h"
+#include "maf.h"
 
-#if defined(TB_ARCH_x86) || defined(TB_ARCH_x64)
-# 	include "x86/atomic.h"
-#elif defined(TB_ARCH_ARM)
-# 	include "arm/atomic.h"
-#elif defined(TB_ARCH_SH4)
-# 	include "sh4/atomic.h"
-#endif
+/* ///////////////////////////////////////////////////////////////////////
+ * macros
+ */
+#define TB_MIF 	(-TB_MAF)
 
 #endif
