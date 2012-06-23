@@ -17,11 +17,12 @@
  * Copyright (C) 2009 - 2012, ruki All rights reserved.
  *
  * @author		ruki
- * @file		fixed16_x86.h
+ * @file		floor.h
+ * @ingroup 	libm
  *
  */
-#ifndef TB_MATH_OPT_FLOAT_x86_H
-#define TB_MATH_OPT_FLOAT_x86_H
+#ifndef TB_LIBM_FLOOR_H
+#define TB_LIBM_FLOOR_H
 
 /* ///////////////////////////////////////////////////////////////////////
  * includes
@@ -29,11 +30,8 @@
 #include "prefix.h"
 
 /* ///////////////////////////////////////////////////////////////////////
- * interfaces
+ * macros
  */
-
-
-
+#define tb_floor(x) 				((x) > 0? (tb_int32_t)(x) : (tb_int32_t)((x) - 0.9999999999))
 
 #endif
-

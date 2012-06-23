@@ -17,60 +17,28 @@
  * Copyright (C) 2009 - 2012, ruki All rights reserved.
  *
  * @author		ruki
- * @file		tbox.h
+ * @file		inf.h
+ * @ingroup 	libm
  *
  */
-#ifndef TB_TBOX_H
-#define TB_TBOX_H
-
-// c plus plus
-#ifdef __cplusplus
-extern "C" {
-#endif
+#ifndef TB_LIBM_INF_H
+#define TB_LIBM_INF_H
 
 /* ///////////////////////////////////////////////////////////////////////
  * includes
  */
 #include "prefix.h"
-#include "platform/platform.h"
-#include "container/container.h"
-#include "encoding/encoding.h"
-#include "network/network.h"
-#include "memory/memory.h"
-#include "stream/stream.h"
-#include "string/string.h"
-#include "utils/utils.h"
-#include "third/third.h"
-#include "math/math.h"
-#include "libc/libc.h"
-#include "libm/libm.h"
-#include "aio/aio.h"
-#include "xml/xml.h"
-#include "zip/zip.h"
+#include "maf.h"
 
 /* ///////////////////////////////////////////////////////////////////////
- * interfaces
+ * macros
  */
 
-/*!init the tbox library
- *
- * @param data 	the memory data, uses it when TB_CONFIG_MEMORY_POOL is enabled
- * @param size 	the memory size, uses it when TB_CONFIG_MEMORY_POOL is enabled
- *
- * @return ok: TB_TRUE, fail: TB_FALSE
- */
-tb_bool_t 			tb_init(tb_byte_t* data, tb_size_t size);
-
-/// exit the tbox library
-tb_void_t 			tb_exit();
-
-/// the tbox version string
-tb_char_t const* 	tb_version();
-
-
-// c plus plus
-#ifdef __cplusplus
-}
+#if defined(TB_COMPILER_IS_GCC) && __GNUC__ >= 3 && __GNUC_MINOR__ >= 3
+# 	define TB_INF	(__builtin_inff ())
+#else
+# 	define TB_INF	TB_MAF
 #endif
+
 
 #endif

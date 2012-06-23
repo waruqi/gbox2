@@ -17,60 +17,38 @@
  * Copyright (C) 2009 - 2012, ruki All rights reserved.
  *
  * @author		ruki
- * @file		tbox.h
+ * @file		maf.h
+ * @ingroup 	libm
  *
  */
-#ifndef TB_TBOX_H
-#define TB_TBOX_H
-
-// c plus plus
-#ifdef __cplusplus
-extern "C" {
-#endif
+#ifndef TB_LIBM_MAF_H
+#define TB_LIBM_MAF_H
 
 /* ///////////////////////////////////////////////////////////////////////
  * includes
  */
 #include "prefix.h"
-#include "platform/platform.h"
-#include "container/container.h"
-#include "encoding/encoding.h"
-#include "network/network.h"
-#include "memory/memory.h"
-#include "stream/stream.h"
-#include "string/string.h"
-#include "utils/utils.h"
-#include "third/third.h"
-#include "math/math.h"
-#include "libc/libc.h"
-#include "libm/libm.h"
-#include "aio/aio.h"
-#include "xml/xml.h"
-#include "zip/zip.h"
 
 /* ///////////////////////////////////////////////////////////////////////
- * interfaces
+ * macros
  */
 
-/*!init the tbox library
- *
- * @param data 	the memory data, uses it when TB_CONFIG_MEMORY_POOL is enabled
- * @param size 	the memory size, uses it when TB_CONFIG_MEMORY_POOL is enabled
- *
- * @return ok: TB_TRUE, fail: TB_FALSE
- */
-tb_bool_t 			tb_init(tb_byte_t* data, tb_size_t size);
-
-/// exit the tbox library
-tb_void_t 			tb_exit();
-
-/// the tbox version string
-tb_char_t const* 	tb_version();
-
-
-// c plus plus
-#ifdef __cplusplus
-}
+#if defined(TB_COMPILER_IS_GCC) && __GNUC__ >= 3 && __GNUC_MINOR__ >= 3
+# 	define TB_MAF 		(__builtin_huge_val())
+#elif defined(TB_COMPILER_IS_GCC) && __GNUC__ >= 2 && __GNUC_MINOR__ >= 96
+#	define TB_MAF 		(__extension__ 0x1.0p2047)
+#elif defined(TB_COMPILER_IS_GCC)
+# 	define TB_MAF 		(__extension__ ((union { unsigned __l __attribute__((__mode__(__DI__))); tb_double_t __d; }) { __l: 0x7ff0000000000000ULL }).__d)
+#else
+	typedef union { tb_byte_t __c[8]; tb_double_t __d; } __tb_maf_t;
+# 	ifdef TB_WORDS_BIGENDIAN
+# 		define __tb_maf_bytes	{ 0x7f, 0xf0, 0, 0, 0, 0, 0, 0 }
+# 	else
+# 		define __tb_maf_bytes	{ 0, 0, 0, 0, 0, 0, 0xf0, 0x7f }
+# 	endif
+	static __tb_maf_t __tb_maf = { __tb_maf_bytes };
+# 	define TB_MAF 		(__maf.__d)
 #endif
+
 
 #endif

@@ -29,10 +29,7 @@
  */
 #include "prefix.h"
 #include "int32.h"
-
-#ifdef TB_CONFIG_TYPE_FLOAT
-# 	include "float.h"
-#endif
+#include "../libm/libm.h"
 
 #if defined(TB_ARCH_x86) || defined(TB_ARCH_x86)
 # 	include "opt/fixed16_x86.h"
@@ -158,17 +155,19 @@ static __tb_inline__ tb_fixed30_t tb_fixed30_sqre_int64(tb_fixed30_t x)
 #ifdef TB_CONFIG_TYPE_FLOAT
 static __tb_inline__ tb_fixed30_t tb_fixed30_mul_float(tb_fixed30_t x, tb_fixed30_t y)
 {
-	return tb_float_to_fixed30(tb_float_mul(tb_fixed30_to_float(x), tb_fixed30_to_float(y)));
+	tb_float_t f = tb_fixed30_to_float(x) * tb_fixed30_to_float(y);
+	return tb_float_to_fixed30(f);
 }
 static __tb_inline__ tb_fixed30_t tb_fixed30_div_float(tb_fixed30_t x, tb_fixed30_t y)
 {
 	tb_assert(y);
 	return tb_float_to_fixed30((tb_float_t)x / y);
-	//return tb_float_to_fixed30(tb_float_div(tb_fixed30_to_float(x), tb_fixed30_to_float(y)));
 }
 static __tb_inline__ tb_fixed30_t tb_fixed30_sqre_float(tb_fixed30_t x)
 {
-	return tb_float_to_fixed30(tb_float_sqre(tb_fixed30_to_float(x)));
+	tb_float_t f = tb_fixed30_to_float(x);
+	f *= f;
+	return tb_float_to_fixed30(f);
 }
 #endif
 

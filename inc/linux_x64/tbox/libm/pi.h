@@ -17,11 +17,12 @@
  * Copyright (C) 2009 - 2012, ruki All rights reserved.
  *
  * @author		ruki
- * @file		fixed16_sh4.h
+ * @file		pi.h
+ * @ingroup 	libm
  *
  */
-#ifndef TB_MATH_OPT_FLOAT_SH4_H
-#define TB_MATH_OPT_FLOAT_SH4_H
+#ifndef TB_LIBM_PI_H
+#define TB_LIBM_PI_H
 
 /* ///////////////////////////////////////////////////////////////////////
  * includes
@@ -29,11 +30,8 @@
 #include "prefix.h"
 
 /* ///////////////////////////////////////////////////////////////////////
- * interfaces
+ * macros
  */
-
-
-
+#define TB_PI 	(3.141592653589793)
 
 #endif
-

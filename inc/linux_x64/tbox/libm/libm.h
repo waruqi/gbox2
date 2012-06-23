@@ -17,23 +17,19 @@
  * Copyright (C) 2009 - 2012, ruki All rights reserved.
  *
  * @author		ruki
- * @file		math.h
- * @defgroup 	math
+ * @file		libm.h
+ * @defgroup 	libm
  *
  */
-#ifndef TB_MATH_H
-#define TB_MATH_H
+#ifndef TB_LIBM_H
+#define TB_LIBM_H
 
 /* ///////////////////////////////////////////////////////////////////////
  * includes
  */
-#include "prefix.h"
-#include "rand.h"
-#include "int32.h"
-#include "fixed6.h"
-#include "fixed16.h"
-#include "fixed30.h"
-#include "fixed.h"
-
+#ifdef TB_CONFIG_TYPE_FLOAT
+# 	include "prefix.h"
+# 	include "math.h"
 #endif
 
+#endif
