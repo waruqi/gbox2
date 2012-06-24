@@ -50,24 +50,26 @@ tb_void_t 			g2_load(tb_handle_t painter);
 tb_handle_t 		g2_style(tb_handle_t painter);
 tb_void_t 			g2_style_set(tb_handle_t painter, tb_handle_t style);
 
-// clipper
-tb_handle_t 		g2_clipper(tb_handle_t painter, tb_handle_t clipper);
-
 // matrix
 g2_matrix_t const* 	g2_matrix(tb_handle_t painter);
 tb_void_t 			g2_matrix_set(tb_handle_t painter, g2_matrix_t const* matrix);
 
-tb_bool_t 			g2_rotate(tb_handle_t painter, g2_float_t degrees);
-tb_bool_t 			g2_skew(tb_handle_t painter, g2_float_t kx, g2_float_t ky);
-tb_bool_t 			g2_scale(tb_handle_t painter, g2_float_t sx, g2_float_t sy);
-tb_bool_t 			g2_translate(tb_handle_t painter, g2_float_t dx, g2_float_t dy);
-tb_bool_t 			g2_multiply(tb_handle_t painter, g2_matrix_t const* matrix);
+tb_bool_t 			g2_rotate(tb_handle_t painter, 		g2_float_t degrees);
+tb_bool_t 			g2_skew(tb_handle_t painter, 		g2_float_t kx, g2_float_t ky);
+tb_bool_t 			g2_scale(tb_handle_t painter, 		g2_float_t sx, g2_float_t sy);
+tb_bool_t 			g2_translate(tb_handle_t painter, 	g2_float_t dx, g2_float_t dy);
+tb_bool_t 			g2_multiply(tb_handle_t painter, 	g2_matrix_t const* matrix);
+
+// clip
+tb_bool_t 			g2_clip_rect(tb_handle_t painter, 	tb_size_t op, g2_rect_t const* rect);
+tb_bool_t 			g2_clip_path(tb_handle_t painter, 	tb_size_t op, tb_handle_t path);
+tb_bool_t 			g2_clip_region(tb_handle_t painter, tb_size_t op, tb_handle_t region);
 
 // clear
 tb_void_t 			g2_clear(tb_handle_t painter, g2_color_t color);
 
 // draw path
-tb_void_t 			g2_draw_path(tb_handle_t painter, tb_handle_t path);
+tb_void_t 			g2_draw_path(tb_handle_t painter, 			tb_handle_t path);
 
 // draw 
 tb_void_t 			g2_draw_arc(tb_handle_t painter, 			g2_arc_t const* arc);

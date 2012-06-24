@@ -17,13 +17,52 @@
  * Copyright (C) 2009 - 2012, ruki All rights reserved.
  *
  * @author		ruki
- * @file		clipper.cpp
+ * @file		region.h
  *
  */
+#ifndef G2_CORE_REGION_H
+#define G2_CORE_REGION_H
+
+// c plus plus
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /* ///////////////////////////////////////////////////////////////////////
  * includes
  */
 #include "prefix.h"
 
+/* ///////////////////////////////////////////////////////////////////////
+ * types
+ */
+// the region op type
+typedef enum __g2_region_op_t
+{
+	G2_REGION_OP_NONE 			= 0
+,	G2_REGION_OP_SUBTRACT 		= 1
+,	G2_REGION_OP_INTERSECT 		= 2
+,	G2_REGION_OP_UNION 			= 3
 
+}g2_region_op_t;
+
+/* ///////////////////////////////////////////////////////////////////////
+ * interfaces
+ */
+
+// init & exit
+tb_handle_t 	g2_region_init();
+tb_void_t 		g2_region_exit(tb_handle_t region);
+
+// clear
+tb_void_t 		g2_region_clear(tb_handle_t region);
+
+// set
+tb_bool_t 		g2_region_set_rect(tb_handle_t region, g2_rect_t const* rect);
+
+// c plus plus
+#ifdef __cplusplus
+}
+#endif
+
+#endif
