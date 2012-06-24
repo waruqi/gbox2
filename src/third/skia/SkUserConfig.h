@@ -50,11 +50,9 @@
 #undef SK_SCALAR_IS_FLOAT
 #undef SK_SCALAR_IS_FIXED
 
-#ifdef G2_CONFIG_SCALAR_FIXED
+#ifdef G2_CONFIG_FLOAT_FIXED
 # 	define SK_SCALAR_IS_FIXED
-#endif
-
-#ifdef G2_CONFIG_SCALAR_FLOAT
+#else
 # 	define SK_SCALAR_IS_FLOAT
 #endif
 

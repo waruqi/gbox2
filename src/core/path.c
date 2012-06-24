@@ -34,7 +34,7 @@ tb_void_t g2_path_movei_to(tb_handle_t path, g2_ipoint_t const* pt)
 	g2_point_t p = g2_ipoint_to_point(pt);
 	g2_path_move_to(path, &p);
 }
-tb_void_t g2_path_move2_to(tb_handle_t path, g2_scalar_t x, g2_scalar_t y)
+tb_void_t g2_path_move2_to(tb_handle_t path, g2_float_t x, g2_float_t y)
 {
 	g2_point_t p;
 	p.x = x;
@@ -44,8 +44,8 @@ tb_void_t g2_path_move2_to(tb_handle_t path, g2_scalar_t x, g2_scalar_t y)
 tb_void_t g2_path_move2i_to(tb_handle_t path, tb_long_t x, tb_long_t y)
 {
 	g2_point_t p;
-	p.x = g2_long_to_scalar(x);
-	p.y = g2_long_to_scalar(y);
+	p.x = g2_long_to_float(x);
+	p.y = g2_long_to_float(y);
 	g2_path_move_to(path, &p);
 }
 tb_void_t g2_path_linei_to(tb_handle_t path, g2_ipoint_t const* pt)
@@ -53,7 +53,7 @@ tb_void_t g2_path_linei_to(tb_handle_t path, g2_ipoint_t const* pt)
 	g2_point_t p = g2_ipoint_to_point(pt);
 	g2_path_line_to(path, &p);
 }
-tb_void_t g2_path_line2_to(tb_handle_t path, g2_scalar_t x, g2_scalar_t y)
+tb_void_t g2_path_line2_to(tb_handle_t path, g2_float_t x, g2_float_t y)
 {
 	g2_point_t p;
 	p.x = x;
@@ -63,8 +63,8 @@ tb_void_t g2_path_line2_to(tb_handle_t path, g2_scalar_t x, g2_scalar_t y)
 tb_void_t g2_path_line2i_to(tb_handle_t path, tb_long_t x, tb_long_t y)
 {
 	g2_point_t p;
-	p.x = g2_long_to_scalar(x);
-	p.y = g2_long_to_scalar(y);
+	p.x = g2_long_to_float(x);
+	p.y = g2_long_to_float(y);
 	g2_path_line_to(path, &p);
 }
 tb_void_t g2_path_quadi_to(tb_handle_t path, g2_ipoint_t const* pt, g2_ipoint_t const* cp)
@@ -73,7 +73,7 @@ tb_void_t g2_path_quadi_to(tb_handle_t path, g2_ipoint_t const* pt, g2_ipoint_t 
 	g2_point_t c = g2_ipoint_to_point(cp);
 	g2_path_quad_to(path, &p, &c);
 }
-tb_void_t g2_path_quad2_to(tb_handle_t path, g2_scalar_t x, g2_scalar_t y, g2_scalar_t cx, g2_scalar_t cy)
+tb_void_t g2_path_quad2_to(tb_handle_t path, g2_float_t x, g2_float_t y, g2_float_t cx, g2_float_t cy)
 {
 	g2_point_t p, c;
 	p.x = x;
@@ -85,10 +85,10 @@ tb_void_t g2_path_quad2_to(tb_handle_t path, g2_scalar_t x, g2_scalar_t y, g2_sc
 tb_void_t g2_path_quad2i_to(tb_handle_t path, tb_long_t x, tb_long_t y, tb_long_t cx, tb_long_t cy)
 {
 	g2_point_t p, c;
-	p.x = g2_long_to_scalar(x);
-	p.y = g2_long_to_scalar(y);
-	c.x = g2_long_to_scalar(cx);
-	c.y = g2_long_to_scalar(cy);
+	p.x = g2_long_to_float(x);
+	p.y = g2_long_to_float(y);
+	c.x = g2_long_to_float(cx);
+	c.y = g2_long_to_float(cy);
 	g2_path_quad_to(path, &p, &c);
 }
 tb_void_t g2_path_cubei_to(tb_handle_t path, g2_ipoint_t const* pt, g2_ipoint_t const* c0, g2_ipoint_t const* c1)
@@ -98,7 +98,7 @@ tb_void_t g2_path_cubei_to(tb_handle_t path, g2_ipoint_t const* pt, g2_ipoint_t 
 	g2_point_t cp1 = g2_ipoint_to_point(c1);
 	g2_path_cube_to(path, &p, &cp0, &cp1);
 }
-tb_void_t g2_path_cube2_to(tb_handle_t path, g2_scalar_t x, g2_scalar_t y, g2_scalar_t cx0, g2_scalar_t cy0, g2_scalar_t cx1, g2_scalar_t cy1)
+tb_void_t g2_path_cube2_to(tb_handle_t path, g2_float_t x, g2_float_t y, g2_float_t cx0, g2_float_t cy0, g2_float_t cx1, g2_float_t cy1)
 {
 	g2_point_t p, cp0, cp1;
 	p.x = x;
@@ -112,12 +112,12 @@ tb_void_t g2_path_cube2_to(tb_handle_t path, g2_scalar_t x, g2_scalar_t y, g2_sc
 tb_void_t g2_path_cube2i_to(tb_handle_t path, tb_long_t x, tb_long_t y, tb_long_t cx0, tb_long_t cy0, tb_long_t cx1, tb_long_t cy1)
 {
 	g2_point_t p, cp0, cp1;
-	p.x = g2_long_to_scalar(x);
-	p.y = g2_long_to_scalar(y);
-	cp0.x = g2_long_to_scalar(cx0);
-	cp0.y = g2_long_to_scalar(cy0);
-	cp1.x = g2_long_to_scalar(cx1);
-	cp1.y = g2_long_to_scalar(cy1);
+	p.x = g2_long_to_float(x);
+	p.y = g2_long_to_float(y);
+	cp0.x = g2_long_to_float(cx0);
+	cp0.y = g2_long_to_float(cy0);
+	cp1.x = g2_long_to_float(cx1);
+	cp1.y = g2_long_to_float(cy1);
 	g2_path_cube_to(path, &p, &cp0, &cp1);
 }
 

@@ -159,28 +159,28 @@ static tb_void_t g2_skia_matrix_set(tb_handle_t painter, g2_matrix_t const* matr
 	}
 	else spainter->canvas->resetMatrix();
 }
-static tb_bool_t g2_skia_rotate(tb_handle_t painter, g2_scalar_t degrees)
+static tb_bool_t g2_skia_rotate(tb_handle_t painter, g2_float_t degrees)
 {
 	g2_skia_painter_t* spainter = static_cast<g2_skia_painter_t*>(painter);
 	tb_assert_and_check_return_val(spainter && spainter->canvas, TB_FALSE);
 
 	return spainter->canvas->rotate(degrees);
 }
-static tb_bool_t g2_skia_scale(tb_handle_t painter, g2_scalar_t sx, g2_scalar_t sy)
+static tb_bool_t g2_skia_scale(tb_handle_t painter, g2_float_t sx, g2_float_t sy)
 {
 	g2_skia_painter_t* spainter = static_cast<g2_skia_painter_t*>(painter);
 	tb_assert_and_check_return_val(spainter && spainter->canvas, TB_FALSE);
 
 	return spainter->canvas->scale(sx, sy);
 }
-static tb_bool_t g2_skia_skew(tb_handle_t painter, g2_scalar_t kx, g2_scalar_t ky)
+static tb_bool_t g2_skia_skew(tb_handle_t painter, g2_float_t kx, g2_float_t ky)
 {
 	g2_skia_painter_t* spainter = static_cast<g2_skia_painter_t*>(painter);
 	tb_assert_and_check_return_val(spainter && spainter->canvas, TB_FALSE);
 
 	return spainter->canvas->skew(kx, ky);
 }
-static tb_bool_t g2_skia_translate(tb_handle_t painter, g2_scalar_t dx, g2_scalar_t dy)
+static tb_bool_t g2_skia_translate(tb_handle_t painter, g2_float_t dx, g2_float_t dy)
 {
 	g2_skia_painter_t* spainter = static_cast<g2_skia_painter_t*>(painter);
 	tb_assert_and_check_return_val(spainter && spainter->canvas, TB_FALSE);
@@ -308,19 +308,19 @@ extern "C"
 	{
 		return g2_skia_matrix(painter);				
 	}
-	tb_bool_t g2_rotate(tb_handle_t painter, g2_scalar_t degrees)
+	tb_bool_t g2_rotate(tb_handle_t painter, g2_float_t degrees)
 	{
 		return g2_skia_rotate(painter, degrees);		
 	}
-	tb_bool_t g2_skew(tb_handle_t painter, g2_scalar_t kx, g2_scalar_t ky)
+	tb_bool_t g2_skew(tb_handle_t painter, g2_float_t kx, g2_float_t ky)
 	{
 		return g2_skia_scale(painter, kx, ky);
 	}
-	tb_bool_t g2_scale(tb_handle_t painter, g2_scalar_t sx, g2_scalar_t sy)
+	tb_bool_t g2_scale(tb_handle_t painter, g2_float_t sx, g2_float_t sy)
 	{
 		return g2_skia_scale(painter, sx, sy);
 	}
-	tb_bool_t g2_translate(tb_handle_t painter, g2_scalar_t dx, g2_scalar_t dy)
+	tb_bool_t g2_translate(tb_handle_t painter, g2_float_t dx, g2_float_t dy)
 	{
 		return g2_skia_translate(painter, dx, dy);		
 	}

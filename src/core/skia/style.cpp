@@ -121,14 +121,14 @@ static tb_void_t g2_skia_style_alpha_set(tb_handle_t style, tb_byte_t alpha)
 
 	sstyle->setAlpha(alpha);
 }
-static g2_scalar_t g2_skia_style_width(tb_handle_t style)
+static g2_float_t g2_skia_style_width(tb_handle_t style)
 {
 	SkPaint* sstyle = static_cast<SkPaint*>(style);
-	tb_assert_and_check_return_val(sstyle, G2_SCALAR_ONE);
+	tb_assert_and_check_return_val(sstyle, G2_ONE);
 
 	return sstyle->getStrokeWidth();
 }
-static tb_void_t g2_skia_style_width_set(tb_handle_t style, g2_scalar_t width)
+static tb_void_t g2_skia_style_width_set(tb_handle_t style, g2_float_t width)
 {
 	SkPaint* sstyle = static_cast<SkPaint*>(style);
 	tb_assert_and_check_return(sstyle);
@@ -222,11 +222,11 @@ extern "C"
 	{
 		g2_skia_style_alpha_set(style, alpha);
 	}
-	g2_scalar_t g2_style_width(tb_handle_t style)
+	g2_float_t g2_style_width(tb_handle_t style)
 	{
 		return g2_skia_style_width(style);
 	}
-	tb_void_t g2_style_width_set(tb_handle_t style, g2_scalar_t width)
+	tb_void_t g2_style_width_set(tb_handle_t style, g2_float_t width)
 	{
 		g2_skia_style_width_set(style, width);
 	}

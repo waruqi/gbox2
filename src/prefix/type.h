@@ -28,7 +28,7 @@
  */
 #include "config.h"
 #include "pixfmt.h"
-#include "scalar.h"
+#include "float.h"
 #include "color.h"
 
 /* ///////////////////////////////////////////////////////////////////////
@@ -39,11 +39,11 @@
  * types
  */
 
-// scalar
-#ifdef G2_CONFIG_SCALAR_FIXED
-typedef tb_fixed_t 		g2_scalar_t;
+// float
+#ifdef G2_CONFIG_FLOAT_FIXED
+typedef tb_fixed_t 		g2_float_t;
 #else
-typedef tb_float_t 		g2_scalar_t;
+typedef tb_float_t 		g2_float_t;
 #endif
 
 // the pixel type
@@ -52,8 +52,8 @@ typedef tb_uint32_t 	g2_pixel_t;
 // the point type
 typedef struct __g2_point_t
 {
-	g2_scalar_t 		x;
-	g2_scalar_t 		y;
+	g2_float_t 			x;
+	g2_float_t 			y;
 
 }g2_point_t;
 
@@ -102,10 +102,10 @@ typedef struct __g2_itriangle_t
 // the rect type
 typedef struct __g2_rect_t
 {
-	g2_scalar_t 		x;
-	g2_scalar_t 		y;
-	g2_scalar_t 		w;
-	g2_scalar_t 		h;
+	g2_float_t 			x;
+	g2_float_t 			y;
+	g2_float_t 			w;
+	g2_float_t 			h;
 
 }g2_rect_t;
 
@@ -176,7 +176,7 @@ typedef struct __g2_circle_t
 	g2_point_t 			c;
 
 	// the radius
-	g2_scalar_t 		r;
+	g2_float_t 		r;
 
 }g2_circle_t;
 
@@ -198,8 +198,8 @@ typedef struct __g2_ellipse_t
 	g2_point_t 			c0;
 
 	// the radius of x & y
-	g2_scalar_t 		rx;
-	g2_scalar_t 		ry;
+	g2_float_t 			rx;
+	g2_float_t 			ry;
 
 }g2_ellipse_t;
 
@@ -222,14 +222,14 @@ typedef struct __g2_arc_t
 	g2_point_t 			c0;
 
 	// the radius of x & y
-	g2_scalar_t 		rx;
-	g2_scalar_t 		ry;
+	g2_float_t 			rx;
+	g2_float_t 			ry;
 
 	// the start angle
-	g2_scalar_t 		ab;
+	g2_float_t 			ab;
 
 	// the sweep angle, 0 - 360
-	g2_scalar_t 		an;
+	g2_float_t 			an;
 
 }g2_arc_t;
 
@@ -256,7 +256,7 @@ typedef struct __g2_iarc_t
  */
 
 // make point
-static __tb_inline__ g2_point_t g2_point_make(g2_scalar_t x, g2_scalar_t y)
+static __tb_inline__ g2_point_t g2_point_make(g2_float_t x, g2_float_t y)
 {
 	g2_point_t pt;
 
@@ -271,8 +271,8 @@ static __tb_inline__ g2_point_t g2_point_imake(tb_long_t x, tb_long_t y)
 {
 	g2_point_t pt;
 
-	pt.x = g2_long_to_scalar(x);
-	pt.y = g2_long_to_scalar(y);
+	pt.x = g2_long_to_float(x);
+	pt.y = g2_long_to_float(y);
 
 	return pt;
 }
@@ -293,14 +293,14 @@ static __tb_inline__ g2_point_t g2_ipoint_to_point(g2_ipoint_t const* point)
 {
 	g2_point_t pt;
 	
-	pt.x = g2_long_to_scalar(point->x);
-	pt.y = g2_long_to_scalar(point->y);
+	pt.x = g2_long_to_float(point->x);
+	pt.y = g2_long_to_float(point->y);
 
 	return pt;
 }
 
 // make rect
-static __tb_inline__ g2_rect_t g2_rect_make(g2_scalar_t x, g2_scalar_t y, g2_scalar_t w, g2_scalar_t h)
+static __tb_inline__ g2_rect_t g2_rect_make(g2_float_t x, g2_float_t y, g2_float_t w, g2_float_t h)
 {
 	g2_rect_t r;
 
@@ -317,10 +317,10 @@ static __tb_inline__ g2_rect_t g2_rect_imake(tb_long_t x, tb_long_t y, tb_size_t
 {
 	g2_rect_t r;
 
-	r.x = g2_long_to_scalar(x);
-	r.y = g2_long_to_scalar(y);
-	r.w = g2_long_to_scalar(w);
-	r.h = g2_long_to_scalar(h);
+	r.x = g2_long_to_float(x);
+	r.y = g2_long_to_float(y);
+	r.w = g2_long_to_float(w);
+	r.h = g2_long_to_float(h);
 
 	return r;
 }
@@ -343,16 +343,16 @@ static __tb_inline__ g2_rect_t g2_irect_to_rect(g2_irect_t const* rect)
 {
 	g2_rect_t r;
 	
-	r.x = g2_long_to_scalar(rect->x);
-	r.y = g2_long_to_scalar(rect->y);
-	r.w = g2_long_to_scalar(rect->w);
-	r.h = g2_long_to_scalar(rect->h);
+	r.x = g2_long_to_float(rect->x);
+	r.y = g2_long_to_float(rect->y);
+	r.w = g2_long_to_float(rect->w);
+	r.h = g2_long_to_float(rect->h);
 
 	return r;
 }
 
 // make line
-static __tb_inline__ g2_line_t g2_line_make(g2_scalar_t x0, g2_scalar_t y0, g2_scalar_t x1, g2_scalar_t y1)
+static __tb_inline__ g2_line_t g2_line_make(g2_float_t x0, g2_float_t y0, g2_float_t x1, g2_float_t y1)
 {
 	g2_line_t l;
 
@@ -369,10 +369,10 @@ static __tb_inline__ g2_line_t g2_line_imake(tb_long_t x0, tb_long_t y0, tb_size
 {
 	g2_line_t l;
 
-	l.p0.x = g2_long_to_scalar(x0);
-	l.p0.y = g2_long_to_scalar(y0);
-	l.p1.x = g2_long_to_scalar(x1);
-	l.p1.y = g2_long_to_scalar(y1);
+	l.p0.x = g2_long_to_float(x0);
+	l.p0.y = g2_long_to_float(y0);
+	l.p1.x = g2_long_to_float(x1);
+	l.p1.y = g2_long_to_float(y1);
 
 	return l;
 }
@@ -402,7 +402,7 @@ static __tb_inline__ g2_line_t g2_iline_to_line(g2_iline_t const* line)
 }
 
 // make triangle
-static __tb_inline__ g2_triangle_t g2_triangle_make(g2_scalar_t x0, g2_scalar_t y0, g2_scalar_t x1, g2_scalar_t y1, g2_scalar_t x2, g2_scalar_t y2)
+static __tb_inline__ g2_triangle_t g2_triangle_make(g2_float_t x0, g2_float_t y0, g2_float_t x1, g2_float_t y1, g2_float_t x2, g2_float_t y2)
 {
 	g2_triangle_t t;
 
@@ -421,12 +421,12 @@ static __tb_inline__ g2_triangle_t g2_triangle_imake(tb_long_t x0, tb_long_t y0,
 {
 	g2_triangle_t t;
 
-	t.p0.x = g2_long_to_scalar(x0);
-	t.p0.y = g2_long_to_scalar(y0);
-	t.p1.x = g2_long_to_scalar(x1);
-	t.p1.y = g2_long_to_scalar(y1);
-	t.p2.x = g2_long_to_scalar(x2);
-	t.p2.y = g2_long_to_scalar(y2);
+	t.p0.x = g2_long_to_float(x0);
+	t.p0.y = g2_long_to_float(y0);
+	t.p1.x = g2_long_to_float(x1);
+	t.p1.y = g2_long_to_float(y1);
+	t.p2.x = g2_long_to_float(x2);
+	t.p2.y = g2_long_to_float(y2);
 
 	return t;
 }
@@ -459,7 +459,7 @@ static __tb_inline__ g2_triangle_t g2_itriangle_to_triangle(g2_itriangle_t const
 }
 
 // make circle
-static __tb_inline__ g2_circle_t g2_circle_make(g2_scalar_t x0, g2_scalar_t y0, g2_scalar_t r)
+static __tb_inline__ g2_circle_t g2_circle_make(g2_float_t x0, g2_float_t y0, g2_float_t r)
 {
 	g2_circle_t c;
 
@@ -475,9 +475,9 @@ static __tb_inline__ g2_circle_t g2_circle_imake(tb_long_t x0, tb_long_t y0, tb_
 {
 	g2_circle_t c;
 
-	c.c.x 	= g2_long_to_scalar(x0);
-	c.c.y 	= g2_long_to_scalar(y0);
-	c.r 	= g2_long_to_scalar(r);
+	c.c.x 	= g2_long_to_float(x0);
+	c.c.y 	= g2_long_to_float(y0);
+	c.r 	= g2_long_to_float(r);
 
 	return c;
 }
@@ -500,13 +500,13 @@ static __tb_inline__ g2_circle_t g2_icircle_to_circle(g2_icircle_t const* circle
 	g2_circle_t c;
 
 	c.c 	= g2_ipoint_to_point(&circle->c);
-	c.r 	= g2_long_to_scalar(circle->r);
+	c.r 	= g2_long_to_float(circle->r);
 
 	return c;
 }
 
 // make ellipse
-static __tb_inline__ g2_ellipse_t g2_ellipse_make(g2_scalar_t x0, g2_scalar_t y0, g2_scalar_t rx, g2_scalar_t ry)
+static __tb_inline__ g2_ellipse_t g2_ellipse_make(g2_float_t x0, g2_float_t y0, g2_float_t rx, g2_float_t ry)
 {
 	g2_ellipse_t e;
 
@@ -523,10 +523,10 @@ static __tb_inline__ g2_ellipse_t g2_ellipse_imake(tb_long_t x0, tb_long_t y0, t
 {
 	g2_ellipse_t e;
 
-	e.c0.x 	= g2_long_to_scalar(x0);
-	e.c0.y 	= g2_long_to_scalar(y0);
-	e.rx 	= g2_long_to_scalar(rx);
-	e.ry 	= g2_long_to_scalar(ry);
+	e.c0.x 	= g2_long_to_float(x0);
+	e.c0.y 	= g2_long_to_float(y0);
+	e.rx 	= g2_long_to_float(rx);
+	e.ry 	= g2_long_to_float(ry);
 
 	return e;
 }
@@ -550,14 +550,14 @@ static __tb_inline__ g2_ellipse_t g2_iellipse_to_ellipse(g2_iellipse_t const* el
 	g2_ellipse_t e;
 
 	e.c0 	= g2_ipoint_to_point(&ellipse->c0);
-	e.rx 	= g2_long_to_scalar(ellipse->rx);
-	e.ry 	= g2_long_to_scalar(ellipse->ry);
+	e.rx 	= g2_long_to_float(ellipse->rx);
+	e.ry 	= g2_long_to_float(ellipse->ry);
 
 	return e;
 }
 
 // make arc
-static __tb_inline__ g2_arc_t g2_arc_make(g2_scalar_t x0, g2_scalar_t y0, g2_scalar_t rx, g2_scalar_t ry, g2_scalar_t ab, g2_scalar_t an)
+static __tb_inline__ g2_arc_t g2_arc_make(g2_float_t x0, g2_float_t y0, g2_float_t rx, g2_float_t ry, g2_float_t ab, g2_float_t an)
 {
 	g2_arc_t a;
 
@@ -576,12 +576,12 @@ static __tb_inline__ g2_arc_t g2_arc_imake(tb_long_t x0, tb_long_t y0, tb_size_t
 {
 	g2_arc_t a;
 
-	a.c0.x 	= g2_long_to_scalar(x0);
-	a.c0.y 	= g2_long_to_scalar(y0);
-	a.rx 	= g2_long_to_scalar(rx);
-	a.ry 	= g2_long_to_scalar(ry);
-	a.ab 	= g2_long_to_scalar(ab);
-	a.an 	= g2_long_to_scalar(an);
+	a.c0.x 	= g2_long_to_float(x0);
+	a.c0.y 	= g2_long_to_float(y0);
+	a.rx 	= g2_long_to_float(rx);
+	a.ry 	= g2_long_to_float(ry);
+	a.ab 	= g2_long_to_float(ab);
+	a.an 	= g2_long_to_float(an);
 
 	return a;
 }
@@ -607,10 +607,10 @@ static __tb_inline__ g2_arc_t g2_iarc_to_arc(g2_iarc_t const* arc)
 	g2_arc_t a;
 
 	a.c0 	= g2_ipoint_to_point(&arc->c0);
-	a.rx 	= g2_long_to_scalar(arc->rx);
-	a.ry 	= g2_long_to_scalar(arc->ry);
-	a.ab 	= g2_long_to_scalar(arc->ab);
-	a.an 	= g2_long_to_scalar(arc->an);
+	a.rx 	= g2_long_to_float(arc->rx);
+	a.ry 	= g2_long_to_float(arc->ry);
+	a.ab 	= g2_long_to_float(arc->ab);
+	a.an 	= g2_long_to_float(arc->an);
 
 	return a;
 }

@@ -102,8 +102,8 @@ tb_byte_t 		g2_style_alpha(tb_handle_t style);
 tb_void_t 		g2_style_alpha_set(tb_handle_t style, tb_byte_t alpha);
 
 // width
-g2_scalar_t 	g2_style_width(tb_handle_t style);
-tb_void_t 		g2_style_width_set(tb_handle_t style, g2_scalar_t width);
+g2_float_t 	g2_style_width(tb_handle_t style);
+tb_void_t 		g2_style_width_set(tb_handle_t style, g2_float_t width);
 
 // cap
 tb_size_t 		g2_style_cap(tb_handle_t style);

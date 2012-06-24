@@ -6,9 +6,8 @@
 #define G2_CONFIG_CORE_SKIA
 //#define G2_CONFIG_CORE_GL
 
-// scalar
-#define G2_CONFIG_SCALAR_FIXED
-//#define G2_CONFIG_SCALAR_FLOAT
+// float
+#define G2_CONFIG_FLOAT_FIXED
 
 // size_t for skia new
 #define G2_CONFIG_SIZE_T 			tb_uint_t

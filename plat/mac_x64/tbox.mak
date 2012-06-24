@@ -22,3 +22,7 @@ TB_CONFIG_THIRD_ZLIB 			= y
 
 # memory
 TB_CONFIG_MEMORY_POOL 			= n
+
+# float
+TB_CONFIG_TYPE_FLOAT 			= y
+

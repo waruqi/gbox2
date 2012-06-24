@@ -28,7 +28,7 @@
  */
 #include "config.h"
 #include "type.h"
-#include "scalar.h"
+#include "float.h"
 #include "version.h"
 
 

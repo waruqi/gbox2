@@ -57,10 +57,10 @@ tb_handle_t 		g2_clipper(tb_handle_t painter, tb_handle_t clipper);
 g2_matrix_t const* 	g2_matrix(tb_handle_t painter);
 tb_void_t 			g2_matrix_set(tb_handle_t painter, g2_matrix_t const* matrix);
 
-tb_bool_t 			g2_rotate(tb_handle_t painter, g2_scalar_t degrees);
-tb_bool_t 			g2_skew(tb_handle_t painter, g2_scalar_t kx, g2_scalar_t ky);
-tb_bool_t 			g2_scale(tb_handle_t painter, g2_scalar_t sx, g2_scalar_t sy);
-tb_bool_t 			g2_translate(tb_handle_t painter, g2_scalar_t dx, g2_scalar_t dy);
+tb_bool_t 			g2_rotate(tb_handle_t painter, g2_float_t degrees);
+tb_bool_t 			g2_skew(tb_handle_t painter, g2_float_t kx, g2_float_t ky);
+tb_bool_t 			g2_scale(tb_handle_t painter, g2_float_t sx, g2_float_t sy);
+tb_bool_t 			g2_translate(tb_handle_t painter, g2_float_t dx, g2_float_t dy);
 tb_bool_t 			g2_multiply(tb_handle_t painter, g2_matrix_t const* matrix);
 
 // clear
@@ -86,13 +86,13 @@ tb_void_t 			g2_drawi_circle(tb_handle_t painter, 		g2_icircle_t const* circle);
 tb_void_t 			g2_drawi_ellipse(tb_handle_t painter, 		g2_iellipse_t const* ellipse);
 tb_void_t 			g2_drawi_triangle(tb_handle_t painter, 		g2_itriangle_t const* triangle);
 
-tb_void_t 			g2_draw2_arc(tb_handle_t painter, 			g2_scalar_t x0, g2_scalar_t y0, g2_scalar_t rx, g2_scalar_t ry, g2_scalar_t ab, g2_scalar_t an);
-tb_void_t 			g2_draw2_line(tb_handle_t painter, 			g2_scalar_t x0, g2_scalar_t y0, g2_scalar_t x1, g2_scalar_t y1);
-tb_void_t 			g2_draw2_rect(tb_handle_t painter, 			g2_scalar_t x, g2_scalar_t y, g2_scalar_t w, g2_scalar_t h);
-tb_void_t 			g2_draw2_point(tb_handle_t painter, 		g2_scalar_t x, g2_scalar_t y);
-tb_void_t 			g2_draw2_circle(tb_handle_t painter, 		g2_scalar_t x0, g2_scalar_t y0, g2_scalar_t r);
-tb_void_t 			g2_draw2_ellipse(tb_handle_t painter, 		g2_scalar_t x0, g2_scalar_t y0, g2_scalar_t rx, g2_scalar_t ry);
-tb_void_t 			g2_draw2_triangle(tb_handle_t painter, 		g2_scalar_t x0, g2_scalar_t y0, g2_scalar_t x1, g2_scalar_t y1, g2_scalar_t x2, g2_scalar_t y2);
+tb_void_t 			g2_draw2_arc(tb_handle_t painter, 			g2_float_t x0, g2_float_t y0, g2_float_t rx, g2_float_t ry, g2_float_t ab, g2_float_t an);
+tb_void_t 			g2_draw2_line(tb_handle_t painter, 			g2_float_t x0, g2_float_t y0, g2_float_t x1, g2_float_t y1);
+tb_void_t 			g2_draw2_rect(tb_handle_t painter, 			g2_float_t x, g2_float_t y, g2_float_t w, g2_float_t h);
+tb_void_t 			g2_draw2_point(tb_handle_t painter, 		g2_float_t x, g2_float_t y);
+tb_void_t 			g2_draw2_circle(tb_handle_t painter, 		g2_float_t x0, g2_float_t y0, g2_float_t r);
+tb_void_t 			g2_draw2_ellipse(tb_handle_t painter, 		g2_float_t x0, g2_float_t y0, g2_float_t rx, g2_float_t ry);
+tb_void_t 			g2_draw2_triangle(tb_handle_t painter, 		g2_float_t x0, g2_float_t y0, g2_float_t x1, g2_float_t y1, g2_float_t x2, g2_float_t y2);
 
 tb_void_t 			g2_draw2i_arc(tb_handle_t painter, 			tb_long_t x0, tb_long_t y0, tb_size_t rx, tb_size_t ry, tb_size_t ab, tb_size_t an);
 tb_void_t 			g2_draw2i_line(tb_handle_t painter, 		tb_long_t x0, tb_long_t y0, tb_long_t x1, tb_long_t y1);

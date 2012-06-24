@@ -20,13 +20,13 @@ static tb_void_t g2_demo_wheeldown(tb_int_t x, tb_int_t y)
 {	
 	if (g_penw > 1) g_penw--;
 	else g_penw = 1;
-	g2_style_width_set(g_style, g2_long_to_scalar(g_penw));
+	g2_style_width_set(g_style, g2_long_to_float(g_penw));
 }
 static tb_void_t g2_demo_wheelup(tb_int_t x, tb_int_t y)
 {
 	if (g_penw > 1000) g_penw = 1000;
 	else g_penw++;
-	g2_style_width_set(g_style, g2_long_to_scalar(g_penw));
+	g2_style_width_set(g_style, g2_long_to_float(g_penw));
 }
 static tb_void_t g2_demo_lclickdown(tb_int_t x, tb_int_t y)
 {
@@ -54,7 +54,7 @@ static tb_void_t g2_demo_key(tb_int_t key)
 static tb_bool_t g2_demo_init(tb_int_t argc, tb_char_t** argv)
 {
 	// init style
-	g2_style_width_set(g_style, g2_long_to_scalar(g_penw));
+	g2_style_width_set(g_style, g2_long_to_float(g_penw));
 	g2_style_cap_set(g_style, g_cap[g_capi]);
 	g2_style_mode_set(g_style, G2_STYLE_MODE_STROKE);
 	g2_style_color_set(g_style, G2_COLOR_RED);
