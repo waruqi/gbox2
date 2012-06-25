@@ -35,6 +35,31 @@ extern "C" {
 #include "matrix.h"
 
 /* ///////////////////////////////////////////////////////////////////////
+ * types
+ */
+
+// the clip mode type
+typedef enum __g2_clip_mode_t
+{
+	G2_CLIP_MODE_NONE 			= 0
+,	G2_CLIP_MODE_SUBTRACT 		= 1
+,	G2_CLIP_MODE_INTERSECT 		= 2
+,	G2_CLIP_MODE_UNION 			= 3
+,	G2_CLIP_MODE_REPLACE 		= 4
+
+}g2_clip_mode_t;
+
+// the save mode type
+typedef enum __g2_save_mode_t
+{
+	G2_SAVE_MODE_NONE 			= 0
+,	G2_SAVE_MODE_MATRIX 		= 1
+,	G2_SAVE_MODE_CLIP 			= 2
+,	G2_SAVE_MODE_MATRIX_CLIP 	= 3
+
+}g2_save_mode_t;
+
+/* ///////////////////////////////////////////////////////////////////////
  * interfaces
  */
 
@@ -43,7 +68,7 @@ tb_handle_t 		g2_init(tb_handle_t surface);
 tb_void_t 			g2_exit(tb_handle_t painter);
 
 // save & load
-tb_void_t 			g2_save(tb_handle_t painter);
+tb_size_t 			g2_save(tb_handle_t painter, tb_size_t mode);
 tb_void_t 			g2_load(tb_handle_t painter);
 
 // style
@@ -61,9 +86,13 @@ tb_bool_t 			g2_translate(tb_handle_t painter, 	g2_float_t dx, g2_float_t dy);
 tb_bool_t 			g2_multiply(tb_handle_t painter, 	g2_matrix_t const* matrix);
 
 // clip
-tb_bool_t 			g2_clip_rect(tb_handle_t painter, 	tb_size_t op, g2_rect_t const* rect);
-tb_bool_t 			g2_clip_path(tb_handle_t painter, 	tb_size_t op, tb_handle_t path);
-tb_bool_t 			g2_clip_region(tb_handle_t painter, tb_size_t op, tb_handle_t region);
+tb_bool_t 			g2_clip_path(tb_handle_t painter, 	tb_size_t mode, tb_handle_t path);
+
+tb_bool_t 			g2_clip_rect(tb_handle_t painter, 	tb_size_t mode, g2_rect_t const* rect);
+tb_bool_t 			g2_clip2_rect(tb_handle_t painter, 	tb_size_t mode, g2_float_t x, g2_float_t y, g2_float_t w, g2_float_t h);
+
+tb_bool_t 			g2_clipi_rect(tb_handle_t painter, 	tb_size_t mode, g2_irect_t const* rect);
+tb_bool_t 			g2_clip2i_rect(tb_handle_t painter, tb_size_t mode, tb_long_t x, tb_long_t y, tb_size_t w, tb_size_t h);
 
 // clear
 tb_void_t 			g2_clear(tb_handle_t painter, g2_color_t color);

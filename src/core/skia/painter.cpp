@@ -104,12 +104,12 @@ fail:
 	if (spainter) g2_skia_exit(spainter);
 	return TB_NULL;
 }
-static tb_void_t g2_skia_save(tb_handle_t painter)
+static tb_size_t g2_skia_save(tb_handle_t painter, tb_size_t mode)
 {
 	g2_skia_painter_t* spainter = static_cast<g2_skia_painter_t*>(painter);
-	tb_assert_and_check_return(spainter && spainter->canvas);
+	tb_assert_and_check_return_val(spainter && spainter->canvas, 0);
 
-	spainter->canvas->save();
+	return spainter->canvas->save(static_cast<SkCanvas::SaveFlags>(mode));
 }
 static tb_void_t g2_skia_load(tb_handle_t painter)
 {	
@@ -131,9 +131,6 @@ static tb_void_t g2_skia_style_set(tb_handle_t painter, tb_handle_t style)
 	tb_assert_and_check_return(spainter);
 
 	spainter->style_usr = style? static_cast<SkPaint*>(style) : spainter->style_def;
-}
-static tb_handle_t g2_skia_clipper(tb_handle_t painter, tb_handle_t clipper)
-{
 }
 static g2_matrix_t const* g2_skia_matrix(tb_handle_t painter)
 {
@@ -164,28 +161,28 @@ static tb_bool_t g2_skia_rotate(tb_handle_t painter, g2_float_t degrees)
 	g2_skia_painter_t* spainter = static_cast<g2_skia_painter_t*>(painter);
 	tb_assert_and_check_return_val(spainter && spainter->canvas, TB_FALSE);
 
-	return spainter->canvas->rotate(degrees);
+	return spainter->canvas->rotate(degrees)? TB_TRUE : TB_FALSE;
 }
 static tb_bool_t g2_skia_scale(tb_handle_t painter, g2_float_t sx, g2_float_t sy)
 {
 	g2_skia_painter_t* spainter = static_cast<g2_skia_painter_t*>(painter);
 	tb_assert_and_check_return_val(spainter && spainter->canvas, TB_FALSE);
 
-	return spainter->canvas->scale(sx, sy);
+	return spainter->canvas->scale(sx, sy)? TB_TRUE : TB_FALSE;
 }
 static tb_bool_t g2_skia_skew(tb_handle_t painter, g2_float_t kx, g2_float_t ky)
 {
 	g2_skia_painter_t* spainter = static_cast<g2_skia_painter_t*>(painter);
 	tb_assert_and_check_return_val(spainter && spainter->canvas, TB_FALSE);
 
-	return spainter->canvas->skew(kx, ky);
+	return spainter->canvas->skew(kx, ky)? TB_TRUE : TB_FALSE;
 }
 static tb_bool_t g2_skia_translate(tb_handle_t painter, g2_float_t dx, g2_float_t dy)
 {
 	g2_skia_painter_t* spainter = static_cast<g2_skia_painter_t*>(painter);
 	tb_assert_and_check_return_val(spainter && spainter->canvas, TB_FALSE);
 
-	return spainter->canvas->translate(dx, dy);
+	return spainter->canvas->translate(dx, dy)? TB_TRUE : TB_FALSE;
 }
 static tb_bool_t g2_skia_multiply(tb_handle_t painter, g2_matrix_t const* matrix)
 {
@@ -197,7 +194,63 @@ static tb_bool_t g2_skia_multiply(tb_handle_t painter, g2_matrix_t const* matrix
 			, 	matrix->ky, matrix->ky, matrix->ty
 			, 	0, 0, kMatrix22Elem);
 	spainter->canvas->setMatrix(mx);
-	return spainter->canvas->concat(mx);
+	return spainter->canvas->concat(mx)? TB_TRUE : TB_FALSE;
+}
+static tb_bool_t g2_skia_clip_path(tb_handle_t painter, tb_size_t mode, tb_handle_t path)
+{
+	g2_skia_painter_t* spainter = static_cast<g2_skia_painter_t*>(painter);
+	tb_assert_and_check_return_val(spainter && spainter->canvas && path, TB_FALSE);
+
+	bool anti = false;
+	SkRegion::Op op = SkRegion::kIntersect_Op;
+	switch (mode)
+	{
+	case G2_CLIP_MODE_INTERSECT:
+		op = SkRegion::kIntersect_Op;
+		break;
+	case G2_CLIP_MODE_UNION:
+		op = SkRegion::kUnion_Op;
+		break;
+	case G2_CLIP_MODE_REPLACE:
+		op = SkRegion::kReplace_Op;
+		break;
+	case G2_CLIP_MODE_SUBTRACT:
+		op = SkRegion::kDifference_Op;
+		break;
+	default:
+		tb_assert(0);
+		break;
+	}
+
+	return spainter->canvas->clipPath(*static_cast<const SkPath*>(path), op, anti)? TB_TRUE : TB_FALSE;
+}
+static tb_bool_t g2_skia_clip_rect(tb_handle_t painter, tb_size_t mode, g2_rect_t const* rect)
+{
+	g2_skia_painter_t* spainter = static_cast<g2_skia_painter_t*>(painter);
+	tb_assert_and_check_return_val(spainter && spainter->canvas && rect, TB_FALSE);
+
+	bool anti = false;
+	SkRegion::Op op = SkRegion::kIntersect_Op;
+	switch (mode)
+	{
+	case G2_CLIP_MODE_INTERSECT:
+		op = SkRegion::kIntersect_Op;
+		break;
+	case G2_CLIP_MODE_UNION:
+		op = SkRegion::kUnion_Op;
+		break;
+	case G2_CLIP_MODE_REPLACE:
+		op = SkRegion::kReplace_Op;
+		break;
+	case G2_CLIP_MODE_SUBTRACT:
+		op = SkRegion::kDifference_Op;
+		break;
+	default:
+		tb_assert(0);
+		break;
+	}
+
+	return spainter->canvas->clipRect(*reinterpret_cast<const SkRect*>(rect), op, anti)? TB_TRUE : TB_FALSE;
 }
 static tb_void_t g2_skia_clear(tb_handle_t painter, g2_color_t color)
 {
@@ -284,9 +337,9 @@ extern "C"
 	{
 		g2_skia_exit(painter);
 	}
-	tb_void_t g2_save(tb_handle_t painter)
+	tb_size_t g2_save(tb_handle_t painter, tb_size_t mode)
 	{
-		g2_skia_save(painter);
+		return g2_skia_save(painter, mode);
 	}
 	tb_void_t g2_load(tb_handle_t painter)
 	{
@@ -299,10 +352,6 @@ extern "C"
 	tb_void_t g2_style_set(tb_handle_t painter, tb_handle_t style)
 	{
 		g2_skia_style_set(painter, style);
-	}
-	tb_handle_t g2_clipper(tb_handle_t painter, tb_handle_t clipper)
-	{
-		return g2_skia_clipper(painter, clipper);
 	}
 	g2_matrix_t const* g2_matrix(tb_handle_t painter)
 	{
@@ -331,6 +380,14 @@ extern "C"
 	tb_void_t g2_matrix_set(tb_handle_t painter, g2_matrix_t const* matrix)
 	{
 		g2_skia_matrix_set(painter, matrix);		
+	}
+	tb_bool_t g2_clip_path(tb_handle_t painter, tb_size_t mode, tb_handle_t path)
+	{
+		return g2_skia_clip_path(painter, mode, path);
+	}
+	tb_bool_t g2_clip_rect(tb_handle_t painter, tb_size_t mode, g2_rect_t const* rect)
+	{
+		return g2_skia_clip_rect(painter, mode, rect);
 	}
 	tb_void_t g2_clear(tb_handle_t painter, g2_color_t color)
 	{

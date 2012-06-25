@@ -28,6 +28,33 @@
 /* ///////////////////////////////////////////////////////////////////////
  * implementation
  */
+tb_bool_t g2_clip2_rect(tb_handle_t painter, tb_size_t mode, g2_float_t x, g2_float_t y, g2_float_t w, g2_float_t h)
+{
+	g2_rect_t r;
+
+	r.x = x;
+	r.y = y;
+	r.w = w;
+	r.h = h;
+
+	g2_clip_rect(painter, mode, &r);
+}
+tb_bool_t g2_clipi_rect(tb_handle_t painter, tb_size_t mode, g2_irect_t const* rect)
+{
+	g2_rect_t r = g2_irect_to_rect(rect);
+	g2_clip_rect(painter, mode, &r);
+}
+tb_bool_t g2_clip2i_rect(tb_handle_t painter, tb_size_t mode, tb_long_t x, tb_long_t y, tb_size_t w, tb_size_t h)
+{
+	g2_rect_t r;
+	
+	r.x = g2_long_to_float(x);
+	r.y = g2_long_to_float(y);
+	r.w = g2_long_to_float(w);
+	r.h = g2_long_to_float(h);
+
+	g2_clip_rect(painter, mode, &r);
+}
 tb_void_t g2_drawi_arc(tb_handle_t painter, g2_iarc_t const* arc)
 {
 	g2_arc_t a = g2_iarc_to_arc(arc);

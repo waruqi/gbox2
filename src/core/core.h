@@ -33,7 +33,6 @@ extern "C" {
  */
 #include "path.h"
 #include "style.h"
-#include "region.h"
 #include "matrix.h"
 #include "bitmap.h"
 #include "painter.h"

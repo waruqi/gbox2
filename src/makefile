@@ -18,8 +18,7 @@ gbox2_CPP_FILES-$(G2_CONFIG_CORE_SKIA) += \
 						core/skia/path \
 						core/skia/style \
 						core/skia/bitmap \
-						core/skia/painter \
-						core/skia/region 
+						core/skia/painter 
 
 # flags
 gbox2_CPPFLAGS 			+= -DTB_PRINT_TAG=\"gbox2\"
@@ -42,7 +41,6 @@ INC_FILES 				= \
 						core/path.h \
 						core/style.h \
 						core/bitmap.h \
-						core/region.h \
 						core/painter.h
 	
 	
