@@ -34,9 +34,6 @@
 #include "fixed16.h"
 #include "fixed30.h"
 #include "fixed.h"
-#ifdef TB_CONFIG_TYPE_FLOAT
-# 	include "float.h"
-#endif
 
 #endif
 

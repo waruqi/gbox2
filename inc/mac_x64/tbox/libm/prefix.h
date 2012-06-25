@@ -17,60 +17,55 @@
  * Copyright (C) 2009 - 2012, ruki All rights reserved.
  *
  * @author		ruki
- * @file		tbox.h
+ * @file		prefix.h
+ * @ingroup 	libm
  *
  */
-#ifndef TB_TBOX_H
-#define TB_TBOX_H
-
-// c plus plus
-#ifdef __cplusplus
-extern "C" {
-#endif
+#ifndef TB_LIBM_PREFIX_H
+#define TB_LIBM_PREFIX_H
 
 /* ///////////////////////////////////////////////////////////////////////
  * includes
  */
-#include "prefix.h"
-#include "platform/platform.h"
-#include "container/container.h"
-#include "encoding/encoding.h"
-#include "network/network.h"
-#include "memory/memory.h"
-#include "stream/stream.h"
-#include "string/string.h"
-#include "utils/utils.h"
-#include "third/third.h"
-#include "math/math.h"
-#include "libc/libc.h"
-#include "libm/libm.h"
-#include "aio/aio.h"
-#include "xml/xml.h"
-#include "zip/zip.h"
+#include "../prefix.h"
 
 /* ///////////////////////////////////////////////////////////////////////
- * interfaces
+ * types
  */
 
-/*!init the tbox library
- *
- * @param data 	the memory data, uses it when TB_CONFIG_MEMORY_POOL is enabled
- * @param size 	the memory size, uses it when TB_CONFIG_MEMORY_POOL is enabled
- *
- * @return ok: TB_TRUE, fail: TB_FALSE
- */
-tb_bool_t 			tb_init(tb_byte_t* data, tb_size_t size);
+// the ieee float type
+typedef union __tb_ieee_float_t
+{
+	tb_float_t 	f;
+	tb_uint32_t i;
 
-/// exit the tbox library
-tb_void_t 			tb_exit();
+}tb_ieee_float_t;
 
-/// the tbox version string
-tb_char_t const* 	tb_version();
+// the ieee double type
+#ifdef TB_FLOAT_BIGENDIAN
+typedef union __tb_ieee_double_t
+{
+	tb_double_t d;
+	struct
+	{
+		tb_uint32_t h;
+		tb_uint32_t l;
 
+	}i;
 
-// c plus plus
-#ifdef __cplusplus
-}
+}tb_ieee_double_t;
+#else
+typedef union __tb_ieee_double_t
+{
+	tb_double_t d;
+	struct
+	{
+		tb_uint32_t l;
+		tb_uint32_t h;
+	}i;
+
+}tb_ieee_double_t;
 #endif
+
 
 #endif

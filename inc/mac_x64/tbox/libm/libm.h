@@ -17,29 +17,19 @@
  * Copyright (C) 2009 - 2012, ruki All rights reserved.
  *
  * @author		ruki
- * @file		atomic.h
- * @ingroup 	platform
+ * @file		libm.h
+ * @defgroup 	libm
  *
  */
-#ifndef TB_PLATFORM_ATOMIC_H
-#define TB_PLATFORM_ATOMIC_H
-
+#ifndef TB_LIBM_H
+#define TB_LIBM_H
 
 /* ///////////////////////////////////////////////////////////////////////
  * includes
  */
-#include "prefix.h"
-
-#if defined(TB_COMPILER_IS_GCC) \
-	&& !defined(TB_CONFIG_COMPILER_NOT_SUPPORT_BUILTIN_FUNCTIONS) \
-	&&	TB_COMPILER_VERSION_BE(4, 1)
-# 	include "compiler/gcc/atomic.h"
-#elif defined(TB_CONFIG_OS_WINDOWS)
-# 	include "windows/atomic.h"
+#ifdef TB_CONFIG_TYPE_FLOAT
+# 	include "prefix.h"
+# 	include "math.h"
 #endif
-
-#include "arch/atomic.h"
-#include "generic/atomic.h"
-
 
 #endif
