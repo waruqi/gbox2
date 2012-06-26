@@ -60,16 +60,18 @@ static tb_void_t g2_demo_key(tb_int_t key)
  */
 static tb_bool_t g2_demo_init(tb_int_t argc, tb_char_t** argv)
 {
-	// init style
-	g2_style_width_set(g_style, g2_long_to_float(g_penw));
-	g2_style_cap_set(g_style, g_cap[g_capi]);
-
 	// ok
 	return TB_TRUE;
 }
 static tb_void_t g2_demo_exit()
 {
 
+}
+static tb_void_t g2_demo_size(tb_int_t w, tb_int_t h)
+{
+	// init style
+	g2_style_width_set(g_style, g2_long_to_float(g_penw));
+	g2_style_cap_set(g_style, g_cap[g_capi]);
 }
 static tb_void_t g2_demo_render()
 {

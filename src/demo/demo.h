@@ -66,6 +66,7 @@ static tb_size_t 	g_join[] 	= {G2_STYLE_JOIN_MITER, G2_STYLE_JOIN_BEVEL, G2_STYL
  */
 static tb_bool_t g2_demo_init(tb_int_t argc, tb_char_t** argv);
 static tb_void_t g2_demo_exit();
+static tb_void_t g2_demo_size(tb_int_t w, tb_int_t h);
 static tb_void_t g2_demo_render();
 static tb_void_t g2_demo_move(tb_int_t x, tb_int_t y);
 static tb_void_t g2_demo_drag(tb_int_t x, tb_int_t y);
@@ -115,10 +116,12 @@ static tb_void_t g2_demo_gl_printf(tb_char_t const* fmt, ...)
 }
 static tb_void_t g2_demo_gl_display()
 {
+	// check
+	tb_check_return(g_painter);
+
 	// clear
-//	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	g2_clear(g_painter, G2_COLOR_BLACK);
-	
+
 	// start clock
 	g_rt = tb_uclock();
 
@@ -156,15 +159,44 @@ static tb_void_t g2_demo_gl_display()
 }
 static tb_void_t g2_demo_gl_reshape(tb_int_t w, tb_int_t h)
 {
+	// init width & height
 	g_width = w;
 	g_height = h;
-	g_x0 = w >> 1;
-	g_y0 = h >> 1;
+
+	// init position
+	g_x0 	= g_width >> 1;
+	g_y0 	= g_height >> 1;
+	g_dx 	= g_width >> 2;
+	g_dy 	= g_height >> 2;
+	g_x 	= g_width >> 1;
+	g_y 	= g_height >> 1;
+
+	// init surface
+#ifndef G2_CONFIG_CORE_GL
+	if (g_surface) g2_bitmap_exit(g_surface);
+	g_surface = g2_bitmap_init(g_pixfmt, g_width, g_height);
+	tb_assert_and_check_return_val(g_surface, 0);
+	g2_bitmap_make(g_surface);
+#endif
+
+	// init painter
+	if (g_painter) g2_exit(g_painter);
+	g_painter = g2_init(g_surface);
+	tb_assert_and_check_return_val(g_painter, 0);
+
+	// init style
+	g_style = g2_style(g_painter);
+	tb_assert_and_check_return_val(g_style, 0);
+
+	// init viewport
 	glViewport(0, 0, w, h);
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 	gluOrtho2D(0.0, (GLfloat)w, 0.0, (GLfloat)h);
 	glMatrixMode(GL_MODELVIEW);
+
+	// resize
+	g2_demo_size(w, h);
 }
 static tb_void_t g2_demo_gl_click(tb_int_t button, tb_int_t state, tb_int_t x, tb_int_t y)
 {
@@ -232,29 +264,6 @@ tb_int_t main(tb_int_t argc, tb_char_t** argv)
 	glutMotionFunc(g2_demo_drag);
 	glutKeyboardFunc(g2_demo_gl_keyboard);
 	glutSpecialFunc(g2_demo_gl_special);
-
-	// init surface
-#ifndef G2_CONFIG_CORE_GL
-	g_surface = g2_bitmap_init(g_pixfmt, g_width, g_height);
-	tb_assert_and_check_return_val(g_surface, 0);
-	g2_bitmap_make(g_surface);
-#endif
-
-	// init painter
-	g_painter = g2_init(g_surface);
-	tb_assert_and_check_return_val(g_painter, 0);
-
-	// init style
-	g_style = g2_style(g_painter);
-	tb_assert_and_check_return_val(g_style, 0);
-
-	// init position
-	g_x0 	= g_width >> 1;
-	g_y0 	= g_height >> 1;
-	g_dx 	= g_width >> 2;
-	g_dy 	= g_height >> 2;
-	g_x 	= g_width >> 1;
-	g_y 	= g_height >> 1;
 
 	// init demo 
 	if (!g2_demo_init(argc, argv)) return 0;
