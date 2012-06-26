@@ -2,10 +2,10 @@
 IS_CONFIG = yes
 
 # architecture
-PLAT = mac_x64
+PLAT = linux_x64
 
 # root
-PRO_DIR = /Users/ruki/projects/personal/gbox2
+PRO_DIR = /home/ruki/projects/personal/gbox2
 PRO_NAME = gbox2
 DEBUG = y
 SDK = /home/ruki/programs/android-ndk-r6

@@ -46,6 +46,11 @@ static tb_void_t g2_demo_rclickup(tb_int_t x, tb_int_t y)
 }
 static tb_void_t g2_demo_key(tb_int_t key)
 {
+	if (key == 'a')
+	{
+		tb_size_t flag = g2_style_flag(g_style);
+		g2_style_flag_set(g_style, flag & G2_STYLE_FLAG_ANTI_ALIAS? flag & ~G2_STYLE_FLAG_ANTI_ALIAS : flag | G2_STYLE_FLAG_ANTI_ALIAS);
+	}
 }
 
 /* ////////////////////////////////////////////////////////////////////////

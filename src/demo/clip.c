@@ -263,14 +263,17 @@ static tb_void_t g2_demo_render()
 	g2_matrix_set(g_painter, &mx);
 #endif
 
-	g2_style_mode_set(g_style, G2_STYLE_MODE_FILL);
-	g2_style_color_set(g_style, G2_COLOR_RED);
-	g2_draw_path(g_painter, g_path[g_pti]);
-
-	g2_style_mode_set(g_style, G2_STYLE_MODE_STROKE);
-	g2_style_color_set(g_style, G2_COLOR_BLUE);
-	g2_draw_path(g_painter, g_path[g_pti]);
+	// clip
+	g2_clip_path(g_painter, G2_CLIP_MODE_REPLACE | (g2_style_flag(g_style) & G2_STYLE_FLAG_ANTI_ALIAS? G2_CLIP_MODE_ANTI_ALIAS : 0), g_path[g_pti]);
 
 	// load
 	g2_load(g_painter);
+
+	// clip
+	g2_clip2i_rect(g_painter, G2_CLIP_MODE_INTERSECT, 10, 10, g_width - 20, g_height - 20);
+
+	// draw
+	g2_style_mode_set(g_style, G2_STYLE_MODE_FILL);
+	g2_style_color_set(g_style, G2_COLOR_RED);
+	g2_draw2i_rect(g_painter, 0, 0, g_width, g_height);
 }

@@ -150,7 +150,7 @@ static tb_void_t g2_skia_matrix_set(tb_handle_t painter, g2_matrix_t const* matr
 	{
 		SkMatrix mx;
 		mx.setAll( 	matrix->sx, matrix->kx, matrix->tx
-				, 	matrix->ky, matrix->ky, matrix->ty
+				, 	matrix->ky, matrix->sy, matrix->ty
 				, 	0, 0, kMatrix22Elem);
 		spainter->canvas->setMatrix(mx);
 	}
@@ -201,8 +201,10 @@ static tb_bool_t g2_skia_clip_path(tb_handle_t painter, tb_size_t mode, tb_handl
 	g2_skia_painter_t* spainter = static_cast<g2_skia_painter_t*>(painter);
 	tb_assert_and_check_return_val(spainter && spainter->canvas && path, TB_FALSE);
 
-	bool anti = false;
-	SkRegion::Op op = SkRegion::kIntersect_Op;
+	bool 			anti = mode & G2_CLIP_MODE_ANTI_ALIAS? true : false;
+	SkRegion::Op 	op = SkRegion::kIntersect_Op;
+
+	mode &= ~G2_CLIP_MODE_ANTI_ALIAS;
 	switch (mode)
 	{
 	case G2_CLIP_MODE_INTERSECT:
@@ -229,8 +231,10 @@ static tb_bool_t g2_skia_clip_rect(tb_handle_t painter, tb_size_t mode, g2_rect_
 	g2_skia_painter_t* spainter = static_cast<g2_skia_painter_t*>(painter);
 	tb_assert_and_check_return_val(spainter && spainter->canvas && rect, TB_FALSE);
 
-	bool anti = false;
-	SkRegion::Op op = SkRegion::kIntersect_Op;
+	bool 			anti = mode & G2_CLIP_MODE_ANTI_ALIAS? true : false;
+	SkRegion::Op 	op = SkRegion::kIntersect_Op;
+
+	mode &= ~G2_CLIP_MODE_ANTI_ALIAS;
 	switch (mode)
 	{
 	case G2_CLIP_MODE_INTERSECT:
@@ -250,7 +254,7 @@ static tb_bool_t g2_skia_clip_rect(tb_handle_t painter, tb_size_t mode, g2_rect_
 		break;
 	}
 
-	return spainter->canvas->clipRect(*reinterpret_cast<const SkRect*>(rect), op, anti)? TB_TRUE : TB_FALSE;
+	return spainter->canvas->clipRect(SkRect::MakeXYWH(rect->x, rect->y, rect->w, rect->h), op, anti)? TB_TRUE : TB_FALSE;
 }
 static tb_void_t g2_skia_clear(tb_handle_t painter, g2_color_t color)
 {

@@ -41,21 +41,22 @@ extern "C" {
 // the clip mode type
 typedef enum __g2_clip_mode_t
 {
-	G2_CLIP_MODE_NONE 			= 0
-,	G2_CLIP_MODE_SUBTRACT 		= 1
-,	G2_CLIP_MODE_INTERSECT 		= 2
-,	G2_CLIP_MODE_UNION 			= 3
-,	G2_CLIP_MODE_REPLACE 		= 4
+	G2_CLIP_MODE_NONE 			= 0x0
+,	G2_CLIP_MODE_SUBTRACT 		= 0x1
+,	G2_CLIP_MODE_INTERSECT 		= 0x2
+,	G2_CLIP_MODE_UNION 			= 0x3
+,	G2_CLIP_MODE_REPLACE 		= 0x4
+,	G2_CLIP_MODE_ANTI_ALIAS 	= 0x0100
 
 }g2_clip_mode_t;
 
 // the save mode type
 typedef enum __g2_save_mode_t
 {
-	G2_SAVE_MODE_NONE 			= 0
-,	G2_SAVE_MODE_MATRIX 		= 1
-,	G2_SAVE_MODE_CLIP 			= 2
-,	G2_SAVE_MODE_MATRIX_CLIP 	= 3
+	G2_SAVE_MODE_NONE 			= 0x0
+,	G2_SAVE_MODE_MATRIX 		= 0x1
+,	G2_SAVE_MODE_CLIP 			= 0x2
+,	G2_SAVE_MODE_MATRIX_CLIP 	= 0x3
 
 }g2_save_mode_t;
 

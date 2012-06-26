@@ -6,6 +6,7 @@ NAMES 					= \
 						line \
 						rect \
 						path \
+						clip \
 						point \
 						circle \
 						ellipse \

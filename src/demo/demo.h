@@ -14,6 +14,12 @@
 #endif
 
 /* ////////////////////////////////////////////////////////////////////////
+ * macros
+ */
+#define G2_DEMO_WIDTH 			(640)
+#define G2_DEMO_HEIGHT 			(480)
+
+/* ////////////////////////////////////////////////////////////////////////
  * globals
  */
 
@@ -27,8 +33,8 @@ static tb_handle_t 	g_painter 	= TB_NULL;
 static tb_handle_t 	g_style 	= TB_NULL;
 
 // width & height
-static tb_size_t 	g_width 	= 640;
-static tb_size_t 	g_height 	= 480;
+static tb_size_t 	g_width 	= G2_DEMO_WIDTH;
+static tb_size_t 	g_height 	= G2_DEMO_HEIGHT;
 
 // pixfmt
 static tb_size_t 	g_pixfmt 	= G2_PIXFMT_XRGB8888;
@@ -40,8 +46,8 @@ static tb_hong_t 	g_rt 		= 0;
 static tb_hong_t 	g_fps 		= 0;
 
 // position
-static tb_long_t 	g_x0 		= 0;
-static tb_long_t 	g_y0 		= 0;
+static tb_long_t 	g_x0 		= G2_DEMO_WIDTH >> 1;
+static tb_long_t 	g_y0 		= G2_DEMO_HEIGHT >> 1;
 static tb_long_t 	g_dx 		= 0;
 static tb_long_t 	g_dy 		= 0;
 static tb_long_t 	g_x 		= 0;
@@ -152,6 +158,8 @@ static tb_void_t g2_demo_gl_reshape(tb_int_t w, tb_int_t h)
 {
 	g_width = w;
 	g_height = h;
+	g_x0 = w >> 1;
+	g_y0 = h >> 1;
 	glViewport(0, 0, w, h);
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
