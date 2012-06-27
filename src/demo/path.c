@@ -160,15 +160,9 @@ static tb_void_t g2_demo_drag(tb_int_t x, tb_int_t y)
 }
 static tb_void_t g2_demo_wheeldown(tb_int_t x, tb_int_t y)
 {	
-	if (g_penw > 1) g_penw--;
-	else g_penw = 1;
-	g2_style_width_set(g_style, g2_long_to_float(g_penw));
 }
 static tb_void_t g2_demo_wheelup(tb_int_t x, tb_int_t y)
 {
-	if (g_penw > 1000) g_penw = 1000;
-	else g_penw++;
-	g2_style_width_set(g_style, g2_long_to_float(g_penw));
 }
 static tb_void_t g2_demo_lclickdown(tb_int_t x, tb_int_t y)
 {
@@ -189,10 +183,25 @@ static tb_void_t g2_demo_rclickup(tb_int_t x, tb_int_t y)
 }
 static tb_void_t g2_demo_key(tb_int_t key)
 {
-	if (key == 'a')
+	switch (key)
 	{
-		tb_size_t flag = g2_style_flag(g_style);
-		g2_style_flag_set(g_style, flag & G2_STYLE_FLAG_ANTI_ALIAS? flag & ~G2_STYLE_FLAG_ANTI_ALIAS : flag | G2_STYLE_FLAG_ANTI_ALIAS);
+	case 'a':
+		{
+			tb_size_t flag = g2_style_flag(g_style);
+			g2_style_flag_set(g_style, flag & G2_STYLE_FLAG_ANTI_ALIAS? flag & ~G2_STYLE_FLAG_ANTI_ALIAS : flag | G2_STYLE_FLAG_ANTI_ALIAS);
+		}
+		break;
+	case 'w':
+		{
+			if (g_penw > 1000) g_penw = 1000;
+			else g_penw++;
+			g2_style_width_set(g_style, g2_long_to_float(g_penw));
+		}
+	case 's':
+		{
+		}
+	default:
+		break;
 	}
 }
 
@@ -206,19 +215,47 @@ static tb_bool_t g2_demo_init(tb_int_t argc, tb_char_t** argv)
 	tb_size_t 	j = 0;
 	for (i = 0; i < g_ptm; i++)
 	{
+		tb_size_t h = 0;
+		tb_size_t c = 0;
 		g_path[i] = g2_path_init();
 		if (g_cpts[i])
 		{
 			g2_path_movei_to(g_path[i], &g_pts[i][0]);
 			for (j = 1; j < g_ptn[i]; j++)
-				g2_path_quadi_to(g_path[i], &g_pts[i][j], &g_cpts[i][j - 1]);
+			{
+				if (c)
+				{
+					g2_path_close(g_path[i]);
+					g2_path_movei_to(g_path[i], &g_pts[i][j]);
+					h = j;
+					c = 0;
+				}
+				else 
+				{
+					g2_path_quadi_to(g_path[i], &g_pts[i][j], &g_cpts[i][j - 1]);
+					if (g_pts[i][j].x == g_pts[i][h].x && g_pts[i][j].y == g_pts[i][h].y) c = 1;
+				}
+			}
 			g2_path_close(g_path[i]);
 		}
 		else
 		{
 			g2_path_movei_to(g_path[i], &g_pts[i][0]);
 			for (j = 1; j < g_ptn[i]; j++)
-				g2_path_linei_to(g_path[i], &g_pts[i][j]);
+			{
+				if (c)
+				{
+					g2_path_close(g_path[i]);
+					g2_path_movei_to(g_path[i], &g_pts[i][j]);
+					h = j;
+					c = 0;
+				}
+				else 
+				{
+					g2_path_linei_to(g_path[i], &g_pts[i][j]);
+					if (g_pts[i][j].x == g_pts[i][h].x && g_pts[i][j].y == g_pts[i][h].y) c = 1;
+				}
+			}
 			g2_path_close(g_path[i]);
 		}
 	}

@@ -206,19 +206,47 @@ static tb_bool_t g2_demo_init(tb_int_t argc, tb_char_t** argv)
 	tb_size_t 	j = 0;
 	for (i = 0; i < g_ptm; i++)
 	{
+		tb_size_t h = 0;
+		tb_size_t c = 0;
 		g_path[i] = g2_path_init();
 		if (g_cpts[i])
 		{
 			g2_path_movei_to(g_path[i], &g_pts[i][0]);
 			for (j = 1; j < g_ptn[i]; j++)
-				g2_path_quadi_to(g_path[i], &g_pts[i][j], &g_cpts[i][j - 1]);
+			{
+				if (c)
+				{
+					g2_path_close(g_path[i]);
+					g2_path_movei_to(g_path[i], &g_pts[i][j]);
+					h = j;
+					c = 0;
+				}
+				else 
+				{
+					g2_path_quadi_to(g_path[i], &g_pts[i][j], &g_cpts[i][j - 1]);
+					if (g_pts[i][j].x == g_pts[i][h].x && g_pts[i][j].y == g_pts[i][h].y) c = 1;
+				}
+			}
 			g2_path_close(g_path[i]);
 		}
 		else
 		{
 			g2_path_movei_to(g_path[i], &g_pts[i][0]);
 			for (j = 1; j < g_ptn[i]; j++)
-				g2_path_linei_to(g_path[i], &g_pts[i][j]);
+			{
+				if (c)
+				{
+					g2_path_close(g_path[i]);
+					g2_path_movei_to(g_path[i], &g_pts[i][j]);
+					h = j;
+					c = 0;
+				}
+				else 
+				{
+					g2_path_linei_to(g_path[i], &g_pts[i][j]);
+					if (g_pts[i][j].x == g_pts[i][h].x && g_pts[i][j].y == g_pts[i][h].y) c = 1;
+				}
+			}
 			g2_path_close(g_path[i]);
 		}
 	}
