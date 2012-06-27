@@ -119,56 +119,6 @@ typedef struct __g2_irect_t
 
 }g2_irect_t;
 
-// the curve1 type
-typedef struct __g2_curve1_t
-{
-	// the endpoint
-	g2_point_t 			p0;
-	g2_point_t 			p1;
-
-	// the control point
-	g2_point_t 			cp;
-
-}g2_curve1_t;
-
-// the icurve1 type
-typedef struct __g2_icurve1_t
-{
-	// the endpoint
-	g2_ipoint_t 		p0;
-	g2_ipoint_t 		p1;
-
-	// the control point
-	g2_ipoint_t 		cp;
-
-}g2_icurve1_t;
-
-// the curve2 type
-typedef struct __g2_curve2_t
-{
-	// the endpoint
-	g2_point_t 			p0;
-	g2_point_t 			p1;
-
-	// the control point
-	g2_point_t 			c0;
-	g2_point_t 			c1;
-
-}g2_curve2_t;
-
-// the icurve2 type
-typedef struct __g2_icurve2_t
-{
-	// the endpoint
-	g2_ipoint_t 		p0;
-	g2_ipoint_t 		p1;
-
-	// the control point
-	g2_ipoint_t 		c0;
-	g2_ipoint_t 		c1;
-
-}g2_icurve2_t;
-
 // the circle type
 typedef struct __g2_circle_t
 {
@@ -176,7 +126,7 @@ typedef struct __g2_circle_t
 	g2_point_t 			c;
 
 	// the radius
-	g2_float_t 		r;
+	g2_float_t 			r;
 
 }g2_circle_t;
 
@@ -250,6 +200,20 @@ typedef struct __g2_iarc_t
 	tb_size_t 			an;
 
 }g2_iarc_t;
+
+// the gradient type
+typedef struct __g2_gradient_t
+{
+	// the color
+	g2_color_t* 		color;
+
+	// the radio
+	g2_float_t* 		radio;
+
+	// the count
+	tb_size_t 			count;
+
+}g2_gradient_t;
 
 /* ////////////////////////////////////////////////////////////////////////
  * inline
