@@ -32,6 +32,7 @@
 #include "./core/SkPaint.h"
 #include "./core/SkRect.h"
 #include "./core/SkColor.h"
+#include "./effects/SkGradientShader.h"
 
 #endif
 

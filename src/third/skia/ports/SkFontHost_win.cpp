@@ -10,6 +10,7 @@
 #include "SkBase64.h"
 #include "SkData.h"
 #include "SkDescriptor.h"
+#include "SkFontDescriptor.h"
 #include "SkFontHost.h"
 #include "SkOTUtils.h"
 #include "SkStream.h"
@@ -23,6 +24,65 @@
 #include <tchar.h>
 #include <usp10.h>
 #include <objbase.h>
+
+static bool compute_bounds_outset(const LOGFONT& lf, SkIRect* outset) {
+
+    static const struct {
+        const char* fUCName;    // UTF8 encoded, ascii is upper-case
+        SkIRect     fOutset;    // these are deltas for the glyph's bounds
+    } gData[] = {
+        // http://code.google.com/p/chromium/issues/detail?id=130842
+        { "DOTUM", { 0, 0, 0, 1 } },
+        { "DOTUMCHE", { 0, 0, 0, 1 } },
+        { "\xEB\x8F\x8B\xEC\x9B\x80", { 0, 0, 0, 1 } },
+        { "\xEB\x8F\x8B\xEC\x9B\x80\xEC\xB2\xB4", { 0, 0, 0, 1 } },
+        { "MS UI GOTHIC", { 1, 0, 0, 0 } },
+    };
+
+    /**
+     *  We convert the target name into upper-case (for ascii chars) UTF8.
+     *  Our database is already stored in this fashion, and it allows us to
+     *  search it with straight memcmp, since everyone is in this canonical
+     *  form.
+     */
+
+    // temp storage is max # TCHARs * max expantion for UTF8 + null
+    char name[kMaxBytesInUTF8Sequence * LF_FACESIZE + 1];
+    int index = 0;
+    for (int i = 0; i < LF_FACESIZE; ++i) {
+        uint16_t c = lf.lfFaceName[i];
+        if (c >= 'a' && c <= 'z') {
+            c = c - 'a' + 'A';
+        }
+        size_t n = SkUTF16_ToUTF8(&c, 1, &name[index]);
+        index += n;
+        if (0 == c) {
+            break;
+        }
+    }
+
+    for (size_t j = 0; j < SK_ARRAY_COUNT(gData); ++j) {
+        if (!strcmp(gData[j].fUCName, name)) {
+            *outset = gData[j].fOutset;
+            return true;
+        }
+    }
+    return false;
+}
+
+// outset isn't really a rect, but 4 (non-negative) values to outset the
+// glyph's metrics by. For "normal" fonts, all these values should be 0.
+static void apply_outset(SkGlyph* glyph, const SkIRect& outset) {
+    SkASSERT(outset.fLeft >= 0);
+    SkASSERT(outset.fTop >= 0);
+    SkASSERT(outset.fRight >= 0);
+    SkASSERT(outset.fBottom >= 0);
+
+    glyph->fLeft -= outset.fLeft;
+    glyph->fTop -= outset.fTop;
+    glyph->fWidth += outset.fLeft + outset.fRight;
+    glyph->fHeight += outset.fTop + outset.fBottom;
+}
 
 // always packed xxRRGGBB
 typedef uint32_t SkGdiRGB;
@@ -147,9 +207,10 @@ static unsigned calculateOutlineGlyphCount(HDC hdc) {
 class LogFontTypeface : public SkTypeface {
 public:
     LogFontTypeface(SkTypeface::Style style, SkFontID fontID, const LOGFONT& lf) :
-      SkTypeface(style, fontID, false), fLogFont(lf) {}
+      SkTypeface(style, fontID, false), fLogFont(lf), fSerializeAsStream(false) {}
 
     LOGFONT fLogFont;
+    bool fSerializeAsStream;
 
     static LogFontTypeface* Create(const LOGFONT& lf) {
         SkTypeface::Style style = get_style(lf);
@@ -164,7 +225,9 @@ public:
      *  Takes ownership of fontMemResource.
      */
     FontMemResourceTypeface(SkTypeface::Style style, SkFontID fontID, const LOGFONT& lf, HANDLE fontMemResource) :
-      LogFontTypeface(style, fontID, lf), fFontMemResource(fontMemResource) {}
+      LogFontTypeface(style, fontID, lf), fFontMemResource(fontMemResource) {
+      fSerializeAsStream = true;
+    }
 
     HANDLE fFontMemResource;
 
@@ -453,7 +516,7 @@ const void* HDCOffscreen::draw(const SkGlyph& glyph, bool isBW,
     return (const char*)fBits + (fHeight - glyph.fHeight) * srcRB;
 }
 
-//////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 
 class SkScalerContext_Windows : public SkScalerContext {
 public:
@@ -467,7 +530,8 @@ protected:
     virtual void generateMetrics(SkGlyph* glyph);
     virtual void generateImage(const SkGlyph& glyph);
     virtual void generatePath(const SkGlyph& glyph, SkPath* path);
-    virtual void generateFontMetrics(SkPaint::FontMetrics* mX, SkPaint::FontMetrics* mY);
+    virtual void generateFontMetrics(SkPaint::FontMetrics* mX,
+                                     SkPaint::FontMetrics* mY);
 
 private:
     HDCOffscreen fOffscreen;
@@ -479,6 +543,14 @@ private:
     HFONT        fFont;
     SCRIPT_CACHE fSC;
     int          fGlyphCount;
+
+    /**
+     *  Some fonts need extra pixels added to avoid clipping, as the bounds
+     *  returned by getOutlineMetrics does not match what GDI draws. Since
+     *  this costs more RAM and therefore slower blits, we have a table to
+     *  only do this for known "bad" fonts.
+     */
+    SkIRect      fOutset;
 
     HFONT        fHiResFont;
     MAT2         fMat22Identity;
@@ -541,6 +613,10 @@ SkScalerContext_Windows::SkScalerContext_Windows(const SkDescriptor* desc)
     lf.lfHeight = -gCanonicalTextSize;
     lf.lfQuality = compute_quality(fRec);
     fFont = CreateFontIndirect(&lf);
+
+    if (!compute_bounds_outset(lf, &fOutset)) {
+        fOutset.setEmpty();
+    }
 
     // if we're rotated, or want fractional widths, create a hires font
     fHiResFont = 0;
@@ -707,6 +783,7 @@ void SkScalerContext_Windows::generateMetrics(SkGlyph* glyph) {
         glyph->fAdvanceY = SkFixedMul(SkFIXEDToFixed(fMat22.eM21), glyph->fAdvanceX);
         glyph->fAdvanceX = SkFixedMul(SkFIXEDToFixed(fMat22.eM11), glyph->fAdvanceX);
 
+        apply_outset(glyph, fOutset);
         return;
     }
 
@@ -751,6 +828,8 @@ void SkScalerContext_Windows::generateMetrics(SkGlyph* glyph) {
             glyph->fHeight += 4;
             glyph->fTop -= 2;
             glyph->fLeft -= 2;
+
+            apply_outset(glyph, fOutset);
         }
 
         if (fHiResFont) {
@@ -1160,13 +1239,79 @@ void SkScalerContext_Windows::generatePath(const SkGlyph& glyph, SkPath* path) {
     //OutputDebugString(buf);
 }
 
-void SkFontHost::Serialize(const SkTypeface* face, SkWStream* stream) {
-    SkDEBUGFAIL("SkFontHost::Serialize unimplemented");
+static void logfont_for_name(const char* familyName, LOGFONT& lf) {
+        memset(&lf, 0, sizeof(LOGFONT));
+#ifdef UNICODE
+        // Get the buffer size needed first.
+        size_t str_len = ::MultiByteToWideChar(CP_UTF8, 0, familyName,
+                                                -1, NULL, 0);
+        // Allocate a buffer (str_len already has terminating null
+        // accounted for).
+        wchar_t *wideFamilyName = new wchar_t[str_len];
+        // Now actually convert the string.
+        ::MultiByteToWideChar(CP_UTF8, 0, familyName, -1,
+                                wideFamilyName, str_len);
+        ::wcsncpy(lf.lfFaceName, wideFamilyName, LF_FACESIZE - 1);
+        delete [] wideFamilyName;
+        lf.lfFaceName[LF_FACESIZE-1] = L'\0';
+#else
+        ::strncpy(lf.lfFaceName, familyName, LF_FACESIZE - 1);
+        lf.lfFaceName[LF_FACESIZE - 1] = '\0';
+#endif
+}
+
+static void logfont_to_name(const LOGFONT& lf, SkString* s) {
+#ifdef UNICODE
+    // Get the buffer size needed first.
+    size_t str_len = WideCharToMultiByte(CP_UTF8, 0, lf.lfFaceName, -1, NULL,
+                                         0, NULL, NULL);
+    // Allocate a buffer (str_len already has terminating null accounted for).
+    s->resize(str_len);
+    // Now actually convert the string.
+    WideCharToMultiByte(CP_UTF8, 0, lf.lfFaceName, -1,
+                        s->writable_str(), str_len,
+                        NULL, NULL);
+#else
+    s->set(lf.lfFaceName);
+#endif
+}
+
+void SkFontHost::Serialize(const SkTypeface* rawFace, SkWStream* stream) {
+    const LogFontTypeface* face = static_cast<const LogFontTypeface*>(rawFace);
+    SkFontDescriptor descriptor(face->style());
+
+    SkString familyName;
+    logfont_to_name(face->fLogFont, &familyName);
+    descriptor.setFamilyName(familyName.c_str());
+    //TODO: FileName and PostScriptName currently unsupported.
+
+    descriptor.serialize(stream);
+
+    if (face->fSerializeAsStream) {
+        // store the entire font in the fontData
+        SkAutoTUnref<SkStream> fontStream(SkFontHost::OpenStream(face->uniqueID()));
+        const uint32_t length = fontStream->getLength();
+
+        stream->writePackedUInt(length);
+        stream->writeStream(fontStream, length);
+    } else {
+        stream->writePackedUInt(0);
+    }
 }
 
 SkTypeface* SkFontHost::Deserialize(SkStream* stream) {
-    SkDEBUGFAIL("SkFontHost::Deserialize unimplemented");
-    return NULL;
+    SkFontDescriptor descriptor(stream);
+
+    const uint32_t customFontDataLength = stream->readPackedUInt();
+    if (customFontDataLength > 0) {
+        // generate a new stream to store the custom typeface
+        SkAutoTUnref<SkMemoryStream> fontStream(SkNEW_ARGS(SkMemoryStream, (customFontDataLength - 1)));
+        stream->read((void*)fontStream->getMemoryBase(), customFontDataLength - 1);
+
+        return CreateTypefaceFromStream(fontStream.get());
+    }
+
+    return SkFontHost::CreateTypeface(NULL, descriptor.getFamilyName(), descriptor.getStyle());
 }
 
 static bool getWidthAdvance(HDC hdc, int gId, int16_t* advance) {
@@ -1226,20 +1371,7 @@ SkAdvancedTypefaceMetrics* SkFontHost::GetAdvancedTypefaceMetrics(
     info->fMultiMaster = false;
     info->fLastGlyphID = SkToU16(glyphCount - 1);
     info->fStyle = 0;
-#ifdef UNICODE
-    // Get the buffer size needed first.
-    size_t str_len = WideCharToMultiByte(CP_UTF8, 0, lf.lfFaceName, -1, NULL,
-                                         0, NULL, NULL);
-    // Allocate a buffer (str_len already has terminating null accounted for).
-    char *familyName = new char[str_len];
-    // Now actually convert the string.
-    WideCharToMultiByte(CP_UTF8, 0, lf.lfFaceName, -1, familyName, str_len,
-                          NULL, NULL);
-    info->fFontName.set(familyName);
-    delete [] familyName;
-#else
-    info->fFontName.set(lf.lfFaceName);
-#endif
+    logfont_to_name(lf, &info->fFontName);
 
     if (perGlyphInfo & SkAdvancedTypefaceMetrics::kToUnicode_PerGlyphInfo) {
         populate_glyph_to_unicode(hdc, glyphCount, &(info->fGlyphToUnicode));
@@ -1399,27 +1531,6 @@ static HANDLE activate_font(SkData* fontData) {
     }
 
     return fontHandle;
-}
-
-static void logfont_for_name(const char* familyName, LOGFONT& lf) {
-        memset(&lf, 0, sizeof(LOGFONT));
-#ifdef UNICODE
-        // Get the buffer size needed first.
-        size_t str_len = ::MultiByteToWideChar(CP_UTF8, 0, familyName,
-                                                -1, NULL, 0);
-        // Allocate a buffer (str_len already has terminating null
-        // accounted for).
-        wchar_t *wideFamilyName = new wchar_t[str_len];
-        // Now actually convert the string.
-        ::MultiByteToWideChar(CP_UTF8, 0, familyName, -1,
-                                wideFamilyName, str_len);
-        ::wcsncpy(lf.lfFaceName, wideFamilyName, LF_FACESIZE);
-        delete [] wideFamilyName;
-        lf.lfFaceName[LF_FACESIZE-1] = L'\0';
-#else
-        ::strncpy(lf.lfFaceName, familyName, LF_FACESIZE);
-        lf.lfFaceName[LF_FACESIZE-1] = '\0';
-#endif
 }
 
 SkTypeface* SkFontHost::CreateTypefaceFromStream(SkStream* stream) {

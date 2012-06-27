@@ -13,6 +13,8 @@
 #include "SkColorFilter.h"
 #include "SkDrawFilter.h"
 
+SK_DEFINE_INST_COUNT(SkDeferredCanvas::DeviceContext)
+
 namespace {
 
 bool isPaintOpaque(const SkPaint* paint, 
@@ -450,7 +452,8 @@ SkDeferredCanvas::DeferredDevice::DeferredDevice(
     fImmediateDevice = immediateDevice; // ref counted via fImmediateCanvas
     fImmediateCanvas = SkNEW_ARGS(SkCanvas, (fImmediateDevice));
     fRecordingCanvas = fPicture.beginRecording(fImmediateDevice->width(),
-        fImmediateDevice->height(), 0);
+        fImmediateDevice->height(),
+        SkPicture::kFlattenMutableNonTexturePixelRefs_RecordingFlag);
 }
 
 SkDeferredCanvas::DeferredDevice::~DeferredDevice() {
@@ -482,7 +485,8 @@ void SkDeferredCanvas::DeferredDevice::contentsCleared() {
             // old one, hence purging deferred draw ops.
             fRecordingCanvas = fPicture.beginRecording(
                 fImmediateDevice->width(),
-                fImmediateDevice->height(), 0);
+                fImmediateDevice->height(),
+                SkPicture::kFlattenMutableNonTexturePixelRefs_RecordingFlag);
 
             // Restore pre-purge state
             if (!clipRegion.isEmpty()) {
@@ -506,12 +510,16 @@ bool SkDeferredCanvas::DeferredDevice::isFreshFrame() {
 }
 
 void SkDeferredCanvas::DeferredDevice::flushPending() {
+    if (!fPicture.hasRecorded()) {
+        return;
+    }
     if (fDeviceContext) {
         fDeviceContext->prepareForDraw();
     }
     fPicture.draw(fImmediateCanvas);
     fRecordingCanvas = fPicture.beginRecording(fImmediateDevice->width(), 
-        fImmediateDevice->height(), 0);
+        fImmediateDevice->height(),
+        SkPicture::kFlattenMutableNonTexturePixelRefs_RecordingFlag);
 }
 
 void SkDeferredCanvas::DeferredDevice::flush() {
@@ -520,8 +528,8 @@ void SkDeferredCanvas::DeferredDevice::flush() {
 }
 
 void SkDeferredCanvas::DeferredDevice::flushIfNeeded(const SkBitmap& bitmap) {
-    if (bitmap.isImmutable()) {
-        return; // safe to deffer without registering a dependency
+    if (bitmap.isImmutable() || fPicture.willFlattenPixelsOnRecord(bitmap)) {
+        return; // safe to defer.
     }
 
     // For now, drawing a writable bitmap triggers a flush

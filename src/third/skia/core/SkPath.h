@@ -259,6 +259,21 @@ public:
     */
     int getPoints(SkPoint points[], int max) const;
 
+    /** Return the number of verbs in the path
+     */
+    int countVerbs() const {
+        return this->getVerbs(NULL, 0);
+    }
+
+    /** Returns the number of verbs in the path. Up to max verbs are copied. The
+        verbs are copied as one byte per verb.
+        
+        @param verbs If not null, receives up to max verbs
+        @param max The maximum number of verbs to copy into verbs
+        @return the actual number of verbs in the path
+    */
+    int getVerbs(uint8_t verbs[], int max) const;
+
     //! Swap contents of this and other. Guaranteed not to throw
     void swap(SkPath& other);
 
@@ -753,6 +768,7 @@ public:
             segments have been visited, return kDone_Verb.
          
             @param  pts The points representing the current verb and/or segment
+                        This must not be NULL.
             @return The verb for the current segment
         */
         Verb next(SkPoint pts[4]);
@@ -768,8 +784,16 @@ public:
     void dump(bool forceClose, const char title[] = NULL) const;
     void dump() const;
 
-    void flatten(SkWriter32&) const;
-    void unflatten(SkReader32&);
+    /**
+     *  Write the region to the buffer, and return the number of bytes written.
+     *  If buffer is NULL, it still returns the number of bytes.
+     */
+    uint32_t writeToMemory(void* buffer) const;
+    /**
+     *  Initialized the region from the buffer, returning the number
+     *  of bytes actually read.
+     */
+    uint32_t readFromMemory(const void* buffer);
 
 #ifdef SK_BUILD_FOR_ANDROID
     uint32_t getGenerationID() const;

@@ -189,6 +189,7 @@ skia_CPP_FILES 			= \
 						core/SkRasterClip \
 						core/SkRasterizer \
 						core/SkRect \
+						core/SkRefCnt \
 						core/SkRefDict \
 						core/SkRegion \
 						core/SkRegion_path \
@@ -215,12 +216,16 @@ skia_CPP_FILES 			= \
 						core/SkUtils \
 						core/SkWriter32 \
 						core/SkXfermode \
+						effects/SkGradientShader \
+						effects/SkBitmapCache \
+						effects/SkClampRange \
 						ports/SkDebug_stdio \
 						ports/SkFontHost_sandbox_none \
 						ports/SkFontHost_FreeType \
 						ports/SkFontHost_gamma_none \
 						ports/SkFontHost_linux \
 						ports/SkFontHost_tables \
+						ports/SkFontDescriptor \
 						ports/SkMemory_malloc \
 						ports/SkOSFile_stdio \
 						ports/SkThread_pthread \

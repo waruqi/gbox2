@@ -11,6 +11,7 @@
 #define SkRefCnt_DEFINED
 
 #include "SkThread.h"
+#include "SkInstCnt.h"
 
 /** \class SkRefCnt
 
@@ -24,6 +25,8 @@
 */
 class SK_API SkRefCnt : SkNoncopyable {
 public:
+    SK_DECLARE_INST_COUNT_ROOT(SkRefCnt)
+
     /** Default construct, initializing the reference count to 1.
     */
     SkRefCnt() : fRefCnt(1) {}
@@ -77,9 +80,14 @@ private:
 #endif
         SkDELETE(this);
     }
+
     friend class SkWeakRefCnt;
+    friend class GrTexture;     // to allow GrTexture's internal_dispose to
+                                // call SkRefCnt's & directly set fRefCnt (to 1)
 
     mutable int32_t fRefCnt;
+
+    typedef SkNoncopyable INHERITED;
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -141,7 +149,25 @@ public:
         return obj;
     }
 
-    T* operator->() { return fObj; }
+    /**
+     * BlockRef<B> is a type which inherits from B, cannot be created,
+     * and makes ref and unref private.
+     */
+    template<typename B> class BlockRef : public B {
+    private:
+        BlockRef();
+        void ref() const;
+        void unref() const;
+    };
+    /**
+     *  SkAutoTUnref assumes ownership of the ref. As a result, it is an error
+     *  for the user to ref or unref through SkAutoTUnref. Therefore
+     *  SkAutoTUnref::operator-> returns BlockRef<T>*. This prevents use of
+     *  skAutoTUnrefInstance->ref() and skAutoTUnrefInstance->unref().
+     */
+    BlockRef<T> *operator->() const {
+        return static_cast<BlockRef<T>*>(fObj);
+    }
     operator T*() { return fObj; }
 
 private:

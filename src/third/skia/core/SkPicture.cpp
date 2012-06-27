@@ -23,6 +23,8 @@
 #include "SkReader32.h"
 #include "SkWriter32.h"
 
+SK_DEFINE_INST_COUNT(SkPicture)
+
 #define DUMP_BUFFER_SIZE 65536
 
 //#define ENABLE_TIME_DRAW    // dumps milliseconds for each draw
@@ -162,6 +164,14 @@ SkCanvas* SkPicture::beginRecording(int width, int height,
     return fRecord;
 }
 
+bool SkPicture::hasRecorded() const {
+    return NULL != fRecord && fRecord->writeStream().size() > 0;
+}
+
+bool SkPicture::willFlattenPixelsOnRecord(const SkBitmap& bitmap) const {
+    return NULL != fRecord && fRecord->shouldFlattenPixels(bitmap);
+}
+
 SkCanvas* SkPicture::getRecordingCanvas() const {
     // will be null if we are not recording
     return fRecord;
@@ -189,22 +199,39 @@ void SkPicture::draw(SkCanvas* surface) {
 
 #include "SkStream.h"
 
-#define PICTURE_VERSION     1
+// V2 : adds SkPixelRef's generation ID.
+// V3 : PictInfo tag at beginning, and EOF tag at the end
+// V4 : move SkPictInfo to be the header
+// V5 : don't read/write FunctionPtr on cross-process (we can detect that)
+#define PICTURE_VERSION     5
 
 SkPicture::SkPicture(SkStream* stream) : SkRefCnt() {
-    if (stream->readU32() != PICTURE_VERSION) {
-        sk_throw();
-    }
-
-    fWidth = stream->readU32();
-    fHeight = stream->readU32();
-
     fRecord = NULL;
     fPlayback = NULL;
+    fWidth = fHeight = 0;
+
+    SkPictInfo info;
+
+    if (!stream->read(&info, sizeof(info))) {
+        return;
+    }
+    if (PICTURE_VERSION != info.fVersion) {
+        return;
+    }
 
     if (stream->readBool()) {
-        fPlayback = SkNEW_ARGS(SkPicturePlayback, (stream));
+        bool isValid = false;
+        fPlayback = SkNEW_ARGS(SkPicturePlayback, (stream, info, &isValid));
+        if (!isValid) {
+            SkDELETE(fPlayback);
+            fPlayback = NULL;
+            return;
+        }
     }
+
+    // do this at the end, so that they will be zero if we hit an error.
+    fWidth = info.fWidth;
+    fHeight = info.fHeight;
 }
 
 void SkPicture::serialize(SkWStream* stream) const {
@@ -214,9 +241,20 @@ void SkPicture::serialize(SkWStream* stream) const {
         playback = SkNEW_ARGS(SkPicturePlayback, (*fRecord));
     }
 
-    stream->write32(PICTURE_VERSION);
-    stream->write32(fWidth);
-    stream->write32(fHeight);
+    SkPictInfo info;
+
+    info.fVersion = PICTURE_VERSION;
+    info.fWidth = fWidth;
+    info.fHeight = fHeight;
+    info.fFlags = SkPictInfo::kCrossProcess_Flag;
+#ifdef SK_SCALAR_IS_FLOAT
+    info.fFlags |= SkPictInfo::kScalarIsFloat_Flag;
+#endif
+    if (8 == sizeof(void*)) {
+        info.fFlags |= SkPictInfo::kPtrIs64Bit_Flag;
+    }
+
+    stream->write(&info, sizeof(info));
     if (playback) {
         stream->writeBool(true);
         playback->serialize(stream);

@@ -10,8 +10,10 @@
 #include "SkAdvancedTypefaceMetrics.h"
 #include "SkTypes.h"
 
+SK_DEFINE_INST_COUNT(SkAdvancedTypefaceMetrics)
+
 #if defined(SK_BUILD_FOR_UNIX) || defined(SK_BUILD_FOR_ANDROID)
-#include "ft2build.h"
+#include <ft2build.h>
 #include FT_FREETYPE_H
 #endif
 
@@ -295,5 +297,13 @@ template void finishRange<SkAdvancedTypefaceMetrics::VerticalMetric>(
         SkAdvancedTypefaceMetrics::VerticalAdvanceRange* range,
         int endId,
         SkAdvancedTypefaceMetrics::VerticalAdvanceRange::MetricType type);
+
+// additional declaration needed for testing with a face of an unknown type
+template SkAdvancedTypefaceMetrics::WidthRange* getAdvanceData(
+        void* fontData,
+        int num_glyphs,
+        const uint32_t* subsetGlyphIDs,
+        uint32_t subsetGlyphIDsLength,
+        bool (*getAdvance)(void* fontData, int gId, int16_t* data));
 
 } // namespace skia_advanced_typeface_metrics_utils

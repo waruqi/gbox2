@@ -7,8 +7,8 @@
  */
 
 
-#include "SkBlitRow.h"
-#include "SkUtils.h"
+#include "../core/SkBlitRow.h"
+#include "../core/SkUtils.h"
 
 SkMemset16Proc SkMemset16GetPlatformProc() {
     return NULL;

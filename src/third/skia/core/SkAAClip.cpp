@@ -135,6 +135,7 @@ SkAAClip::Iter::Iter(const SkAAClip& clip) {
         fDone = true;
         fTop = fBottom = clip.fBounds.fBottom;
         fData = NULL;
+        fStopYOff = NULL;
         return;
     }
     
@@ -809,7 +810,9 @@ const uint8_t* SkAAClip::findX(const uint8_t data[], int x, int* initialCount) c
     for (;;) {
         int n = data[0];
         if (x < n) {
-            *initialCount = n - x;
+            if (initialCount) {
+                *initialCount = n - x;
+            }
             break;
         }
         data += 2;
@@ -831,7 +834,7 @@ bool SkAAClip::quickContains(int left, int top, int right, int bottom) const {
     }
 #endif
 
-    int lastY;
+    int lastY SK_INIT_TO_AVOID_WARNING;
     const uint8_t* row = this->findRow(top, &lastY);
     if (lastY < bottom) {
         return false;
@@ -1055,6 +1058,9 @@ public:
 
     void validate() {
 #ifdef SK_DEBUG
+        if (false) { // avoid bit rot, suppress warning
+            test_count_left_right_zeros();
+        }
         int prevY = -1;
         for (int i = 0; i < fRows.count(); ++i) {
             const Row& row = fRows[i];
@@ -1324,12 +1330,6 @@ typedef void (*RowProc)(SkAAClip::Builder&, int bottom,
                         const uint8_t* rowA, const SkIRect& rectA,
                         const uint8_t* rowB, const SkIRect& rectB);
 
-static void sectRowProc(SkAAClip::Builder& builder, int bottom,
-                        const uint8_t* rowA, const SkIRect& rectA,
-                        const uint8_t* rowB, const SkIRect& rectB) {
-    
-}
-
 typedef U8CPU (*AlphaProc)(U8CPU alphaA, U8CPU alphaB);
 
 static U8CPU sectAlphaProc(U8CPU alphaA, U8CPU alphaB) {
@@ -1434,6 +1434,7 @@ static void adjust_row(RowIter& iter, int& leftA, int& riteA, int rite) {
     }
 }
 
+#if 0 // UNUSED
 static bool intersect(int& min, int& max, int boundsMin, int boundsMax) {
     SkASSERT(min < max);
     SkASSERT(boundsMin < boundsMax);
@@ -1448,6 +1449,7 @@ static bool intersect(int& min, int& max, int boundsMin, int boundsMax) {
     }
     return true;
 }
+#endif
 
 static void operatorX(SkAAClip::Builder& builder, int lastY,
                       RowIter& iterA, RowIter& iterB,
@@ -1700,7 +1702,11 @@ bool SkAAClip::op(const SkRect& rOrig, SkRegion::Op op, bool doAA) {
         case SkRegion::kIntersect_Op:
         case SkRegion::kDifference_Op:
             if (!rStorage.intersect(rOrig, boundsStorage)) {
-                return this->setEmpty();
+                if (SkRegion::kIntersect_Op == op) {
+                    return this->setEmpty();
+                } else {    // kDifference
+                    return !this->isEmpty();
+                }
             }
             r = &rStorage;   // use the intersected bounds
             break;
@@ -1836,8 +1842,7 @@ void SkAAClipBlitter::blitH(int x, int y, int width) {
     SkASSERT(fAAClipBounds.contains(x, y));
     SkASSERT(fAAClipBounds.contains(x + width  - 1, y));
 
-    int lastY;
-    const uint8_t* row = fAAClip->findRow(y, &lastY);
+    const uint8_t* row = fAAClip->findRow(y);
     int initialCount;
     row = fAAClip->findX(row, x, &initialCount);
 
@@ -1904,8 +1909,8 @@ static void merge(const uint8_t* SK_RESTRICT row, int rowN,
 
 void SkAAClipBlitter::blitAntiH(int x, int y, const SkAlpha aa[],
                                 const int16_t runs[]) {
-    int lastY;
-    const uint8_t* row = fAAClip->findRow(y, &lastY);
+
+    const uint8_t* row = fAAClip->findRow(y);
     int initialCount;
     row = fAAClip->findX(row, x, &initialCount);
 
@@ -1922,7 +1927,7 @@ void SkAAClipBlitter::blitV(int x, int y, int height, SkAlpha alpha) {
     }
 
     for (;;) {
-        int lastY;
+        int lastY SK_INIT_TO_AVOID_WARNING;
         const uint8_t* row = fAAClip->findRow(y, &lastY);
         int dy = lastY - y + 1;
         if (dy > height) {
@@ -1930,8 +1935,7 @@ void SkAAClipBlitter::blitV(int x, int y, int height, SkAlpha alpha) {
         }
         height -= dy;
 
-        int initialCount;
-        row = fAAClip->findX(row, x, &initialCount);
+        row = fAAClip->findX(row, x);
         SkAlpha newAlpha = SkMulDiv255Round(alpha, row[1]);
         if (newAlpha) {
             fBlitter->blitV(x, y, dy, newAlpha);
@@ -1975,8 +1979,8 @@ static inline uint16_t mergeOne(uint16_t value, unsigned alpha) {
     unsigned g = SkGetPackedG16(value);
     unsigned b = SkGetPackedB16(value);
     return SkPackRGB16(SkMulDiv255Round(r, alpha),
-                       SkMulDiv255Round(r, alpha),
-                       SkMulDiv255Round(r, alpha));
+                       SkMulDiv255Round(g, alpha),
+                       SkMulDiv255Round(b, alpha));
 }
 static inline SkPMColor mergeOne(SkPMColor value, unsigned alpha) {
     unsigned a = SkGetPackedA32(value);
@@ -1992,7 +1996,6 @@ static inline SkPMColor mergeOne(SkPMColor value, unsigned alpha) {
 template <typename T> void mergeT(const T* SK_RESTRICT src, int srcN,
                                  const uint8_t* SK_RESTRICT row, int rowN,
                                  T* SK_RESTRICT dst) {
-    SkDEBUGCODE(int accumulated = 0;)
     for (;;) {
         SkASSERT(rowN > 0);
         SkASSERT(srcN > 0);
@@ -2140,7 +2143,7 @@ void SkAAClipBlitter::blitMask(const SkMask& origMask, const SkIRect& clip) {
     const int stopY = y + clip.height();
 
     do {
-        int localStopY;
+        int localStopY SK_INIT_TO_AVOID_WARNING;
         const uint8_t* row = fAAClip->findRow(y, &localStopY);
         // findRow returns last Y, not stop, so we add 1
         localStopY = SkMin32(localStopY + 1, stopY);

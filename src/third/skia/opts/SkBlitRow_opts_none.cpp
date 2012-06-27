@@ -5,8 +5,8 @@
  * found in the LICENSE file.
  */
 
-#include "SkBlitRow.h"
-#include "SkBlitMask.h"
+#include "../core/SkBlitRow.h"
+#include "../core/SkBlitMask.h"
 
 // Platform impl of Platform_procs with no overrides
 

@@ -7,8 +7,7 @@
  */
 
 
-#include "SkBitmap.h"
-#include "SkFlattenable.h"
+#include "SkColorTable.h"
 #include "SkStream.h"
 #include "SkTemplates.h"
 
@@ -28,8 +27,9 @@ SkColorTable::SkColorTable(int count)
     SkDEBUGCODE(f16BitCacheLockCount = 0;)
 }
 
-// call SkRefCnt's constructor explicitly, to avoid warning
-SkColorTable::SkColorTable(const SkColorTable& src) : SkRefCnt() {
+// As copy constructor is hidden in the class hierarchy, we need to call
+// default constructor explicitly to suppress a compiler warning.
+SkColorTable::SkColorTable(const SkColorTable& src) : INHERITED() {
     f16BitCache = NULL;
     fFlags = src.fFlags;
     int count = src.count();
@@ -156,3 +156,4 @@ void SkColorTable::flatten(SkFlattenableWriteBuffer& buffer) const {
     buffer.writeMul4(fColors, count * sizeof(SkPMColor));
 }
 
+SK_DEFINE_FLATTENABLE_REGISTRAR(SkColorTable)

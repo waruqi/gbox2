@@ -11,15 +11,15 @@
 #define SkFlattenable_DEFINED
 
 #include "SkRefCnt.h"
-#include "SkBitmap.h"
-#include "SkPath.h"
-#include "SkPoint.h"
 #include "SkReader32.h"
 #include "SkTDArray.h"
 #include "SkWriter32.h"
 
+class SkBitmap;
 class SkFlattenableReadBuffer;
 class SkFlattenableWriteBuffer;
+class SkPath;
+struct SkPoint;
 class SkString;
 
 #if SK_ALLOW_STATIC_GLOBAL_INITIALIZERS
@@ -68,6 +68,8 @@ class SkString;
  */
 class SK_API SkFlattenable : public SkRefCnt {
 public:
+    SK_DECLARE_INST_COUNT(SkFlattenable)
+
     typedef SkFlattenable* (*Factory)(SkFlattenableReadBuffer&);
     
     SkFlattenable() {}
@@ -104,6 +106,8 @@ private:
 
     friend class SkGraphics;
     friend class SkFlattenableWriteBuffer;
+
+    typedef SkRefCnt INHERITED;
 };
 
 // helpers for matrix and region
@@ -123,9 +127,21 @@ class SkTypeface;
 
 class SkFlattenableReadBuffer {
 public:
+    enum Flags {
+        kCrossProcess_Flag      = 1 << 0,
+        kScalarIsFloat_Flag     = 1 << 1,
+        kPtrIs64Bit_Flag        = 1 << 2,
+    };
+
     SkFlattenableReadBuffer();
     virtual ~SkFlattenableReadBuffer() {}
 
+    void setFlags(uint32_t flags) { fFlags = flags; }
+    uint32_t getFlags() const { return fFlags; }
+
+    bool isCrossProcess() const { return SkToBool(fFlags & kCrossProcess_Flag); }
+    bool isScalarFloat() const { return SkToBool(fFlags & kScalarIsFloat_Flag); }
+    bool isPtr64Bit() const { return SkToBool(fFlags & kPtrIs64Bit_Flag); }
 
     virtual uint8_t readU8() = 0;
     virtual uint16_t readU16() = 0;
@@ -188,7 +204,7 @@ public:
     virtual SkRefCnt* readRefCnt() = 0;
     virtual void* readFunctionPtr() = 0;
     virtual SkFlattenable* readFlattenable() = 0;
-    
+
 protected:
     SkRefCnt** fRCArray;
     int        fRCCount;
@@ -199,6 +215,9 @@ protected:
     SkTDArray<SkFlattenable::Factory>* fFactoryTDArray;
     SkFlattenable::Factory* fFactoryArray;
     int                     fFactoryCount;
+
+private:
+    uint32_t    fFlags;
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -267,15 +286,20 @@ public:
     SkFactorySet* setFactoryRecorder(SkFactorySet*);
 
     enum Flags {
-        kCrossProcess_Flag       = 0x01,
+        kCrossProcess_Flag               = 0x01,
         /**
          *  Instructs the writer to inline Factory names as there are seen the
          *  first time (after that we store an index). The pipe code uses this.
          */
-        kInlineFactoryNames_Flag = 0x02,
+        kInlineFactoryNames_Flag         = 0x02,
+        /**
+         *  Instructs the writer to always serialize bitmap pixel data.
+         */
+        kForceFlattenBitmapPixels_Flag   = 0x04
     };
-    Flags getFlags() const { return (Flags)fFlags; }
-    void setFlags(Flags flags) { fFlags = flags; }
+
+    uint32_t getFlags() const { return fFlags; }
+    void setFlags(uint32_t flags) { fFlags = flags; }
 
     bool isCrossProcess() const {
         return SkToBool(fFlags & kCrossProcess_Flag);
@@ -285,7 +309,7 @@ public:
     }
 
     bool persistBitmapPixels() const {
-        return (fFlags & kCrossProcess_Flag) != 0;
+        return (fFlags & (kCrossProcess_Flag | kForceFlattenBitmapPixels_Flag)) != 0;
     }
 
     bool persistTypeface() const { return (fFlags & kCrossProcess_Flag) != 0; }

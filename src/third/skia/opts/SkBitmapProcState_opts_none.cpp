@@ -5,7 +5,7 @@
  * Use of this source code is governed by a BSD-style license that can be
  * found in the LICENSE file.
  */
-#include "SkBitmapProcState.h"
+#include "../core/SkBitmapProcState.h"
 
 /*  A platform may optionally overwrite any of these with accelerated
     versions. On input, these will already have valid function pointers,
