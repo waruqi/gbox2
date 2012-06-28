@@ -152,7 +152,6 @@ static tb_void_t g2_demo_wheelup(tb_int_t x, tb_int_t y)
 }
 static tb_void_t g2_demo_lclickdown(tb_int_t x, tb_int_t y)
 {
-	g_pti = (g_pti + 1) % g_ptm;	
 }
 static tb_void_t g2_demo_lclickup(tb_int_t x, tb_int_t y)
 {
@@ -165,6 +164,7 @@ static tb_void_t g2_demo_rclickup(tb_int_t x, tb_int_t y)
 }
 static tb_void_t g2_demo_key(tb_int_t key)
 {
+	if (key == 'p') g_pti = (g_pti + 1) % g_ptm;
 }
 
 /* ////////////////////////////////////////////////////////////////////////

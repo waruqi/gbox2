@@ -65,7 +65,8 @@ static tb_size_t 	g_joini 	= 0;
 static tb_size_t 	g_shaderi 	= 0;
 static tb_size_t 	g_cap[] 	= {G2_STYLE_CAP_BUTT, G2_STYLE_CAP_SQUARE, G2_STYLE_CAP_ROUND};
 static tb_size_t 	g_join[] 	= {G2_STYLE_JOIN_MITER, G2_STYLE_JOIN_BEVEL, G2_STYLE_JOIN_ROUND};
-static tb_handle_t 	g_shader[2] = {TB_NULL};
+static tb_handle_t 	g_shader[6] = {TB_NULL};
+static tb_handle_t 	g_mhader[6] = {TB_NULL};
 
 /* ////////////////////////////////////////////////////////////////////////
  * callbacks
@@ -167,8 +168,7 @@ static tb_void_t g2_demo_gl_display()
 		g2_style_flag_set(g_style, g_anti? g2_style_flag(g_style) | G2_STYLE_FLAG_ANTI_ALIAS : g2_style_flag(g_style) & ~G2_STYLE_FLAG_ANTI_ALIAS);
 		g2_style_mode_set(g_style, G2_STYLE_MODE_FILL);
 		g2_style_color_set(g_style, G2_COLOR_RED);
-		g2_style_shader_set(g_style, g_shader[g_shaderi]);
-//		if (g_bm && g_shader[g_shaderi]) g2_shader_matrix_set(g_shader[g_shaderi], &g_mx);
+		g2_style_shader_set(g_style, g_bm? g_mhader[g_shaderi] : g_shader[g_shaderi]);
 
 		g2_demo_render();
 	}
@@ -197,7 +197,7 @@ static tb_void_t g2_demo_gl_display()
 	if (g_surface)
 	{
 		glPixelZoom(1.0, -1.0);
-		glRasterPos2i(0, g_height);
+		glRasterPos2i(0, g_height-1);
 		switch (g_pixfmt)
 		{
 		case G2_PIXFMT_RGB565:
@@ -234,7 +234,7 @@ static tb_void_t g2_demo_gl_reshape(tb_int_t w, tb_int_t h)
 	g_y 		= g_dy;
 
 	// init matrix
-	g2_matrix_init_translate(&g_mx, g_x0, g_y0);	
+	g2_matrix_init_translate(&g_mx, g2_long_to_float(g_x0), g2_long_to_float(g_y0));	
 
 	// init surface
 #ifndef G2_CONFIG_CORE_GL
@@ -258,15 +258,24 @@ static tb_void_t g2_demo_gl_reshape(tb_int_t w, tb_int_t h)
 	g2_style_join_set(g_style, g_join[g_joini]);
 
 	// init gradient
-	g2_color_t color[3] = {G2_COLOR_RED, G2_COLOR_GREEN, G2_COLOR_BLUE};
-	g2_float_t radio[3] = {0, G2_HAF, G2_ONE};
-	g2_gradient_t grad;
-	grad.color = color;
-	grad.radio = radio;
-	grad.count = 3;
+	g2_color_t 		color[3] = {G2_COLOR_RED, G2_COLOR_GREEN, G2_COLOR_BLUE};
+	g2_gradient_t 	grad = {color, TB_NULL, 3};
 
 	// init shader
-	g_shader[1]	= g2_shader_init2i_linear(0, 0, g_width, g_height, &grad, 0);
+	g_shader[1]	= g2_shader_init2i_linear(g_x0 - 100, 0, g_x0 + 100, 0, &grad, G2_SHADER_MODE_CLAMP);
+	g_mhader[1]	= g2_shader_init2i_linear(-50, 0, 50, 0, &grad, G2_SHADER_MODE_CLAMP);
+
+	g_shader[2]	= g2_shader_init2i_radial(g_x0, g_y0, 100, &grad, G2_SHADER_MODE_CLAMP);
+	g_mhader[2]	= g2_shader_init2i_radial(0, 0, 50, &grad, G2_SHADER_MODE_CLAMP);
+
+	g_shader[3]	= g2_shader_init2i_radial2(g_x0, g_y0, 100, g_x0, g_y0, 200, &grad, G2_SHADER_MODE_CLAMP);
+	g_mhader[3]	= g2_shader_init2i_radial2(0, 0, 50, 0, 0, 100, &grad, G2_SHADER_MODE_CLAMP);
+
+	g_shader[4]	= g2_shader_init2i_conical(0, 0, 100, g_width, g_height, 200, &grad, G2_SHADER_MODE_CLAMP);
+	g_mhader[4]	= g2_shader_init2i_conical(-50, -50, 50, 50, 50, 100, &grad, G2_SHADER_MODE_CLAMP);
+
+	g_shader[5]	= g2_shader_init2i_sweep(g_x0, g_y0, &grad);
+	g_mhader[5]	= g2_shader_init2i_sweep(0, 0, &grad);
 
 	// init viewport
 	glViewport(0, 0, w, h);
@@ -284,7 +293,7 @@ static tb_void_t g2_demo_gl_click(tb_int_t button, tb_int_t state, tb_int_t x, t
 	{
 		if (state == 0)
 		{
-			g_shaderi = (g_shaderi + 1) % 2;
+			g_shaderi = (g_shaderi + 1) % 6;
 			g2_demo_lclickdown(x, y);
 		}
 		else if (state == 1)
