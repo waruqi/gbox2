@@ -54,14 +54,18 @@ static tb_long_t 	g_x 		= 0;
 static tb_long_t 	g_y 		= 0;
 static tb_float_t 	g_an 		= 0.;
 static tb_bool_t 	g_bm 		= TB_FALSE;
+static g2_matrix_t 	g_mx;
 
 // style
+static tb_size_t 	g_anti 		= 0;
 static tb_size_t 	g_mode 		= G2_STYLE_MODE_NONE;
 static tb_size_t 	g_penw 		= 1;
 static tb_size_t 	g_capi 		= 0;
 static tb_size_t 	g_joini 	= 0;
+static tb_size_t 	g_shaderi 	= 0;
 static tb_size_t 	g_cap[] 	= {G2_STYLE_CAP_BUTT, G2_STYLE_CAP_SQUARE, G2_STYLE_CAP_ROUND};
 static tb_size_t 	g_join[] 	= {G2_STYLE_JOIN_MITER, G2_STYLE_JOIN_BEVEL, G2_STYLE_JOIN_ROUND};
+static tb_handle_t 	g_shader[2] = {TB_NULL};
 
 /* ////////////////////////////////////////////////////////////////////////
  * callbacks
@@ -89,15 +93,13 @@ static tb_void_t g2_demo_gl_keyboard(tb_byte_t key, tb_int_t x, tb_int_t y)
 	{
 	case 'a':
 		{
-			tb_size_t flag = g2_style_flag(g_style);
-			g2_style_flag_set(g_style, flag & G2_STYLE_FLAG_ANTI_ALIAS? flag & ~G2_STYLE_FLAG_ANTI_ALIAS : flag | G2_STYLE_FLAG_ANTI_ALIAS);
+			g_anti = !g_anti;
 		}
 		break;
 	case 'w':
 		{
 			if (g_penw > 1000) g_penw = 1000;
 			else g_penw++;
-			g2_style_width_set(g_style, g2_long_to_float(g_penw));
 		}
 		break;
 	case 'm':
@@ -151,30 +153,8 @@ static tb_void_t g2_demo_gl_display()
 	// matrix
 	if (g_bm)
 	{
-		g2_float_t x0 = g2_long_to_float(g_x0);
-		g2_float_t y0 = g2_long_to_float(g_y0);
-		g2_float_t dx = g2_long_to_float(g_dx);
-		g2_float_t dy = g2_long_to_float(g_dy);
-		g2_float_t dw = g2_long_to_float(g_width);
-		g2_float_t dh = g2_long_to_float(g_height);
-
-		dx = g2_lsh(dx, 2);
-		dy = g2_lsh(dy, 2);
-
-		// save
 		g2_save(g_painter, G2_SAVE_MODE_MATRIX);
-
-#if 0
-		g2_translate(g_painter, x0, y0);
-		g2_scale(g_painter, g2_div(dx, dw), g2_div(dy, dh));
-		g2_rotate(g_painter, g_an);
-#else
-		g2_matrix_t mx;
-		g2_matrix_init_translate(&mx, x0, y0);
-		g2_matrix_scale(&mx, g2_div(dx, dw), g2_div(dy, dh));
-		g2_matrix_rotate(&mx, g_an);
-		g2_matrix_set(g_painter, &mx);
-#endif
+		g2_matrix_set(g_painter, &g_mx);
 	}
 
 	// start clock
@@ -183,16 +163,26 @@ static tb_void_t g2_demo_gl_display()
 	// render 
 	if (g_mode & G2_STYLE_MODE_FILL)
 	{
+		g2_style_clear(g_style);
+		g2_style_flag_set(g_style, g_anti? g2_style_flag(g_style) | G2_STYLE_FLAG_ANTI_ALIAS : g2_style_flag(g_style) & ~G2_STYLE_FLAG_ANTI_ALIAS);
 		g2_style_mode_set(g_style, G2_STYLE_MODE_FILL);
 		g2_style_color_set(g_style, G2_COLOR_RED);
+		g2_style_shader_set(g_style, g_shader[g_shaderi]);
+//		if (g_bm && g_shader[g_shaderi]) g2_shader_matrix_set(g_shader[g_shaderi], &g_mx);
 
 		g2_demo_render();
 	}
 
 	if (g_mode & G2_STYLE_MODE_STROKE)
 	{
+		g2_style_clear(g_style);
+		g2_style_flag_set(g_style, g_anti? g2_style_flag(g_style) | G2_STYLE_FLAG_ANTI_ALIAS : g2_style_flag(g_style) & ~G2_STYLE_FLAG_ANTI_ALIAS);		
 		g2_style_mode_set(g_style, G2_STYLE_MODE_STROKE);
 		g2_style_color_set(g_style, G2_COLOR_BLUE);
+
+		g2_style_width_set(g_style, g2_long_to_float(g_penw));
+		g2_style_cap_set(g_style, g_cap[g_capi]);
+		g2_style_join_set(g_style, g_join[g_joini]);
 
 		g2_demo_render();
 	}
@@ -232,16 +222,19 @@ static tb_void_t g2_demo_gl_display()
 static tb_void_t g2_demo_gl_reshape(tb_int_t w, tb_int_t h)
 {
 	// init width & height
-	g_width = w;
-	g_height = h;
+	g_width 	= w;
+	g_height 	= h;
 
 	// init position
-	g_x0 	= g_width >> 1;
-	g_y0 	= g_height >> 1;
-	g_dx 	= g_width >> 2;
-	g_dy 	= g_height >> 2;
-	g_x 	= g_dx;
-	g_y 	= g_dy;
+	g_x0 		= g_width >> 1;
+	g_y0 		= g_height >> 1;
+	g_dx 		= g_width >> 2;
+	g_dy 		= g_height >> 2;
+	g_x 		= g_dx;
+	g_y 		= g_dy;
+
+	// init matrix
+	g2_matrix_init_translate(&g_mx, g_x0, g_y0);	
 
 	// init surface
 #ifndef G2_CONFIG_CORE_GL
@@ -264,6 +257,17 @@ static tb_void_t g2_demo_gl_reshape(tb_int_t w, tb_int_t h)
 	g2_style_cap_set(g_style, g_cap[g_capi]);
 	g2_style_join_set(g_style, g_join[g_joini]);
 
+	// init gradient
+	g2_color_t color[3] = {G2_COLOR_RED, G2_COLOR_GREEN, G2_COLOR_BLUE};
+	g2_float_t radio[3] = {0, G2_HAF, G2_ONE};
+	g2_gradient_t grad;
+	grad.color = color;
+	grad.radio = radio;
+	grad.count = 3;
+
+	// init shader
+	g_shader[1]	= g2_shader_init2i_linear(0, 0, g_width, g_height, &grad, 0);
+
 	// init viewport
 	glViewport(0, 0, w, h);
 	glMatrixMode(GL_PROJECTION);
@@ -280,6 +284,7 @@ static tb_void_t g2_demo_gl_click(tb_int_t button, tb_int_t state, tb_int_t x, t
 	{
 		if (state == 0)
 		{
+			g_shaderi = (g_shaderi + 1) % 2;
 			g2_demo_lclickdown(x, y);
 		}
 		else if (state == 1)
@@ -291,15 +296,12 @@ static tb_void_t g2_demo_gl_click(tb_int_t button, tb_int_t state, tb_int_t x, t
 	{	
 		if (state == 0)
 		{
+			g_capi = (g_capi + 1) % 3;
+			g_joini = (g_joini + 1) % 3;
 			g2_demo_rclickdown(x, y);
 		}
 		else if (state == 1)
 		{
-			g_capi = (g_capi + 1) % 3;
-			g_joini = (g_joini + 1) % 3;
-			g2_style_cap_set(g_style, g_cap[g_capi]);
-			g2_style_join_set(g_style, g_join[g_joini]);
-
 			g2_demo_rclickup(x, y);
 		}
 	}
@@ -327,17 +329,28 @@ static tb_void_t g2_demo_gl_move(tb_int_t x, tb_int_t y)
 	g_dx = x > g_x0? (x - g_x0) << 1 : (g_x0 - x) << 1;
 	g_dy = y > g_y0? (y - g_y0) << 1 : (g_y0 - y) << 1;
 
+	g2_float_t x0 = g2_long_to_float(g_x0);
+	g2_float_t y0 = g2_long_to_float(g_y0);
 	g2_float_t dx = g2_long_to_float(g_dx);
 	g2_float_t dy = g2_long_to_float(g_dy);
+	g2_float_t dw = g2_long_to_float(g_width);
+	g2_float_t dh = g2_long_to_float(g_height);
 
 	g2_float_t an = 0;
 	if (y == g_y0) an = 0;
 	else if (x == g_x0) an = g2_long_to_float(90);
-	else an = g2_div(g2_imul(g2_atan(g2_div(dy, dx)), 180), G2_PI);
+	else an = g2_div(g2_atan(g2_div(dy, dx)) * 180, G2_PI);
 	if (y < g_y0 && x < g_x0) an = g2_long_to_float(180) - an;
 	if (y > g_y0 && x < g_x0) an += g2_long_to_float(180);
 	if (y > g_y0 && x > g_x0) an = g2_long_to_float(360) - an;
 	g_an = -an;
+
+	dx = g2_lsh(dx, 2);
+	dy = g2_lsh(dy, 2);
+
+	g2_matrix_init_translate(&g_mx, x0, y0);
+	g2_matrix_scale(&g_mx, g2_div(dx, dw), g2_div(dy, dh));
+	g2_matrix_rotate(&g_mx, g_an);
 
 	g2_demo_move(x, y);
 }

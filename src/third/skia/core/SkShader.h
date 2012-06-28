@@ -15,6 +15,7 @@
 #include "SkMask.h"
 #include "SkMatrix.h"
 #include "SkPaint.h"
+#include "../../../core/matrix.h"
 
 class SkPath;
 
@@ -318,6 +319,9 @@ protected:
 
     SkShader(SkFlattenableReadBuffer& );
     virtual void flatten(SkFlattenableWriteBuffer&) const SK_OVERRIDE;
+
+public:
+	g2_matrix_t 		matrix;
 private:
     SkMatrix*           fLocalMatrix;
     SkMatrix            fTotalInverse;

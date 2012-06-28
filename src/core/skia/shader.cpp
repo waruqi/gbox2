@@ -28,12 +28,23 @@
 #include "../shader.h"
 
 /* ///////////////////////////////////////////////////////////////////////
+ * macros
+ */
+#ifdef SK_SCALAR_IS_FLOAT
+# 	define kMatrix22Elem 	SK_Scalar1
+#else
+# 	define kMatrix22Elem 	SK_Fract1
+#endif
+
+/* ///////////////////////////////////////////////////////////////////////
  * implementation
  */
 static tb_handle_t g2_skia_shader_init_linear(g2_point_t const* pb, g2_point_t const* pe, g2_gradient_t const* gradient, tb_size_t mode)
 {
+	// check
 	tb_assert_and_check_return_val(pb && pe && gradient && gradient->color && gradient->radio && gradient->count, TB_NULL);
 
+	// init shader
 	SkPoint pts[2];
 	pts[0] = SkPoint::Make(pb->x, pb->y);
 	pts[1] = SkPoint::Make(pe->x, pe->y);
@@ -41,15 +52,19 @@ static tb_handle_t g2_skia_shader_init_linear(g2_point_t const* pb, g2_point_t c
 }
 static tb_handle_t g2_skia_shader_init_radial(g2_circle_t const* cp, g2_gradient_t const* gradient, tb_size_t mode)
 {
+	// check
 	tb_assert_and_check_return_val(cp && gradient && gradient->color && gradient->radio && gradient->count, TB_NULL);
 
+	// init shader
 	SkPoint pt = SkPoint::Make(cp->c.x, cp->c.y);
 	return SkGradientShader::CreateRadial(pt, cp->r, reinterpret_cast<SkColor*>(gradient->color), gradient->radio, gradient->count, SkShader::kClamp_TileMode);
 }
 static tb_handle_t g2_skia_shader_init_radial2(g2_circle_t const* cb, g2_circle_t const* ce, g2_gradient_t const* gradient, tb_size_t mode)
 {
+	// check
 	tb_assert_and_check_return_val(cb && ce && gradient && gradient->color && gradient->radio && gradient->count, TB_NULL);
 
+	// init shader
 	SkPoint p1 = SkPoint::Make(cb->c.x, cb->c.y);
 	SkPoint p2 = SkPoint::Make(ce->c.x, ce->c.y);
 	return SkGradientShader::CreateTwoPointRadial(p1, cb->r, p2, ce->r, reinterpret_cast<SkColor*>(gradient->color), gradient->radio, gradient->count, SkShader::kClamp_TileMode);
@@ -61,6 +76,33 @@ static tb_void_t g2_skia_shader_exit(tb_handle_t shader)
 
 	SkSafeUnref(sshader);
 }
+static g2_matrix_t const* g2_skia_shader_matrix(tb_handle_t shader)
+{
+	SkShader* sshader = static_cast<SkShader*>(shader);
+	tb_assert_and_check_return_val(sshader, TB_NULL);
+
+	SkMatrix mx;
+	if (!sshader->getLocalMatrix(&mx)) return TB_NULL;
+
+	g2_matrix_init(&sshader->matrix, mx.getScaleX(), mx.getScaleY(), mx.getSkewX(), mx.getSkewY(), mx.getTranslateX(), mx.getTranslateY());
+	return &sshader->matrix;
+}
+static tb_void_t g2_skia_shader_matrix_set(tb_handle_t shader, g2_matrix_t const* matrix)
+{
+	SkShader* sshader = static_cast<SkShader*>(shader);
+	tb_assert_and_check_return(sshader);
+
+	if (matrix)
+	{
+		SkMatrix mx;
+		mx.setAll( 	matrix->sx, matrix->kx, matrix->tx
+				, 	matrix->ky, matrix->sy, matrix->ty
+				, 	0, 0, kMatrix22Elem);
+		sshader->setLocalMatrix(mx);
+	}
+	else sshader->resetLocalMatrix();
+}
+
 /* ///////////////////////////////////////////////////////////////////////
  * interfaces
  */
@@ -81,5 +123,13 @@ extern "C"
 	tb_void_t g2_shader_exit(tb_handle_t shader)
 	{
 		g2_skia_shader_exit(shader);
+	}
+	g2_matrix_t const* g2_shader_matrix(tb_handle_t shader)
+	{
+		return g2_skia_shader_matrix(shader);
+	}
+	tb_void_t g2_shader_matrix_set(tb_handle_t shader, g2_matrix_t const* matrix)
+	{
+		g2_skia_shader_matrix_set(shader, matrix);
 	}
 }
