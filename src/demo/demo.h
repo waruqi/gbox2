@@ -37,7 +37,8 @@ static tb_size_t 	g_width 	= G2_DEMO_WIDTH;
 static tb_size_t 	g_height 	= G2_DEMO_HEIGHT;
 
 // pixfmt
-static tb_size_t 	g_pixfmt 	= G2_PIXFMT_XRGB8888;
+//static tb_size_t 	g_pixfmt 	= G2_PIXFMT_XRGB8888;
+static tb_size_t 	g_pixfmt 	= G2_PIXFMT_RGB565;
 
 // clock
 static tb_hong_t 	g_bt 		= 0;
@@ -63,10 +64,11 @@ static tb_size_t 	g_penw 		= 1;
 static tb_size_t 	g_capi 		= 0;
 static tb_size_t 	g_joini 	= 0;
 static tb_size_t 	g_shaderi 	= 0;
+static tb_handle_t 	g_bitmap 	= TB_NULL;
 static tb_size_t 	g_cap[] 	= {G2_STYLE_CAP_BUTT, G2_STYLE_CAP_SQUARE, G2_STYLE_CAP_ROUND};
 static tb_size_t 	g_join[] 	= {G2_STYLE_JOIN_MITER, G2_STYLE_JOIN_BEVEL, G2_STYLE_JOIN_ROUND};
-static tb_handle_t 	g_shader[6] = {TB_NULL};
-static tb_handle_t 	g_mhader[6] = {TB_NULL};
+static tb_handle_t 	g_shader[7] = {TB_NULL};
+static tb_handle_t 	g_mhader[7] = {TB_NULL};
 
 /* ////////////////////////////////////////////////////////////////////////
  * callbacks
@@ -277,6 +279,12 @@ static tb_void_t g2_demo_gl_reshape(tb_int_t w, tb_int_t h)
 	g_shader[5]	= g2_shader_init2i_sweep(g_x0, g_y0, &grad);
 	g_mhader[5]	= g2_shader_init2i_sweep(0, 0, &grad);
 
+	if (g_bitmap)
+	{
+		g_shader[6]	= g2_shader_init_bitmap(g_bitmap, G2_SHADER_MODE_CLAMP, G2_SHADER_MODE_CLAMP);
+		g_mhader[6]	= g2_shader_init_bitmap(g_bitmap, G2_SHADER_MODE_CLAMP, G2_SHADER_MODE_CLAMP);
+	}
+
 	// init viewport
 	glViewport(0, 0, w, h);
 	glMatrixMode(GL_PROJECTION);
@@ -293,7 +301,7 @@ static tb_void_t g2_demo_gl_click(tb_int_t button, tb_int_t state, tb_int_t x, t
 	{
 		if (state == 0)
 		{
-			g_shaderi = (g_shaderi + 1) % 6;
+			g_shaderi = (g_shaderi + 1) % (g_bitmap? 7 : 6);
 			g2_demo_lclickdown(x, y);
 		}
 		else if (state == 1)
@@ -390,6 +398,9 @@ tb_int_t main(tb_int_t argc, tb_char_t** argv)
 	glutMotionFunc(g2_demo_drag);
 	glutKeyboardFunc(g2_demo_gl_keyboard);
 	glutSpecialFunc(g2_demo_gl_special);
+
+	// init bitmap
+	if (argv[1]) g_bitmap = g2_bitmap_init_url(g_pixfmt, argv[1]);
 
 	// init demo 
 	if (!g2_demo_init(argc, argv)) return 0;

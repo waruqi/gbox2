@@ -39,7 +39,7 @@ static tb_handle_t g2_skia_bitmap_init(tb_size_t pixfmt, tb_size_t width, tb_siz
 	tb_assert_and_check_return_val(sbitmap, TB_NULL);
 
 	// init config
-	sbitmap->setConfig(g2_skia_pixfmt(pixfmt), width, height);
+	sbitmap->setConfig(g2_pixfmt_to_skia(pixfmt), width, height);
 
 	// ok
 	return sbitmap;

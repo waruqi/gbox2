@@ -39,6 +39,8 @@ extern "C" {
 
 // init & exit
 tb_handle_t 	g2_bitmap_init(tb_size_t pixfmt, tb_size_t width, tb_size_t height);
+tb_handle_t 	g2_bitmap_init_url(tb_size_t pixfmt, tb_char_t const* url);
+tb_handle_t 	g2_bitmap_init_gst(tb_size_t pixfmt, tb_gstream_t* gst);
 tb_void_t 		g2_bitmap_exit(tb_handle_t bitmap);
 
 // make

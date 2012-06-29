@@ -87,6 +87,14 @@ static tb_handle_t g2_skia_shader_init_sweep(g2_point_t const* c0, g2_gradient_t
 	// init shader
 	return SkGradientShader::CreateSweep(c0->x, c0->y, reinterpret_cast<SkColor*>(gradient->color), gradient->radio, gradient->count);
 }
+static tb_handle_t g2_skia_shader_init_bitmap(tb_handle_t bitmap, tb_size_t xmode, tb_size_t ymode)
+{
+	// check
+	tb_assert_and_check_return_val(bitmap, TB_NULL);
+
+	// init shader
+	return SkShader::CreateBitmapShader(*static_cast<SkBitmap const*>(bitmap), static_cast<SkShader::TileMode>(xmode), static_cast<SkShader::TileMode>(ymode));
+}
 static tb_void_t g2_skia_shader_exit(tb_handle_t shader)
 {
 	SkShader* sshader = static_cast<SkShader*>(shader);
@@ -145,6 +153,10 @@ extern "C"
 	tb_handle_t g2_shader_init_sweep(g2_point_t const* c0, g2_gradient_t const* gradient)
 	{
 		return g2_skia_shader_init_sweep(c0, gradient);
+	}
+	tb_handle_t g2_shader_init_bitmap(tb_handle_t bitmap, tb_size_t xmode, tb_size_t ymode)
+	{
+		return g2_skia_shader_init_bitmap(bitmap, xmode, ymode);
 	}
 	tb_void_t g2_shader_exit(tb_handle_t shader)
 	{

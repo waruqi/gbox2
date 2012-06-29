@@ -31,7 +31,9 @@
 /* /////////////////////////////////////////////////////////
  * inlines
  */
-static __tb_inline__ SkBitmap::Config g2_skia_pixfmt(tb_size_t pixfmt)
+
+// g2 pixfmt => skia pixfmt
+static __tb_inline__ SkBitmap::Config g2_pixfmt_to_skia(tb_size_t pixfmt)
 {
 #if 0
 	typedef enum __g2_pixfmt_t
@@ -81,7 +83,41 @@ static __tb_inline__ SkBitmap::Config g2_skia_pixfmt(tb_size_t pixfmt)
 	, 	SkBitmap::kNo_Config
 	, 	SkBitmap::kNo_Config
 	};
+	tb_assert_and_check_return_val(pixfmt < tb_arrayn(spixfmts), SkBitmap::kNo_Config);
 	return spixfmts[pixfmt];
+}
+
+// skia pixfmt => g2 pixfmt
+static __tb_inline__ tb_size_t g2_pixfmt_from_skia(SkBitmap::Config pixfmt)
+{
+#if 0
+	enum Config 
+	{
+		kNo_Config 			//!< bitmap has not been configured
+	,	kA1_Config
+	,	kA8_Config 			//!< 8-bits per pixel, with only alpha specified (0 is transparent, 0xFF is opaque)
+	,	kIndex8_Config 		//!< 8-bits per pixel, using SkColorTable to specify the colors
+	,	kRGB_565_Config 	//!< 16-bits per pixel, (see SkColorPriv.h for packing)
+	,	kARGB_4444_Config 	//!< 16-bits per pixel, (see SkColorPriv.h for packing)
+	,	kARGB_8888_Config 	//!< 32-bits per pixel, (see SkColorPriv.h for packing)
+	,	kRLE_Index8_Config
+	,	kConfigCount
+	};
+#endif
+
+	static tb_size_t const spixfmts[] =
+	{
+		G2_PIXFMT_NONE
+	, 	G2_PIXFMT_NONE
+	, 	G2_PIXFMT_NONE
+	, 	G2_PIXFMT_PAL8
+	, 	G2_PIXFMT_RGB565
+	, 	G2_PIXFMT_ARGB4444
+	, 	G2_PIXFMT_ARGB8888
+	, 	G2_PIXFMT_NONE
+	};
+	tb_assert_and_check_return_val(static_cast<tb_size_t>(pixfmt) < tb_arrayn(spixfmts), G2_PIXFMT_NONE);
+	return spixfmts[static_cast<tb_size_t>(pixfmt)];
 }
 
 #endif

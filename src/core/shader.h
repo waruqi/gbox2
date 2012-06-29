@@ -86,6 +86,9 @@ tb_handle_t 		g2_shader_init2_sweep(g2_float_t x0, g2_float_t y0, g2_gradient_t 
 tb_handle_t 		g2_shader_initi_sweep(g2_ipoint_t const* c0, g2_gradient_t const* gradient);
 tb_handle_t 		g2_shader_init2i_sweep(tb_long_t x0, tb_long_t y0, g2_gradient_t const* gradient);
 
+// init bitmap shader
+tb_handle_t 		g2_shader_init_bitmap(tb_handle_t bitmap, tb_size_t xmode, tb_size_t ymode);
+
 // matrix
 g2_matrix_t const* 	g2_shader_matrix(tb_handle_t shader);
 tb_void_t 			g2_shader_matrix_set(tb_handle_t shader, g2_matrix_t const* matrix);

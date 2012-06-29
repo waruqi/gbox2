@@ -11,9 +11,12 @@ gbox2_TYPE 				= LIB
 gbox2_C_FILES 			+= \
 						gbox2 \
 						core/path \
+						core/bitmap \
 						core/shader \
 						core/matrix \
-						core/painter 
+						core/painter \
+						core/image/decoder/bmp \
+						core/image/decoder/decoder
 
 gbox2_CPP_FILES-$(G2_CONFIG_CORE_SKIA) += \
 						core/skia/path \
