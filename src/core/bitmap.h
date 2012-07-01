@@ -49,6 +49,9 @@ tb_pointer_t 	g2_bitmap_make(tb_handle_t bitmap);
 // size
 tb_size_t 		g2_bitmap_size(tb_handle_t bitmap);
 
+// line
+tb_size_t 		g2_bitmap_line(tb_handle_t bitmap);
+
 // data
 tb_pointer_t 	g2_bitmap_data(tb_handle_t bitmap);
 tb_void_t 		g2_bitmap_data_set(tb_handle_t bitmap, tb_pointer_t data);

@@ -17,23 +17,17 @@
  * Copyright (C) 2009 - 2012, ruki All rights reserved.
  *
  * @author		ruki
- * @file		skia.h
+ * @file		prefix.h
  *
  */
-#ifndef G2_THIRD_SKIA_H
-#define G2_THIRD_SKIA_H
+#ifndef G2_CORE_PIXMAP_OPT_PREFIX_H
+#define G2_CORE_PIXMAP_OPT_PREFIX_H
 
 /* ///////////////////////////////////////////////////////////////////////
  * includes
  */
-#include "./core/SkBitmap.h"
-#include "./core/SkCanvas.h"
-#include "./core/SkDevice.h"
-#include "./core/SkPaint.h"
-#include "./core/SkRect.h"
-#include "./core/SkColor.h"
-#include "./effects/SkGradientShader.h"
+#include "../prefix.h"
+
 
 #endif
-
 

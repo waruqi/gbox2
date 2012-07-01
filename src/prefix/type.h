@@ -39,7 +39,16 @@
  * types
  */
 
-// float
+// the quality type
+typedef enum __g2_quality_t
+{
+	G2_QUALITY_LOW 	= 0
+,	G2_QUALITY_MID 	= 1
+,	G2_QUALITY_TOP 	= 2
+
+}g2_quality_t;
+
+// the float type
 #ifdef G2_CONFIG_FLOAT_FIXED
 typedef tb_fixed_t 		g2_float_t;
 #else

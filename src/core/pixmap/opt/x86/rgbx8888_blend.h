@@ -17,65 +17,31 @@
  * Copyright (C) 2009 - 2012, ruki All rights reserved.
  *
  * @author		ruki
- * @file		memory.h
+ * @file		rgbx8888_blend.h
  *
  */
-#ifndef G2_CORE_SKIA_MEMORY_H
-#define G2_CORE_SKIA_MEMORY_H
+#ifndef G2_CORE_PIXMAP_OPT_x86_RGBX8888_BLEND_H
+#define G2_CORE_PIXMAP_OPT_x86_RGBX8888_BLEND_H
 
 /* ///////////////////////////////////////////////////////////////////////
  * includes
  */
 #include "prefix.h"
-
-/* ///////////////////////////////////////////////////////////////////////
- * types
- */
-typedef G2_CONFIG_SIZE_T 	sk_size_t;
-
-/* ///////////////////////////////////////////////////////////////////////
- * inlines
- */
-
-#ifdef TB_DEBUG
-__tb_inline__ tb_pointer_t operator new(sk_size_t size, tb_char_t const* func, tb_size_t line, tb_char_t const* file) throw () 
-{
-	return tb_memory_malloc0_impl(size, func, line, file);
-}
-
-__tb_inline__ tb_pointer_t operator new[](sk_size_t size, tb_char_t const* func, tb_size_t line, tb_char_t const* file) throw () 
-{ 
-	return tb_memory_malloc0_impl(size, func, line, file); 
-}
-#else
-__tb_inline__ tb_pointer_t operator new(sk_size_t size) throw () 	
-{
-	return tb_malloc0(size);
-}
-__tb_inline__ tb_pointer_t operator new[](sk_size_t size) throw () 
-{ 
-	return tb_malloc0(size); 
-}
-#endif
-
-__tb_inline__ tb_void_t operator delete(tb_pointer_t data) throw() 
-{
-	tb_free(data); 			
-}
-__tb_inline__ tb_void_t operator delete[](tb_pointer_t data) throw()
-{ 
-	tb_free(data); 			
-}
+#include "xrgb8888_blend.h"
 
 /* ///////////////////////////////////////////////////////////////////////
  * macros
  */
 
-#ifdef TB_DEBUG
-# 	define new 		new(__tb_func__, __tb_line__, __tb_file__)
+#if defined(TB_CONFIG_ASSEMBLER_GAS)
+//# 	define g2_pixmap_rgbx8888_blend(d, s, a) 		g2_pixmap_xrgb8888_blend_asm(d, s, a)
+//# 	define g2_pixmap_rgbx8888_blend2(d, hs, ls, a) 	g2_pixmap_xrgb8888_blend2_asm(d, hs, ls, a)
 #endif
 
+/* ///////////////////////////////////////////////////////////////////////
+ * implementation
+ */
+
 
 #endif
-
 

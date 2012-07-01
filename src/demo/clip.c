@@ -242,7 +242,7 @@ static tb_void_t g2_demo_size(tb_int_t w, tb_int_t h)
 static tb_void_t g2_demo_render()
 {
 	// clip
-	g2_clip_path(g_painter, G2_CLIP_MODE_REPLACE | (g2_style_flag(g_style) & G2_STYLE_FLAG_ANTI_ALIAS? G2_CLIP_MODE_ANTI_ALIAS : 0), g_path[g_pti]);
+	g2_clip_path(g_painter, G2_CLIP_MODE_REPLACE, g_path[g_pti]);
 
 	// save
 	g2_save(g_painter, G2_SAVE_MODE_MATRIX);

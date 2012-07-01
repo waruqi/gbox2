@@ -51,6 +51,9 @@ typedef struct __g2_skia_painter_t
 	// the matrix
 	g2_matrix_t 		matrix;
 
+	// the quality
+	tb_size_t 			quality;
+
 	// the style
 	SkPaint* 			style_def;
 	SkPaint* 			style_usr;
@@ -75,7 +78,7 @@ static tb_void_t g2_skia_exit(tb_handle_t painter)
 	// free it
 	delete spainter;
 }
-static tb_handle_t g2_skia_init(tb_handle_t surface)
+static tb_handle_t g2_skia_init(tb_handle_t surface, tb_size_t quality)
 {
 	// check
 	tb_assert_and_check_return_val(surface, TB_NULL);
@@ -96,6 +99,11 @@ static tb_handle_t g2_skia_init(tb_handle_t surface)
 	spainter->style_def = new SkPaint();
 	spainter->style_usr = spainter->style_def;
 	tb_assert_and_check_goto(spainter->style_def, fail);
+
+	// init quality
+	spainter->quality = quality;
+	if (quality > G2_QUALITY_LOW) spainter->style_usr->setFlags(spainter->style_usr->getFlags() | SkPaint::kAntiAlias_Flag);
+	else spainter->style_usr->setFlags(spainter->style_usr->getFlags() & ~SkPaint::kAntiAlias_Flag);
 
 	// ok
 	return spainter;
@@ -125,6 +133,20 @@ static tb_size_t g2_skia_pixfmt(tb_handle_t painter)
 
 	return g2_pixfmt_from_skia(spainter->surface->config());
 }
+static tb_size_t g2_skia_quality(tb_handle_t painter)
+{
+	g2_skia_painter_t* spainter = static_cast<g2_skia_painter_t*>(painter);
+	tb_assert_and_check_return_val(spainter, G2_QUALITY_LOW);
+
+	return spainter->quality;
+}
+static tb_void_t g2_skia_quality_set(tb_handle_t painter, tb_size_t quality)
+{
+	g2_skia_painter_t* spainter = static_cast<g2_skia_painter_t*>(painter);
+	tb_assert_and_check_return(spainter);
+
+	spainter->quality = quality;
+}
 static tb_handle_t g2_skia_style(tb_handle_t painter)
 {
 	g2_skia_painter_t* spainter = static_cast<g2_skia_painter_t*>(painter);
@@ -138,6 +160,9 @@ static tb_void_t g2_skia_style_set(tb_handle_t painter, tb_handle_t style)
 	tb_assert_and_check_return(spainter);
 
 	spainter->style_usr = style? static_cast<SkPaint*>(style) : spainter->style_def;
+	
+	if (spainter->quality > G2_QUALITY_LOW) spainter->style_usr->setFlags(spainter->style_usr->getFlags() | SkPaint::kAntiAlias_Flag);
+	else spainter->style_usr->setFlags(spainter->style_usr->getFlags() & ~SkPaint::kAntiAlias_Flag);
 }
 static g2_matrix_t const* g2_skia_matrix(tb_handle_t painter)
 {
@@ -231,6 +256,7 @@ static tb_bool_t g2_skia_clip_path(tb_handle_t painter, tb_size_t mode, tb_handl
 		break;
 	}
 
+	if (spainter->quality == G2_QUALITY_TOP) anti = true;
 	return spainter->canvas->clipPath(*static_cast<const SkPath*>(path), op, anti)? TB_TRUE : TB_FALSE;
 }
 static tb_bool_t g2_skia_clip_rect(tb_handle_t painter, tb_size_t mode, g2_rect_t const* rect)
@@ -261,6 +287,7 @@ static tb_bool_t g2_skia_clip_rect(tb_handle_t painter, tb_size_t mode, g2_rect_
 		break;
 	}
 
+	if (spainter->quality == G2_QUALITY_TOP) anti = true;
 	return spainter->canvas->clipRect(SkRect::MakeXYWH(rect->x, rect->y, rect->w, rect->h), op, anti)? TB_TRUE : TB_FALSE;
 }
 static tb_void_t g2_skia_clear(tb_handle_t painter, g2_color_t color)
@@ -340,9 +367,9 @@ static tb_void_t g2_skia_draw_triangle(tb_handle_t painter, g2_triangle_t const*
 
 extern "C"
 {
-	tb_handle_t g2_init(tb_handle_t surface)
+	tb_handle_t g2_init(tb_handle_t surface, tb_size_t quality)
 	{
-		return g2_skia_init(surface);
+		return g2_skia_init(surface, quality);
 	}
 	tb_void_t g2_exit(tb_handle_t painter)
 	{
@@ -359,6 +386,14 @@ extern "C"
 	tb_size_t g2_pixfmt(tb_handle_t painter)
 	{
 		return g2_skia_pixfmt(painter);
+	}
+	tb_size_t g2_quality(tb_handle_t painter)
+	{
+		return g2_skia_quality(painter);
+	}
+	tb_void_t g2_quality_set(tb_handle_t painter, tb_size_t quality)
+	{
+		g2_skia_quality_set(painter, quality);
 	}
 	tb_handle_t g2_style(tb_handle_t painter)
 	{

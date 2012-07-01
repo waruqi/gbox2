@@ -58,7 +58,6 @@ static tb_bool_t 	g_bm 		= TB_FALSE;
 static g2_matrix_t 	g_mx;
 
 // style
-static tb_size_t 	g_anti 		= 0;
 static tb_size_t 	g_mode 		= G2_STYLE_MODE_NONE;
 static tb_size_t 	g_penw 		= 1;
 static tb_size_t 	g_capi 		= 0;
@@ -94,9 +93,9 @@ static tb_void_t g2_demo_gl_keyboard(tb_byte_t key, tb_int_t x, tb_int_t y)
 {
 	switch (key)
 	{
-	case 'a':
+	case 'q':
 		{
-			g_anti = !g_anti;
+			g2_quality_set(g_painter, (g2_quality(g_painter) + 1) % 3);
 		}
 		break;
 	case 'w':
@@ -167,7 +166,6 @@ static tb_void_t g2_demo_gl_display()
 	if (g_mode & G2_STYLE_MODE_FILL)
 	{
 		g2_style_clear(g_style);
-		g2_style_flag_set(g_style, g_anti? g2_style_flag(g_style) | G2_STYLE_FLAG_ANTI_ALIAS : g2_style_flag(g_style) & ~G2_STYLE_FLAG_ANTI_ALIAS);
 		g2_style_mode_set(g_style, G2_STYLE_MODE_FILL);
 		g2_style_color_set(g_style, G2_COLOR_RED);
 		g2_style_shader_set(g_style, g_bm? g_mhader[g_shaderi] : g_shader[g_shaderi]);
@@ -178,7 +176,6 @@ static tb_void_t g2_demo_gl_display()
 	if (g_mode & G2_STYLE_MODE_STROKE)
 	{
 		g2_style_clear(g_style);
-		g2_style_flag_set(g_style, g_anti? g2_style_flag(g_style) | G2_STYLE_FLAG_ANTI_ALIAS : g2_style_flag(g_style) & ~G2_STYLE_FLAG_ANTI_ALIAS);		
 		g2_style_mode_set(g_style, G2_STYLE_MODE_STROKE);
 		g2_style_color_set(g_style, G2_COLOR_BLUE);
 
@@ -248,7 +245,7 @@ static tb_void_t g2_demo_gl_reshape(tb_int_t w, tb_int_t h)
 
 	// init painter
 	if (g_painter) g2_exit(g_painter);
-	g_painter = g2_init(g_surface);
+	g_painter = g2_init(g_surface, G2_QUALITY_LOW);
 	tb_assert_and_check_return_val(g_painter, 0);
 
 	// init style

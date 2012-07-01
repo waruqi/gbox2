@@ -28,6 +28,18 @@
 /* ///////////////////////////////////////////////////////////////////////
  * implementation
  */
+tb_char_t const* g2_version(tb_handle_t painter)
+{
+	static tb_char_t version_data[32] = {0};
+	static tb_size_t version_size = 0;
+	
+	if (!version_size)
+	{
+		version_size = tb_snprintf(version_data, 32, "gbox2-v%u.%u.%u", G2_VERSION_MAJOR, G2_VERSION_MINOR, G2_VERSION_ALTER);
+		version_data[version_size] = '\0';
+	}
+	return version_data;
+}
 tb_bool_t g2_clip2_rect(tb_handle_t painter, tb_size_t mode, g2_float_t x, g2_float_t y, g2_float_t w, g2_float_t h)
 {
 	g2_rect_t r;

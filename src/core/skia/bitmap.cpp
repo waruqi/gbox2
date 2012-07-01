@@ -70,6 +70,13 @@ static tb_size_t g2_skia_bitmap_size(tb_handle_t bitmap)
 
 	return sbitmap->getSize();
 }
+static tb_size_t g2_skia_bitmap_line(tb_handle_t bitmap)
+{
+	SkBitmap* sbitmap = static_cast<SkBitmap*>(bitmap);
+	tb_assert_and_check_return_val(sbitmap, 0);
+
+	return sbitmap->rowBytes();
+}
 static tb_pointer_t g2_skia_bitmap_data(tb_handle_t bitmap)
 {
 	SkBitmap* sbitmap = static_cast<SkBitmap*>(bitmap);
@@ -120,6 +127,10 @@ extern "C"
 	tb_size_t g2_bitmap_size(tb_handle_t bitmap)
 	{
 		return g2_skia_bitmap_size(bitmap);
+	}
+	tb_size_t g2_bitmap_line(tb_handle_t bitmap)
+	{
+		return g2_skia_bitmap_line(bitmap);
 	}
 	tb_pointer_t g2_bitmap_data(tb_handle_t bitmap)
 	{

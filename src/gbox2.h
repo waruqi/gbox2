@@ -34,13 +34,6 @@ extern "C" {
 #include "prefix.h"
 #include "core/core.h"
 
-/* ///////////////////////////////////////////////////////////////////////
- * interfaces
- */
-
-/// the gbox2 version string
-tb_char_t const* 	g2_version();
-
 
 // c plus plus
 #ifdef __cplusplus
