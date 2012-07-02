@@ -20,8 +20,8 @@
  * @file		rgb32.h
  *
  */
-#ifndef G2_CORE_PIXMAP_XRGB32_H
-#define G2_CORE_PIXMAP_XRGB32_H
+#ifndef G2_CORE_PIXMAP_RGB32_H
+#define G2_CORE_PIXMAP_RGB32_H
 
 /* ///////////////////////////////////////////////////////////////////////
  * includes

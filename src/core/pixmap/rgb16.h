@@ -50,7 +50,7 @@ static tb_void_t g2_pixmap_rgb16_pixel_set_bo(tb_pointer_t data, g2_pixel_t pixe
 static tb_void_t g2_pixmap_rgb16_pixel_cpy_o(tb_pointer_t data, tb_cpointer_t pixel, tb_byte_t alpha)
 {
 	*((tb_uint16_t*)data) = *((tb_uint16_t*)pixel);
-
+}
 static tb_void_t g2_pixmap_rgb16_pixels_set_lo(tb_pointer_t data, g2_pixel_t pixel, tb_size_t count, tb_byte_t alpha)
 {
 	tb_memset_u16(data, tb_bits_ne_to_le_u16(pixel), count);
@@ -61,3 +61,4 @@ static tb_void_t g2_pixmap_rgb16_pixels_set_bo(tb_pointer_t data, g2_pixel_t pix
 }
 
 
+#endif

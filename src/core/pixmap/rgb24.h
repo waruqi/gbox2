@@ -20,8 +20,8 @@
  * @file		rgb24.h
  *
  */
-#ifndef G2_CORE_PIXMAP_RGB888_H
-#define G2_CORE_PIXMAP_RGB888_H
+#ifndef G2_CORE_PIXMAP_RGB24_H
+#define G2_CORE_PIXMAP_RGB24_H
 
 /* //////////////////////////////////////////////////////////////////////
  * includes
@@ -31,28 +31,6 @@
 /* //////////////////////////////////////////////////////////////////////
  * implementation
  */
-static g2_pixel_t g2_pixmap_rgb24_pixel(g2_color_t color)
-{
-	union __g2_c2p_t
-	{
-		g2_color_t c;
-		g2_pixel_t p;
-
-	}c2p;
-	c2p.c = color;
-	return c2p.p;
-}
-static g2_color_t g2_pixmap_rgb24_color(g2_pixel_t pixel)
-{
-	union __g2_p2c_t
-	{
-		g2_color_t c;
-		g2_pixel_t p;
-
-	}p2c;
-	p2c.p = pixel;
-	return p2c.c;
-}
 static g2_pixel_t g2_pixmap_rgb24_pixel_get_l(tb_cpointer_t data)
 {
 	return g2_bits_get_u24_le(data);
@@ -74,34 +52,6 @@ static tb_void_t g2_pixmap_rgb24_pixel_cpy_o(tb_pointer_t data, tb_cpointer_t pi
 	((tb_byte_t*)data)[0] = ((tb_byte_t const*)pixel)[0];
 	((tb_byte_t*)data)[1] = ((tb_byte_t const*)pixel)[1];
 	((tb_byte_t*)data)[2] = ((tb_byte_t const*)pixel)[2];
-}
-static g2_color_t g2_pixmap_rgb24_color_get_l(tb_cpointer_t data)
-{
-	g2_color_t 	color;
-	tb_uint32_t pixel = g2_bits_get_u24_le(data);
-	color.r = G2_RGB_888_R(pixel);
-	color.g = G2_RGB_888_G(pixel);
-	color.b = G2_RGB_888_B(pixel);
-	color.a = 0xff;
-	return color;
-}
-static g2_color_t g2_pixmap_rgb24_color_get_b(tb_cpointer_t data)
-{
-	g2_color_t 	color;
-	tb_uint32_t pixel = g2_bits_get_u24_be(data);
-	color.r = G2_RGB_888_R(pixel);
-	color.g = G2_RGB_888_G(pixel);
-	color.b = G2_RGB_888_B(pixel);
-	color.a = 0xff;
-	return color;
-}
-static tb_void_t g2_pixmap_rgb24_color_set_lo(tb_pointer_t data, g2_color_t color)
-{
-	g2_pixmap_rgb24_pixel_set_lo(data, g2_pixmap_rgb24_pixel(color), 0);
-}
-static tb_void_t g2_pixmap_rgb24_color_set_bo(tb_pointer_t data, g2_color_t color)
-{
-	g2_pixmap_rgb24_pixel_set_bo(data, g2_pixmap_rgb24_pixel(color), 0);
 }
 static tb_void_t g2_pixmap_rgb24_pixels_set_lo(tb_pointer_t data, g2_pixel_t pixel, tb_size_t count, tb_byte_t alpha)
 {

@@ -136,11 +136,11 @@ static g2_color_t g2_pixmap_xrgb1555_color_get_b(tb_cpointer_t data)
 }
 static tb_void_t g2_pixmap_xrgb1555_color_set_lo(tb_pointer_t data, g2_color_t color)
 {
-	g2_bits_set_u16_le(data, g2_pixmap_xrgb1555_pixel(color), 0);
+	g2_bits_set_u16_le(data, g2_pixmap_xrgb1555_pixel(color));
 }
 static tb_void_t g2_pixmap_xrgb1555_color_set_bo(tb_pointer_t data, g2_color_t color)
 {
-	g2_bits_set_u16_be(data, g2_pixmap_xrgb1555_pixel(color), 0);
+	g2_bits_set_u16_be(data, g2_pixmap_xrgb1555_pixel(color));
 }
 static tb_void_t g2_pixmap_xrgb1555_color_set_la(tb_pointer_t data, g2_color_t color)
 {
