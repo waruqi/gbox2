@@ -91,18 +91,29 @@ static g2_color_t g2_pixmap_rgb888_color(g2_pixel_t pixel)
 	p2c.p = pixel;
 	return p2c.c;
 }
-static g2_pixel_t g2_pixmap_rgb888_pixel_get(tb_cpointer_t data)
+static g2_pixel_t g2_pixmap_rgb888_pixel_get_l(tb_cpointer_t data)
 {
-	return ((tb_uint32_t const*)data)[0] & 0x00ffffff;
+	return g2_bits_get_u24_le(data);
 }
-static tb_void_t g2_pixmap_rgb888_pixel_set_o(tb_pointer_t data, g2_pixel_t pixel, tb_byte_t alpha)
+static g2_pixel_t g2_pixmap_rgb888_pixel_get_b(tb_cpointer_t data)
 {
-	tb_bits_set_u24_be((tb_byte_t*)data, pixel);
+	return g2_bits_get_u24_be(data);
 }
-static tb_void_t g2_pixmap_rgb888_pixel_set_a(tb_pointer_t data, tb_uint32_t pixel, tb_byte_t alpha)
+static tb_void_t g2_pixmap_rgb888_pixel_set_lo(tb_pointer_t data, g2_pixel_t pixel, tb_byte_t alpha)
 {
-	pixel = g2_pixmap_rgb888_blend(tb_bits_get_u24_be((tb_byte_t const*)data), pixel, alpha);
-	tb_bits_set_u24_be((tb_byte_t*)data, pixel);
+	g2_bits_set_u24_le(data, pixel);
+}
+static tb_void_t g2_pixmap_rgb888_pixel_set_la(tb_pointer_t data, tb_uint32_t pixel, tb_byte_t alpha)
+{
+	g2_bits_set_u24_le(data, g2_pixmap_rgb888_blend(g2_bits_get_u24_le(data), pixel, alpha));
+}
+static tb_void_t g2_pixmap_rgb888_pixel_set_bo(tb_pointer_t data, g2_pixel_t pixel, tb_byte_t alpha)
+{
+	g2_bits_set_u24_be(data, pixel);
+}
+static tb_void_t g2_pixmap_rgb888_pixel_set_la(tb_pointer_t data, tb_uint32_t pixel, tb_byte_t alpha)
+{
+	g2_bits_set_u24_be(data, g2_pixmap_rgb888_blend(g2_bits_get_u24_be(data), pixel, alpha));
 }
 static tb_void_t g2_pixmap_rgb888_pixel_cpy_o(tb_pointer_t data, tb_cpointer_t pixel, tb_byte_t alpha)
 {
@@ -110,45 +121,80 @@ static tb_void_t g2_pixmap_rgb888_pixel_cpy_o(tb_pointer_t data, tb_cpointer_t p
 	((tb_byte_t*)data)[1] = ((tb_byte_t const*)pixel)[1];
 	((tb_byte_t*)data)[2] = ((tb_byte_t const*)pixel)[2];
 }
-static tb_void_t g2_pixmap_rgb888_pixel_cpy_a(tb_pointer_t data, tb_cpointer_t pixel, tb_byte_t alpha)
+static tb_void_t g2_pixmap_rgb888_pixel_cpy_la(tb_pointer_t data, tb_cpointer_t pixel, tb_byte_t alpha)
 {
-	tb_uint32_t d = g2_pixmap_rgb888_blend(tb_bits_get_u24_be((tb_byte_t const*)data), tb_bits_get_u24_be((tb_byte_t const*)pixel), alpha);
-	tb_bits_set_u24_be((tb_byte_t*)data, d);
+	g2_bits_set_u24_le(data, g2_pixmap_rgb888_blend(g2_bits_get_u24_le(data), g2_bits_get_u24_le(pixel), alpha));
 }
-static g2_color_t g2_pixmap_rgb888_color_get(tb_cpointer_t data)
+static tb_void_t g2_pixmap_rgb888_pixel_cpy_ba(tb_pointer_t data, tb_cpointer_t pixel, tb_byte_t alpha)
+{
+	g2_bits_set_u24_be(data, g2_pixmap_rgb888_blend(g2_bits_get_u24_be(data), g2_bits_get_u24_be(pixel), alpha));
+}
+static g2_color_t g2_pixmap_rgb888_color_get_l(tb_cpointer_t data)
 {
 	g2_color_t 	color;
-	tb_uint32_t pixel = tb_bits_get_u24_be((tb_byte_t const*)data);
+	tb_uint32_t pixel = g2_bits_get_u24_le(data);
 	color.r = G2_RGB_888_R(pixel);
 	color.g = G2_RGB_888_G(pixel);
 	color.b = G2_RGB_888_B(pixel);
 	color.a = 0xff;
 	return color;
 }
-static tb_void_t g2_pixmap_rgb888_color_set_o(tb_pointer_t data, g2_color_t color)
+static g2_color_t g2_pixmap_rgb888_color_get_b(tb_cpointer_t data)
 {
-	g2_pixmap_rgb888_pixel_set_o(data, g2_pixmap_rgb888_pixel(color), 0);
+	g2_color_t 	color;
+	tb_uint32_t pixel = g2_bits_get_u24_be(data);
+	color.r = G2_RGB_888_R(pixel);
+	color.g = G2_RGB_888_G(pixel);
+	color.b = G2_RGB_888_B(pixel);
+	color.a = 0xff;
+	return color;
 }
-static tb_void_t g2_pixmap_rgb888_color_set_a(tb_pointer_t data, g2_color_t color)
+static tb_void_t g2_pixmap_rgb888_color_set_lo(tb_pointer_t data, g2_color_t color)
 {
-	tb_uint32_t d = g2_pixmap_rgb888_blend(tb_bits_get_u24_be((tb_byte_t const*)data), G2_RGB_888(color.r, color.g, color.b), color.a);
-	tb_bits_set_u24_be((tb_byte_t*)data, d);
+	g2_pixmap_rgb888_pixel_set_lo(data, g2_pixmap_rgb888_pixel(color), 0);
 }
-static tb_void_t g2_pixmap_rgb888_pixels_set_o(tb_pointer_t data, g2_pixel_t pixel, tb_size_t count, tb_byte_t alpha)
+static tb_void_t g2_pixmap_rgb888_color_set_bo(tb_pointer_t data, g2_color_t color)
+{
+	g2_pixmap_rgb888_pixel_set_bo(data, g2_pixmap_rgb888_pixel(color), 0);
+}
+static tb_void_t g2_pixmap_rgb888_color_set_la(tb_pointer_t data, g2_color_t color)
+{
+	g2_bits_set_u24_le(data, g2_pixmap_rgb888_blend(g2_bits_get_u24_le(data), G2_RGB_888(color.r, color.g, color.b), color.a));
+}
+static tb_void_t g2_pixmap_rgb888_color_set_ba(tb_pointer_t data, g2_color_t color)
+{
+	g2_bits_set_u24_be(data, g2_pixmap_rgb888_blend(g2_bits_get_u24_be(data), G2_RGB_888(color.r, color.g, color.b), color.a));
+}
+static tb_void_t g2_pixmap_rgb888_pixels_set_lo(tb_pointer_t data, g2_pixel_t pixel, tb_size_t count, tb_byte_t alpha)
 {
 	tb_memset_u24(data, pixel, count);
 }
-static tb_void_t g2_pixmap_rgb888_pixels_set_a(tb_pointer_t data, g2_pixel_t pixel, tb_size_t count, tb_byte_t alpha)
+static tb_void_t g2_pixmap_rgb888_pixels_set_bo(tb_pointer_t data, g2_pixel_t pixel, tb_size_t count, tb_byte_t alpha)
 {
-	tb_uint32_t 	d;
+	// FIXME
+	tb_memset_u24(data, pixel, count);
+}
+static tb_void_t g2_pixmap_rgb888_pixels_set_la(tb_pointer_t data, g2_pixel_t pixel, tb_size_t count, tb_byte_t alpha)
+{
 	tb_byte_t* 		p = (tb_byte_t*)data;
 	tb_byte_t* 		e = p + count * 3;
 	g2_color_t 		s = g2_pixmap_rgb888_color(pixel & 0x00ffffff);
 	alpha >>= 2;
 	while (p < e)
 	{
-		d = g2_pixmap_rgb888_blend2(tb_bits_get_u24_be((tb_byte_t const*)p), s, alpha);
-		tb_bits_set_u24_be(p, d);
+		g2_bits_set_u24_le(p, g2_pixmap_rgb888_blend2(g2_bits_get_u24_le(p), s, alpha));
+		p += 3;
+	}
+}
+static tb_void_t g2_pixmap_rgb888_pixels_set_ba(tb_pointer_t data, g2_pixel_t pixel, tb_size_t count, tb_byte_t alpha)
+{
+	tb_byte_t* 		p = (tb_byte_t*)data;
+	tb_byte_t* 		e = p + count * 3;
+	g2_color_t 		s = g2_pixmap_rgb888_color(pixel & 0x00ffffff);
+	alpha >>= 2;
+	while (p < e)
+	{
+		g2_bits_set_u24_be(p, g2_pixmap_rgb888_blend2(g2_bits_get_u24_be(p), s, alpha));
 		p += 3;
 	}
 }
@@ -157,36 +203,68 @@ static tb_void_t g2_pixmap_rgb888_pixels_set_a(tb_pointer_t data, g2_pixel_t pix
  * globals
  */
 
-static g2_pixmap_t const g_pixmap_opaque_rgb888 =
+static g2_pixmap_t const g_pixmap_lo_rgb888 =
 { 	
 	"rgb888"
 , 	24
 , 	3
-, 	G2_PIXFMT_RGB888
+, 	G2_PIXFMT_RGB565
 , 	g2_pixmap_rgb888_pixel
 , 	g2_pixmap_rgb888_color
-,	g2_pixmap_rgb888_pixel_get
-,	g2_pixmap_rgb888_pixel_set_o
-, 	g2_pixmap_rgb888_pixel_cpy_o
-,	g2_pixmap_rgb888_color_get
-,	g2_pixmap_rgb888_color_set_o
-, 	g2_pixmap_rgb888_pixels_set_o
+,	g2_pixmap_rgb888_pixel_get_l
+,	g2_pixmap_rgb888_pixel_set_lo
+, 	g2_pixmap_rgb888_pixel_cpy_lo
+,	g2_pixmap_rgb888_color_get_l
+,	g2_pixmap_rgb888_color_set_lo
+, 	g2_pixmap_rgb888_pixels_set_lo
 };
 
-static g2_pixmap_t const g_pixmap_alpha_rgb888 =
+static g2_pixmap_t const g_pixmap_bo_rgb888 =
 { 	
 	"rgb888"
 , 	24
 , 	3
-, 	G2_PIXFMT_RGB888
+, 	G2_PIXFMT_RGB565
 , 	g2_pixmap_rgb888_pixel
 , 	g2_pixmap_rgb888_color
-,	g2_pixmap_rgb888_pixel_get
-,	g2_pixmap_rgb888_pixel_set_a
-, 	g2_pixmap_rgb888_pixel_cpy_a
-,	g2_pixmap_rgb888_color_get
-,	g2_pixmap_rgb888_color_set_a
-, 	g2_pixmap_rgb888_pixels_set_a
+,	g2_pixmap_rgb888_pixel_get_b
+,	g2_pixmap_rgb888_pixel_set_bo
+, 	g2_pixmap_rgb888_pixel_cpy_bo
+,	g2_pixmap_rgb888_color_get_b
+,	g2_pixmap_rgb888_color_set_bo
+, 	g2_pixmap_rgb888_pixels_set_bo
+};
+
+static g2_pixmap_t const g_pixmap_la_rgb888 =
+{ 	
+	"rgb888"
+, 	24
+, 	3
+, 	G2_PIXFMT_RGB565
+, 	g2_pixmap_rgb888_pixel
+, 	g2_pixmap_rgb888_color
+,	g2_pixmap_rgb888_pixel_get_l
+,	g2_pixmap_rgb888_pixel_set_la
+, 	g2_pixmap_rgb888_pixel_cpy_la
+,	g2_pixmap_rgb888_color_get_l
+,	g2_pixmap_rgb888_color_set_la
+, 	g2_pixmap_rgb888_pixels_set_la
+};
+
+static g2_pixmap_t const g_pixmap_ba_rgb888 =
+{ 	
+	"rgb888"
+, 	24
+, 	3
+, 	G2_PIXFMT_RGB565
+, 	g2_pixmap_rgb888_pixel
+, 	g2_pixmap_rgb888_color
+,	g2_pixmap_rgb888_pixel_get_b
+,	g2_pixmap_rgb888_pixel_set_ba
+, 	g2_pixmap_rgb888_pixel_cpy_ba
+,	g2_pixmap_rgb888_color_get_b
+,	g2_pixmap_rgb888_color_set_ba
+, 	g2_pixmap_rgb888_pixels_set_ba
 };
 
 #endif

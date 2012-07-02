@@ -120,7 +120,7 @@ static tb_handle_t g2_bmp_decoder_done(g2_image_decoder_t* decoder)
 
 	// the pixfmt
 	tb_size_t pixfmt 	= decoder->pixfmt;
-	tb_assert_and_check_return_val(pixfmt != G2_PIXFMT_NONE, TB_NULL);
+	tb_assert_and_check_return_val(G2_PIXFMT_OK(pixfmt), TB_NULL);
 
 	// the width & height
 	tb_size_t width 	= decoder->width;
@@ -192,14 +192,14 @@ static tb_handle_t g2_bmp_decoder_done(g2_image_decoder_t* decoder)
 		if (bpp == 16)
 		{
 			if (rm == 0xf800 && gm == 0x07e0 && bm == 0x001f)
-				sp = g2_pixmap(TB_NULL, G2_PIXFMT_RGB565, 0xff);
+				sp = g2_pixmap(TB_NULL, G2_PIXFMT_RGB565 | G2_PIXFMT_LENDIAN, 0xff);
 			else if (rm == 0x7c00 && gm == 0x03e0 && bm == 0x001f)
-				sp = g2_pixmap(TB_NULL, G2_PIXFMT_XRGB1555, 0xff);
+				sp = g2_pixmap(TB_NULL, G2_PIXFMT_XRGB1555 | G2_PIXFMT_LENDIAN, 0xff);
 		}
 		else if (bpp == 32)
 		{
 			if (rm == 0xff000000 && gm == 0xff0000 && bm == 0xff00)
-				sp = g2_pixmap(TB_NULL, G2_PIXFMT_RGBX8888, 0xff);
+				sp = g2_pixmap(TB_NULL, G2_PIXFMT_RGBX8888 | G2_PIXFMT_LENDIAN, 0xff);
 		}
 	}
 	else if (bc == G2_BMP_RGB)
@@ -207,16 +207,16 @@ static tb_handle_t g2_bmp_decoder_done(g2_image_decoder_t* decoder)
 		switch (bpp)
 		{
 		case 32:
-			sp = g2_pixmap(TB_NULL, G2_PIXFMT_ARGB8888, 0xff);
+			sp = g2_pixmap(TB_NULL, G2_PIXFMT_ARGB8888 | G2_PIXFMT_LENDIAN, 0xff);
 			break;
 		case 24:
-			sp = g2_pixmap(TB_NULL, G2_PIXFMT_RGB888, 0xff);
+			sp = g2_pixmap(TB_NULL, G2_PIXFMT_RGB888 | G2_PIXFMT_LENDIAN, 0xff);
 			break;
 		case 16:
-			sp = g2_pixmap(TB_NULL, G2_PIXFMT_XRGB1555, 0xff);
+			sp = g2_pixmap(TB_NULL, G2_PIXFMT_XRGB1555 | G2_PIXFMT_LENDIAN, 0xff);
 			break;
 		case 8:
-			sp = g2_pixmap(TB_NULL, G2_PIXFMT_PAL8, 0xff);
+			sp = g2_pixmap(TB_NULL, G2_PIXFMT_PAL8 | G2_PIXFMT_LENDIAN, 0xff);
 			break;
 		default:
 			tb_trace_impl("the bpp: %lu is not supported", bpp);
@@ -304,7 +304,7 @@ fail:
  */
 g2_image_decoder_t* g2_bmp_decoder_init(tb_size_t pixfmt, tb_gstream_t* gst)
 {
-	tb_assert_and_check_return_val(pixfmt != G2_PIXFMT_NONE && gst, TB_NULL);
+	tb_assert_and_check_return_val(G2_PIXFMT_OK(pixfmt) && gst, TB_NULL);
 
 	// probe it
 	if (!g2_bmp_decoder_probe(gst)) return TB_NULL;

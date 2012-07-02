@@ -40,7 +40,7 @@
  */
 tb_handle_t g2_bitmap_init_url(tb_size_t pixfmt, tb_char_t const* url)
 {
-	tb_assert_and_check_return_val(pixfmt != G2_PIXFMT_NONE && url, TB_NULL);
+	tb_assert_and_check_return_val(G2_PIXFMT_OK(pixfmt) && url, TB_NULL);
 	
 	// init stream
 	tb_gstream_t* gst = tb_gstream_init_from_url(url);
@@ -66,7 +66,7 @@ tb_handle_t g2_bitmap_init_url(tb_size_t pixfmt, tb_char_t const* url)
 
 tb_handle_t g2_bitmap_init_gst(tb_size_t pixfmt, tb_gstream_t* gst)
 {
-	tb_assert_and_check_return_val(pixfmt != G2_PIXFMT_NONE && gst, TB_NULL);
+	tb_assert_and_check_return_val(G2_PIXFMT_OK(pixfmt) && gst, TB_NULL);
 
 	// init image decoder
 	g2_image_decoder_t* decoder = g2_image_decoder_init(pixfmt, gst);

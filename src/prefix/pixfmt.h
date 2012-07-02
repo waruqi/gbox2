@@ -78,6 +78,19 @@
 #define G2_RGBX_8888_G(c) 			(((c) >> 16) & 0xff)
 #define G2_RGBX_8888_B(c) 			(((c) >> 8) & 0xff)
 
+// the endian for the stored pixfmt
+#define G2_PIXFMT_LENDIAN 			(0x0000)
+#define G2_PIXFMT_BENDIAN 			(0x0100)
+#define G2_PIXFMT_MENDIAN 			(0x0100)
+#ifdef TB_WORDS_BIGENDIAN
+# 	define G2_PIXFMT_NENDIAN 		(G2_PIXFMT_BENDIAN)
+#else
+# 	define G2_PIXFMT_NENDIAN 		(G2_PIXFMT_LENDIAN)
+#endif
+
+// ok?
+#define G2_PIXFMT_OK(pixfmt) 		(((pixfmt) & ~G2_PIXFMT_MENDIAN) != G2_PIXFMT_NONE)
+
 /* ///////////////////////////////////////////////////////////////////////
  * types
  */
@@ -112,12 +125,6 @@ typedef enum __g2_pixfmt_t
 , 	G2_PIXFMT_BGRX8888		= 23	//!< 32-bit b g r x: 8 8 8 8
 , 	G2_PIXFMT_BGRA4444		= 24	//!< 32-bit b g r a: 4 4 4 4
 , 	G2_PIXFMT_BGRX4444		= 25	//!< 32-bit b g r x: 4 4 4 4
-
-	// big endian or little endian for storing the data
-, 	G2_PIXFMT_LE 			= 0x0100
-, 	G2_PIXFMT_BE 			= 0x0200
-, 	G2_PIXFMT_NE 			= 0x0300
-, 	G2_PIXFMT_MK 			= 0xFF00
 
 }g2_pixfmt_t;
 

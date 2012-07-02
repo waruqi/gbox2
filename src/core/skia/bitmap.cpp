@@ -32,7 +32,7 @@
 static tb_handle_t g2_skia_bitmap_init(tb_size_t pixfmt, tb_size_t width, tb_size_t height)
 {
 	// check
-	tb_assert_and_check_return_val(pixfmt && width && height, TB_NULL);
+	tb_assert_and_check_return_val(G2_PIXFMT_OK(pixfmt) && width && height, TB_NULL);
 
 	// alloc
 	SkBitmap* sbitmap = new SkBitmap();

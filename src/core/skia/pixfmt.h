@@ -99,6 +99,8 @@ static __tb_inline__ SkBitmap::Config g2_pixfmt_to_skia(tb_size_t pixfmt)
 	, 	SkBitmap::kNo_Config
 	, 	SkBitmap::kNo_Config
 	};
+
+	pixfmt &= ~G2_PIXFMT_MENDIAN;
 	tb_assert_and_check_return_val(pixfmt < tb_arrayn(spixfmts), SkBitmap::kNo_Config);
 	return spixfmts[pixfmt];
 }
@@ -132,8 +134,8 @@ static __tb_inline__ tb_size_t g2_pixfmt_from_skia(SkBitmap::Config pixfmt)
 	, 	G2_PIXFMT_XRGB8888
 	, 	G2_PIXFMT_NONE
 	};
-	tb_assert_and_check_return_val(static_cast<tb_size_t>(pixfmt) < tb_arrayn(spixfmts), G2_PIXFMT_NONE);
-	return spixfmts[static_cast<tb_size_t>(pixfmt)];
+	tb_assert_and_check_return_val(static_cast<tb_size_t>(pixfmt) < tb_arrayn(spixfmts), G2_PIXFMT_NONE | G2_PIXFMT_NENDIAN);
+	return spixfmts[static_cast<tb_size_t>(pixfmt)] | G2_PIXFMT_NENDIAN;
 }
 
 #endif

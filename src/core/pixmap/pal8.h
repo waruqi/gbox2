@@ -88,7 +88,7 @@ static tb_void_t g2_pixmap_pal8_pixels_set_a(tb_pointer_t data, g2_pixel_t pixel
  * globals
  */
 
-static g2_pixmap_t const g_pixmap_opaque_pal8 =
+static g2_pixmap_t const g_pixmap_o_pal8 =
 { 	
 	"pal8"
 , 	8
@@ -104,7 +104,7 @@ static g2_pixmap_t const g_pixmap_opaque_pal8 =
 , 	g2_pixmap_pal8_pixels_set_o
 };
 
-static g2_pixmap_t const g_pixmap_alpha_pal8 =
+static g2_pixmap_t const g_pixmap_a_pal8 =
 { 	
 	"pal8"
 , 	8

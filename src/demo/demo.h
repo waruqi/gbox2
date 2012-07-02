@@ -37,8 +37,8 @@ static tb_size_t 	g_width 	= G2_DEMO_WIDTH;
 static tb_size_t 	g_height 	= G2_DEMO_HEIGHT;
 
 // pixfmt
-//static tb_size_t 	g_pixfmt 	= G2_PIXFMT_XRGB8888;
-static tb_size_t 	g_pixfmt 	= G2_PIXFMT_RGB565;
+//static tb_size_t 	g_pixfmt 	= G2_PIXFMT_XRGB8888 | G2_PIXFMT_NENDIAN;
+static tb_size_t 	g_pixfmt 	= G2_PIXFMT_RGB565 | G2_PIXFMT_NENDIAN;
 
 // clock
 static tb_hong_t 	g_bt 		= 0;

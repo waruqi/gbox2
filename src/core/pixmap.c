@@ -39,20 +39,20 @@
  * globals 
  */
 
-// the pixmaps for opaque
-static g2_pixmap_t const* g_pixmaps_opaque[] =
+// the pixmaps for opaque and little endian
+static g2_pixmap_t const* g_pixmaps_lo[] =
 {
-	&g_pixmap_opaque_pal8
-,	&g_pixmap_opaque_rgb565
-,	&g_pixmap_opaque_rgb888
-,	&g_pixmap_opaque_argb1555
-,	&g_pixmap_opaque_xrgb1555
-,	&g_pixmap_opaque_argb8888
-,	&g_pixmap_opaque_xrgb8888
+	&g_pixmap_o_pal8
+,	&g_pixmap_lo_rgb565
+,	&g_pixmap_lo_rgb888
+,	&g_pixmap_lo_argb1555
+,	&g_pixmap_lo_xrgb1555
+,	&g_pixmap_lo_argb8888
+,	&g_pixmap_lo_xrgb8888
 ,	TB_NULL
 ,	TB_NULL
-,	&g_pixmap_opaque_rgba8888
-,	&g_pixmap_opaque_rgbx8888
+,	&g_pixmap_lo_rgba8888
+,	&g_pixmap_lo_rgbx8888
 ,	TB_NULL
 ,	TB_NULL
 
@@ -71,20 +71,84 @@ static g2_pixmap_t const* g_pixmaps_opaque[] =
 
 };
 
-// the pixmaps for alpha
-static g2_pixmap_t const* g_pixmaps_alpha[] =
+// the pixmaps for opaque and big endian
+static g2_pixmap_t const* g_pixmaps_bo[] =
 {
-	&g_pixmap_alpha_pal8
-,	&g_pixmap_alpha_rgb565
-,	&g_pixmap_alpha_rgb888
-,	&g_pixmap_alpha_argb1555
-,	&g_pixmap_alpha_xrgb1555
-,	&g_pixmap_alpha_argb8888
-,	&g_pixmap_alpha_xrgb8888
+	&g_pixmap_o_pal8
+,	&g_pixmap_bo_rgb565
+,	&g_pixmap_bo_rgb888
+,	&g_pixmap_bo_argb1555
+,	&g_pixmap_bo_xrgb1555
+,	&g_pixmap_bo_argb8888
+,	&g_pixmap_bo_xrgb8888
 ,	TB_NULL
 ,	TB_NULL
-,	&g_pixmap_alpha_rgba8888
-,	&g_pixmap_alpha_rgbx8888
+,	&g_pixmap_bo_rgba8888
+,	&g_pixmap_bo_rgbx8888
+,	TB_NULL
+,	TB_NULL
+
+,	TB_NULL
+,	TB_NULL
+,	TB_NULL
+,	TB_NULL
+,	TB_NULL
+,	TB_NULL
+,	TB_NULL
+,	TB_NULL
+,	TB_NULL
+,	TB_NULL
+,	TB_NULL
+,	TB_NULL
+
+};
+
+// the pixmaps for alpha and little endian
+static g2_pixmap_t const* g_pixmaps_la[] =
+{
+	&g_pixmap_a_pal8
+,	&g_pixmap_la_rgb565
+,	&g_pixmap_la_rgb888
+,	&g_pixmap_la_argb1555
+,	&g_pixmap_la_xrgb1555
+,	&g_pixmap_la_argb8888
+,	&g_pixmap_la_xrgb8888
+,	TB_NULL
+,	TB_NULL
+,	&g_pixmap_la_rgba8888
+,	&g_pixmap_la_rgbx8888
+,	TB_NULL
+,	TB_NULL
+
+,	TB_NULL
+,	TB_NULL
+,	TB_NULL
+,	TB_NULL
+,	TB_NULL
+,	TB_NULL
+,	TB_NULL
+,	TB_NULL
+,	TB_NULL
+,	TB_NULL
+,	TB_NULL
+,	TB_NULL
+
+};
+
+// the pixmaps for alpha and big endian
+static g2_pixmap_t const* g_pixmaps_ba[] =
+{
+	&g_pixmap_a_pal8
+,	&g_pixmap_ba_rgb565
+,	&g_pixmap_ba_rgb888
+,	&g_pixmap_ba_argb1555
+,	&g_pixmap_ba_xrgb1555
+,	&g_pixmap_ba_argb8888
+,	&g_pixmap_ba_xrgb8888
+,	TB_NULL
+,	TB_NULL
+,	&g_pixmap_ba_rgba8888
+,	&g_pixmap_ba_rgbx8888
 ,	TB_NULL
 ,	TB_NULL
 
@@ -108,18 +172,19 @@ static g2_pixmap_t const* g_pixmaps_alpha[] =
  */
 g2_pixmap_t const* g2_pixmap(tb_handle_t painter, tb_size_t pixfmt, tb_byte_t alpha)
 {
+	tb_size_t e = pixfmt & G2_PIXFMT_MENDIAN; pixfmt &= ~G2_PIXFMT_MENDIAN;
 	tb_byte_t a = painter? (G2_QUALITY_TOP - g2_quality(painter)) << 3 : 0;
 	if (alpha >= (0xff - a))
 	{
 		// opaque
-		tb_assert_and_check_return_val(pixfmt != G2_PIXFMT_NONE && (pixfmt - 1) < tb_arrayn(g_pixmaps_opaque), TB_NULL);
-		return g_pixmaps_opaque[pixfmt - 1];
+		tb_assert_and_check_return_val(pixfmt && (pixfmt - 1) < tb_arrayn(g_pixmaps_lo), TB_NULL);
+		return e == G2_PIXFMT_LENDIAN? g_pixmaps_lo[pixfmt - 1] : g_pixmaps_bo[pixfmt - 1];
 	}
 	else if (alpha > a)
 	{
 		// alpha
-		tb_assert_and_check_return_val(pixfmt != G2_PIXFMT_NONE && (pixfmt - 1) < tb_arrayn(g_pixmaps_alpha), TB_NULL);
-		return g_pixmaps_alpha[pixfmt - 1];
+		tb_assert_and_check_return_val(pixfmt && (pixfmt - 1) < tb_arrayn(g_pixmaps_la), TB_NULL);
+		return e == G2_PIXFMT_LENDIAN? g_pixmaps_la[pixfmt - 1] : g_pixmaps_ba[pixfmt - 1];
 	}
 
 	// transparent
