@@ -82,7 +82,7 @@
  * types
  */
 
-// the pixel format type
+/// the pixel format type
 typedef enum __g2_pixfmt_t
 {
  	G2_PIXFMT_NONE 			= 0		
@@ -112,6 +112,12 @@ typedef enum __g2_pixfmt_t
 , 	G2_PIXFMT_BGRX8888		= 23	//!< 32-bit b g r x: 8 8 8 8
 , 	G2_PIXFMT_BGRA4444		= 24	//!< 32-bit b g r a: 4 4 4 4
 , 	G2_PIXFMT_BGRX4444		= 25	//!< 32-bit b g r x: 4 4 4 4
+
+	// big endian or little endian for storing the data
+, 	G2_PIXFMT_LE 			= 0x0100
+, 	G2_PIXFMT_BE 			= 0x0200
+, 	G2_PIXFMT_NE 			= 0x0300
+, 	G2_PIXFMT_MK 			= 0xFF00
 
 }g2_pixfmt_t;
 

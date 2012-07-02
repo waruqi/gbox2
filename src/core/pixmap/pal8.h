@@ -84,5 +84,41 @@ static tb_void_t g2_pixmap_pal8_pixels_set_a(tb_pointer_t data, g2_pixel_t pixel
 	tb_memset(data, (tb_byte_t)pixel, count);
 }
 
+/* ///////////////////////////////////////////////////////////////////////
+ * globals
+ */
+
+static g2_pixmap_t const g_pixmap_opaque_pal8 =
+{ 	
+	"pal8"
+, 	8
+, 	1
+, 	G2_PIXFMT_PAL8
+, 	g2_pixmap_pal8_pixel
+, 	g2_pixmap_pal8_color
+,	g2_pixmap_pal8_pixel_get
+,	g2_pixmap_pal8_pixel_set_o
+, 	g2_pixmap_pal8_pixel_cpy_o
+,	g2_pixmap_pal8_color_get
+,	g2_pixmap_pal8_color_set_o
+, 	g2_pixmap_pal8_pixels_set_o
+};
+
+static g2_pixmap_t const g_pixmap_alpha_pal8 =
+{ 	
+	"pal8"
+, 	8
+, 	1
+, 	G2_PIXFMT_PAL8
+, 	g2_pixmap_pal8_pixel
+, 	g2_pixmap_pal8_color
+,	g2_pixmap_pal8_pixel_get
+,	g2_pixmap_pal8_pixel_set_a
+, 	g2_pixmap_pal8_pixel_cpy_a
+,	g2_pixmap_pal8_color_get
+,	g2_pixmap_pal8_color_set_a
+, 	g2_pixmap_pal8_pixels_set_a
+};
+
 #endif
 

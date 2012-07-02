@@ -27,6 +27,7 @@
  * includes
  */
 #include "config.h"
+#include "bits.h"
 #include "type.h"
 #include "float.h"
 #include "version.h"

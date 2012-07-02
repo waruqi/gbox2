@@ -155,5 +155,41 @@ static tb_void_t g2_pixmap_rgbx8888_pixels_set_a(tb_pointer_t data, g2_pixel_t p
 	}
 }
 
+/* ///////////////////////////////////////////////////////////////////////
+ * globals
+ */
+
+static g2_pixmap_t const g_pixmap_opaque_rgbx8888 =
+{ 	
+	"rgbx8888"
+, 	32
+, 	4
+, 	G2_PIXFMT_RGBX8888
+, 	g2_pixmap_rgbx8888_pixel
+, 	g2_pixmap_rgbx8888_color
+,	g2_pixmap_rgbx8888_pixel_get
+,	g2_pixmap_rgbx8888_pixel_set_o
+, 	g2_pixmap_rgbx8888_pixel_cpy_o
+,	g2_pixmap_rgbx8888_color_get
+,	g2_pixmap_rgbx8888_color_set_o
+, 	g2_pixmap_rgbx8888_pixels_set_o
+};
+
+static g2_pixmap_t const g_pixmap_alpha_rgbx8888 =
+{ 	
+	"rgbx8888"
+, 	32
+, 	4
+, 	G2_PIXFMT_RGBX8888
+, 	g2_pixmap_rgbx8888_pixel
+, 	g2_pixmap_rgbx8888_color
+,	g2_pixmap_rgbx8888_pixel_get
+,	g2_pixmap_rgbx8888_pixel_set_a
+, 	g2_pixmap_rgbx8888_pixel_cpy_a
+,	g2_pixmap_rgbx8888_color_get
+,	g2_pixmap_rgbx8888_color_set_a
+, 	g2_pixmap_rgbx8888_pixels_set_a
+};
+
 #endif
 

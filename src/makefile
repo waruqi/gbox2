@@ -37,6 +37,7 @@ INC_FILES 				= \
 						prefix.h \
 						prefix/config.h \
 						prefix/prefix.h \
+						prefix/bits.h \
 						prefix/type.h \
 						prefix/float.h \
 						prefix/color.h \
