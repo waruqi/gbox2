@@ -17,31 +17,40 @@
  * Copyright (C) 2009 - 2012, ruki All rights reserved.
  *
  * @author		ruki
- * @file		rgbx8888_blend.h
+ * @file		gbox2.c
  *
  */
-#ifndef G2_CORE_PIXMAP_OPT_x86_RGBX8888_BLEND_H
-#define G2_CORE_PIXMAP_OPT_x86_RGBX8888_BLEND_H
-
 /* ///////////////////////////////////////////////////////////////////////
  * includes
  */
-#include "prefix.h"
-#include "xrgb8888_blend.h"
+#include "gbox2.h"
 
 /* ///////////////////////////////////////////////////////////////////////
- * macros
+ * globals
  */
-
-#if defined(TB_CONFIG_ASSEMBLER_GAS)
-//# 	define g2_pixmap_rgbx8888_blend(d, s, a) 		g2_pixmap_xrgb8888_blend_asm(d, s, a)
-//# 	define g2_pixmap_rgbx8888_blend2(d, hs, ls, a) 	g2_pixmap_xrgb8888_blend2_asm(d, hs, ls, a)
-#endif
+static tb_size_t 		g_quality = G2_QUALITY_LOW;
 
 /* ///////////////////////////////////////////////////////////////////////
  * implementation
  */
-
-
-#endif
+tb_char_t const* g2_version()
+{
+	static tb_char_t version_data[32] = {0};
+	static tb_size_t version_size = 0;
+	
+	if (!version_size)
+	{
+		version_size = tb_snprintf(version_data, 32, "gbox2-v%u.%u.%u", G2_VERSION_MAJOR, G2_VERSION_MINOR, G2_VERSION_ALTER);
+		version_data[version_size] = '\0';
+	}
+	return version_data;
+}
+tb_size_t g2_quality()
+{
+	return tb_atomic_get(&g_quality);
+}
+tb_void_t g2_quality_set(tb_size_t quality)
+{
+	tb_atomic_set(&g_quality, quality);
+}
 

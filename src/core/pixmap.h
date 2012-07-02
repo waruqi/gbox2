@@ -84,7 +84,7 @@ typedef struct __g2_pixmap_t
  */
 
 // the pixmap from the pixel format 
-g2_pixmap_t const* 		g2_pixmap(tb_handle_t painter, tb_size_t pixfmt, tb_byte_t alpha);
+g2_pixmap_t const* 		g2_pixmap(tb_size_t pixfmt, tb_byte_t alpha);
 
 
 #endif

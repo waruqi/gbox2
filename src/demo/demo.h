@@ -95,7 +95,7 @@ static tb_void_t g2_demo_gl_keyboard(tb_byte_t key, tb_int_t x, tb_int_t y)
 	{
 	case 'q':
 		{
-			g2_quality_set(g_painter, (g2_quality(g_painter) + 1) % 3);
+			g2_quality_set((g2_quality() + 1) % 3);
 		}
 		break;
 	case 'w':
@@ -245,7 +245,7 @@ static tb_void_t g2_demo_gl_reshape(tb_int_t w, tb_int_t h)
 
 	// init painter
 	if (g_painter) g2_exit(g_painter);
-	g_painter = g2_init(g_surface, G2_QUALITY_LOW);
+	g_painter = g2_init(g_surface);
 	tb_assert_and_check_return_val(g_painter, 0);
 
 	// init style

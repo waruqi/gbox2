@@ -17,11 +17,11 @@
  * Copyright (C) 2009 - 2012, ruki All rights reserved.
  *
  * @author		ruki
- * @file		xrgb8888_blend.h
+ * @file		rgb32_blend.h
  *
  */
-#ifndef G2_CORE_PIXMAP_OPT_x86_XRGB8888_BLEND_H
-#define G2_CORE_PIXMAP_OPT_x86_XRGB8888_BLEND_H
+#ifndef G2_CORE_PIXMAP_OPT_x86_RGB32_BLEND_H
+#define G2_CORE_PIXMAP_OPT_x86_RGB32_BLEND_H
 
 /* ///////////////////////////////////////////////////////////////////////
  * includes
@@ -33,8 +33,8 @@
  */
 
 #if defined(TB_CONFIG_ASSEMBLER_GAS)
-//# 	define g2_pixmap_xrgb8888_blend(d, s, a) 		g2_pixmap_xrgb8888_blend_asm(d, s, a)
-//# 	define g2_pixmap_xrgb8888_blend2(d, hs, ls, a) 	g2_pixmap_xrgb8888_blend2_asm(d, hs, ls, a)
+//# 	define g2_pixmap_rgb32_blend(d, s, a) 		g2_pixmap_rgb32_blend_asm(d, s, a)
+//# 	define g2_pixmap_rgb32_blend2(d, hs, ls, a) 	g2_pixmap_rgb32_blend2_asm(d, hs, ls, a)
 #endif
 
 /* ///////////////////////////////////////////////////////////////////////
@@ -42,7 +42,7 @@
  */
 
 #ifdef TB_CONFIG_ASSEMBLER_GAS
-static __tb_inline__ tb_uint32_t g2_pixmap_xrgb8888_blend_asm(tb_uint32_t d, tb_uint32_t s, tb_byte_t a)
+static __tb_inline__ tb_uint32_t g2_pixmap_rgb32_blend_asm(tb_uint32_t d, tb_uint32_t s, tb_byte_t a)
 {
 	__tb_asm__ __tb_volatile__
 	(
@@ -74,7 +74,7 @@ static __tb_inline__ tb_uint32_t g2_pixmap_xrgb8888_blend_asm(tb_uint32_t d, tb_
 	// FIXME: d => eax, faster?
 	return d;
 }
-static __tb_inline__ tb_uint32_t g2_pixmap_xrgb8888_blend2_asm(tb_uint32_t d, tb_uint32_t hs, tb_uint32_t ls, tb_byte_t a)
+static __tb_inline__ tb_uint32_t g2_pixmap_rgb32_blend2_asm(tb_uint32_t d, tb_uint32_t hs, tb_uint32_t ls, tb_byte_t a)
 {
 	__tb_asm__ __tb_volatile__
 	(

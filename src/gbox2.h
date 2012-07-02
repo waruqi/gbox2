@@ -34,6 +34,16 @@ extern "C" {
 #include "prefix.h"
 #include "core/core.h"
 
+/* ///////////////////////////////////////////////////////////////////////
+ * interfaces
+ */
+
+// version
+tb_char_t const* 	g2_version();
+
+// quality
+tb_size_t 			g2_quality();
+tb_void_t 			g2_quality_set(tb_size_t quality);
 
 // c plus plus
 #ifdef __cplusplus

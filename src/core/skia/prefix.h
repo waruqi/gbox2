@@ -29,6 +29,7 @@
 #include "../prefix.h"
 #include "../matrix.h"
 #include "../painter.h"
+#include "../../gbox2.h"
 #include "../../third/skia/skia.h"
 #include "color.h"
 #include "pixfmt.h"

@@ -33,7 +33,7 @@
 #include "pixmap/xrgb8888.h"
 #include "pixmap/rgba8888.h"
 #include "pixmap/rgbx8888.h"
-#include "../core/painter.h"
+#include "../gbox2.h"
 
 /* ////////////////////////////////////////////////////////////////////////
  * globals 
@@ -170,10 +170,10 @@ static g2_pixmap_t const* g_pixmaps_ba[] =
 /* ////////////////////////////////////////////////////////////////////////
  * implementions
  */
-g2_pixmap_t const* g2_pixmap(tb_handle_t painter, tb_size_t pixfmt, tb_byte_t alpha)
+g2_pixmap_t const* g2_pixmap(tb_size_t pixfmt, tb_byte_t alpha)
 {
 	tb_size_t e = pixfmt & G2_PIXFMT_MENDIAN; pixfmt &= ~G2_PIXFMT_MENDIAN;
-	tb_byte_t a = painter? (G2_QUALITY_TOP - g2_quality(painter)) << 3 : 0;
+	tb_byte_t a = (G2_QUALITY_TOP - g2_quality()) << 3;
 	if (alpha >= (0xff - a))
 	{
 		// opaque

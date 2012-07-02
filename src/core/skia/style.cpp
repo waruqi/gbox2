@@ -35,6 +35,10 @@ static tb_handle_t g2_skia_style_init()
 	// alloc
 	SkPaint* sstyle = new SkPaint();
 	tb_assert_and_check_return_val(sstyle, TB_NULL);
+	
+	// init style
+	if (g2_quality() > G2_QUALITY_LOW) sstyle->setFlags(sstyle->getFlags() | SkPaint::kAntiAlias_Flag);
+	else sstyle->setFlags(sstyle->getFlags() & ~SkPaint::kAntiAlias_Flag);
 
 	// ok
 	return sstyle;
@@ -57,6 +61,8 @@ static tb_void_t g2_skia_style_clear(tb_handle_t style)
 
 	// reset
 	sstyle->reset();
+	if (g2_quality() > G2_QUALITY_LOW) sstyle->setFlags(sstyle->getFlags() | SkPaint::kAntiAlias_Flag);
+	else sstyle->setFlags(sstyle->getFlags() & ~SkPaint::kAntiAlias_Flag);
 
 	// ref--
 	if (shader) SkSafeUnref(shader);

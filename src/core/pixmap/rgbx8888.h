@@ -30,65 +30,39 @@
 #include "rgb32.h"
 
 /* ///////////////////////////////////////////////////////////////////////
- * macros
- */
-
-#ifndef g2_pixmap_rgbx8888_blend
-# 	define g2_pixmap_rgbx8888_blend(d, s, a) 		g2_pixmap_xrgb8888_blend(d, s, a)
-#endif
-
-#ifndef g2_pixmap_rgbx8888_blend2
-# 	define g2_pixmap_rgbx8888_blend2(d, hs, ls, a) 	g2_pixmap_xrgb8888_blend2(d, hs, ls, a)
-#endif
-
-/* ///////////////////////////////////////////////////////////////////////
  * implementation
  */
-static g2_pixel_t g2_pixmap_rgbx8888_pixel(g2_color_t color)
+static __tb_inline__ g2_pixel_t g2_pixmap_rgbx8888_pixel(g2_color_t color)
 {
-	union __g2_c2p_t
-	{
-		g2_color_t c;
-		g2_pixel_t p;
-
-	}c2p;
-	c2p.c = color;
-	return ((c2p.p << 8) | 0xff);
+	return ((g2_pixmap_rgb32_pixel(color) << 8) | 0xff);
 }
-static g2_color_t g2_pixmap_rgbx8888_color(g2_pixel_t pixel)
+static __tb_inline__ g2_color_t g2_pixmap_rgbx8888_color(g2_pixel_t pixel)
 {
-	union __g2_p2c_t
-	{
-		g2_color_t c;
-		g2_pixel_t p;
-
-	}p2c;
-	p2c.p = ((pixel >> 8) | 0xff000000);
-	return p2c.c;
+	return g2_pixmap_rgb32_color((pixel >> 8) | 0xff000000);
 }
-static g2_color_t g2_pixmap_rgbx8888_color_get_l(tb_cpointer_t data)
+static __tb_inline__ g2_color_t g2_pixmap_rgbx8888_color_get_l(tb_cpointer_t data)
 {
 	return g2_pixmap_rgbx8888_color(g2_bits_get_u32_le(data));
 }
-static g2_color_t g2_pixmap_rgbx8888_color_get_b(tb_cpointer_t data)
+static __tb_inline__ g2_color_t g2_pixmap_rgbx8888_color_get_b(tb_cpointer_t data)
 {
 	return g2_pixmap_rgbx8888_color(g2_bits_get_u32_be(data));
 }
-static tb_void_t g2_pixmap_rgbx8888_color_set_lo(tb_pointer_t data, g2_color_t color)
+static __tb_inline__ tb_void_t g2_pixmap_rgbx8888_color_set_lo(tb_pointer_t data, g2_color_t color)
 {
 	g2_bits_set_u32_le(data, g2_pixmap_rgbx8888_pixel(color));
 }
-static tb_void_t g2_pixmap_rgbx8888_color_set_bo(tb_pointer_t data, g2_color_t color)
+static __tb_inline__ tb_void_t g2_pixmap_rgbx8888_color_set_bo(tb_pointer_t data, g2_color_t color)
 {
 	g2_bits_set_u32_be(data, g2_pixmap_rgbx8888_pixel(color));
 }
-static tb_void_t g2_pixmap_rgbx8888_color_set_la(tb_pointer_t data, g2_color_t color)
+static __tb_inline__ tb_void_t g2_pixmap_rgbx8888_color_set_la(tb_pointer_t data, g2_color_t color)
 {
-	g2_bits_set_u32_le(data, g2_pixmap_rgbx8888_blend(g2_bits_get_u32_le(data), G2_RGBX_8888(color.r, color.g, color.b), color.a));
+	g2_bits_set_u32_le(data, g2_pixmap_rgb32_blend(g2_bits_get_u32_le(data), g2_pixmap_rgbx8888_pixel(color), color.a));
 }
-static tb_void_t g2_pixmap_rgbx8888_color_set_ba(tb_pointer_t data, g2_color_t color)
+static __tb_inline__ tb_void_t g2_pixmap_rgbx8888_color_set_ba(tb_pointer_t data, g2_color_t color)
 {
-	g2_bits_set_u32_be(data, g2_pixmap_rgbx8888_blend(g2_bits_get_u32_be(data), G2_RGBX_8888(color.r, color.g, color.b), color.a));
+	g2_bits_set_u32_be(data, g2_pixmap_rgb32_blend(g2_bits_get_u32_be(data), g2_pixmap_rgbx8888_pixel(color), color.a));
 }
 
 /* ///////////////////////////////////////////////////////////////////////

@@ -146,8 +146,9 @@ static tb_handle_t g2_bmp_decoder_done(g2_image_decoder_t* decoder)
 	tb_assert_and_check_return_val(bc != G2_BMP_RLE4 && bc != G2_BMP_RLE8, TB_NULL);
 
 	// linesize & datasize
-	tb_size_t linesize = width * (bpp >> 3);
+	tb_size_t linesize = (width * bpp) >> 3;
 	tb_size_t datasize = tb_gstream_bread_u32_le(gst);
+	if (!datasize) datasize = tb_align4(linesize) * height;
 	tb_trace_impl("data: %lu bytes", datasize);
 	tb_assert_and_check_return_val(datasize && datasize < filesize, TB_NULL);
 
@@ -180,7 +181,7 @@ static tb_handle_t g2_bmp_decoder_done(g2_image_decoder_t* decoder)
 
 	// the pixfmt
 	g2_pixmap_t* sp = TB_NULL;
-	g2_pixmap_t* dp = g2_pixmap(TB_NULL, pixfmt, 0xff);
+	g2_pixmap_t* dp = g2_pixmap(pixfmt, 0xff);
 	if (bc == G2_BMP_BITFIELDS)
 	{
 		// the color mask
@@ -192,14 +193,14 @@ static tb_handle_t g2_bmp_decoder_done(g2_image_decoder_t* decoder)
 		if (bpp == 16)
 		{
 			if (rm == 0xf800 && gm == 0x07e0 && bm == 0x001f)
-				sp = g2_pixmap(TB_NULL, G2_PIXFMT_RGB565 | G2_PIXFMT_LENDIAN, 0xff);
+				sp = g2_pixmap(G2_PIXFMT_RGB565 | G2_PIXFMT_LENDIAN, 0xff);
 			else if (rm == 0x7c00 && gm == 0x03e0 && bm == 0x001f)
-				sp = g2_pixmap(TB_NULL, G2_PIXFMT_XRGB1555 | G2_PIXFMT_LENDIAN, 0xff);
+				sp = g2_pixmap(G2_PIXFMT_XRGB1555 | G2_PIXFMT_LENDIAN, 0xff);
 		}
 		else if (bpp == 32)
 		{
 			if (rm == 0xff000000 && gm == 0xff0000 && bm == 0xff00)
-				sp = g2_pixmap(TB_NULL, G2_PIXFMT_RGBX8888 | G2_PIXFMT_LENDIAN, 0xff);
+				sp = g2_pixmap(G2_PIXFMT_RGBX8888 | G2_PIXFMT_LENDIAN, 0xff);
 		}
 	}
 	else if (bc == G2_BMP_RGB)
@@ -207,16 +208,18 @@ static tb_handle_t g2_bmp_decoder_done(g2_image_decoder_t* decoder)
 		switch (bpp)
 		{
 		case 32:
-			sp = g2_pixmap(TB_NULL, G2_PIXFMT_ARGB8888 | G2_PIXFMT_LENDIAN, 0xff);
+			sp = g2_pixmap(G2_PIXFMT_ARGB8888 | G2_PIXFMT_LENDIAN, 0xff);
 			break;
 		case 24:
-			sp = g2_pixmap(TB_NULL, G2_PIXFMT_RGB888 | G2_PIXFMT_LENDIAN, 0xff);
+			sp = g2_pixmap(G2_PIXFMT_RGB888 | G2_PIXFMT_LENDIAN, 0xff);
 			break;
 		case 16:
-			sp = g2_pixmap(TB_NULL, G2_PIXFMT_XRGB1555 | G2_PIXFMT_LENDIAN, 0xff);
+			sp = g2_pixmap(G2_PIXFMT_XRGB1555 | G2_PIXFMT_LENDIAN, 0xff);
 			break;
 		case 8:
-			sp = g2_pixmap(TB_NULL, G2_PIXFMT_PAL8 | G2_PIXFMT_LENDIAN, 0xff);
+		case 4:
+		case 1:
+			sp = g2_pixmap(G2_PIXFMT_PAL8 | G2_PIXFMT_LENDIAN, 0xff);
 			break;
 		default:
 			tb_trace_impl("the bpp: %lu is not supported", bpp);
@@ -256,8 +259,8 @@ static tb_handle_t g2_bmp_decoder_done(g2_image_decoder_t* decoder)
 			if (!tb_gstream_bread(gst, l, r)) goto fail;
 			
 			// save image data
-			tb_size_t 	i = 0;
 			tb_byte_t* 	d = p;
+			tb_size_t 	i = 0;
 			if (sp == dp)
 			{
 				for (i = 0; i < linesize; i += t, d += b)
@@ -273,6 +276,24 @@ static tb_handle_t g2_bmp_decoder_done(g2_image_decoder_t* decoder)
 			p -= n;
 		}
 	}
+	else if (bpp == 8)
+	{
+		// walk
+		while (height--)
+		{
+			// read line
+			if (!tb_gstream_bread(gst, l, r)) goto fail;
+			
+			// save image data
+			tb_byte_t* 	d = p;
+			tb_size_t 	i = 0;
+			for (i = 0; i < linesize; i++, d += b)
+				dp->color_set(d, pals[l[i]]);
+
+			// next line
+			p -= n;
+		}
+	}	
 	else
 	{
 		// walk
@@ -282,10 +303,11 @@ static tb_handle_t g2_bmp_decoder_done(g2_image_decoder_t* decoder)
 			if (!tb_gstream_bread(gst, l, r)) goto fail;
 			
 			// save image data
-			tb_size_t 	i = 0;
 			tb_byte_t* 	d = p;
-			for (i = 0; i < linesize; i += t, d += b)
-				dp->color_set(d, pals[l[i]]);
+			tb_size_t 	i = 0;
+			tb_size_t 	m = (linesize << 3) / bpp;
+			for (i = 0; i < m; i += bpp, d += b)
+				dp->color_set(d, pals[tb_bits_get_ubits32(&l[i / 8], i & 7, bpp)]);
 
 			// next line
 			p -= n;
