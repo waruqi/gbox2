@@ -305,7 +305,7 @@ static tb_handle_t g2_bmp_decoder_done(g2_image_decoder_t* decoder)
 			// save image data
 			tb_byte_t* 	d = p;
 			tb_size_t 	i = 0;
-			tb_size_t 	m = (linesize << 3) / bpp;
+			tb_size_t 	m = linesize << 3;
 			for (i = 0; i < m; i += bpp, d += b)
 				dp->color_set(d, pals[tb_bits_get_ubits32(&l[i / 8], i & 7, bpp)]);
 
@@ -321,6 +321,7 @@ fail:
 	if (bitmap) g2_bitmap_exit(bitmap);
 	return TB_NULL;
 }
+
 /* ///////////////////////////////////////////////////////////////////////
  * interfaces
  */

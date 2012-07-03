@@ -169,6 +169,24 @@ static tb_void_t g2_demo_gl_display()
 		g2_style_mode_set(g_style, G2_STYLE_MODE_FILL);
 		g2_style_color_set(g_style, G2_COLOR_RED);
 		g2_style_shader_set(g_style, g_bm? g_mhader[g_shaderi] : g_shader[g_shaderi]);
+		if (g_shaderi == 6) 
+		{
+			g2_matrix_t mx;
+			tb_size_t width 	= g2_bitmap_width(g_bitmap);
+			tb_size_t height 	= g2_bitmap_height(g_bitmap);
+			if (g_bm)
+			{
+				g2_matrix_init_translate(&mx, -g2_long_to_float(100), -g2_long_to_float(100));
+				g2_matrix_scale(&mx, g2_long_to_float(200) / width, g2_long_to_float(200) / height);
+				g2_shader_matrix_set(g_mhader[g_shaderi], &mx);
+			}
+			else
+			{
+				g2_matrix_init_translate(&mx, 0, 0);
+				g2_matrix_scale(&mx, g2_long_to_float(g_width) / width, g2_long_to_float(g_height) / height);
+				g2_shader_matrix_set(g_shader[g_shaderi], &mx);
+			}
+		}
 
 		g2_demo_render();
 	}
