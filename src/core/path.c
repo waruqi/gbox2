@@ -28,7 +28,46 @@
 /* ///////////////////////////////////////////////////////////////////////
  * implementation
  */
-
+#ifndef G2_CONFIG_CORE_SKIA
+tb_handle_t g2_path_init()
+{
+	tb_trace_noimpl();
+	return TB_NULL;
+}
+tb_void_t g2_path_exit(tb_handle_t path)
+{
+	tb_trace_noimpl();
+}
+tb_void_t g2_path_clear(tb_handle_t path)
+{
+	tb_trace_noimpl();
+}
+tb_void_t g2_path_close(tb_handle_t path)
+{
+	tb_trace_noimpl();
+}
+tb_bool_t g2_path_null(tb_handle_t path)
+{
+	tb_trace_noimpl();
+	return TB_NULL;
+}
+tb_void_t g2_path_move_to(tb_handle_t path, g2_point_t const* pt)
+{
+	tb_trace_noimpl();
+}
+tb_void_t g2_path_line_to(tb_handle_t path, g2_point_t const* pt)
+{
+	tb_trace_noimpl();
+}
+tb_void_t g2_path_quad_to(tb_handle_t path, g2_point_t const* pt, g2_point_t const* cp)
+{
+	tb_trace_noimpl();
+}
+tb_void_t g2_path_cube_to(tb_handle_t path, g2_point_t const* pt, g2_point_t const* c0, g2_point_t const* c1)
+{
+	tb_trace_noimpl();
+}
+#endif
 tb_void_t g2_path_movei_to(tb_handle_t path, g2_ipoint_t const* pt)
 {
 	g2_point_t p = g2_ipoint_to_point(pt);

@@ -36,6 +36,7 @@ extern "C" {
 #include "shader.h"
 #include "matrix.h"
 #include "bitmap.h"
+#include "context.h"
 #include "painter.h"
 
 /* ///////////////////////////////////////////////////////////////////////

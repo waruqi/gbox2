@@ -106,7 +106,9 @@ static tb_size_t g2_skia_bitmap_height(tb_handle_t bitmap)
 
 	return sbitmap->height();
 }
-
+static tb_void_t g2_skia_bitmap_resize(tb_handle_t bitmap, tb_size_t width, tb_size_t height)
+{
+}
 /* ///////////////////////////////////////////////////////////////////////
  * interfaces
  */
@@ -147,6 +149,10 @@ extern "C"
 	tb_size_t g2_bitmap_height(tb_handle_t bitmap)
 	{
 		return g2_skia_bitmap_height(bitmap);
+	}
+	tb_void_t g2_bitmap_resize(tb_handle_t bitmap, tb_size_t width, tb_size_t height)
+	{
+		g2_skia_bitmap_resize(bitmap, width, height);
 	}
 }
 

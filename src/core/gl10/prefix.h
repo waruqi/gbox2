@@ -20,13 +20,16 @@
  * @file		prefix.h
  *
  */
-#ifndef G2_CORE_GL_PREFIX_H
-#define G2_CORE_GL_PREFIX_H
+#ifndef G2_CORE_GL10_PREFIX_H
+#define G2_CORE_GL10_PREFIX_H
 
 /* ///////////////////////////////////////////////////////////////////////
  * includes
  */
 #include "../prefix.h"
+#include "../matrix.h"
+#include "../painter.h"
+#include "../../gbox2.h"
 
 #endif
 

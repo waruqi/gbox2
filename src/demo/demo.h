@@ -26,15 +26,14 @@
 // surface
 static tb_handle_t 	g_surface 	= TB_NULL;
 
+// context
+static tb_handle_t 	g_context 	= TB_NULL;
+
 // painter
 static tb_handle_t 	g_painter 	= TB_NULL;
 
 // style
 static tb_handle_t 	g_style 	= TB_NULL;
-
-// width & height
-static tb_size_t 	g_width 	= G2_DEMO_WIDTH;
-static tb_size_t 	g_height 	= G2_DEMO_HEIGHT;
 
 // pixfmt
 //static tb_size_t 	g_pixfmt 	= G2_PIXFMT_XRGB8888 | G2_PIXFMT_NENDIAN;
@@ -134,7 +133,7 @@ static tb_void_t g2_demo_gl_printf(tb_char_t const* fmt, ...)
 	glMatrixMode(GL_MODELVIEW);
 	glPushMatrix();
 	glLoadIdentity();
-	glTranslatef(20., g_height - 20., 0);
+	glTranslatef(20., g2_context_height(g_context) - 20., 0);
 	glScalef(0.12, 0.12, 0.12);
 
 	// render it
@@ -172,18 +171,20 @@ static tb_void_t g2_demo_gl_display()
 		if (g_shaderi == 6) 
 		{
 			g2_matrix_t mx;
-			tb_size_t width 	= g2_bitmap_width(g_bitmap);
-			tb_size_t height 	= g2_bitmap_height(g_bitmap);
+			tb_size_t bw 	= g2_bitmap_width(g_bitmap);
+			tb_size_t bh 	= g2_bitmap_height(g_bitmap);
+			tb_size_t cw 	= g2_context_width(g_context);
+			tb_size_t ch 	= g2_context_height(g_context);
 			if (g_bm)
 			{
 				g2_matrix_init_translate(&mx, -g2_long_to_float(100), -g2_long_to_float(100));
-				g2_matrix_scale(&mx, g2_long_to_float(200) / width, g2_long_to_float(200) / height);
+				g2_matrix_scale(&mx, g2_long_to_float(200) / bw, g2_long_to_float(200) / bh);
 				g2_shader_matrix_set(g_mhader[g_shaderi], &mx);
 			}
 			else
 			{
 				g2_matrix_init_translate(&mx, 0, 0);
-				g2_matrix_scale(&mx, g2_long_to_float(g_width) / width, g2_long_to_float(g_height) / height);
+				g2_matrix_scale(&mx, g2_long_to_float(cw) / bw, g2_long_to_float(ch) / bh);
 				g2_shader_matrix_set(g_shader[g_shaderi], &mx);
 			}
 		}
@@ -211,22 +212,27 @@ static tb_void_t g2_demo_gl_display()
 	if (g_bm) g2_load(g_painter);
 
 	// draw
+#ifndef G2_CONFIG_CORE_GL
 	if (g_surface)
 	{
+		tb_size_t width 	= g2_context_width(g_context);
+		tb_size_t height 	= g2_context_height(g_context);
+
 		glPixelZoom(1.0, -1.0);
-		glRasterPos2i(0, g_height-1);
+		glRasterPos2i(0, height - 1);
 		switch (g_pixfmt)
 		{
 		case G2_PIXFMT_RGB565:
-			glDrawPixels(g_width, g_height, GL_RGB, GL_UNSIGNED_SHORT_5_6_5, g2_bitmap_data(g_surface));
+			glDrawPixels(width, height, GL_RGB, GL_UNSIGNED_SHORT_5_6_5, g2_bitmap_data(g_surface));
 			break;
 		case G2_PIXFMT_XRGB8888:
-			glDrawPixels(g_width, g_height, GL_BGRA, GL_UNSIGNED_BYTE, g2_bitmap_data(g_surface));
+			glDrawPixels(width, height, GL_BGRA, GL_UNSIGNED_BYTE, g2_bitmap_data(g_surface));
 			break;
 		default:
 			break;
 		}
 	}
+#endif
 
 	// render fps & rpt
 	if (!g_bt) g_bt = tb_uclock();
@@ -238,74 +244,15 @@ static tb_void_t g2_demo_gl_display()
 }
 static tb_void_t g2_demo_gl_reshape(tb_int_t w, tb_int_t h)
 {
-	// init width & height
-	g_width 	= w;
-	g_height 	= h;
-
-	// init position
-	g_x0 		= g_width >> 1;
-	g_y0 		= g_height >> 1;
-	g_dx 		= g_width >> 2;
-	g_dy 		= g_height >> 2;
-	g_x 		= g_dx;
-	g_y 		= g_dy;
-
-	// init matrix
-	g2_matrix_init_translate(&g_mx, g2_long_to_float(g_x0), g2_long_to_float(g_y0));	
-
-	// init surface
-#ifndef G2_CONFIG_CORE_GL
-	if (g_surface) g2_bitmap_exit(g_surface);
-	g_surface = g2_bitmap_init(g_pixfmt, g_width, g_height);
-	tb_assert_and_check_return_val(g_surface, 0);
-	g2_bitmap_make(g_surface);
-#endif
-
-	// init painter
-	if (g_painter) g2_exit(g_painter);
-	g_painter = g2_init(g_surface);
-	tb_assert_and_check_return_val(g_painter, 0);
-
-	// init style
-	g_style = g2_style(g_painter);
-	tb_assert_and_check_return_val(g_style, 0);
-
-	g2_style_width_set(g_style, g2_long_to_float(g_penw));
-	g2_style_cap_set(g_style, g_cap[g_capi]);
-	g2_style_join_set(g_style, g_join[g_joini]);
-
-	// init gradient
-	g2_color_t 		color[3] = {G2_COLOR_RED, G2_COLOR_GREEN, G2_COLOR_BLUE};
-	g2_gradient_t 	grad = {color, TB_NULL, 3};
-
-	// init shader
-	g_shader[1]	= g2_shader_init2i_linear(g_x0 - 100, 0, g_x0 + 100, 0, &grad, G2_SHADER_MODE_CLAMP);
-	g_mhader[1]	= g2_shader_init2i_linear(-50, 0, 50, 0, &grad, G2_SHADER_MODE_CLAMP);
-
-	g_shader[2]	= g2_shader_init2i_radial(g_x0, g_y0, 100, &grad, G2_SHADER_MODE_CLAMP);
-	g_mhader[2]	= g2_shader_init2i_radial(0, 0, 50, &grad, G2_SHADER_MODE_CLAMP);
-
-	g_shader[3]	= g2_shader_init2i_radial2(g_x0, g_y0, 100, g_x0, g_y0, 200, &grad, G2_SHADER_MODE_CLAMP);
-	g_mhader[3]	= g2_shader_init2i_radial2(0, 0, 50, 0, 0, 100, &grad, G2_SHADER_MODE_CLAMP);
-
-	g_shader[4]	= g2_shader_init2i_conical(0, 0, 100, g_width, g_height, 200, &grad, G2_SHADER_MODE_CLAMP);
-	g_mhader[4]	= g2_shader_init2i_conical(-50, -50, 50, 50, 50, 100, &grad, G2_SHADER_MODE_CLAMP);
-
-	g_shader[5]	= g2_shader_init2i_sweep(g_x0, g_y0, &grad);
-	g_mhader[5]	= g2_shader_init2i_sweep(0, 0, &grad);
-
-	if (g_bitmap)
-	{
-		g_shader[6]	= g2_shader_init_bitmap(g_bitmap, G2_SHADER_MODE_CLAMP, G2_SHADER_MODE_CLAMP);
-		g_mhader[6]	= g2_shader_init_bitmap(g_bitmap, G2_SHADER_MODE_CLAMP, G2_SHADER_MODE_CLAMP);
-	}
-
 	// init viewport
 	glViewport(0, 0, w, h);
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 	gluOrtho2D(0.0, (GLfloat)w, 0.0, (GLfloat)h);
 	glMatrixMode(GL_MODELVIEW);
+
+	// resize context
+	g2_context_resize(g_context, w, h);
 
 	// resize
 	g2_demo_size(w, h);
@@ -365,8 +312,8 @@ static tb_void_t g2_demo_gl_move(tb_int_t x, tb_int_t y)
 	g2_float_t y0 = g2_long_to_float(g_y0);
 	g2_float_t dx = g2_long_to_float(g_dx);
 	g2_float_t dy = g2_long_to_float(g_dy);
-	g2_float_t dw = g2_long_to_float(g_width);
-	g2_float_t dh = g2_long_to_float(g_height);
+	g2_float_t dw = g2_long_to_float(g2_context_width(g_context));
+	g2_float_t dh = g2_long_to_float(g2_context_height(g_context));
 
 	g2_float_t an = 0;
 	if (y == g_y0) an = 0;
@@ -386,7 +333,112 @@ static tb_void_t g2_demo_gl_move(tb_int_t x, tb_int_t y)
 
 	g2_demo_move(x, y);
 }
+tb_bool_t g2_demo_gl_init(tb_int_t argc, tb_char_t** argv)
+{
+	// init gl
+	glutInit (&argc, argv);
+	glutInitDisplayMode (GLUT_RGBA | GLUT_DOUBLE | GLUT_ALPHA | GLUT_STENCIL | GLUT_MULTISAMPLE);
+	//glutInitDisplayMode (GLUT_RGBA | GLUT_DOUBLE | GLUT_STENCIL);
+	glutInitWindowPosition (0, 0);
+	glutInitWindowSize (G2_DEMO_WIDTH, G2_DEMO_HEIGHT);
+	glutCreateWindow ("gbox2");
+	glutDisplayFunc(g2_demo_gl_display);
+	glutIdleFunc(g2_demo_gl_display);
+	glutReshapeFunc(g2_demo_gl_reshape);
+	glutMouseFunc(g2_demo_gl_click);
+	glutPassiveMotionFunc(g2_demo_gl_move);
+	glutMotionFunc(g2_demo_drag);
+	glutKeyboardFunc(g2_demo_gl_keyboard);
+	glutSpecialFunc(g2_demo_gl_special);
 
+	// ok
+	return TB_TRUE;
+}
+
+/* ////////////////////////////////////////////////////////////////////////
+ * gbox2
+ */
+tb_bool_t g2_demo_gbox2_init(tb_int_t argc, tb_char_t** argv)
+{
+	// init bitmap
+	if (argv[1]) g_bitmap = g2_bitmap_init_url(g_pixfmt, argv[1]);
+
+	// init gradient
+	g2_color_t 		color[3] = {G2_COLOR_RED, G2_COLOR_GREEN, G2_COLOR_BLUE};
+	g2_gradient_t 	grad = {color, TB_NULL, 3};
+
+	// init shader
+	g_shader[1]	= g2_shader_init2i_linear(g_x0 - 100, 0, g_x0 + 100, 0, &grad, G2_SHADER_MODE_CLAMP);
+	g_mhader[1]	= g2_shader_init2i_linear(-50, 0, 50, 0, &grad, G2_SHADER_MODE_CLAMP);
+
+	g_shader[2]	= g2_shader_init2i_radial(g_x0, g_y0, 100, &grad, G2_SHADER_MODE_CLAMP);
+	g_mhader[2]	= g2_shader_init2i_radial(0, 0, 50, &grad, G2_SHADER_MODE_CLAMP);
+
+	g_shader[3]	= g2_shader_init2i_radial2(g_x0, g_y0, 100, g_x0, g_y0, 200, &grad, G2_SHADER_MODE_CLAMP);
+	g_mhader[3]	= g2_shader_init2i_radial2(0, 0, 50, 0, 0, 100, &grad, G2_SHADER_MODE_CLAMP);
+
+	g_shader[4]	= g2_shader_init2i_conical(0, 0, 100, G2_DEMO_WIDTH, G2_DEMO_HEIGHT, 200, &grad, G2_SHADER_MODE_CLAMP);
+	g_mhader[4]	= g2_shader_init2i_conical(-50, -50, 50, 50, 50, 100, &grad, G2_SHADER_MODE_CLAMP);
+
+	g_shader[5]	= g2_shader_init2i_sweep(g_x0, g_y0, &grad);
+	g_mhader[5]	= g2_shader_init2i_sweep(0, 0, &grad);
+
+	if (g_bitmap)
+	{
+		g_shader[6]	= g2_shader_init_bitmap(g_bitmap, G2_SHADER_MODE_CLAMP, G2_SHADER_MODE_CLAMP);
+		g_mhader[6]	= g2_shader_init_bitmap(g_bitmap, G2_SHADER_MODE_CLAMP, G2_SHADER_MODE_CLAMP);
+	}
+
+	// init context
+#ifdef G2_CONFIG_CORE_GL
+	g_context = g2_context_init_gl10(G2_DEMO_WIDTH, G2_DEMO_HEIGHT);
+	tb_assert_and_check_return_val(g_context, TB_FALSE);
+#else
+	g_surface = g2_bitmap_init(g_pixfmt, G2_DEMO_WIDTH, G2_DEMO_HEIGHT);
+	tb_assert_and_check_return_val(g_surface, TB_FALSE);
+	g2_bitmap_make(g_surface);
+
+	g_context = g2_context_init(g_surface);
+	tb_assert_and_check_return_val(g_context, TB_FALSE);
+#endif
+
+	// init painter
+	g_painter = g2_init(g_context);
+	tb_assert_and_check_return_val(g_painter, TB_FALSE);
+
+	// init style
+	g_style = g2_style(g_painter);
+	tb_assert_and_check_return_val(g_style, TB_FALSE);
+
+	g2_style_width_set(g_style, g2_long_to_float(g_penw));
+	g2_style_cap_set(g_style, g_cap[g_capi]);
+	g2_style_join_set(g_style, g_join[g_joini]);
+
+	// init position
+	g_x0 		= G2_DEMO_WIDTH >> 1;
+	g_y0 		= G2_DEMO_HEIGHT >> 1;
+	g_dx 		= G2_DEMO_WIDTH >> 2;
+	g_dy 		= G2_DEMO_HEIGHT >> 2;
+	g_x 		= g_dx;
+	g_y 		= g_dy;
+
+	// init matrix
+	g2_matrix_init_translate(&g_mx, g2_long_to_float(g_x0), g2_long_to_float(g_y0));	
+
+	// ok
+	return TB_TRUE;
+}
+tb_void_t g2_demo_gbox2_exit()
+{
+	// exit painter
+	if (g_painter) g2_exit(g_painter);
+
+	// exit context
+	if (g_context) g2_context_exit(g_context);
+
+	// exit surface
+	if (g_surface) g2_bitmap_exit(g_surface);
+}
 /* ////////////////////////////////////////////////////////////////////////
  * main
  */
@@ -399,23 +451,10 @@ tb_int_t main(tb_int_t argc, tb_char_t** argv)
 	atexit(g2_demo_exit);
 
 	// init gl
-	glutInit (&argc, argv);
-	glutInitDisplayMode (GLUT_RGBA | GLUT_DOUBLE | GLUT_ALPHA | GLUT_STENCIL | GLUT_MULTISAMPLE);
-	//glutInitDisplayMode (GLUT_RGBA | GLUT_DOUBLE | GLUT_STENCIL);
-	glutInitWindowPosition (0, 0);
-	glutInitWindowSize (g_width, g_height);
-	glutCreateWindow ("gbox2");
-	glutDisplayFunc(g2_demo_gl_display);
-	glutIdleFunc(g2_demo_gl_display);
-	glutReshapeFunc(g2_demo_gl_reshape);
-	glutMouseFunc(g2_demo_gl_click);
-	glutPassiveMotionFunc(g2_demo_gl_move);
-	glutMotionFunc(g2_demo_drag);
-	glutKeyboardFunc(g2_demo_gl_keyboard);
-	glutSpecialFunc(g2_demo_gl_special);
+	if (!g2_demo_gl_init(argc, argv)) return 0;
 
-	// init bitmap
-	if (argv[1]) g_bitmap = g2_bitmap_init_url(g_pixfmt, argv[1]);
+	// init gbox2
+	if (!g2_demo_gbox2_init(argc, argv)) return 0;
 
 	// init demo 
 	if (!g2_demo_init(argc, argv)) return 0;
@@ -426,23 +465,13 @@ tb_int_t main(tb_int_t argc, tb_char_t** argv)
 	// exit demo
 	g2_demo_exit();
 
-	// free painter
-	if (g_painter) g2_exit(g_painter);
-
-	// free surface
-	if (g_surface) g2_bitmap_exit(g_surface);
+	// exit gbox2
+	g2_demo_gbox2_exit();
 
 	// exit tbox
 	tb_exit();
 	return 0;
 }
-
-
-
-
-
-
-
 
 
 

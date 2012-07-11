@@ -27,16 +27,7 @@
 #include "image/image.h"
 
 /* ///////////////////////////////////////////////////////////////////////
- * types
- */
-
-
-/* ///////////////////////////////////////////////////////////////////////
- * globals
- */
-
-/* ///////////////////////////////////////////////////////////////////////
- * interfaces
+ * implementation
  */
 tb_handle_t g2_bitmap_init_url(tb_size_t pixfmt, tb_char_t const* url)
 {
@@ -82,3 +73,53 @@ tb_handle_t g2_bitmap_init_gst(tb_size_t pixfmt, tb_gstream_t* gst)
 	// ok?
 	return bitmap;
 }
+#ifndef G2_CONFIG_CORE_SKIA
+tb_handle_t g2_bitmap_init(tb_size_t pixfmt, tb_size_t width, tb_size_t height)
+{
+	tb_trace_noimpl();
+	return TB_NULL;
+}
+tb_void_t g2_bitmap_exit(tb_handle_t bitmap)
+{
+	tb_trace_noimpl();
+}
+tb_pointer_t g2_bitmap_make(tb_handle_t bitmap)
+{
+	tb_trace_noimpl();
+	return TB_NULL;
+}
+tb_size_t g2_bitmap_size(tb_handle_t bitmap)
+{
+	tb_trace_noimpl();
+	return TB_NULL;
+}
+tb_size_t g2_bitmap_line(tb_handle_t bitmap)
+{
+	tb_trace_noimpl();
+	return TB_NULL;
+}
+tb_pointer_t g2_bitmap_data(tb_handle_t bitmap)
+{
+	tb_trace_noimpl();
+	return TB_NULL;
+}
+tb_void_t g2_bitmap_data_set(tb_handle_t bitmap, tb_pointer_t data)
+{
+	tb_trace_noimpl();
+}
+tb_size_t g2_bitmap_width(tb_handle_t bitmap)
+{
+	tb_trace_noimpl();
+	return TB_NULL;
+}
+tb_size_t g2_bitmap_height(tb_handle_t bitmap)
+{
+	tb_trace_noimpl();
+	return TB_NULL;
+}
+tb_void_t g2_bitmap_resize(tb_handle_t bitmap, tb_size_t width, tb_size_t height)
+{
+	tb_trace_noimpl();
+}
+#endif
+

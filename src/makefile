@@ -19,11 +19,17 @@ gbox2_C_FILES 			+= \
 						core/image/decoder/bmp \
 						core/image/decoder/decoder
 
+gbox2_C_FILES-$(G2_CONFIG_CORE_GL10) += \
+						core/gl10/style \
+						core/gl10/context \
+						core/gl10/painter 
+
 gbox2_CPP_FILES-$(G2_CONFIG_CORE_SKIA) += \
 						core/skia/path \
 						core/skia/style \
 						core/skia/shader \
 						core/skia/bitmap \
+						core/skia/context \
 						core/skia/painter 
 
 # flags

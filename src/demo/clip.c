@@ -249,14 +249,14 @@ static tb_void_t g2_demo_render()
 	g2_matrix_set(g_painter, TB_NULL);
 
 	// clip
-	g2_clip2i_rect(g_painter, G2_CLIP_MODE_INTERSECT, 10, 10, g_width - 20, g_height - 20);
+	g2_clip2i_rect(g_painter, G2_CLIP_MODE_INTERSECT, 10, 10, g2_context_width(g_context) - 20, g2_context_height(g_context) - 20);
 
 	// set shader matrix
 	tb_handle_t shader = g2_style_shader(g_style);
 	if (shader && g_bm) g2_shader_matrix_set(shader, &g_mx);
 
 	// draw
-	g2_draw2i_rect(g_painter, 0, 0, g_width, g_height);
+	g2_draw2i_rect(g_painter, 0, 0, g2_context_width(g_context), g2_context_height(g_context));
 
 	// load
 	g2_load(g_painter);

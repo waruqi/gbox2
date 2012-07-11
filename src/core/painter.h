@@ -65,7 +65,7 @@ typedef enum __g2_save_mode_t
  */
 
 // init & exit
-tb_handle_t 		g2_init(tb_handle_t surface);
+tb_handle_t 		g2_init(tb_handle_t context);
 tb_void_t 			g2_exit(tb_handle_t painter);
 
 // save & load
