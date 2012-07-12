@@ -45,7 +45,7 @@ typedef enum __g2_style_mode_t
 ,	G2_STYLE_MODE_STROKE 		= 2 //!< stroke
 ,	G2_STYLE_MODE_FILL_STROKE 	= 3 //!< fill & stroke
 
-}g2_style_flags_t;
+}g2_style_mode_t;
 
 // the style flag type
 typedef enum __g2_style_flag_t
@@ -74,6 +74,32 @@ typedef enum __g2_style_join_t
 ,	G2_STYLE_JOIN_BEVEL			= 3 //!< a flat bevel join
 
 }g2_style_join_t;
+
+// the style type
+typedef struct __g2_style_t
+{
+	// the style mode
+	tb_size_t 			mode 	: 4;
+
+	// the style flag
+	tb_size_t 			flag 	: 4;
+
+	// the pen join
+	tb_size_t 			join 	: 4;
+
+	// the pen cap
+	tb_size_t 			cap 	: 4;
+
+	// the style color
+	g2_color_t 			color;
+
+	// the pen width
+	g2_float_t 			width;
+
+	// the shader
+	tb_handle_t 		shader;
+
+}g2_style_t;
 
 /* ///////////////////////////////////////////////////////////////////////
  * interfaces

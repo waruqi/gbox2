@@ -42,8 +42,8 @@
 // the painter type
 typedef struct __g2_skia_painter_t
 {
-	// the surface
-	SkBitmap* 			surface;
+	// the context
+	SkBitmap* 			context;
 
 	// the canvas
 	SkCanvas* 			canvas;
@@ -75,20 +75,20 @@ static tb_void_t g2_skia_exit(tb_handle_t painter)
 	// free it
 	delete spainter;
 }
-static tb_handle_t g2_skia_init(tb_handle_t surface)
+static tb_handle_t g2_skia_init(tb_handle_t context)
 {
 	// check
-	tb_assert_and_check_return_val(surface, TB_NULL);
+	tb_assert_and_check_return_val(context, TB_NULL);
 
 	// alloc
 	g2_skia_painter_t* spainter = new g2_skia_painter_t;
 	tb_assert_and_check_return_val(spainter, TB_NULL);
 
-	// init surface
-	spainter->surface = static_cast<SkBitmap*>(surface);
+	// init context
+	spainter->context = static_cast<SkBitmap*>(context);
 
 	// init canvas
-	spainter->canvas = new SkCanvas(*spainter->surface);
+	spainter->canvas = new SkCanvas(*spainter->context);
 	tb_assert_and_check_goto(spainter->canvas, fail);
 	spainter->canvas->resetMatrix();
 
@@ -121,9 +121,9 @@ static tb_void_t g2_skia_load(tb_handle_t painter)
 static tb_size_t g2_skia_pixfmt(tb_handle_t painter)
 {
 	g2_skia_painter_t* spainter = static_cast<g2_skia_painter_t*>(painter);
-	tb_assert_and_check_return_val(spainter && spainter->surface, G2_PIXFMT_NONE);
+	tb_assert_and_check_return_val(spainter && spainter->context, G2_PIXFMT_NONE);
 
-	return g2_pixfmt_from_skia(spainter->surface->config());
+	return g2_pixfmt_from_skia(spainter->context->config());
 }
 static tb_handle_t g2_skia_style(tb_handle_t painter)
 {
@@ -342,9 +342,9 @@ static tb_void_t g2_skia_draw_triangle(tb_handle_t painter, g2_triangle_t const*
 
 extern "C"
 {
-	tb_handle_t g2_init(tb_handle_t surface)
+	tb_handle_t g2_init(tb_handle_t context)
 	{
-		return g2_skia_init(surface);
+		return g2_skia_init(context);
 	}
 	tb_void_t g2_exit(tb_handle_t painter)
 	{

@@ -17,28 +17,39 @@
  * Copyright (C) 2009 - 2012, ruki All rights reserved.
  *
  * @author		ruki
- * @file		prefix.h
+ * @file		context.h
  *
  */
-#ifndef G2_CORE_GL10_PREFIX_H
-#define G2_CORE_GL10_PREFIX_H
+#ifndef G2_CORE_GL10_CONTEXT_H
+#define G2_CORE_GL10_CONTEXT_H
+
+// c plus plus
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /* ///////////////////////////////////////////////////////////////////////
  * includes
  */
-#include "../prefix.h"
-#include "../style.h"
-#include "../matrix.h"
-#include "../painter.h"
-#include "../../gbox2.h"
-#ifdef TB_CONFIG_OS_MAC
-# 	include <OpenGL/gl.h>
-# 	include <OpenGL/glu.h>
-# 	include <GLUT/glut.h>
-#else
-# 	include <GL/glut.h>
+#include "prefix.h"
+#include "../context.h"
+
+/* ///////////////////////////////////////////////////////////////////////
+ * types
+ */
+
+// the gl10 context type
+typedef struct __g2_gl10_context_t
+{
+	// the width & height
+	tb_size_t 			width;
+	tb_size_t 			height;
+
+}g2_gl10_context_t;
+
+// c plus plus
+#ifdef __cplusplus
+}
 #endif
 
 #endif
-
-

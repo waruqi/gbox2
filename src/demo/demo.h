@@ -212,7 +212,7 @@ static tb_void_t g2_demo_gl_display()
 	if (g_bm) g2_load(g_painter);
 
 	// draw
-#ifndef G2_CONFIG_CORE_GL
+#ifndef G2_CONFIG_CORE_GL10
 	if (g_surface)
 	{
 		tb_size_t width 	= g2_context_width(g_context);
@@ -244,12 +244,14 @@ static tb_void_t g2_demo_gl_display()
 }
 static tb_void_t g2_demo_gl_reshape(tb_int_t w, tb_int_t h)
 {
+#ifndef G2_CONFIG_CORE_GL10
 	// init viewport
 	glViewport(0, 0, w, h);
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 	gluOrtho2D(0.0, (GLfloat)w, 0.0, (GLfloat)h);
 	glMatrixMode(GL_MODELVIEW);
+#endif
 
 	// resize context
 	g2_context_resize(g_context, w, h);
@@ -390,7 +392,7 @@ tb_bool_t g2_demo_gbox2_init(tb_int_t argc, tb_char_t** argv)
 	}
 
 	// init context
-#ifdef G2_CONFIG_CORE_GL
+#ifdef G2_CONFIG_CORE_GL10
 	g_context = g2_context_init_gl10(G2_DEMO_WIDTH, G2_DEMO_HEIGHT);
 	tb_assert_and_check_return_val(g_context, TB_FALSE);
 #else

@@ -11,6 +11,7 @@ gbox2_TYPE 				= LIB
 gbox2_C_FILES 			+= \
 						gbox2 \
 						core/path \
+						core/style \
 						core/pixmap \
 						core/bitmap \
 						core/shader \
@@ -20,7 +21,6 @@ gbox2_C_FILES 			+= \
 						core/image/decoder/decoder
 
 gbox2_C_FILES-$(G2_CONFIG_CORE_GL10) += \
-						core/gl10/style \
 						core/gl10/context \
 						core/gl10/painter 
 
