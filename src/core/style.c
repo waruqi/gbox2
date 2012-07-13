@@ -57,7 +57,7 @@ tb_void_t g2_style_clear(tb_handle_t style)
 	tb_assert_and_check_return(gstyle);
 
 	gstyle->mode 	= G2_STYLE_MODE_NONE;
-	gstyle->flag 	= g2_quality() > G2_QUALITY_LOW? G2_STYLE_FLAG_ANTI_ALIAS : G2_STYLE_FLAG_NONE;
+	gstyle->flag 	= g2_quality() > G2_QUALITY_LOW? (G2_STYLE_FLAG_ANTI_ALIAS | G2_STYLE_FLAG_BITMAP_FILTER) : G2_STYLE_FLAG_NONE;
 	gstyle->join 	= G2_STYLE_JOIN_MITER;
 	gstyle->cap 	= G2_STYLE_CAP_BUTT;
 	gstyle->width 	= G2_ONE;

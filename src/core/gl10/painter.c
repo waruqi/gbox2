@@ -305,6 +305,12 @@ tb_void_t g2_draw_rect(tb_handle_t painter, g2_rect_t const* rect)
 	// mode
 	tb_size_t mode = g2_style_mode(gpainter->style_usr);
 
+	// flag
+	tb_size_t flag = g2_style_flag(gpainter->style_usr);
+
+	// shader
+	tb_handle_t shader = g2_style_shader(gpainter->style_usr);
+
 	// width
 	tb_float_t width = g2_style_width(gpainter->style_usr);
 
@@ -317,6 +323,35 @@ tb_void_t g2_draw_rect(tb_handle_t painter, g2_rect_t const* rect)
 	tb_float_t x1 = g2_float_to_tb(rect->x + rect->w - 1);
 	tb_float_t y1 = g2_float_to_tb(rect->y + rect->h - 1);
 
+	// antialiasing?
+	if (flag & G2_STYLE_FLAG_ANTI_ALIAS)
+	{
+		// init smooth
+		tb_size_t smooth = g2_quality() == G2_QUALITY_TOP? GL_NICEST : GL_FASTEST;
+
+		// smooth point
+		glEnable(GL_POINT_SMOOTH);
+		glHint(GL_POINT_SMOOTH, smooth);
+
+		// smooth line
+		glEnable(GL_LINE_SMOOTH);
+		glHint(GL_LINE_SMOOTH, smooth);
+
+		// smooth polygon
+		glEnable(GL_POLYGON_SMOOTH);
+		glHint(GL_POLYGON_SMOOTH, smooth);
+
+		// multisample
+		glEnable(GL_MULTISAMPLE);
+	}
+	else
+	{
+		glDisable(GL_POINT_SMOOTH);
+		glDisable(GL_LINE_SMOOTH);
+		glDisable(GL_POLYGON_SMOOTH);
+		glDisable(GL_MULTISAMPLE);
+	}
+
 	// matrix
 	g2_gl10_matrix_set(gpainter->matrix_gl, &gpainter->matrix);
 	glMatrixMode(GL_MODELVIEW);
@@ -326,7 +361,12 @@ tb_void_t g2_draw_rect(tb_handle_t painter, g2_rect_t const* rect)
 	// fill
 	if (mode & G2_STYLE_MODE_FILL)
 	{
-		glColor4f(color.r / 256., color.g / 256., color.b / 256., color.a / 256.);
+		if (shader)
+		{
+		}
+		else glColor4f(color.r / 256., color.g / 256., color.b / 256., color.a / 256.);
+
+		// draw
 		glRectf(x0, y0, x1, y1);
 	}
 

@@ -37,8 +37,9 @@ static tb_handle_t g2_skia_style_init()
 	tb_assert_and_check_return_val(sstyle, TB_NULL);
 	
 	// init style
-	if (g2_quality() > G2_QUALITY_LOW) sstyle->setFlags(sstyle->getFlags() | SkPaint::kAntiAlias_Flag);
-	else sstyle->setFlags(sstyle->getFlags() & ~SkPaint::kAntiAlias_Flag);
+	tb_size_t flag = SkPaint::kAntiAlias_Flag | SkPaint::kFilterBitmap_Flag;
+	if (g2_quality() > G2_QUALITY_LOW) sstyle->setFlags(sstyle->getFlags() | flag);
+	else sstyle->setFlags(sstyle->getFlags() & ~flag);
 
 	// ok
 	return sstyle;
@@ -61,8 +62,9 @@ static tb_void_t g2_skia_style_clear(tb_handle_t style)
 
 	// reset
 	sstyle->reset();
-	if (g2_quality() > G2_QUALITY_LOW) sstyle->setFlags(sstyle->getFlags() | SkPaint::kAntiAlias_Flag);
-	else sstyle->setFlags(sstyle->getFlags() & ~SkPaint::kAntiAlias_Flag);
+	tb_size_t flag = SkPaint::kAntiAlias_Flag | SkPaint::kFilterBitmap_Flag;
+	if (g2_quality() > G2_QUALITY_LOW) sstyle->setFlags(sstyle->getFlags() | flag);
+	else sstyle->setFlags(sstyle->getFlags() & ~flag);
 
 	// ref--
 	if (shader) SkSafeUnref(shader);

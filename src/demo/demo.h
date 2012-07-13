@@ -339,8 +339,7 @@ tb_bool_t g2_demo_gl_init(tb_int_t argc, tb_char_t** argv)
 {
 	// init gl
 	glutInit (&argc, argv);
-	glutInitDisplayMode (GLUT_RGBA | GLUT_DOUBLE | GLUT_ALPHA | GLUT_STENCIL | GLUT_MULTISAMPLE);
-	//glutInitDisplayMode (GLUT_RGBA | GLUT_DOUBLE | GLUT_STENCIL);
+	glutInitDisplayMode (GLUT_RGBA | GLUT_DOUBLE | GLUT_STENCIL);
 	glutInitWindowPosition (0, 0);
 	glutInitWindowSize (G2_DEMO_WIDTH, G2_DEMO_HEIGHT);
 	glutCreateWindow ("gbox2");

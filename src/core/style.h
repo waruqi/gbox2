@@ -52,6 +52,7 @@ typedef enum __g2_style_flag_t
 {
 	G2_STYLE_FLAG_NONE 			= 0 //!< none
 ,	G2_STYLE_FLAG_ANTI_ALIAS 	= 1 //!< antialiasing
+,	G2_STYLE_FLAG_BITMAP_FILTER = 2 //!< bitmap filter
 
 }g2_style_flag_t;
 
