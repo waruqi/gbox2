@@ -31,10 +31,13 @@
 #include "../matrix.h"
 #include "../painter.h"
 #include "../../gbox2.h"
-#ifdef TB_CONFIG_OS_MAC
+#if defined(TB_CONFIG_OS_MAC)
 # 	include <OpenGL/gl.h>
 # 	include <OpenGL/glu.h>
 # 	include <GLUT/glut.h>
+#elif defined(TB_CONFIG_OS_ANDROID)
+# 	include <GLES/gl.h>
+# 	include <GLES/glext.h>
 #else
 # 	include <GL/glut.h>
 #endif

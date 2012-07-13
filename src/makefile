@@ -269,7 +269,7 @@ gbox2_CPP_FILES-$(G2_CONFIG_CORE_SKIA) += $(skia_CPP_FILES)
 	
 # demo
 ifeq ($(G2_CONFIG_DEMO),y)
-SUB_PROS 				= demo
+SUB_PROS 				= demo/$(G2_CONFIG_DEMO_TYPE)
 endif
 
 include $(PRO_DIR)/suffix.mak

@@ -338,8 +338,10 @@ tb_void_t g2_draw_rect(tb_handle_t painter, g2_rect_t const* rect)
 		glHint(GL_LINE_SMOOTH, smooth);
 
 		// smooth polygon
+#ifndef TB_CONFIG_OS_ANDROID
 		glEnable(GL_POLYGON_SMOOTH);
 		glHint(GL_POLYGON_SMOOTH, smooth);
+#endif
 
 		// multisample
 		glEnable(GL_MULTISAMPLE);
@@ -348,7 +350,9 @@ tb_void_t g2_draw_rect(tb_handle_t painter, g2_rect_t const* rect)
 	{
 		glDisable(GL_POINT_SMOOTH);
 		glDisable(GL_LINE_SMOOTH);
+#ifndef TB_CONFIG_OS_ANDROID
 		glDisable(GL_POLYGON_SMOOTH);
+#endif
 		glDisable(GL_MULTISAMPLE);
 	}
 
@@ -367,7 +371,27 @@ tb_void_t g2_draw_rect(tb_handle_t painter, g2_rect_t const* rect)
 		else glColor4f(color.r / 256., color.g / 256., color.b / 256., color.a / 256.);
 
 		// draw
-		glRectf(x0, y0, x1, y1);
+//		glRectf(x0, y0, x1, y1);
+
+
+		GLfloat vertices[8];
+
+		vertices[0] = x0;
+		vertices[1] = y0;
+
+		vertices[2] = x1;
+		vertices[3] = y0;
+
+		vertices[4] = x0;
+		vertices[5] = y1;
+
+		vertices[6] = x1;
+		vertices[7] = y1;
+
+		glEnableClientState(GL_VERTEX_ARRAY);
+		glVertexPointer(2, GL_FLOAT, 0, vertices);
+		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+		glDisableClientState(GL_VERTEX_ARRAY);
 	}
 
 	glPopMatrix();
