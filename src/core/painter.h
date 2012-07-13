@@ -72,9 +72,6 @@ tb_void_t 			g2_exit(tb_handle_t painter);
 tb_size_t 			g2_save(tb_handle_t painter, tb_size_t mode);
 tb_void_t 			g2_load(tb_handle_t painter);
 
-// pixfmt
-tb_size_t 			g2_pixfmt(tb_handle_t painter);
-
 // style
 tb_handle_t 		g2_style(tb_handle_t painter);
 tb_void_t 			g2_style_set(tb_handle_t painter, tb_handle_t style);

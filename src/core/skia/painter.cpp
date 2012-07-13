@@ -118,13 +118,6 @@ static tb_void_t g2_skia_load(tb_handle_t painter)
 
 	spainter->canvas->restore();
 }
-static tb_size_t g2_skia_pixfmt(tb_handle_t painter)
-{
-	g2_skia_painter_t* spainter = static_cast<g2_skia_painter_t*>(painter);
-	tb_assert_and_check_return_val(spainter && spainter->context, G2_PIXFMT_NONE);
-
-	return g2_pixfmt_from_skia(spainter->context->config());
-}
 static tb_handle_t g2_skia_style(tb_handle_t painter)
 {
 	g2_skia_painter_t* spainter = static_cast<g2_skia_painter_t*>(painter);
@@ -357,10 +350,6 @@ extern "C"
 	tb_void_t g2_load(tb_handle_t painter)
 	{
 		g2_skia_load(painter);
-	}
-	tb_size_t g2_pixfmt(tb_handle_t painter)
-	{
-		return g2_skia_pixfmt(painter);
 	}
 	tb_handle_t g2_style(tb_handle_t painter)
 	{

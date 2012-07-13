@@ -27,23 +27,94 @@
 #include "context.h"
 
 /* ///////////////////////////////////////////////////////////////////////
+ * macros
+ */
+
+// the mcstack grow
+#ifdef TB_CONFIG_BINARY_SMALL
+# 	define G2_GL10_MCSTACK_GROW 				(32)
+#else
+# 	define G2_GL10_MCSTACK_GROW 				(64)
+#endif
+
+/* ///////////////////////////////////////////////////////////////////////
  * types
  */
+
+// the gl110 matrix and clip item type for stack
+typedef struct __g2_gl10_mcitem_t
+{
+	// the mode
+	tb_size_t 					mode;
+
+	// the matrix
+	g2_matrix_t 				matrix;
+
+	// the clipper
+	tb_handle_t 				clipper;
+
+}g2_gl10_mcitem_t;
+
 // the gl10 painter type
 typedef struct __g2_gl10_painter_t
 {
 	// the context
 	g2_gl10_context_t* 			context;
 
+	// the matrix
+	g2_matrix_t 				matrix;
+	GLfloat 					matrix_gl[16];
+
 	// the style
 	tb_handle_t 				style_def;
 	tb_handle_t 				style_usr;
+
+	// the matrix and clipper stack
+	tb_stack_t* 				mcstack;
 
 }g2_gl10_painter_t;
 
 /* ///////////////////////////////////////////////////////////////////////
  * gl10 
  */
+static __tb_inline__ tb_void_t g2_gl10_matrix_init(GLfloat* gmatrix)
+{
+	gmatrix[0] 	= 1.0f;
+	gmatrix[1] 	= 0.0f;
+	gmatrix[2] 	= 0.0f;
+	gmatrix[3] 	= 0.0f;
+	gmatrix[4] 	= 0.0f;
+	gmatrix[5] 	= 1.0f;
+	gmatrix[6] 	= 0.0f; 
+	gmatrix[7] 	= 0.0f;       
+	gmatrix[8] 	= 0.0f;
+	gmatrix[9] 	= 0.0f; 
+	gmatrix[10] = 1.0f; 
+	gmatrix[11] = 0.0f; 
+	gmatrix[12] = 0.0f; 
+	gmatrix[13] = 0.0f; 
+	gmatrix[14] = 1.0f;
+	gmatrix[15] = 1.0f;
+}
+static __tb_inline__ tb_void_t g2_gl10_matrix_set(GLfloat* gmatrix, g2_matrix_t const* matrix)
+{
+	gmatrix[0] 	= g2_float_to_tb(matrix->sx);
+	gmatrix[1] 	= g2_float_to_tb(matrix->ky);
+	gmatrix[2] 	= 0.0f;
+	gmatrix[3] 	= 0.0f;
+	gmatrix[4] 	= g2_float_to_tb(matrix->kx);
+	gmatrix[5] 	= g2_float_to_tb(matrix->sy);
+	gmatrix[6] 	= 0.0f; 
+	gmatrix[7] 	= 0.0f;       
+	gmatrix[8] 	= 0.0f;
+	gmatrix[9] 	= 0.0f; 
+	gmatrix[10] = 1.0f; 
+	gmatrix[11] = 0.0f; 
+	gmatrix[12] = g2_float_to_tb(matrix->tx); 
+	gmatrix[13] = g2_float_to_tb(matrix->ty); 
+	gmatrix[14] = 1.0f;
+	gmatrix[15] = 1.0f;
+}
 
 /* ///////////////////////////////////////////////////////////////////////
  * implementation
@@ -65,6 +136,13 @@ tb_handle_t g2_init(tb_handle_t context)
 	gpainter->style_usr = gpainter->style_def;
 	tb_assert_and_check_goto(gpainter->style_def, fail);
 
+	// init matrix
+	g2_matrix_clear(&gpainter->matrix);
+	g2_gl10_matrix_init(gpainter->matrix_gl);
+
+	// init stack
+	gpainter->mcstack = tb_stack_init(G2_GL10_MCSTACK_GROW, tb_item_func_ifm(sizeof(g2_gl10_mcitem_t), TB_NULL, TB_NULL));
+	tb_assert_and_check_goto(gpainter->mcstack, fail);
 
 	// ok
 	return gpainter;
@@ -78,23 +156,58 @@ tb_void_t g2_exit(tb_handle_t painter)
 	g2_gl10_painter_t* gpainter = (g2_gl10_painter_t*)painter;
 	if (gpainter)
 	{
+		// exit mcstack
+		if (gpainter->mcstack) tb_stack_exit(gpainter->mcstack);
+
 		// free it
 		tb_free(gpainter);
 	}
 }
 tb_size_t g2_save(tb_handle_t painter, tb_size_t mode)
-{
-	tb_trace_noimpl();
-	return TB_NULL;
+{	
+	g2_gl10_painter_t* gpainter = (g2_gl10_painter_t*)painter;
+	tb_assert_and_check_return_val(gpainter && gpainter->mcstack, 0);
+
+	// no mode?
+	tb_assert_and_check_return_val(mode, tb_stack_size(gpainter->mcstack));
+
+	// init item
+	g2_gl10_mcitem_t item = {0}; 
+	item.mode = mode;
+
+	// save matrix
+	if (mode & G2_SAVE_MODE_MATRIX)
+		item.matrix = gpainter->matrix;
+
+	// save clipper
+	if (mode & G2_SAVE_MODE_CLIP)
+		tb_trace_noimpl();
+
+	// put item
+	tb_stack_put(gpainter->mcstack, &item);
+
+	// ok
+	return tb_stack_size(gpainter->mcstack);
 }
 tb_void_t g2_load(tb_handle_t painter)
 {
-	tb_trace_noimpl();
-}
-tb_size_t g2_pixfmt(tb_handle_t painter)
-{
-	tb_trace_noimpl();
-	return TB_NULL;
+	g2_gl10_painter_t* gpainter = (g2_gl10_painter_t*)painter;
+	tb_assert_and_check_return(gpainter && gpainter->mcstack);
+
+	// init item
+	g2_gl10_mcitem_t* item = tb_stack_top(gpainter->mcstack);
+	tb_assert_and_check_return(item);
+
+	// load matrix
+	if (item->mode & G2_SAVE_MODE_MATRIX)
+		gpainter->matrix = item->matrix;
+
+	// load clipper
+	if (item->mode & G2_SAVE_MODE_CLIP)
+		tb_trace_noimpl();
+
+	// pop item
+	tb_stack_pop(gpainter->mcstack);
 }
 tb_handle_t g2_style(tb_handle_t painter)
 {
@@ -112,37 +225,53 @@ tb_void_t g2_style_set(tb_handle_t painter, tb_handle_t style)
 }
 g2_matrix_t const* g2_matrix(tb_handle_t painter)
 {
-	tb_trace_noimpl();
-	return TB_NULL;
+	g2_gl10_painter_t* gpainter = (g2_gl10_painter_t*)painter;
+	tb_assert_and_check_return_val(gpainter, TB_NULL);
+
+	return &gpainter->matrix;
 }
 tb_bool_t g2_rotate(tb_handle_t painter, g2_float_t degrees)
 {
-	tb_trace_noimpl();
-	return TB_NULL;
+	g2_gl10_painter_t* gpainter = (g2_gl10_painter_t*)painter;
+	tb_assert_and_check_return_val(gpainter, TB_FALSE);
+
+	return g2_matrix_rotate(&gpainter->matrix, degrees);
 }
 tb_bool_t g2_skew(tb_handle_t painter, g2_float_t kx, g2_float_t ky)
 {
-	tb_trace_noimpl();
-	return TB_NULL;
+	g2_gl10_painter_t* gpainter = (g2_gl10_painter_t*)painter;
+	tb_assert_and_check_return_val(gpainter, TB_FALSE);
+
+	return g2_matrix_skew(&gpainter->matrix, kx, ky);
 }
 tb_bool_t g2_scale(tb_handle_t painter, g2_float_t sx, g2_float_t sy)
 {
-	tb_trace_noimpl();
-	return TB_NULL;
+	g2_gl10_painter_t* gpainter = (g2_gl10_painter_t*)painter;
+	tb_assert_and_check_return_val(gpainter, TB_FALSE);
+
+	return g2_matrix_scale(&gpainter->matrix, sx, sy);
 }
 tb_bool_t g2_translate(tb_handle_t painter, g2_float_t dx, g2_float_t dy)
 {
-	tb_trace_noimpl();
-	return TB_NULL;
+	g2_gl10_painter_t* gpainter = (g2_gl10_painter_t*)painter;
+	tb_assert_and_check_return_val(gpainter, TB_FALSE);
+
+	return g2_matrix_translate(&gpainter->matrix, dx, dy);
 }
 tb_bool_t g2_multiply(tb_handle_t painter, g2_matrix_t const* matrix)
 {
-	tb_trace_noimpl();
-	return TB_NULL;
+	g2_gl10_painter_t* gpainter = (g2_gl10_painter_t*)painter;
+	tb_assert_and_check_return_val(gpainter && matrix, TB_FALSE);
+
+	return g2_matrix_multiply(&gpainter->matrix, matrix);
 }
 tb_void_t g2_matrix_set(tb_handle_t painter, g2_matrix_t const* matrix)
 {
-	tb_trace_noimpl();
+	g2_gl10_painter_t* gpainter = (g2_gl10_painter_t*)painter;
+	tb_assert_and_check_return(gpainter);
+
+	if (matrix) gpainter->matrix = *matrix;
+	else g2_matrix_clear(&gpainter->matrix);
 }
 tb_bool_t g2_clip_path(tb_handle_t painter, tb_size_t mode, tb_handle_t path)
 {
@@ -188,6 +317,12 @@ tb_void_t g2_draw_rect(tb_handle_t painter, g2_rect_t const* rect)
 	tb_float_t x1 = g2_float_to_tb(rect->x + rect->w - 1);
 	tb_float_t y1 = g2_float_to_tb(rect->y + rect->h - 1);
 
+	// matrix
+	g2_gl10_matrix_set(gpainter->matrix_gl, &gpainter->matrix);
+	glMatrixMode(GL_MODELVIEW);
+	glPushMatrix();
+	glMultMatrixf(gpainter->matrix_gl);
+
 	// fill
 	if (mode & G2_STYLE_MODE_FILL)
 	{
@@ -195,6 +330,9 @@ tb_void_t g2_draw_rect(tb_handle_t painter, g2_rect_t const* rect)
 		glRectf(x0, y0, x1, y1);
 	}
 
+	glPopMatrix();
+
+#if 0
 	// stroke
 	if (mode & G2_STYLE_MODE_STROKE)
 	{
@@ -228,6 +366,7 @@ tb_void_t g2_draw_rect(tb_handle_t painter, g2_rect_t const* rect)
 		glDrawArrays(GL_TRIANGLES, 0, 4);
 		glDisableClientState(GL_VERTEX_ARRAY);
 	}
+#endif
 }
 tb_void_t g2_draw_line(tb_handle_t painter, g2_line_t const* line)
 {
