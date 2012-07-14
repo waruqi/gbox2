@@ -330,16 +330,16 @@ tb_void_t g2_draw_rect(tb_handle_t painter, g2_rect_t const* rect)
 		tb_size_t smooth = g2_quality() == G2_QUALITY_TOP? GL_NICEST : GL_FASTEST;
 
 		// smooth point
-		glEnable(GL_POINT_SMOOTH);
+		glDisable(GL_POINT_SMOOTH);
 		glHint(GL_POINT_SMOOTH, smooth);
 
 		// smooth line
-		glEnable(GL_LINE_SMOOTH);
+		glDisable(GL_LINE_SMOOTH);
 		glHint(GL_LINE_SMOOTH, smooth);
 
 		// smooth polygon
 #ifndef TB_CONFIG_OS_ANDROID
-		glEnable(GL_POLYGON_SMOOTH);
+		glDisable(GL_POLYGON_SMOOTH);
 		glHint(GL_POLYGON_SMOOTH, smooth);
 #endif
 

@@ -190,17 +190,8 @@ static tb_void_t g2_skia_style_shader_set(tb_handle_t style, tb_handle_t shader)
 	SkPaint* sstyle = static_cast<SkPaint*>(style);
 	tb_assert_and_check_return(sstyle);
 
-	// get oshader
-	SkShader* oshader = sstyle->getShader();
-
 	// set shader
 	sstyle->setShader(static_cast<SkShader*>(shader));
-
-	// ref++
-	SkSafeRef(static_cast<SkShader*>(shader));
-
-	// oref--
-	if (oshader) SkSafeUnref(oshader);
 }
 
 /* ///////////////////////////////////////////////////////////////////////
