@@ -263,9 +263,25 @@ skia_CPP_FILES 			+= \
 						opts/SkBlitRect_opts_SSE2 \
 						opts/SkUtils_opts_SSE2
 endif
+	
+ifeq ($(TB_CONFIG_ARCH),arm)
+skia_CPP_FILES 			+= \
+						opts/opts_check_arm \
+						opts/SkBitmapProcState_opts_arm \
+						opts/SkBlitRow_opts_arm
+
+ifeq ($(G2_CONFIG_ARM_NEON),y)
+skia_ASM_FILES 			+= opts/memset16_neon
+skia_ASM_FILES 			+= opts/memset32_neon
+else
+skia_ASM_FILES 			+= opts/memset.arm
+endif
+endif
 
 skia_CPP_FILES 			:= $(addprefix third/skia/,$(skia_CPP_FILES))
+skia_ASM_FILES 			:= $(addprefix third/skia/,$(skia_ASM_FILES))
 gbox2_CPP_FILES-$(G2_CONFIG_CORE_SKIA) += $(skia_CPP_FILES)
+gbox2_ASM_FILES-$(G2_CONFIG_CORE_SKIA) += $(skia_ASM_FILES)
 	
 # demo
 ifeq ($(G2_CONFIG_DEMO),y)

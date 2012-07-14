@@ -13,10 +13,10 @@
  *    available in the core
  */
 
-#include "SkBlitRow.h"
-#include "SkUtils.h"
+#include "../core/SkBlitRow.h"
+#include "../core/SkUtils.h"
 
-#include "SkUtilsArm.h"
+#include "../core/SkUtilsArm.h"
 
 #if defined(SK_CPU_LENDIAN) && !SK_ARM_NEON_IS_NONE
 extern "C" void memset16_neon(uint16_t dst[], uint16_t value, int count);

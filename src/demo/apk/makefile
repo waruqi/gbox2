@@ -8,7 +8,7 @@ NAMES 					= apk
 apk_TYPE 				= BIN
 
 # demo
-SUB_PROS 				= gl10 skia
+SUB_PROS 				= gl10
 
 include $(PRO_DIR)/suffix.mak
 

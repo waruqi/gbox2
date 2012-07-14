@@ -65,6 +65,9 @@ class DemoView extends GLSurfaceView
 	// context
 	private Context 			context 		= null;
 
+	// painter
+	private int 				painter 		= 0;
+
 	// init
 	public DemoView(Context context, AttributeSet attrs) 
 	{
@@ -80,6 +83,29 @@ class DemoView extends GLSurfaceView
 		requestFocus();
 		setFocusableInTouchMode(true);
 
+		// init event
+		setOnTouchListener(new View.OnTouchListener()
+		{	
+			// touch
+			public boolean onTouch(View v, MotionEvent event) 
+			{
+				if (event.getAction() == MotionEvent.ACTION_MOVE) 
+				{
+					if (event.getPointerCount() == 1) 
+					{
+						if (painter != 0) demo_move(painter, event.getX(0), event.getY(0));
+					}
+				} 
+				return true;
+			}
+		});
+	}
+
+	// exit
+	public void exit()
+	{
+		if (painter != 0) demo_exit(painter);
+		painter = 0;
 	}
 
 	// render
@@ -97,21 +123,34 @@ class DemoView extends GLSurfaceView
 		// init surface
 		public void onSurfaceCreated(GL10 gl, EGLConfig config)
 		{
-
+			// init painter
+			painter = demo_init();
 		}
 
 		// draw frame
 		public void onDrawFrame(GL10 gl)
 		{
-
+			if (painter != 0) demo_draw(painter);
 		}
 
 		// resize surface
 		public void onSurfaceChanged(GL10 gl, int width, int height)
 		{
-
+			if (painter != 0) demo_size(painter, width, height);
 		}
 	}
 
+	// native
+	private static native int 	demo_init();
+	private static native void 	demo_exit(int painter);
+	private static native void 	demo_draw(int painter);
+	private static native void 	demo_size(int painter, int width, int height);
+	private static native void 	demo_move(int painter, float x, float y);
+
+	// load library
+	static 
+	{
+		System.loadLibrary("demo");
+	}
 }
 

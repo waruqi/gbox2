@@ -6,10 +6,10 @@
  */
 
 
-#include "SkBlitRow.h"
-#include "SkBlitMask.h"
-#include "SkColorPriv.h"
-#include "SkDither.h"
+#include "../core/SkBlitRow.h"
+#include "../core/SkBlitMask.h"
+#include "../core/SkColorPriv.h"
+#include "../core/SkDither.h"
 
 #if defined(__ARM_HAVE_NEON)
 #include <arm_neon.h>

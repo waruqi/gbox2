@@ -7,9 +7,9 @@
  */
 
 
-#include "SkBitmapProcState.h"
-#include "SkColorPriv.h"
-#include "SkUtils.h"
+#include "../core/SkBitmapProcState.h"
+#include "../core/SkColorPriv.h"
+#include "../core/SkUtils.h"
 
 #if __ARM_ARCH__ >= 6 && !defined(SK_CPU_BENDIAN)
 void SI8_D16_nofilter_DX_arm(
