@@ -72,6 +72,10 @@ tb_void_t 			g2_exit(tb_handle_t painter);
 tb_size_t 			g2_save(tb_handle_t painter, tb_size_t mode);
 tb_void_t 			g2_load(tb_handle_t painter);
 
+// context
+tb_handle_t 		g2_context(tb_handle_t painter);
+tb_void_t 			g2_context_set(tb_handle_t painter, tb_handle_t context);
+
 // style
 tb_handle_t 		g2_style(tb_handle_t painter);
 tb_void_t 			g2_style_set(tb_handle_t painter, tb_handle_t style);

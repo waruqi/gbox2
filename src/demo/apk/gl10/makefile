@@ -3,13 +3,15 @@ include $(PRO_DIR)/prefix.mak
 
 # debug
 ifeq ($(DEBUG),y)
-ANT_DEBUG := debug
+ANT_DEBUG 	:= debug
 else
-ANT_DEBUG := release
+ANT_DEBUG 	:= release
 endif
 
 # make all
 all : .null
+	export NDK_PROJECT_PATH=${shell pwd}
+	$(SDK)/ndk-build
 	ant $(ANT_DEBUG) -buildfile ./build.xml
 
 # make install
@@ -19,6 +21,7 @@ install : .null
 
 # make clean
 clean : .null
+	-@$(RM) ./jni/*.o
 	-@$(RMDIR) -rf ./gen
 	-@$(RMDIR) -rf ./bin
 

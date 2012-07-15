@@ -38,16 +38,16 @@ extern "C" {
  */
 
 // init & exit
-tb_handle_t 		g2_context_init(tb_handle_t bitmap);
-tb_handle_t 		g2_context_init_gl10(tb_size_t width, tb_size_t height);
+tb_handle_t 		g2_context_init_soft(tb_size_t pixfmt, tb_pointer_t data, tb_size_t width, tb_size_t height, tb_size_t lpitch);
+tb_handle_t 		g2_context_init_skia(tb_size_t pixfmt, tb_pointer_t data, tb_size_t width, tb_size_t height, tb_size_t lpitch);
+tb_handle_t 		g2_context_init_gl10(tb_size_t pixfmt, tb_size_t width, tb_size_t height);
 tb_void_t 			g2_context_exit(tb_handle_t context);
 
-// width & height
-tb_size_t 			g2_context_width(tb_handle_t context);
-tb_size_t 			g2_context_height(tb_handle_t context);
-
 // resize
-tb_void_t 			g2_context_resize(tb_handle_t context, tb_size_t width, tb_size_t height);
+tb_handle_t 		g2_context_resize(tb_handle_t context, tb_size_t width, tb_size_t height);
+
+// surface
+tb_handle_t 		g2_context_surface(tb_handle_t context);
 
 // c plus plus
 #ifdef __cplusplus

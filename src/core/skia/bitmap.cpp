@@ -29,7 +29,7 @@
 /* ///////////////////////////////////////////////////////////////////////
  * implementation
  */
-static tb_handle_t g2_skia_bitmap_init(tb_size_t pixfmt, tb_size_t width, tb_size_t height)
+static tb_handle_t g2_skia_bitmap_init(tb_size_t pixfmt, tb_size_t width, tb_size_t height, tb_size_t lpitch)
 {
 	// check
 	tb_assert_and_check_return_val(G2_PIXFMT_OK(pixfmt) && width && height, TB_NULL);
@@ -39,7 +39,7 @@ static tb_handle_t g2_skia_bitmap_init(tb_size_t pixfmt, tb_size_t width, tb_siz
 	tb_assert_and_check_return_val(sbitmap, TB_NULL);
 
 	// init config
-	sbitmap->setConfig(g2_pixfmt_to_skia(pixfmt), width, height);
+	sbitmap->setConfig(g2_pixfmt_to_skia(pixfmt), width, height, lpitch);
 
 	// ok
 	return sbitmap;
@@ -70,13 +70,6 @@ static tb_size_t g2_skia_bitmap_size(tb_handle_t bitmap)
 
 	return sbitmap->getSize();
 }
-static tb_size_t g2_skia_bitmap_line(tb_handle_t bitmap)
-{
-	SkBitmap* sbitmap = static_cast<SkBitmap*>(bitmap);
-	tb_assert_and_check_return_val(sbitmap, 0);
-
-	return sbitmap->rowBytes();
-}
 static tb_pointer_t g2_skia_bitmap_data(tb_handle_t bitmap)
 {
 	SkBitmap* sbitmap = static_cast<SkBitmap*>(bitmap);
@@ -106,17 +99,50 @@ static tb_size_t g2_skia_bitmap_height(tb_handle_t bitmap)
 
 	return sbitmap->height();
 }
-static tb_void_t g2_skia_bitmap_resize(tb_handle_t bitmap, tb_size_t width, tb_size_t height)
+static tb_size_t g2_skia_bitmap_lpitch(tb_handle_t bitmap)
 {
+	SkBitmap* sbitmap = static_cast<SkBitmap*>(bitmap);
+	tb_assert_and_check_return_val(sbitmap, 0);
+
+	return sbitmap->rowBytes();
 }
+static tb_size_t g2_skia_bitmap_pixfmt(tb_handle_t bitmap)
+{
+	SkBitmap* sbitmap = static_cast<SkBitmap*>(bitmap);
+	tb_assert_and_check_return_val(sbitmap, G2_PIXFMT_NONE);
+
+	return g2_pixfmt_from_skia(sbitmap->config());
+}
+static tb_handle_t g2_skia_bitmap_resize(tb_handle_t bitmap, tb_size_t width, tb_size_t height)
+{
+	SkBitmap* sbitmap = static_cast<SkBitmap*>(bitmap);
+	tb_assert_and_check_return_val(sbitmap && width && height, TB_NULL);
+
+	SkBitmap tmp;
+	if (sbitmap->pixelRef())
+	{
+		tmp.setConfig(sbitmap->config(), width, height, 0);
+		tmp.allocPixels();
+	}
+	else
+	{
+		tmp.setConfig(sbitmap->config(), width, height, sbitmap->rowBytes());
+		tmp.setPixels(sbitmap->getPixels());
+	}
+	tmp.swap(*sbitmap);
+
+	// ok
+	return sbitmap;
+}
+
 /* ///////////////////////////////////////////////////////////////////////
  * interfaces
  */
 extern "C"
 {
-	tb_handle_t g2_bitmap_init(tb_size_t pixfmt, tb_size_t width, tb_size_t height)
+	tb_handle_t g2_bitmap_init(tb_size_t pixfmt, tb_size_t width, tb_size_t height, tb_size_t lpitch)
 	{
-		return g2_skia_bitmap_init(pixfmt, width, height);
+		return g2_skia_bitmap_init(pixfmt, width, height, lpitch);
 	}
 	tb_void_t g2_bitmap_exit(tb_handle_t bitmap)
 	{
@@ -129,10 +155,6 @@ extern "C"
 	tb_size_t g2_bitmap_size(tb_handle_t bitmap)
 	{
 		return g2_skia_bitmap_size(bitmap);
-	}
-	tb_size_t g2_bitmap_line(tb_handle_t bitmap)
-	{
-		return g2_skia_bitmap_line(bitmap);
 	}
 	tb_pointer_t g2_bitmap_data(tb_handle_t bitmap)
 	{
@@ -150,9 +172,17 @@ extern "C"
 	{
 		return g2_skia_bitmap_height(bitmap);
 	}
-	tb_void_t g2_bitmap_resize(tb_handle_t bitmap, tb_size_t width, tb_size_t height)
+	tb_size_t g2_bitmap_lpitch(tb_handle_t bitmap)
 	{
-		g2_skia_bitmap_resize(bitmap, width, height);
+		return g2_skia_bitmap_lpitch(bitmap);
+	}
+	tb_size_t g2_bitmap_pixfmt(tb_handle_t bitmap)
+	{
+		return g2_skia_bitmap_pixfmt(bitmap);
+	}
+	tb_handle_t g2_bitmap_resize(tb_handle_t bitmap, tb_size_t width, tb_size_t height)
+	{
+		return g2_skia_bitmap_resize(bitmap, width, height);
 	}
 }
 

@@ -209,6 +209,20 @@ tb_void_t g2_load(tb_handle_t painter)
 	// pop item
 	tb_stack_pop(gpainter->mcstack);
 }
+tb_handle_t g2_context(tb_handle_t painter)
+{
+	g2_gl10_painter_t* gpainter = (g2_gl10_painter_t*)painter;
+	tb_assert_and_check_return_val(gpainter, TB_NULL);
+
+	return (tb_handle_t)gpainter->context;
+}
+tb_void_t g2_context_set(tb_handle_t painter, tb_handle_t context)
+{
+	g2_gl10_painter_t* gpainter = (g2_gl10_painter_t*)painter;
+	tb_assert_and_check_return(gpainter && context);
+
+	gpainter->context = (g2_gl10_context_t*)context;
+}
 tb_handle_t g2_style(tb_handle_t painter)
 {
 	g2_gl10_painter_t* gpainter = (g2_gl10_painter_t*)painter;

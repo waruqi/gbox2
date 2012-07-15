@@ -41,9 +41,8 @@ extern "C" {
 // the gl10 context type
 typedef struct __g2_gl10_context_t
 {
-	// the width & height
-	tb_size_t 			width;
-	tb_size_t 			height;
+	// the surface
+	tb_handle_t 		surface;
 
 }g2_gl10_context_t;
 

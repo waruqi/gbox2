@@ -30,18 +30,18 @@
 /* ///////////////////////////////////////////////////////////////////////
  * implementation
  */
-tb_handle_t g2_context_init_gl10(tb_size_t width, tb_size_t height)
+tb_handle_t g2_context_init_gl10(tb_size_t pixfmt, tb_size_t width, tb_size_t height)
 {
 	// check
-	tb_assert_and_check_return_val(width && height, TB_NULL);
+	tb_assert_and_check_return_val(G2_PIXFMT_OK(pixfmt) && width && height, TB_NULL);
 
 	// alloc
 	g2_gl10_context_t* gcontext = tb_malloc0(sizeof(g2_gl10_context_t));
 	tb_assert_and_check_return_val(gcontext, TB_NULL);
 
-	// init
-	gcontext->width = width;
-	gcontext->height = height;
+	// init surface
+	gcontext->surface = g2_bitmap_init(pixfmt, width, height, 0);
+	tb_assert_and_check_goto(gcontext->surface, fail);
 
 	// init viewport
 	glViewport(0, 0, width, height);
@@ -57,33 +57,37 @@ tb_handle_t g2_context_init_gl10(tb_size_t width, tb_size_t height)
 
 	// ok
 	return gcontext;
+
+fail:
+	if (gcontext) g2_context_exit(gcontext);
+	return TB_NULL;
 }
 tb_void_t g2_context_exit(tb_handle_t context)
 {
-	if (context) tb_free(context);
+	g2_gl10_context_t* gcontext = (g2_gl10_context_t*)context;
+	if (gcontext) 
+	{
+		// free surface
+		if (gcontext->surface) g2_bitmap_exit(gcontext->surface);
+
+		// free it
+		tb_free(gcontext);
+	}
 }
-tb_size_t g2_context_width(tb_handle_t context)
+tb_handle_t g2_context_surface(tb_handle_t context)
 {
 	g2_gl10_context_t* gcontext = (g2_gl10_context_t*)context;
-	tb_assert_and_check_return_val(gcontext, 0);
+	tb_assert_and_check_return_val(gcontext, TB_NULL);
 
-	return gcontext->width;
+	return gcontext->surface;
 }
-tb_size_t g2_context_height(tb_handle_t context)
+tb_handle_t g2_context_resize(tb_handle_t context, tb_size_t width, tb_size_t height)
 {
 	g2_gl10_context_t* gcontext = (g2_gl10_context_t*)context;
-	tb_assert_and_check_return_val(gcontext, 0);
+	tb_assert_and_check_return_val(gcontext && width && height, TB_NULL);
 
-	return gcontext->height;
-}
-tb_void_t g2_context_resize(tb_handle_t context, tb_size_t width, tb_size_t height)
-{
-	g2_gl10_context_t* gcontext = (g2_gl10_context_t*)context;
-	tb_assert_and_check_return(gcontext && width && height);
-
-	// update width & height
-	gcontext->width = width;
-	gcontext->height = height;
+	// update surface
+	if (!g2_bitmap_resize(gcontext->surface, width, height)) return TB_NULL;
 
 	// update viewport
 	glViewport(0, 0, width, height);
@@ -96,5 +100,8 @@ tb_void_t g2_context_resize(tb_handle_t context, tb_size_t width, tb_size_t heig
 #endif
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
+
+	// ok
+	return context;
 }
 

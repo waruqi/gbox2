@@ -2,7 +2,7 @@
 IS_CONFIG = yes
 
 # architecture
-PLAT = android_armv6
+PLAT = linux_x64
 
 # root
 PRO_DIR = /home/ruki/projects/personal/gbox2

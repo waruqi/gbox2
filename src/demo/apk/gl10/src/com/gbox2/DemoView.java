@@ -65,8 +65,8 @@ class DemoView extends GLSurfaceView
 	// context
 	private Context 			context 		= null;
 
-	// painter
-	private int 				painter 		= 0;
+	// demo
+	private int 				demo 		= 0;
 
 	// init
 	public DemoView(Context context, AttributeSet attrs) 
@@ -93,7 +93,7 @@ class DemoView extends GLSurfaceView
 				{
 					if (event.getPointerCount() == 1) 
 					{
-						if (painter != 0) demo_move(painter, event.getX(0), event.getY(0));
+						if (demo != 0) demo_move(demo, event.getX(0), event.getY(0));
 					}
 				} 
 				return true;
@@ -104,8 +104,8 @@ class DemoView extends GLSurfaceView
 	// exit
 	public void exit()
 	{
-		if (painter != 0) demo_exit(painter);
-		painter = 0;
+		if (demo != 0) demo_exit(demo);
+		demo = 0;
 	}
 
 	// render
@@ -123,29 +123,29 @@ class DemoView extends GLSurfaceView
 		// init surface
 		public void onSurfaceCreated(GL10 gl, EGLConfig config)
 		{
-			// init painter
-			painter = demo_init();
+			// init demo
+			demo = demo_init();
 		}
 
 		// draw frame
 		public void onDrawFrame(GL10 gl)
 		{
-			if (painter != 0) demo_draw(painter);
+			if (demo != 0) demo_draw(demo);
 		}
 
 		// resize surface
 		public void onSurfaceChanged(GL10 gl, int width, int height)
 		{
-			if (painter != 0) demo_size(painter, width, height);
+			if (demo != 0) demo_size(demo, width, height);
 		}
 	}
 
 	// native
 	private static native int 	demo_init();
-	private static native void 	demo_exit(int painter);
-	private static native void 	demo_draw(int painter);
-	private static native void 	demo_size(int painter, int width, int height);
-	private static native void 	demo_move(int painter, float x, float y);
+	private static native void 	demo_exit(int demo);
+	private static native void 	demo_draw(int demo);
+	private static native void 	demo_size(int demo, int width, int height);
+	private static native void 	demo_move(int demo, float x, float y);
 
 	// load library
 	static 

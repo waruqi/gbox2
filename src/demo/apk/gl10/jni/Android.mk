@@ -15,11 +15,12 @@
 LOCAL_PATH := $(call my-dir)
 
 include $(CLEAR_VARS)
+include $(LOCAL_PATH)/../../../../../config.mak
 include $(LOCAL_PATH)/../../../../../prefix.mak
 
 LOCAL_MODULE    := demo
-LOCAL_SRC_FILES := com_gbox2_DemoView.c
+LOCAL_SRC_FILES := com_gbox2_DemoView.c demo.c
 LOCAL_CFLAGS 	:= -I$(INC_DIR) -I$(SRC_DIR)
-LOCAL_LDLIBS 	:= -L$(SYSROOT)/usr/lib -L$(LOCAL_PATH) -L$(LIB_DIR) -lgbox2 -ltbox -llog
+LOCAL_LDLIBS 	:= -L$(SYSROOT)/usr/lib -L$(LOCAL_PATH) -L$(LIB_DIR) -L$(SRC_DIR) -lgbox2 -ltbox -llog
 
 include $(BUILD_SHARED_LIBRARY)

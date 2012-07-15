@@ -233,7 +233,7 @@ static tb_handle_t g2_bmp_decoder_done(g2_image_decoder_t* decoder)
 	if (!tb_gstream_bseek(gst, filesize - datasize)) return TB_NULL;
 
 	// init bitmap
-	tb_handle_t bitmap = g2_bitmap_init(pixfmt, width, height);
+	tb_handle_t bitmap = g2_bitmap_init(pixfmt, width, height, 0);
 	tb_assert_and_check_return_val(bitmap, TB_NULL);
 
 	// make bitmap
@@ -244,7 +244,7 @@ static tb_handle_t g2_bmp_decoder_done(g2_image_decoder_t* decoder)
 	tb_size_t 	b = dp->btp;
 	tb_size_t 	t = sp->btp;
 	tb_size_t 	r = tb_align4(linesize);
-	tb_size_t 	n = g2_bitmap_line(bitmap);
+	tb_size_t 	n = g2_bitmap_lpitch(bitmap);
 	tb_byte_t* 	p = data + (height - 1) * n;
 	tb_byte_t 	l[8192];
 	tb_assert_and_check_goto(r <= 8192, fail);

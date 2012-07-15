@@ -25,29 +25,41 @@
  * includes
  */
 #include "prefix.h"
-#include "../bitmap.h"
 
 /* ///////////////////////////////////////////////////////////////////////
  * implementation
  */
-static tb_handle_t g2_skia_context_init(tb_handle_t bitmap)
+static tb_handle_t g2_skia_context_init(tb_size_t pixfmt, tb_pointer_t data, tb_size_t width, tb_size_t height, tb_size_t lpitch)
 {
-	return bitmap;
+	// check
+	tb_assert_and_check_return_val(G2_PIXFMT_OK(pixfmt) && width && height, TB_NULL);
+
+	// init 
+	tb_handle_t context = g2_bitmap_init(pixfmt, width, height, lpitch);
+	tb_assert_and_check_return_val(context, TB_NULL);
+
+	// make
+	g2_bitmap_data_set(context, data);
+	if (!data) if (!g2_bitmap_make(context)) goto fail;
+
+	// ok
+	return context;
+
+fail:
+	if (context) g2_bitmap_exit(context);
+	return TB_NULL;
 }
 static tb_void_t g2_skia_context_exit(tb_handle_t context)
 {
+	if (context) g2_bitmap_exit(context);
 }
-static tb_size_t g2_skia_context_width(tb_handle_t context)
+static tb_handle_t g2_skia_context_surface(tb_handle_t context)
 {
-	return g2_bitmap_width(context);
+	return context;
 }
-static tb_size_t g2_skia_context_height(tb_handle_t context)
+static tb_handle_t g2_skia_context_resize(tb_handle_t context, tb_size_t width, tb_size_t height)
 {
-	return g2_bitmap_height(context);
-}
-static tb_void_t g2_skia_context_resize(tb_handle_t context, tb_size_t width, tb_size_t height)
-{
-	g2_bitmap_resize(context, width, height);
+	return g2_bitmap_resize(context, width, height);
 }
 
 /* ///////////////////////////////////////////////////////////////////////
@@ -55,25 +67,21 @@ static tb_void_t g2_skia_context_resize(tb_handle_t context, tb_size_t width, tb
  */
 extern "C"
 {
-	tb_handle_t g2_context_init(tb_handle_t bitmap)
+	tb_handle_t g2_context_init_skia(tb_size_t pixfmt, tb_pointer_t data, tb_size_t width, tb_size_t height, tb_size_t lpitch)
 	{
-		return g2_skia_context_init(bitmap);
+		return g2_skia_context_init(pixfmt, data, width, height, lpitch);
 	}
 	tb_void_t g2_context_exit(tb_handle_t context)
 	{
 		g2_skia_context_exit(context);
 	}
-	tb_size_t g2_context_width(tb_handle_t context)
+	tb_handle_t g2_context_surface(tb_handle_t context)
 	{
-		return g2_skia_context_width(context);
+		return g2_skia_context_surface(context);
 	}
-	tb_size_t g2_context_height(tb_handle_t context)
+	tb_handle_t g2_context_resize(tb_handle_t context, tb_size_t width, tb_size_t height)
 	{
-		return g2_skia_context_height(context);
-	}
-	tb_void_t g2_context_resize(tb_handle_t context, tb_size_t width, tb_size_t height)
-	{
-		g2_skia_context_resize(context, width, height);
+		return g2_skia_context_resize(context, width, height);
 	}
 }
 

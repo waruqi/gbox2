@@ -43,7 +43,7 @@
 typedef struct __g2_skia_painter_t
 {
 	// the context
-	SkBitmap* 			context;
+	tb_handle_t 		context;
 
 	// the canvas
 	SkCanvas* 			canvas;
@@ -80,15 +80,19 @@ static tb_handle_t g2_skia_init(tb_handle_t context)
 	// check
 	tb_assert_and_check_return_val(context, TB_NULL);
 
+	// init surface
+	SkBitmap const* surface = static_cast<SkBitmap const*>(g2_context_surface(context));
+	tb_assert_and_check_return_val(surface, TB_NULL);
+
 	// alloc
 	g2_skia_painter_t* spainter = new g2_skia_painter_t;
 	tb_assert_and_check_return_val(spainter, TB_NULL);
 
 	// init context
-	spainter->context = static_cast<SkBitmap*>(context);
-
+	spainter->context = context;
+	
 	// init canvas
-	spainter->canvas = new SkCanvas(*spainter->context);
+	spainter->canvas = new SkCanvas(*surface);
 	tb_assert_and_check_goto(spainter->canvas, fail);
 	spainter->canvas->resetMatrix();
 
@@ -117,6 +121,28 @@ static tb_void_t g2_skia_load(tb_handle_t painter)
 	tb_assert_and_check_return(spainter && spainter->canvas);
 
 	spainter->canvas->restore();
+}
+static tb_handle_t g2_skia_context(tb_handle_t painter)
+{
+	g2_skia_painter_t* spainter = static_cast<g2_skia_painter_t*>(painter);
+	tb_assert_and_check_return_val(spainter, TB_NULL);
+
+	return spainter->context;
+}
+static tb_void_t g2_skia_context_set(tb_handle_t painter, tb_handle_t context)
+{
+	g2_skia_painter_t* spainter = static_cast<g2_skia_painter_t*>(painter);
+	tb_assert_and_check_return(spainter && spainter->canvas && context);
+
+	// surface
+	SkBitmap const* surface = static_cast<SkBitmap const*>(g2_context_surface(context));
+	tb_assert_and_check_return(surface);
+
+	// update context
+	spainter->context = context;
+
+	// update canvas
+	spainter->canvas->setBitmapDevice(*surface);
 }
 static tb_handle_t g2_skia_style(tb_handle_t painter)
 {
@@ -350,6 +376,14 @@ extern "C"
 	tb_void_t g2_load(tb_handle_t painter)
 	{
 		g2_skia_load(painter);
+	}
+	tb_handle_t g2_context(tb_handle_t painter)
+	{
+		return g2_skia_context(painter);
+	}
+	tb_void_t g2_context_set(tb_handle_t painter, tb_handle_t context)
+	{
+		g2_skia_context_set(painter, context);
 	}
 	tb_handle_t g2_style(tb_handle_t painter)
 	{

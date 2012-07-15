@@ -16,28 +16,30 @@
 /* ////////////////////////////////////////////////////////////////////////
  * macros
  */
+
+// width & height
 #define G2_DEMO_WIDTH 			(640)
 #define G2_DEMO_HEIGHT 			(480)
+
+// pixfmt
+//#define G2_DEMO_PIXFMT 			(G2_PIXFMT_XRGB8888 | G2_PIXFMT_NENDIAN)
+#define G2_DEMO_PIXFMT 			(G2_PIXFMT_RGB565 | G2_PIXFMT_NENDIAN)
 
 /* ////////////////////////////////////////////////////////////////////////
  * globals
  */
 
-// surface
-static tb_handle_t 	g_surface 	= TB_NULL;
-
 // context
 static tb_handle_t 	g_context 	= TB_NULL;
+
+// surface
+static tb_handle_t 	g_surface 	= TB_NULL;
 
 // painter
 static tb_handle_t 	g_painter 	= TB_NULL;
 
 // style
 static tb_handle_t 	g_style 	= TB_NULL;
-
-// pixfmt
-//static tb_size_t 	g_pixfmt 	= G2_PIXFMT_XRGB8888 | G2_PIXFMT_NENDIAN;
-static tb_size_t 	g_pixfmt 	= G2_PIXFMT_RGB565 | G2_PIXFMT_NENDIAN;
 
 // clock
 static tb_hong_t 	g_bt 		= 0;
@@ -133,7 +135,7 @@ static tb_void_t g2_demo_gl_printf(tb_char_t const* fmt, ...)
 	glMatrixMode(GL_MODELVIEW);
 	glPushMatrix();
 	glLoadIdentity();
-	glTranslatef(20., g2_context_height(g_context) - 20., 0);
+	glTranslatef(20., g2_bitmap_height(g_surface) - 20., 0);
 	glScalef(0.12, 0.12, 0.12);
 
 	// render it
@@ -173,8 +175,8 @@ static tb_void_t g2_demo_gl_display()
 			g2_matrix_t mx;
 			tb_size_t bw 	= g2_bitmap_width(g_bitmap);
 			tb_size_t bh 	= g2_bitmap_height(g_bitmap);
-			tb_size_t cw 	= g2_context_width(g_context);
-			tb_size_t ch 	= g2_context_height(g_context);
+			tb_size_t cw 	= g2_bitmap_width(g_surface);
+			tb_size_t ch 	= g2_bitmap_height(g_surface);
 			if (g_bm)
 			{
 				g2_matrix_init_translate(&mx, -g2_long_to_float(100), -g2_long_to_float(100));
@@ -215,12 +217,13 @@ static tb_void_t g2_demo_gl_display()
 #ifndef G2_CONFIG_CORE_GL10
 	if (g_surface)
 	{
-		tb_size_t width 	= g2_context_width(g_context);
-		tb_size_t height 	= g2_context_height(g_context);
+		tb_size_t width 	= g2_bitmap_width(g_surface);
+		tb_size_t height 	= g2_bitmap_height(g_surface);
+		tb_size_t pixfmt 	= g2_bitmap_pixfmt(g_surface);
 
 		glPixelZoom(1.0, -1.0);
 		glRasterPos2i(0, height - 1);
-		switch (g_pixfmt)
+		switch (pixfmt)
 		{
 		case G2_PIXFMT_RGB565:
 			glDrawPixels(width, height, GL_RGB, GL_UNSIGNED_SHORT_5_6_5, g2_bitmap_data(g_surface));
@@ -253,8 +256,19 @@ static tb_void_t g2_demo_gl_reshape(tb_int_t w, tb_int_t h)
 	glMatrixMode(GL_MODELVIEW);
 #endif
 
+	// update position
+	g_x0 		= w >> 1;
+	g_y0 		= h >> 1;
+	g_dx 		= w >> 2;
+	g_dy 		= h >> 2;
+	g_x 		= g_dx;
+	g_y 		= g_dy;
+
+	// update matrix
+	g2_matrix_init_translate(&g_mx, g2_long_to_float(g_x0), g2_long_to_float(g_y0));	
+
 	// resize context
-	g2_context_resize(g_context, w, h);
+	g2_context_set(g_painter, g2_context_resize(g_context, w, h));
 
 	// resize
 	g2_demo_size(w, h);
@@ -314,8 +328,8 @@ static tb_void_t g2_demo_gl_move(tb_int_t x, tb_int_t y)
 	g2_float_t y0 = g2_long_to_float(g_y0);
 	g2_float_t dx = g2_long_to_float(g_dx);
 	g2_float_t dy = g2_long_to_float(g_dy);
-	g2_float_t dw = g2_long_to_float(g2_context_width(g_context));
-	g2_float_t dh = g2_long_to_float(g2_context_height(g_context));
+	g2_float_t dw = g2_long_to_float(g2_bitmap_width(g_surface));
+	g2_float_t dh = g2_long_to_float(g2_bitmap_height(g_surface));
 
 	g2_float_t an = 0;
 	if (y == g_y0) an = 0;
@@ -362,7 +376,7 @@ tb_bool_t g2_demo_gl_init(tb_int_t argc, tb_char_t** argv)
 tb_bool_t g2_demo_gbox2_init(tb_int_t argc, tb_char_t** argv)
 {
 	// init bitmap
-	if (argv[1]) g_bitmap = g2_bitmap_init_url(g_pixfmt, argv[1]);
+	if (argv[1]) g_bitmap = g2_bitmap_init_url(G2_DEMO_PIXFMT, argv[1]);
 
 	// init gradient
 	g2_color_t 		color[3] = {G2_COLOR_RED, G2_COLOR_GREEN, G2_COLOR_BLUE};
@@ -392,16 +406,16 @@ tb_bool_t g2_demo_gbox2_init(tb_int_t argc, tb_char_t** argv)
 
 	// init context
 #ifdef G2_CONFIG_CORE_GL10
-	g_context = g2_context_init_gl10(G2_DEMO_WIDTH, G2_DEMO_HEIGHT);
+	g_context = g2_context_init_gl10(G2_DEMO_PIXFMT, G2_DEMO_WIDTH, G2_DEMO_HEIGHT);
 	tb_assert_and_check_return_val(g_context, TB_FALSE);
 #else
-	g_surface = g2_bitmap_init(g_pixfmt, G2_DEMO_WIDTH, G2_DEMO_HEIGHT);
-	tb_assert_and_check_return_val(g_surface, TB_FALSE);
-	g2_bitmap_make(g_surface);
-
-	g_context = g2_context_init(g_surface);
+	g_context = g2_context_init_skia(G2_DEMO_PIXFMT, TB_NULL, G2_DEMO_WIDTH, G2_DEMO_HEIGHT, 0);
 	tb_assert_and_check_return_val(g_context, TB_FALSE);
 #endif
+
+	// init surface
+	g_surface = g2_context_surface(g_context);
+	tb_assert_and_check_return_val(g_surface, TB_FALSE);
 
 	// init painter
 	g_painter = g2_init(g_context);
@@ -410,10 +424,6 @@ tb_bool_t g2_demo_gbox2_init(tb_int_t argc, tb_char_t** argv)
 	// init style
 	g_style = g2_style(g_painter);
 	tb_assert_and_check_return_val(g_style, TB_FALSE);
-
-	g2_style_width_set(g_style, g2_long_to_float(g_penw));
-	g2_style_cap_set(g_style, g_cap[g_capi]);
-	g2_style_join_set(g_style, g_join[g_joini]);
 
 	// init position
 	g_x0 		= G2_DEMO_WIDTH >> 1;
@@ -436,9 +446,6 @@ tb_void_t g2_demo_gbox2_exit()
 
 	// exit context
 	if (g_context) g2_context_exit(g_context);
-
-	// exit surface
-	if (g_surface) g2_bitmap_exit(g_surface);
 }
 /* ////////////////////////////////////////////////////////////////////////
  * main

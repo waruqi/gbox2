@@ -28,6 +28,8 @@
  */
 #include "../prefix.h"
 #include "../matrix.h"
+#include "../bitmap.h"
+#include "../context.h"
 #include "../painter.h"
 #include "../../gbox2.h"
 #include "../../third/skia/skia.h"
