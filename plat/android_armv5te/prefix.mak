@@ -35,7 +35,7 @@ PWD 				= pwd
 CPPFLAGS_RELEASE 	= -O3 -DNDEBUG -freg-struct-return -fno-bounds-check
 CPPFLAGS_DEBUG 		= -g
 CPPFLAGS 			= -c -Wall -fomit-frame-pointer -march=armv5te \
-					  -I$(SDK)/platforms/android-4/arch-arm/usr/include 
+					  -I$(NDK)/platforms/android-4/arch-arm/usr/include 
 CPPFLAGS-I 			= -I
 CPPFLAGS-o 			= -o
 
@@ -58,7 +58,7 @@ CXXFLAGS_DEBUG 		=
 CXXFLAGS 			= \
 					-D_ISOC99_SOURCE -D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE \
 					-D_POSIX_C_SOURCE=200112 -D_XOPEN_SOURCE=600 \
-					-I$(SDK)/sources/cxx-stl/stlport/stlport
+					-I$(NDK)/sources/cxx-stl/stlport/stlport
 
 # ldflags
 LDFLAGS_RELEASE 	=

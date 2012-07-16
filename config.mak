@@ -8,7 +8,8 @@ PLAT = android_armv5te
 PRO_DIR = /home/ruki/projects/personal/gbox2
 PRO_NAME = gbox2
 DEBUG = y
-SDK = /home/ruki/programs/android-ndk-r8
+SDK = /home/ruki/programs/android-sdk-linux
+NDK = /home/ruki/programs/android-ndk-r8
 BIN = /home/ruki/programs/android-ndk-r8/toolchains/arm-linux-androideabi-4.4.3/prebuilt/linux-x86/bin
 HOST = mac
 CCACHE = ccache
@@ -20,6 +21,7 @@ export PRO_DIR
 export PRO_NAME
 export DEBUG
 export SDK
+export NDK
 export BIN
 export HOST
 export CCACHE

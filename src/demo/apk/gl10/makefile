@@ -10,8 +10,9 @@ endif
 
 # make all
 all : .null
+	$(SDK)/tools/android -v update project -p .
 	export NDK_PROJECT_PATH=${shell pwd}
-	$(SDK)/ndk-build
+	$(NDK)/ndk-build
 	ant $(ANT_DEBUG) -buildfile ./build.xml
 
 # make install

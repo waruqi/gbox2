@@ -1,12 +1,6 @@
 # includes
 include $(PRO_DIR)/prefix.mak
 
-# module name
-NAMES 					= apk
-
-# module type
-apk_TYPE 				= BIN
-
 # demo
 SUB_PROS 				= gl10
 
