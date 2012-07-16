@@ -42,6 +42,13 @@
 # 	include <GL/glut.h>
 #endif
 
+/* ///////////////////////////////////////////////////////////////////////
+ * macros
+ */
+#ifdef TB_CONFIG_OS_ANDROID
+# 	define glOrtho 		glOrthof
+#endif
+
 #endif
 
 

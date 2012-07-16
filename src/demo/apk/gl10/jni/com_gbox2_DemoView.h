@@ -17,42 +17,58 @@ extern "C" {
 /*
  * Class:     com_gbox2_DemoView
  * Method:    demo_init
- * Signature: ()I
+ * Signature: ()Z
  */
-JNIEXPORT jint JNICALL Java_com_gbox2_DemoView_demo_1init
+JNIEXPORT jboolean JNICALL Java_com_gbox2_DemoView_demo_1init
   (JNIEnv *, jclass);
 
 /*
  * Class:     com_gbox2_DemoView
  * Method:    demo_exit
- * Signature: (I)V
+ * Signature: ()V
  */
 JNIEXPORT void JNICALL Java_com_gbox2_DemoView_demo_1exit
-  (JNIEnv *, jclass, jint);
+  (JNIEnv *, jclass);
 
 /*
  * Class:     com_gbox2_DemoView
  * Method:    demo_draw
- * Signature: (I)V
+ * Signature: ()V
  */
 JNIEXPORT void JNICALL Java_com_gbox2_DemoView_demo_1draw
-  (JNIEnv *, jclass, jint);
+  (JNIEnv *, jclass);
 
 /*
  * Class:     com_gbox2_DemoView
  * Method:    demo_size
- * Signature: (III)V
+ * Signature: (II)V
  */
 JNIEXPORT void JNICALL Java_com_gbox2_DemoView_demo_1size
-  (JNIEnv *, jclass, jint, jint, jint);
+  (JNIEnv *, jclass, jint, jint);
 
 /*
  * Class:     com_gbox2_DemoView
  * Method:    demo_move
- * Signature: (IFF)V
+ * Signature: (FF)V
  */
 JNIEXPORT void JNICALL Java_com_gbox2_DemoView_demo_1move
-  (JNIEnv *, jclass, jint, jfloat, jfloat);
+  (JNIEnv *, jclass, jfloat, jfloat);
+
+/*
+ * Class:     com_gbox2_DemoView
+ * Method:    demo_tfps
+ * Signature: ()I
+ */
+JNIEXPORT jint JNICALL Java_com_gbox2_DemoView_demo_1tfps
+  (JNIEnv *, jclass);
+
+/*
+ * Class:     com_gbox2_DemoView
+ * Method:    demo_trpt
+ * Signature: ()I
+ */
+JNIEXPORT jint JNICALL Java_com_gbox2_DemoView_demo_1trpt
+  (JNIEnv *, jclass);
 
 // c plus plus
 #ifdef __cplusplus

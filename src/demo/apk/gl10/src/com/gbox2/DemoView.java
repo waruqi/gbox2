@@ -45,7 +45,10 @@ import android.os.SystemClock;
 import android.app.AlertDialog;  
 import android.content.DialogInterface;  
 import android.content.Intent;
-import android.os.Handler;
+import android.os.Handler; 
+import android.opengl.GLU;  
+import android.view.GestureDetector;
+import android.view.MotionEvent;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -64,9 +67,6 @@ class DemoView extends GLSurfaceView
 {
 	// context
 	private Context 			context 		= null;
-
-	// demo
-	private int 				demo 		= 0;
 
 	// init
 	public DemoView(Context context, AttributeSet attrs) 
@@ -93,7 +93,7 @@ class DemoView extends GLSurfaceView
 				{
 					if (event.getPointerCount() == 1) 
 					{
-						if (demo != 0) demo_move(demo, event.getX(0), event.getY(0));
+						demo_move(event.getX(0), event.getY(0));
 					}
 				} 
 				return true;
@@ -101,11 +101,22 @@ class DemoView extends GLSurfaceView
 		});
 	}
 
+	// fps
+	public int fps()
+	{
+		return demo_tfps();
+	}
+
+	// rpt
+	public int rpt()
+	{
+		return demo_trpt();
+	}
+
 	// exit
 	public void exit()
 	{
-		if (demo != 0) demo_exit(demo);
-		demo = 0;
+		demo_exit();
 	}
 
 	// render
@@ -124,28 +135,30 @@ class DemoView extends GLSurfaceView
 		public void onSurfaceCreated(GL10 gl, EGLConfig config)
 		{
 			// init demo
-			demo = demo_init();
+			demo_init();
 		}
 
 		// draw frame
 		public void onDrawFrame(GL10 gl)
 		{
-			if (demo != 0) demo_draw(demo);
+			demo_draw();
 		}
 
 		// resize surface
 		public void onSurfaceChanged(GL10 gl, int width, int height)
 		{
-			if (demo != 0) demo_size(demo, width, height);
+			demo_size(width, height);
 		}
 	}
 
 	// native
-	private static native int 	demo_init();
-	private static native void 	demo_exit(int demo);
-	private static native void 	demo_draw(int demo);
-	private static native void 	demo_size(int demo, int width, int height);
-	private static native void 	demo_move(int demo, float x, float y);
+	private static native void 		demo_init();
+	private static native void 		demo_exit();
+	private static native void 		demo_draw();
+	private static native void 		demo_size(int width, int height);
+	private static native void 		demo_move(float x, float y);
+	private static native int 		demo_tfps();
+	private static native int 		demo_trpt();
 
 	// load library
 	static 

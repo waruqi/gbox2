@@ -1,5 +1,4 @@
-obj/local/armeabi/objs/demo/com_gbox2_DemoView.o: \
- jni/com_gbox2_DemoView.c jni/prefix.h \
+obj/local/armeabi/objs/demo/demo.o: jni/demo.c jni/demo.h jni/prefix.h \
  /home/ruki/programs/android-ndk-r8/platforms/android-8/arch-arm/usr/include/jni.h \
  /home/ruki/programs/android-ndk-r8/platforms/android-8/arch-arm/usr/include/android/log.h \
  /home/ruki/projects/personal/gbox2/src/gbox2.h \
@@ -216,7 +215,17 @@ obj/local/armeabi/objs/demo/com_gbox2_DemoView.o: \
  /home/ruki/projects/personal/gbox2/src/core/matrix.h \
  /home/ruki/projects/personal/gbox2/src/core/bitmap.h \
  /home/ruki/projects/personal/gbox2/src/core/context.h \
- /home/ruki/projects/personal/gbox2/src/core/painter.h
+ /home/ruki/projects/personal/gbox2/src/core/painter.h \
+ /home/ruki/programs/android-ndk-r8/platforms/android-8/arch-arm/usr/include/GLES/gl.h \
+ /home/ruki/programs/android-ndk-r8/platforms/android-8/arch-arm/usr/include/GLES/glplatform.h \
+ /home/ruki/programs/android-ndk-r8/platforms/android-8/arch-arm/usr/include/KHR/khrplatform.h \
+ /home/ruki/programs/android-ndk-r8/platforms/android-8/arch-arm/usr/include/stdint.h \
+ /home/ruki/programs/android-ndk-r8/platforms/android-8/arch-arm/usr/include/sys/_types.h \
+ /home/ruki/programs/android-ndk-r8/platforms/android-8/arch-arm/usr/include/machine/_types.h \
+ /home/ruki/programs/android-ndk-r8/platforms/android-8/arch-arm/usr/include/GLES/glext.h \
+ jni/rect.c
+
+jni/demo.h:
 
 jni/prefix.h:
 
@@ -653,3 +662,19 @@ jni/prefix.h:
 /home/ruki/projects/personal/gbox2/src/core/context.h:
 
 /home/ruki/projects/personal/gbox2/src/core/painter.h:
+
+/home/ruki/programs/android-ndk-r8/platforms/android-8/arch-arm/usr/include/GLES/gl.h:
+
+/home/ruki/programs/android-ndk-r8/platforms/android-8/arch-arm/usr/include/GLES/glplatform.h:
+
+/home/ruki/programs/android-ndk-r8/platforms/android-8/arch-arm/usr/include/KHR/khrplatform.h:
+
+/home/ruki/programs/android-ndk-r8/platforms/android-8/arch-arm/usr/include/stdint.h:
+
+/home/ruki/programs/android-ndk-r8/platforms/android-8/arch-arm/usr/include/sys/_types.h:
+
+/home/ruki/programs/android-ndk-r8/platforms/android-8/arch-arm/usr/include/machine/_types.h:
+
+/home/ruki/programs/android-ndk-r8/platforms/android-8/arch-arm/usr/include/GLES/glext.h:
+
+jni/rect.c:

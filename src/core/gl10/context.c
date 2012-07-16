@@ -49,9 +49,7 @@ tb_handle_t g2_context_init_gl10(tb_size_t pixfmt, tb_size_t width, tb_size_t he
 	// init matrix
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-#ifndef TB_CONFIG_OS_ANDROID
-	gluOrtho2D(0.0, (GLfloat)width, 0.0, (GLfloat)height);
-#endif
+	glOrtho(0.0, (GLfloat)width, 0.0, (GLfloat)height, -1.0f, 1.0f);
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 
@@ -95,9 +93,7 @@ tb_handle_t g2_context_resize(tb_handle_t context, tb_size_t width, tb_size_t he
 	// update matrix
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-#ifndef TB_CONFIG_OS_ANDROID
-	gluOrtho2D(0.0, (GLfloat)width, 0.0, (GLfloat)height);
-#endif
+	glOrtho(0.0, (GLfloat)width, 0.0, (GLfloat)height, -1.0f, 1.0f);
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 

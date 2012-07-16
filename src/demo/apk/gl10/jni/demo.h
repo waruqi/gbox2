@@ -16,17 +16,24 @@ extern "C" {
  */
 
 // init & exit
-tb_handle_t 	g2_demo_init();
-tb_void_t 		g2_demo_exit(tb_handle_t hdemo);
+tb_bool_t 		g2_demo_gl_init();
+tb_void_t 		g2_demo_gl_exit();
 
 // draw
-tb_void_t 		g2_demo_draw(tb_handle_t hdemo);
-
-// size
-tb_void_t 		g2_demo_size(tb_handle_t hdemo, tb_size_t width, tb_size_t height);
+tb_void_t 		g2_demo_gl_draw();
 
 // move
-tb_void_t 		g2_demo_move(tb_handle_t hdemo, tb_long_t x, tb_long_t y);
+tb_void_t 		g2_demo_gl_move(tb_long_t x, tb_long_t y);
+
+// size
+tb_void_t 		g2_demo_gl_size(tb_size_t width, tb_size_t height);
+
+// fps
+tb_size_t 		g2_demo_gl_tfps();
+
+// rpt
+tb_size_t 		g2_demo_gl_trpt();
+
 
 // c plus plus
 #ifdef __cplusplus
