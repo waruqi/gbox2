@@ -3,8 +3,8 @@
 
 // core
 //#define G2_CONFIG_CORE_SOFT
-#define G2_CONFIG_CORE_SKIA
-//#define G2_CONFIG_CORE_GL10
+//#define G2_CONFIG_CORE_SKIA
+#define G2_CONFIG_CORE_GL10
 
 // float
 #define G2_CONFIG_FLOAT_FIXED
