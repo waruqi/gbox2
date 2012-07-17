@@ -13,8 +13,8 @@ G2_CONFIG_ARM_NEON 					= n
 
 # core
 G2_CONFIG_CORE_SOFT 				= n
-G2_CONFIG_CORE_SKIA 				= n
-G2_CONFIG_CORE_GL10 				= y
+G2_CONFIG_CORE_SKIA 				= y
+G2_CONFIG_CORE_GL10 				= n
 
 ###############################################################################
 # tbox

@@ -28,6 +28,9 @@ tb_void_t 		g2_demo_gl_move(tb_long_t x, tb_long_t y);
 // size
 tb_void_t 		g2_demo_gl_size(tb_size_t width, tb_size_t height);
 
+// key
+tb_void_t 		g2_demo_gl_tkey(tb_size_t key);
+
 // fps
 tb_size_t 		g2_demo_gl_tfps();
 

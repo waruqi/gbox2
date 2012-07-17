@@ -239,7 +239,12 @@ static tb_void_t g2_demo_gl_display()
 
 	// render fps & rpt
 	if (!g_bt) g_bt = tb_uclock();
-	if (!(g_fp++ & 0x15)) g_fps = (1000000 * g_fp) / ((tb_uclock() - g_bt) + 1);
+	if (!(++g_fp & 0x15))
+	{
+		g_fps = (1000000 * g_fp) / ((tb_uclock() - g_bt) + 1);
+		g_fp = 0;
+		g_bt = 0;
+	}
 	g2_demo_gl_printf("fps: %lld, rpt: %lld us", g_fps, g_rt);
 
 	// flush

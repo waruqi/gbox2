@@ -14,8 +14,8 @@ static tb_void_t g2_demo_exit()
 }
 static tb_void_t g2_demo_draw()
 {
-	if (g_bm) g2_draw2i_rect(g_painter, -100, -100, 200, 200);
-	else g2_draw2i_rect(g_painter, g_x0 - g_dx, g_y0 - g_dy, g_dx << 1, g_dy << 1);
+	if (g_bm) g2_draw2i_triangle(g_painter, -100, 100, 0, -100, 100, 100);
+	else g2_draw2i_triangle(g_painter, g_x0 - g_dx, g_y0 + g_dy, g_x0, g_y0 - g_dy, g_x0 + g_dx, g_y0 + g_dy);
 }
 static tb_void_t g2_demo_move(tb_long_t x, tb_long_t y)
 {

@@ -70,6 +70,14 @@ JNIEXPORT jint JNICALL Java_com_gbox2_DemoView_demo_1tfps
 JNIEXPORT jint JNICALL Java_com_gbox2_DemoView_demo_1trpt
   (JNIEnv *, jclass);
 
+/*
+ * Class:     com_gbox2_DemoView
+ * Method:    demo_tkey
+ * Signature: (I)V
+ */
+JNIEXPORT void JNICALL Java_com_gbox2_DemoView_demo_1tkey
+  (JNIEnv *, jclass, jint );
+
 // c plus plus
 #ifdef __cplusplus
 }

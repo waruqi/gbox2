@@ -113,6 +113,12 @@ class DemoView extends GLSurfaceView
 		return demo_trpt();
 	}
 
+	// key
+	public void key(int key)
+	{
+		demo_tkey(key);
+	}
+
 	// exit
 	public void exit()
 	{
@@ -157,6 +163,7 @@ class DemoView extends GLSurfaceView
 	private static native void 		demo_draw();
 	private static native void 		demo_size(int width, int height);
 	private static native void 		demo_move(float x, float y);
+	private static native void 		demo_tkey(int key);
 	private static native int 		demo_tfps();
 	private static native int 		demo_trpt();
 

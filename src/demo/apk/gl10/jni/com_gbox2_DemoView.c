@@ -91,4 +91,14 @@ JNIEXPORT jint JNICALL Java_com_gbox2_DemoView_demo_1trpt
 {
 	return g2_demo_gl_trpt();
 }
+/*
+ * Class:     com_gbox2_DemoView
+ * Method:    demo_tkey
+ * Signature: (I)V
+ */
+JNIEXPORT void JNICALL Java_com_gbox2_DemoView_demo_1tkey
+  (JNIEnv * env, jclass this, jint key)
+{
+	g2_demo_gl_tkey(key);
+}
 

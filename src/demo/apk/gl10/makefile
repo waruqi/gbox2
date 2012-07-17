@@ -2,23 +2,23 @@
 include $(PRO_DIR)/prefix.mak
 
 # debug
-ifeq ($(DEBUG),y)
+#ifeq ($(DEBUG),y)
 ANT_DEBUG 	:= debug
-else
-ANT_DEBUG 	:= release
-endif
+#else
+#ANT_DEBUG 	:= release
+#endif
 
 # make all
 all : .null
 	$(SDK)/tools/android -v update project -p .
 	export NDK_PROJECT_PATH=${shell pwd}
 	$(NDK)/ndk-build
-	ant $(ANT_DEBUG) -buildfile ./build.xml
+	ant $(ANT_DEBUG)
 
 # make install
 install : .null
 	$(MKDIR) $(BIN_DIR)/bin
-	$(CP) ./bin/demo-$(ANT_DEBUG).apk $(BIN_DIR)/bin
+	$(CP) ./bin/*.apk $(BIN_DIR)/bin
 
 # make clean
 clean : .null

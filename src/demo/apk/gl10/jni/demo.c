@@ -11,57 +11,70 @@
 
 // pixfmt
 //#define G2_DEMO_PIXFMT 			(G2_PIXFMT_XRGB8888 | G2_PIXFMT_NENDIAN)
-#define G2_DEMO_PIXFMT 			(G2_PIXFMT_RGB565 | G2_PIXFMT_NENDIAN)
+#define G2_DEMO_PIXFMT 				(G2_PIXFMT_RGB565 | G2_PIXFMT_NENDIAN)
 
 /* ////////////////////////////////////////////////////////////////////////
  * globals
  */
 
 // context
-static tb_handle_t 	g_context 	= TB_NULL;
+static tb_handle_t 	g_context 		= TB_NULL;
 
 // surface
-static tb_handle_t 	g_surface 	= TB_NULL;
+static tb_handle_t 	g_surface 		= TB_NULL;
 
 // painter
-static tb_handle_t 	g_painter 	= TB_NULL;
+static tb_handle_t 	g_painter 		= TB_NULL;
 
 // style
-static tb_handle_t 	g_style 	= TB_NULL;
+static tb_handle_t 	g_style 		= TB_NULL;
 
 // clock
-static tb_hong_t 	g_bt 		= 0;
-static tb_hong_t 	g_fp 		= 0;
-static tb_hong_t 	g_rt 		= 0;
-static tb_hong_t 	g_fps 		= 0;
+static tb_hong_t 	g_bt 			= 0;
+static tb_hong_t 	g_fp 			= 0;
+static tb_hong_t 	g_rt 			= 0;
+static tb_hong_t 	g_fps 			= 0;
 
 // position
-static tb_long_t 	g_x0 		= 0;
-static tb_long_t 	g_y0 		= 0;
-static tb_long_t 	g_dx 		= 0;
-static tb_long_t 	g_dy 		= 0;
-static tb_long_t 	g_x 		= 0;
-static tb_long_t 	g_y 		= 0;
-static tb_float_t 	g_an 		= 0.;
-static tb_bool_t 	g_bm 		= TB_FALSE;
+static tb_long_t 	g_x0 			= 0;
+static tb_long_t 	g_y0 			= 0;
+static tb_long_t 	g_dx 			= 0;
+static tb_long_t 	g_dy 			= 0;
+static tb_long_t 	g_x 			= 0;
+static tb_long_t 	g_y 			= 0;
+static tb_float_t 	g_an 			= 0.;
+static tb_bool_t 	g_bm 			= TB_FALSE;
 static g2_matrix_t 	g_mx;
 
 // style
-static tb_size_t 	g_mode 		= G2_STYLE_MODE_NONE;
-static tb_size_t 	g_penw 		= 1;
-static tb_size_t 	g_capi 		= 0;
-static tb_size_t 	g_joini 	= 0;
-static tb_size_t 	g_shaderi 	= 0;
-static tb_handle_t 	g_bitmap 	= TB_NULL;
-static tb_size_t 	g_cap[] 	= {G2_STYLE_CAP_BUTT, G2_STYLE_CAP_SQUARE, G2_STYLE_CAP_ROUND};
-static tb_size_t 	g_join[] 	= {G2_STYLE_JOIN_MITER, G2_STYLE_JOIN_BEVEL, G2_STYLE_JOIN_ROUND};
-static tb_handle_t 	g_shader[7] = {TB_NULL};
-static tb_handle_t 	g_mhader[7] = {TB_NULL};
+static tb_size_t 	g_mode 			= G2_STYLE_MODE_NONE;
+static tb_size_t 	g_penw 			= 1;
+static tb_size_t 	g_capi 			= 0;
+static tb_size_t 	g_joini 		= 0;
+static tb_size_t 	g_shaderi 		= 0;
+static tb_handle_t 	g_bitmap 		= TB_NULL;
+static tb_size_t 	g_cap[] 		= {G2_STYLE_CAP_BUTT, G2_STYLE_CAP_SQUARE, G2_STYLE_CAP_ROUND};
+static tb_size_t 	g_join[] 		= {G2_STYLE_JOIN_MITER, G2_STYLE_JOIN_BEVEL, G2_STYLE_JOIN_ROUND};
+static tb_handle_t 	g_shader[7] 	= {TB_NULL};
+static tb_handle_t 	g_mhader[7] 	= {TB_NULL};
+
+// gl10
+static GLuint 		g_gsurface 		= 0;
+static GLfloat 		g_gvertices[8] 	= {-1, -1, 1, -1, -1, 1, 1, 1};
+static GLfloat 		g_gtexcoords[8] = {0, 0, 1, 0, 0, 1, 1, 1};
 
 /* ////////////////////////////////////////////////////////////////////////
  * demo 
  */
 #include "rect.c"
+//#include "path.c"
+//#include "clip.c"
+//#include "line.c"
+//#include "arc.c"
+//#include "point.c"
+//#include "triangle.c"
+//#include "ellipse.c"
+//#include "circle.c"
 
 /* ///////////////////////////////////////////////////////////////////////
  * implementation
@@ -69,6 +82,44 @@ static tb_handle_t 	g_mhader[7] = {TB_NULL};
 
 tb_bool_t g2_demo_gl_init()
 {
+#ifndef G2_CONFIG_CORE_GL10
+	
+	// disable
+	glDisable(GL_DEPTH_TEST);
+	glDisable(GL_BLEND);
+	glDisable(GL_DITHER);
+	
+	// enable texture
+	glEnable(GL_TEXTURE_2D);
+	
+	// Indicate that pixel rows are tightly packed (defaults to stride of 4 which is kind of only good for RGBA or FLOAT data types)
+	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+
+	// init surface
+	glActiveTexture(GL_TEXTURE0);
+	glGenTextures(1, &g_gsurface);        
+	tb_assert_and_check_return_val(g_gsurface, TB_FALSE);
+	glBindTexture(GL_TEXTURE_2D, g_gsurface);
+	
+	// fill
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);    
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);	
+	
+	// scale
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	
+	// init vertices && texcoords
+	glEnableClientState(GL_VERTEX_ARRAY); 
+	glEnableClientState(GL_NORMAL_ARRAY); 
+	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+	
+	glVertexPointer(2, GL_FLOAT, 0, g_gvertices);
+	glTexCoordPointer(2, GL_FLOAT, 0, g_gtexcoords);
+
+#endif
 	return TB_TRUE;
 }
 tb_void_t g2_demo_gl_exit()
@@ -83,6 +134,12 @@ tb_void_t g2_demo_gl_exit()
 	// exit context
 	if (g_context) g2_context_exit(g_context);
 	g_context = TB_NULL;
+
+	// exit surface
+#ifndef G2_CONFIG_CORE_GL10
+	if (g_gsurface) glDeleteTextures(1, &g_gsurface);
+	g_gsurface = 0;
+#endif
 
 }
 tb_void_t g2_demo_gl_draw()
@@ -161,25 +218,31 @@ tb_void_t g2_demo_gl_draw()
 		tb_size_t height 	= g2_bitmap_height(g_surface);
 		tb_size_t pixfmt 	= g2_bitmap_pixfmt(g_surface);
 
-		glPixelZoom(1.0, -1.0);
-		glRasterPos2i(0, height - 1);
 		switch (pixfmt)
 		{
 		case G2_PIXFMT_RGB565:
-			glDrawPixels(width, height, GL_RGB, GL_UNSIGNED_SHORT_5_6_5, g2_bitmap_data(g_surface));
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_SHORT_5_6_5, g2_bitmap_data(g_surface));
 			break;
 		case G2_PIXFMT_XRGB8888:
-			glDrawPixels(width, height, GL_BGRA, GL_UNSIGNED_BYTE, g2_bitmap_data(g_surface));
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, g2_bitmap_data(g_surface));
 			break;
 		default:
 			break;
 		}
+
+		// draw rectangle
+		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 	}
 #endif
 
 	// render fps & rpt
 	if (!g_bt) g_bt = tb_uclock();
-	if (!(g_fp++ & 0x15)) g_fps = (1000000 * g_fp) / ((tb_uclock() - g_bt) + 1);
+	if (!(++g_fp & 0x15))
+	{
+		g_fps = (1000000 * g_fp) / ((tb_uclock() - g_bt) + 1);
+		g_fp = 0;
+		g_bt = 0;
+	}
 	tb_print("fps: %lld, rpt: %lld us", g_fps, g_rt);
 }
 tb_void_t g2_demo_gl_size(tb_size_t width, tb_size_t height)
@@ -189,8 +252,9 @@ tb_void_t g2_demo_gl_size(tb_size_t width, tb_size_t height)
 	glViewport(0, 0, width, height);
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	glOrthof(0.0, (GLfloat)width, 0.0, (GLfloat)height, -1.0f, 1.0f);
+	glOrthof(-1.0f, 1.0f, -1.0f, 1.0f, -1.0f, 1.0f);
 	glMatrixMode(GL_MODELVIEW);
+	glScalef(1.0f, -1.0f, 1.0f);
 #endif
 
 	if (!g_painter)
@@ -209,6 +273,9 @@ tb_void_t g2_demo_gl_size(tb_size_t width, tb_size_t height)
 		// init gradient
 		g2_color_t 		color[3] = {G2_COLOR_RED, G2_COLOR_GREEN, G2_COLOR_BLUE};
 		g2_gradient_t 	grad = {color, TB_NULL, 3};
+
+		// init bitmap
+		g_bitmap = g2_bitmap_init_url(G2_DEMO_PIXFMT, "/mnt/sdcard/logo.bmp");
 
 		// init shader
 		g_shader[1]	= g2_shader_init2i_linear(g_x0 - 100, 0, g_x0 + 100, 0, &grad, G2_SHADER_MODE_CLAMP);
@@ -316,5 +383,42 @@ tb_size_t g2_demo_gl_tfps()
 tb_size_t g2_demo_gl_trpt()
 {
 	return (tb_size_t)g_rt;
+}
+tb_void_t g2_demo_gl_tkey(tb_size_t key)
+{
+	switch (key)
+	{
+	case 'q':
+		{
+			g2_quality_set((g2_quality() + 1) % 3);
+		}
+		break;
+	case 'w':
+		{
+			if (g_penw > 1000) g_penw = 1000;
+			else g_penw++;
+		}
+		break;
+	case 'm':
+		{
+			g_bm = g_bm? TB_FALSE : TB_TRUE;
+		}
+		break;
+	case 'f':
+		{
+			g_shaderi = (g_shaderi + 1) % (g_bitmap? 7 : 6);
+		}
+		break;	
+	case 's':
+		{
+			g_capi = (g_capi + 1) % 3;
+			g_joini = (g_joini + 1) % 3;
+		}
+		break;
+	default:
+		break;
+	}
+
+	g2_demo_tkey(key);
 }
 

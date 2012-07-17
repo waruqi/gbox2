@@ -8,7 +8,7 @@
 						android:layout_width="fill_parent" 
 						android:layout_height="fill_parent" />
 
-	<LinearLayout 	android:id="@+id/Tool" 
+	<LinearLayout 	android:id="@+id/InfoLayout" 
 					android:gravity="top"
 					android:layout_width="fill_parent" 
 					android:layout_height="wrap_content" 
@@ -23,5 +23,46 @@
 					android:layout_height="wrap_content"/> 
 
 	</LinearLayout>
+
+
+	<LinearLayout 	android:id="@+id/ToolLayout" 
+					android:gravity="top"
+					android:layout_width="wrap_content" 
+					android:layout_height="wrap_content" 
+					android:layout_gravity="center|bottom"
+					android:orientation="horizontal" > 
+
+		<Button 	android:id="@+id/Q"
+					android:text="Q"
+					android:layout_width="wrap_content" 
+					android:layout_height="wrap_content"/> 
+
+		<Button 	android:id="@+id/W"
+					android:text="W"
+					android:layout_width="wrap_content" 
+					android:layout_height="wrap_content"/> 
+
+		<Button 	android:id="@+id/M"
+					android:text="M"
+					android:layout_width="wrap_content" 
+					android:layout_height="wrap_content"/> 
+
+		<Button 	android:id="@+id/F"
+					android:text="F"
+					android:layout_width="wrap_content" 
+					android:layout_height="wrap_content"/> 
+
+		<Button 	android:id="@+id/S"
+					android:text="S"
+					android:layout_width="wrap_content" 
+					android:layout_height="wrap_content"/> 
+
+		<Button 	android:id="@+id/P"
+					android:text="P"
+					android:layout_width="wrap_content" 
+					android:layout_height="wrap_content"/> 
+
+	</LinearLayout>
+
 </FrameLayout>
 
