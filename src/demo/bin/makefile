@@ -2,6 +2,7 @@
 include $(PRO_DIR)/prefix.mak
 
 NAMES 					= \
+						svg \
 						arc \
 						line \
 						rect \

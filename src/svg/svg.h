@@ -27,6 +27,8 @@
  * includes
  */
 #include "prefix.h"
+#include "reader.h"
+#include "element.h"
 
 #endif
 

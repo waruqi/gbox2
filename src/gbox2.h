@@ -32,6 +32,7 @@ extern "C" {
  * includes
  */
 #include "prefix.h"
+#include "svg/svg.h"
 #include "core/core.h"
 
 /* ///////////////////////////////////////////////////////////////////////

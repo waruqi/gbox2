@@ -22,9 +22,15 @@
  */
 
 /* ///////////////////////////////////////////////////////////////////////
+ * trace
+ */
+#define TB_TRACE_IMPL_TAG 		"svg"
+
+/* ///////////////////////////////////////////////////////////////////////
  * includes
  */
 #include "reader.h"
+#include "element.h"
 
 /* ///////////////////////////////////////////////////////////////////////
  * types
@@ -37,6 +43,60 @@ typedef struct __g2_svg_reader_t
 	tb_handle_t 			reader;
 
 }g2_svg_reader_t;
+
+// the svg reader element type
+typedef struct __g2_svg_reader_element_t
+{
+	// the element type
+	tb_size_t 				type;
+
+	// the element name
+	tb_char_t const* 		name;
+
+}g2_svg_reader_element_t;
+
+/* ///////////////////////////////////////////////////////////////////////
+ * globals
+ */
+
+// the element names
+static g2_svg_reader_element_t* 	g_svg_elements[] = 
+{
+	{G2_SVG_ELEMENT_TYPE_NONE, 				TB_NULL 			}
+,	{G2_SVG_ELEMENT_TYPE_CIRClE, 			"circle" 			}
+,	{G2_SVG_ELEMENT_TYPE_CLIPPATH, 			"clipPath" 			}
+,	{G2_SVG_ELEMENT_TYPE_DEFS, 				"defs" 				}
+,	{G2_SVG_ELEMENT_TYPE_ELLIPSE, 			"ellipse" 			}
+,	{G2_SVG_ELEMENT_TYPE_FECOLORMATRIX, 	"feColorMatrix" 	}
+,	{G2_SVG_ELEMENT_TYPE_FILTER, 			"filter" 			}
+,	{G2_SVG_ELEMENT_TYPE_G, 				"g" 				}
+,	{G2_SVG_ELEMENT_TYPE_IMAGE, 			"image" 			}
+,	{G2_SVG_ELEMENT_TYPE_LINE, 				"line" 				}
+,	{G2_SVG_ELEMENT_TYPE_LINEARGRADIENT, 	"linearGradient" 	}
+,	{G2_SVG_ELEMENT_TYPE_MASK, 				"mask" 				}
+,	{G2_SVG_ELEMENT_TYPE_METADATA, 			"metadata" 			}
+,	{G2_SVG_ELEMENT_TYPE_PATH, 				"path" 				}
+,	{G2_SVG_ELEMENT_TYPE_POLYGON, 			"polygon" 			}
+,	{G2_SVG_ELEMENT_TYPE_POLYLINE, 			"polyline" 			}
+,	{G2_SVG_ELEMENT_TYPE_RADIALGRADIENT, 	"radialGradient" 	}
+,	{G2_SVG_ELEMENT_TYPE_RECT, 				"rect" 				}
+,	{G2_SVG_ELEMENT_TYPE_SVG, 				"svg" 				}
+,	{G2_SVG_ELEMENT_TYPE_STOP, 				"circle" 			}
+,	{G2_SVG_ELEMENT_TYPE_SYMBOL, 			"stop" 				}
+,	{G2_SVG_ELEMENT_TYPE_TEXT, 				"text" 				}
+,	{G2_SVG_ELEMENT_TYPE_TSPAN, 			"tspan" 			}
+,	{G2_SVG_ELEMENT_TYPE_USE, 				"use" 				}
+};
+
+/* ///////////////////////////////////////////////////////////////////////
+ * parser
+ */
+
+static tb_size_t g2_svg_reader_type(tb_char_t const* name)
+{
+
+	return 0;
+}
 
 /* ///////////////////////////////////////////////////////////////////////
  * implementation
@@ -79,37 +139,61 @@ g2_svg_element_t* g2_svg_reader_load(tb_handle_t reader)
 	g2_svg_reader_t* sreader = (g2_svg_reader_t*)reader;
 	tb_assert_and_check_return_val(sreader && sreader->reader, TB_NULL);
 
+	// init 
+	tb_bool_t bsvg = TB_FALSE;
+
 	// walk
 	tb_size_t e = TB_XML_READER_EVENT_NONE;
 	while (e = tb_xml_reader_next(sreader->reader))
 	{
 		switch (e)
 		{
-		case TB_XML_READER_EVENT_DOCUMENT:
-		case TB_XML_READER_EVENT_DOCUMENT_TYPE:
-			break;
 		case TB_XML_READER_EVENT_ELEMENT_EMPTY: 
 			{
+				// check
+				tb_assert_and_check_goto(bsvg, fail);
 			}
 			break;
 		case TB_XML_READER_EVENT_ELEMENT_BEG: 
 			{
+				// init
+				tb_char_t const* name = tb_xml_reader_element(sreader->reader);
+				tb_assert_and_check_goto(name, fail);
+
+				// is svg?
+				if (!bsvg)
+				{
+					if (!tb_stricmp(name, "svg")) bsvg = TB_TRUE;
+					else goto fail;
+				}
+				
+
+				tb_print("%s", name);
+
 			}
 			break;
 		case TB_XML_READER_EVENT_ELEMENT_END: 
 			{
+				// check
+				tb_assert_and_check_goto(bsvg, fail);
 			}
 			break;
 		case TB_XML_READER_EVENT_TEXT: 
 			{
+				// check
+				tb_assert_and_check_goto(bsvg, fail);
 			}
 			break;
 		case TB_XML_READER_EVENT_CDATA: 
 			{
+				// check
+				tb_assert_and_check_goto(bsvg, fail);
 			}
 			break;
 		case TB_XML_READER_EVENT_COMMENT: 
 			{
+				// check
+				tb_assert_and_check_goto(bsvg, fail);
 			}
 			break;
 		default:
@@ -118,5 +202,8 @@ g2_svg_element_t* g2_svg_reader_load(tb_handle_t reader)
 	}
 
 	// ok
+	return TB_NULL;
+
+fail:
 	return TB_NULL;
 }
