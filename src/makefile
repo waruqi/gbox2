@@ -10,6 +10,8 @@ gbox2_TYPE 				= LIB
 # basic files
 gbox2_C_FILES 			+= \
 						gbox2 \
+						svg/reader \
+						svg/element \
 						core/path \
 						core/style \
 						core/pixmap \
@@ -50,8 +52,11 @@ INC_FILES 				= \
 						prefix/color.h \
 						prefix/pixfmt.h \
 						prefix/version.h \
+						svg/prefix.h \
+						svg/svg.h \
 						core/prefix.h \
 						core/path.h \
+						core/core.h \
 						core/style.h \
 						core/bitmap.h \
 						core/painter.h

@@ -31,32 +31,15 @@
 #include "node.h"
 
 /* ///////////////////////////////////////////////////////////////////////
- * macros
- */
-
-#ifdef TB_CONFIG_MEMORY_MODE_SMALL
-# 	define TB_XML_READER_ATTRIBUTES_MAX 		(256)
-#else
-# 	define TB_XML_READER_ATTRIBUTES_MAX 		(512)
-#endif
-
-
-#ifdef TB_DEBUG
-# 	define TB_XML_READER_DUMP(r) 				tb_xml_reader_dump(r)
-#else 
-# 	define TB_XML_READER_DUMP(r)
-#endif
-
-/* ///////////////////////////////////////////////////////////////////////
  * types
  */
 
-// the reader event type
+/// the reader event type for iterator
 typedef enum __tb_xml_reader_event_t
 {
-	TB_XML_READER_EVENT_NULL 					= 0
-, 	TB_XML_READER_EVENT_DOCUMENT_BEG 			= 1
-, 	TB_XML_READER_EVENT_DOCUMENT_END 			= 2
+	TB_XML_READER_EVENT_NONE 					= 0
+, 	TB_XML_READER_EVENT_DOCUMENT_TYPE 			= 1
+, 	TB_XML_READER_EVENT_DOCUMENT 				= 2
 , 	TB_XML_READER_EVENT_ELEMENT_BEG 			= 3
 , 	TB_XML_READER_EVENT_ELEMENT_END 			= 4
 , 	TB_XML_READER_EVENT_ELEMENT_EMPTY 			= 5
@@ -66,69 +49,156 @@ typedef enum __tb_xml_reader_event_t
 
 }tb_xml_reader_event_t;
 
-// the xml reader - StAX
-typedef struct __tb_xml_reader_t
-{
-	// the reference to stream
-	tb_gstream_t* 			gst;
-
-	// the event
-	tb_size_t 				event;
-
-	// the cache character
-	tb_char_t 				cache;
-
-	// the version
-	tb_pstring_t 			version;
-
-	// the encoding
-	tb_pstring_t 			encoding;
-
-	// the element
-	tb_pstring_t 			element;
-
-	// the element name
-	tb_pstring_t 			name;
-
-	// the text
-	tb_pstring_t 			text;
-
-	// the attributes
-	tb_xml_attribute_t 		attributes[TB_XML_READER_ATTRIBUTES_MAX];
-	tb_size_t 				attributes_n;
-
-}tb_xml_reader_t;
-
 
 /* ///////////////////////////////////////////////////////////////////////
  * interfaces
  */
 
-// open & close
-tb_xml_reader_t* 		tb_xml_reader_open(tb_gstream_t* gst);
-tb_void_t 				tb_xml_reader_close(tb_xml_reader_t* reader);
 
-// iterator
-tb_bool_t 				tb_xml_reader_has_next(tb_xml_reader_t* reader);
-tb_size_t 				tb_xml_reader_next(tb_xml_reader_t* reader);
+/*!init reader
+ *
+ * @param gst 		the stream
+ * @return 			the reader handle
+ */
+tb_handle_t 			tb_xml_reader_init(tb_gstream_t* gst);
 
-// seek: /root/node/item
-tb_bool_t 				tb_xml_reader_seek(tb_xml_reader_t* reader, tb_char_t const* path);
+/// exit
+tb_void_t 				tb_xml_reader_exit(tb_handle_t reader);
 
-// debug
-tb_void_t 				tb_xml_reader_dump(tb_xml_reader_t* reader);
+/// clear, @note the stream will be reseted
+tb_void_t 				tb_xml_reader_clear(tb_handle_t reader);
 
-// getter
-tb_size_t 				tb_xml_reader_get_event(tb_xml_reader_t* reader);
-tb_pstring_t const* 	tb_xml_reader_get_version(tb_xml_reader_t* reader);
-tb_pstring_t const* 	tb_xml_reader_get_encoding(tb_xml_reader_t* reader);
-tb_pstring_t const* 	tb_xml_reader_get_text(tb_xml_reader_t* reader);
-tb_pstring_t const* 	tb_xml_reader_get_comment(tb_xml_reader_t* reader);
-tb_pstring_t const* 	tb_xml_reader_get_cdata(tb_xml_reader_t* reader);
-tb_pstring_t const* 	tb_xml_reader_get_element_name(tb_xml_reader_t* reader);
-tb_size_t 				tb_xml_reader_get_attribute_count(tb_xml_reader_t* reader);
-tb_pstring_t const* 	tb_xml_reader_get_attribute_name(tb_xml_reader_t* reader, tb_int_t index);
-tb_pstring_t const* 	tb_xml_reader_get_attribute_value_by_index(tb_xml_reader_t* reader, tb_int_t index);
-tb_pstring_t const* 	tb_xml_reader_get_attribute_value_by_name(tb_xml_reader_t* reader, tb_char_t const* name);
+/*!next for iterator
+ *
+ * @code
+ *
+ *	// init stream
+ *	tb_gstream_t* gst = tb_gstream_init_from_url(argv[1]);
+ *	if (gst && tb_gstream_bopen(gst))
+ *	{
+ *		// init reader
+ *		tb_handle_t reader = tb_xml_reader_init(gst);
+ *		if (reader)
+ *		{
+ *			// walk
+ *			tb_size_t e = TB_XML_READER_EVENT_NONE;
+ *			while (e = tb_xml_reader_next(reader))
+ *			{
+ *				switch (e)
+ *				{
+ *				case TB_XML_READER_EVENT_DOCUMENT: 
+ *					{
+ *						tb_printf("<?xml version = \"%s\" encoding = \"%s\" ?>\n"
+ *							, tb_xml_reader_version(reader), tb_xml_reader_encoding(reader));
+ *					}
+ *					break;
+ *				case TB_XML_READER_EVENT_DOCUMENT_TYPE: 
+ *					{
+ *						tb_printf("<!DOCTYPE>\n");
+ *					}
+ *					break;
+ *				case TB_XML_READER_EVENT_ELEMENT_EMPTY: 
+ *					{
+ *						tb_char_t const* 		name = tb_xml_reader_element(reader);
+ *						tb_xml_node_t const* 	attr = tb_xml_reader_attributes(reader);
+ *						if (!attr) tb_printf("<%s/>\n", name);
+ *						else
+ *						{
+ *							tb_printf("<%s", name);
+ *							for (; attr; attr = attr->next)
+ *								tb_printf(" %s = \"%s\"", tb_pstring_cstr(&attr->name), tb_pstring_cstr(&attr->data));
+ *							tb_printf("/>\n");
+ *						}
+ *					}
+ *					break;
+ *				case TB_XML_READER_EVENT_ELEMENT_BEG: 
+ *					{
+ *						tb_char_t const* 		name = tb_xml_reader_element(reader);
+ *						tb_xml_node_t const* 	attr = tb_xml_reader_attributes(reader);
+ *						if (!attr) tb_printf("<%s>\n", name);
+ *						else
+ *						{
+ *							tb_printf("<%s", name);
+ *							for (; attr; attr = attr->next)
+ *								tb_printf(" %s = \"%s\"", tb_pstring_cstr(&attr->name), tb_pstring_cstr(&attr->data));
+ *							tb_printf(">\n");
+ *						}
+ *					}
+ *					break;
+ *				case TB_XML_READER_EVENT_ELEMENT_END: 
+ *					{
+ *						tb_printf("</%s>\n", tb_xml_reader_element(reader));
+ *					}
+ *				break;
+ *				case TB_XML_READER_EVENT_TEXT: 
+ *					{
+ *						tb_printf("%s", tb_xml_reader_text(reader));
+ *					}
+ *					break;
+ *				case TB_XML_READER_EVENT_CDATA: 
+ *					{
+ *						tb_printf("<![CDATA[%s]]>", tb_xml_reader_cdata(reader));
+ *					}
+ *					break;
+ *				case TB_XML_READER_EVENT_COMMENT: 
+ *					{
+ *						tb_printf("<!--%s-->", tb_xml_reader_comment(reader));
+ *					}
+ *					break;
+ *				default:
+ *					break;
+ *				}
+ *			}
+ *
+ *			// exit reader
+ *			tb_xml_reader_exit(reader);
+ *		}
+ *	
+ *		// exit stream
+ *		tb_gstream_exit(gst);
+ *	}
+ * @endcode
+ */
+tb_size_t 				tb_xml_reader_next(tb_handle_t reader);
+
+/// stream
+tb_gstream_t* 			tb_xml_reader_stream(tb_handle_t reader);
+
+/// level
+tb_size_t 				tb_xml_reader_level(tb_handle_t reader);
+
+/*!goto: /root/node/item
+ *
+ * @param reader 	the reader handle
+ * @param path 		the xml path
+ * @return 			ok: TB_TRUE
+ *
+ * @note the stream will be reseted
+ */
+tb_bool_t 				tb_xml_reader_goto(tb_handle_t reader, tb_char_t const* path);
+
+/// load document or node
+tb_xml_node_t* 			tb_xml_reader_load(tb_handle_t reader);
+
+/// version
+tb_char_t const* 		tb_xml_reader_version(tb_handle_t reader);
+
+/// encoding, default: utf-8
+tb_char_t const* 		tb_xml_reader_encoding(tb_handle_t reader);
+
+/// element
+tb_char_t const* 		tb_xml_reader_element(tb_handle_t reader);
+
+/// text
+tb_char_t const* 		tb_xml_reader_text(tb_handle_t reader);
+
+/// cdata
+tb_char_t const* 		tb_xml_reader_cdata(tb_handle_t reader);
+
+/// comment
+tb_char_t const* 		tb_xml_reader_comment(tb_handle_t reader);
+
+/// attributes
+tb_xml_node_t const* 	tb_xml_reader_attributes(tb_handle_t reader);
 
 #endif
