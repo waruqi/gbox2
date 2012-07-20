@@ -12,6 +12,28 @@ gbox2_C_FILES 			+= \
 						gbox2 \
 						svg/reader \
 						svg/element \
+						svg/g \
+						svg/use \
+						svg/svg \
+						svg/defs \
+						svg/mask \
+						svg/path \
+						svg/stop \
+						svg/line \
+						svg/text \
+						svg/rect \
+						svg/image \
+						svg/tspan \
+						svg/filter \
+						svg/circle \
+						svg/symbol \
+						svg/ellipse \
+						svg/polygon \
+						svg/polyline \
+						svg/metadata \
+						svg/clippath \
+						svg/matrix \
+						svg/gradient \
 						core/path \
 						core/style \
 						core/pixmap \

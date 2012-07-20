@@ -90,6 +90,75 @@ typedef struct __g2_svg_element_t
 /// init element
 g2_svg_element_t* 	g2_svg_element_init(tb_handle_t reader);
 
+/// init element: <g ...>
+g2_svg_element_t* 	g2_svg_element_init_g(tb_handle_t reader);
+
+/// init element: <svg ...>
+g2_svg_element_t* 	g2_svg_element_init_svg(tb_handle_t reader);
+
+/// init element: <use ...>
+g2_svg_element_t* 	g2_svg_element_init_use(tb_handle_t reader);
+
+/// init element: <defs ...>
+g2_svg_element_t* 	g2_svg_element_init_defs(tb_handle_t reader);
+
+/// init element: <mask ...>
+g2_svg_element_t* 	g2_svg_element_init_mask(tb_handle_t reader);
+
+/// init element: <path ...>
+g2_svg_element_t* 	g2_svg_element_init_path(tb_handle_t reader);
+
+/// init element: <stop ...>
+g2_svg_element_t* 	g2_svg_element_init_stop(tb_handle_t reader);
+
+/// init element: <line ...>
+g2_svg_element_t* 	g2_svg_element_init_line(tb_handle_t reader);
+
+/// init element: <rect ...>
+g2_svg_element_t* 	g2_svg_element_init_rect(tb_handle_t reader);
+
+/// init element: <text ...>
+g2_svg_element_t* 	g2_svg_element_init_text(tb_handle_t reader);
+
+/// init element: <image ...>
+g2_svg_element_t* 	g2_svg_element_init_image(tb_handle_t reader);
+
+/// init element: <tspan ...>
+g2_svg_element_t* 	g2_svg_element_init_tspan(tb_handle_t reader);
+
+/// init element: <filter ...>
+g2_svg_element_t* 	g2_svg_element_init_filter(tb_handle_t reader);
+
+/// init element: <circle ...>
+g2_svg_element_t* 	g2_svg_element_init_circle(tb_handle_t reader);
+
+/// init element: <symbol ...>
+g2_svg_element_t* 	g2_svg_element_init_symbol(tb_handle_t reader);
+
+/// init element: <ellipse ...>
+g2_svg_element_t* 	g2_svg_element_init_ellipse(tb_handle_t reader);
+
+/// init element: <polygon ...>
+g2_svg_element_t* 	g2_svg_element_init_polygon(tb_handle_t reader);
+
+/// init element: <polyline ...>
+g2_svg_element_t* 	g2_svg_element_init_polyline(tb_handle_t reader);
+
+/// init element: <metadata ...>
+g2_svg_element_t* 	g2_svg_element_init_metadata(tb_handle_t reader);
+
+/// init element: <clipPath ...>
+g2_svg_element_t* 	g2_svg_element_init_clippath(tb_handle_t reader);
+
+/// init element: <feColorMatrix ...>
+g2_svg_element_t* 	g2_svg_element_init_color_matrix(tb_handle_t reader);
+
+/// init element: <linearGradient ...>
+g2_svg_element_t* 	g2_svg_element_init_linear_gradient(tb_handle_t reader);
+
+/// init element: <radialGradient ...>
+g2_svg_element_t* 	g2_svg_element_init_radial_gradient(tb_handle_t reader);
+
 /// exit element
 tb_void_t 			g2_svg_element_exit(g2_svg_element_t* element);
 

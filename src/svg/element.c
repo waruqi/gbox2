@@ -28,8 +28,8 @@
 /* ///////////////////////////////////////////////////////////////////////
  * types
  */
-// the svg reader entry type
-typedef struct __g2_svg_reader_entry_t
+// the svg element entry type
+typedef struct __g2_svg_element_entry_t
 {
 	// the element type
 	tb_size_t 				type;
@@ -37,39 +37,42 @@ typedef struct __g2_svg_reader_entry_t
 	// the element name
 	tb_char_t const* 		name;
 
-}g2_svg_reader_entry_t;
+	// the initialiser
+	g2_svg_element_t* 		(*init)(tb_handle_t reader);
+
+}g2_svg_element_entry_t;
 
 /* ///////////////////////////////////////////////////////////////////////
  * globals
  */
 
 // the entries
-static g2_svg_reader_entry_t* 	g_reader_entries[] = 
+static g2_svg_element_entry_t 	g_element_entries[] = 
 {
-	{G2_SVG_ELEMENT_TYPE_NONE, 				TB_NULL 			}
-,	{G2_SVG_ELEMENT_TYPE_CIRClE, 			"circle" 			}
-,	{G2_SVG_ELEMENT_TYPE_CLIPPATH, 			"clipPath" 			}
-,	{G2_SVG_ELEMENT_TYPE_DEFS, 				"defs" 				}
-,	{G2_SVG_ELEMENT_TYPE_ELLIPSE, 			"ellipse" 			}
-,	{G2_SVG_ELEMENT_TYPE_FECOLORMATRIX, 	"feColorMatrix" 	}
-,	{G2_SVG_ELEMENT_TYPE_FILTER, 			"filter" 			}
-,	{G2_SVG_ELEMENT_TYPE_G, 				"g" 				}
-,	{G2_SVG_ELEMENT_TYPE_IMAGE, 			"image" 			}
-,	{G2_SVG_ELEMENT_TYPE_LINE, 				"line" 				}
-,	{G2_SVG_ELEMENT_TYPE_LINEARGRADIENT, 	"linearGradient" 	}
-,	{G2_SVG_ELEMENT_TYPE_MASK, 				"mask" 				}
-,	{G2_SVG_ELEMENT_TYPE_METADATA, 			"metadata" 			}
-,	{G2_SVG_ELEMENT_TYPE_PATH, 				"path" 				}
-,	{G2_SVG_ELEMENT_TYPE_POLYGON, 			"polygon" 			}
-,	{G2_SVG_ELEMENT_TYPE_POLYLINE, 			"polyline" 			}
-,	{G2_SVG_ELEMENT_TYPE_RADIALGRADIENT, 	"radialGradient" 	}
-,	{G2_SVG_ELEMENT_TYPE_RECT, 				"rect" 				}
-,	{G2_SVG_ELEMENT_TYPE_SVG, 				"svg" 				}
-,	{G2_SVG_ELEMENT_TYPE_STOP, 				"stop" 				}
-,	{G2_SVG_ELEMENT_TYPE_SYMBOL, 			"symbol" 			}
-,	{G2_SVG_ELEMENT_TYPE_TEXT, 				"text" 				}
-,	{G2_SVG_ELEMENT_TYPE_TSPAN, 			"tspan" 			}
-,	{G2_SVG_ELEMENT_TYPE_USE, 				"use" 				}
+	{G2_SVG_ELEMENT_TYPE_NONE, 				TB_NULL, 				TB_NULL 							}
+,	{G2_SVG_ELEMENT_TYPE_CIRClE, 			"circle", 				g2_svg_element_init_circle 			}
+,	{G2_SVG_ELEMENT_TYPE_CLIPPATH, 			"clipPath", 			g2_svg_element_init_clippath 		}
+,	{G2_SVG_ELEMENT_TYPE_DEFS, 				"defs", 				g2_svg_element_init_defs 			}
+,	{G2_SVG_ELEMENT_TYPE_ELLIPSE, 			"ellipse", 				g2_svg_element_init_ellipse 		}
+,	{G2_SVG_ELEMENT_TYPE_FECOLORMATRIX, 	"feColorMatrix", 		g2_svg_element_init_color_matrix 	}
+,	{G2_SVG_ELEMENT_TYPE_FILTER, 			"filter", 				g2_svg_element_init_filter 			}
+,	{G2_SVG_ELEMENT_TYPE_G, 				"g", 					g2_svg_element_init_g 				}
+,	{G2_SVG_ELEMENT_TYPE_IMAGE, 			"image", 				g2_svg_element_init_image 			}
+,	{G2_SVG_ELEMENT_TYPE_LINE, 				"line", 				g2_svg_element_init_line 			}
+,	{G2_SVG_ELEMENT_TYPE_LINEARGRADIENT, 	"linearGradient", 		g2_svg_element_init_linear_gradient }
+,	{G2_SVG_ELEMENT_TYPE_MASK, 				"mask", 				g2_svg_element_init_mask 			}
+,	{G2_SVG_ELEMENT_TYPE_METADATA, 			"metadata", 			g2_svg_element_init_metadata 		}
+,	{G2_SVG_ELEMENT_TYPE_PATH, 				"path", 				g2_svg_element_init_path 			}
+,	{G2_SVG_ELEMENT_TYPE_POLYGON, 			"polygon", 				g2_svg_element_init_polygon 		}
+,	{G2_SVG_ELEMENT_TYPE_POLYLINE, 			"polyline", 			g2_svg_element_init_polyline 		}
+,	{G2_SVG_ELEMENT_TYPE_RADIALGRADIENT, 	"radialGradient", 		g2_svg_element_init_radial_gradient }
+,	{G2_SVG_ELEMENT_TYPE_RECT, 				"rect", 				g2_svg_element_init_rect 			}
+,	{G2_SVG_ELEMENT_TYPE_SVG, 				"svg", 					g2_svg_element_init_svg 			}
+,	{G2_SVG_ELEMENT_TYPE_STOP, 				"stop", 				g2_svg_element_init_stop 			}
+,	{G2_SVG_ELEMENT_TYPE_SYMBOL, 			"symbol", 				g2_svg_element_init_symbol 			}
+,	{G2_SVG_ELEMENT_TYPE_TEXT, 				"text", 				g2_svg_element_init_text 			}
+,	{G2_SVG_ELEMENT_TYPE_TSPAN, 			"tspan", 				g2_svg_element_init_tspan 			}
+,	{G2_SVG_ELEMENT_TYPE_USE, 				"use", 					g2_svg_element_init_use 			}
 };
 
 /* ///////////////////////////////////////////////////////////////////////
@@ -77,19 +80,17 @@ static g2_svg_reader_entry_t* 	g_reader_entries[] =
  */
 g2_svg_element_t* g2_svg_element_init(tb_handle_t reader)
 {
-#if 0
+	// the element name
+	tb_char_t const* name = tb_xml_reader_element(reader);
+	tb_assert_and_check_return_val(name, TB_NULL);
 
-static tb_size_t g2_svg_reader_type(tb_char_t const* name)
-{
 	// FIXME: use binary search
 	tb_size_t i = 0;
-	tb_size_t n = tb_arraryn(g_reader_entries);
+	tb_size_t n = tb_arrayn(g_element_entries);
 	for (i = 1; i < n; i++)
-		if (!tb_stricmp(g_reader_entries[i].name, name)) return g_reader_entries[i].type;
+		if (g_element_entries[i].init && !tb_stricmp(g_element_entries[i].name, name)) 
+			return g_element_entries[i].init(reader);
 
-	return G2_SVG_ELEMENT_TYPE_NONE;
-}
-#endif
 	return TB_NULL;
 }
 tb_void_t g2_svg_element_exit(g2_svg_element_t* element)
