@@ -17,7 +17,7 @@
  * Copyright (C) 2009 - 2012, ruki All rights reserved.
  *
  * @author		ruki
- * @file		matrix.c
+ * @file		glyph.c
  *
  */
 /* ///////////////////////////////////////////////////////////////////////
@@ -28,8 +28,16 @@
 /* ///////////////////////////////////////////////////////////////////////
  * implementation
  */
-g2_svg_element_t* g2_svg_element_init_color_matrix(tb_handle_t reader)
+g2_svg_element_t* g2_svg_element_init_glyph(tb_handle_t reader)
 {
-	return TB_NULL;
+	// alloc 
+	g2_svg_element_glyph_t* element = tb_malloc0(sizeof(g2_svg_element_glyph_t));
+	tb_assert_and_check_return_val(element, TB_NULL);
+
+	// init
+	element->base.type = G2_SVG_ELEMENT_TYPE_GLYPH;
+
+	// ok
+	return element;
 }
 

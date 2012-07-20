@@ -30,6 +30,14 @@
  */
 g2_svg_element_t* g2_svg_element_init_filter(tb_handle_t reader)
 {
-	return TB_NULL;
+	// alloc 
+	g2_svg_element_svg_t* element = tb_malloc0(sizeof(g2_svg_element_filter_t));
+	tb_assert_and_check_return_val(element, TB_NULL);
+
+	// init
+	element->base.type = G2_SVG_ELEMENT_TYPE_FILTER;
+
+	// ok
+	return element;
 }
 

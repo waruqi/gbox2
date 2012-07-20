@@ -21,7 +21,7 @@ tb_int_t main(tb_int_t argc, tb_char_t** argv)
 		if (reader)
 		{
 			// load
-			g2_svg_element_t* element = g2_svg_reader_load(reader);
+			g2_svg_element_dump(g2_svg_reader_load(reader));
 
 			// exit reader
 			g2_svg_reader_exit(reader);

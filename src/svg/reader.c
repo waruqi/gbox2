@@ -22,6 +22,11 @@
  */
 
 /* ///////////////////////////////////////////////////////////////////////
+ * trace
+ */
+#define TB_TRACE_IMPL_TAG 		"svg"
+
+/* ///////////////////////////////////////////////////////////////////////
  * includes
  */
 #include "reader.h"
@@ -60,7 +65,11 @@ g2_svg_element_t* g2_svg_reader_load(tb_handle_t reader)
 				// init
 				g2_svg_element_t* element = g2_svg_element_init(reader);
 				tb_assert_and_check_goto(element, fail);
-				
+
+				// trace
+				if (!element->type)
+					tb_trace_impl("not_impl: <%s>", tb_xml_reader_element(reader));
+
 				// append
 				g2_svg_element_append_tail(parent, element); 
 				tb_assert_and_check_goto(element->parent, fail);
@@ -72,18 +81,38 @@ g2_svg_element_t* g2_svg_reader_load(tb_handle_t reader)
 				g2_svg_element_t* element = g2_svg_element_init(reader);
 				tb_assert_and_check_goto(element, fail);
 
-				// append
-				g2_svg_element_append_tail(parent, element); 
-				tb_assert_and_check_goto(element->parent, fail);
+				// trace
+				if (!element->type)
+					tb_trace_impl("not_impl: <%s>", tb_xml_reader_element(reader));
 
-				// enter
-				parent = element;
+				// is svg?
+				if (!parent)
+				{
+					if (element->type == G2_SVG_ELEMENT_TYPE_SVG)
+						parent = element;
+					else
+					{
+						g2_svg_element_exit(element);
+						goto fail;
+					}
+				}
+				else
+				{
+					// append
+					g2_svg_element_append_tail(parent, element); 
+					tb_assert_and_check_goto(element->parent, fail);
+
+					// enter
+					parent = element;
+				}
 			}
 			break;
 		case TB_XML_READER_EVENT_ELEMENT_END: 
 			{
 				tb_assert_and_check_goto(parent, fail);
-				parent = parent->parent;
+
+				if (parent->type != G2_SVG_ELEMENT_TYPE_SVG) 
+					parent = parent->parent;
 			}
 			break;
 		case TB_XML_READER_EVENT_TEXT: 

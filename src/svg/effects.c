@@ -17,7 +17,7 @@
  * Copyright (C) 2009 - 2012, ruki All rights reserved.
  *
  * @author		ruki
- * @file		gradient.c
+ * @file		effects.c
  *
  */
 /* ///////////////////////////////////////////////////////////////////////
@@ -28,26 +28,50 @@
 /* ///////////////////////////////////////////////////////////////////////
  * implementation
  */
-g2_svg_element_t* g2_svg_element_init_linear_gradient(tb_handle_t reader)
+g2_svg_element_t* g2_svg_element_init_fe_color_matrix(tb_handle_t reader)
 {
 	// alloc 
-	g2_svg_element_svg_t* element = tb_malloc0(sizeof(g2_svg_element_linear_gradient_t));
+	g2_svg_element_fe_color_matrix_t* element = tb_malloc0(sizeof(g2_svg_element_fe_color_matrix_t));
 	tb_assert_and_check_return_val(element, TB_NULL);
 
 	// init
-	element->base.type = G2_SVG_ELEMENT_TYPE_LINEARGRADIENT;
+	element->base.type = G2_SVG_ELEMENT_TYPE_FECOLORMATRIX;
 
 	// ok
 	return element;
 }
-g2_svg_element_t* g2_svg_element_init_radial_gradient(tb_handle_t reader)
+g2_svg_element_t* g2_svg_element_init_fe_merge(tb_handle_t reader)
 {
 	// alloc 
-	g2_svg_element_svg_t* element = tb_malloc0(sizeof(g2_svg_element_radial_gradient_t));
+	g2_svg_element_fe_merge_t* element = tb_malloc0(sizeof(g2_svg_element_fe_merge_t));
 	tb_assert_and_check_return_val(element, TB_NULL);
 
 	// init
-	element->base.type = G2_SVG_ELEMENT_TYPE_RADIALGRADIENT;
+	element->base.type = G2_SVG_ELEMENT_TYPE_FEMERGE;
+
+	// ok
+	return element;
+}
+g2_svg_element_t* g2_svg_element_init_fe_merge_node(tb_handle_t reader)
+{
+	// alloc 
+	g2_svg_element_fe_merge_node_t* element = tb_malloc0(sizeof(g2_svg_element_fe_merge_node_t));
+	tb_assert_and_check_return_val(element, TB_NULL);
+
+	// init
+	element->base.type = G2_SVG_ELEMENT_TYPE_FEMERGENODE;
+
+	// ok
+	return element;
+}
+g2_svg_element_t* g2_svg_element_init_fe_gaussian_blur(tb_handle_t reader)
+{
+	// alloc 
+	g2_svg_element_fe_gaussian_blur_t* element = tb_malloc0(sizeof(g2_svg_element_fe_gaussian_blur_t));
+	tb_assert_and_check_return_val(element, TB_NULL);
+
+	// init
+	element->base.type = G2_SVG_ELEMENT_TYPE_FEGAUSSIANBLUR;
 
 	// ok
 	return element;
