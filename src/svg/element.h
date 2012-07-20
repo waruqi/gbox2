@@ -32,7 +32,7 @@
  * types
  */
 
-// the svg element type
+/// the element type
 typedef enum __g2_svg_element_type_t
 {
 	G2_SVG_ELEMENT_TYPE_NONE 			= 0
@@ -62,11 +62,48 @@ typedef enum __g2_svg_element_type_t
 
 }g2_svg_element_type_t;
 
-// the svg element type
+/// the svg element type
 typedef struct __g2_svg_element_t
 {
+	// the element type
+	tb_size_t 					type;
+
+	// the next
+	struct __g2_svg_element_t* 	next;
+
+	// the childs
+	struct __g2_svg_element_t* 	head;
+	struct __g2_svg_element_t* 	tail;
+
+	// the parent
+	struct __g2_svg_element_t* 	parent;
+
+	// exit it
+	tb_void_t 					(*exit)(struct __g2_svg_element_t* element);
 
 }g2_svg_element_t;
+
+/* ///////////////////////////////////////////////////////////////////////
+ * interfaces
+ */
+
+/// init element
+g2_svg_element_t* 	g2_svg_element_init(tb_handle_t reader);
+
+/// exit element
+tb_void_t 			g2_svg_element_exit(g2_svg_element_t* element);
+
+/// insert the next element
+tb_void_t 			g2_svg_element_insert_next(g2_svg_element_t* element, g2_svg_element_t* next);
+
+/// remove the next element
+tb_void_t 			g2_svg_element_remove_next(g2_svg_element_t* element);
+
+/// append the element to the head
+tb_void_t 			g2_svg_element_append_head(g2_svg_element_t* element, g2_svg_element_t* child);
+
+/// append the element to the tail
+tb_void_t 			g2_svg_element_append_tail(g2_svg_element_t* element, g2_svg_element_t* child);
 
 #endif
 
