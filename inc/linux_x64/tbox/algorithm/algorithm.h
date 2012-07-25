@@ -17,24 +17,18 @@
  * Copyright (C) 2009 - 2012, ruki All rights reserved.
  *
  * @author		ruki
- * @file		container.h
- * @defgroup 	container
+ * @file		algorithm.h
+ * @defgroup 	algorithm
  *
  */
-#ifndef TB_CONTAINER_H
-#define TB_CONTAINER_H
+#ifndef TB_ALGORITHM_H
+#define TB_ALGORITHM_H
 
 /* ///////////////////////////////////////////////////////////////////////
  * includes
  */
 #include "prefix.h"
-#include "item.h"
-#include "hash.h"
-#include "slist.h"
-#include "dlist.h"
-#include "queue.h"
-#include "stack.h"
-#include "vector.h"
-#include "iterator.h"
+#include "find.h"
+#include "sort.h"
 
 #endif

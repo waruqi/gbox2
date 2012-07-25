@@ -120,6 +120,20 @@ static g2_svg_element_entry_t 	g_element_entries[] =
 };
 
 /* ///////////////////////////////////////////////////////////////////////
+ * comparator
+ */
+static tb_long_t g2_svg_element_entry_comp(tb_iterator_t* iterator, tb_cpointer_t ltem, tb_cpointer_t rtem)
+{
+	// init
+	g2_svg_element_entry_t const* l = (g2_svg_element_entry_t const*)ltem;
+	g2_svg_element_entry_t const* r = (g2_svg_element_entry_t const*)rtem;
+	tb_assert_return_val(l && r, 0);
+
+	// comp
+	return tb_stricmp(l->name, r->name);
+}
+
+/* ///////////////////////////////////////////////////////////////////////
  * implementation
  */
 g2_svg_element_t* g2_svg_element_init(tb_handle_t reader)
@@ -128,17 +142,29 @@ g2_svg_element_t* g2_svg_element_init(tb_handle_t reader)
 	tb_char_t const* name = tb_xml_reader_element(reader);
 	tb_assert_and_check_return_val(name, TB_NULL);
 
-	// FIXME: use binary search
-	tb_size_t i = 0;
-	tb_size_t n = tb_arrayn(g_element_entries);
-	for (i = 1; i < n; i++)
-		if (g_element_entries[i].init && !tb_stricmp(g_element_entries[i].name, name)) 
+	// init entry
+	g2_svg_element_entry_t e = {G2_SVG_ELEMENT_TYPE_NONE, name, g2_svg_element_init_none};
+
+	// init iterator
+	tb_iterator_t 	iterator = tb_iterator_mem(g_element_entries, tb_arrayn(g_element_entries), sizeof(g2_svg_element_entry_t));
+	iterator.comp = g2_svg_element_entry_comp;
+
+	// find it by the binary search
+	tb_size_t 		itor = tb_binary_find_all(&iterator, &e);
+
+	// ok?
+	if (itor != tb_iterator_tail(&iterator))
+	{
+		// entry
+		g2_svg_element_entry_t const* entry = (g2_svg_element_entry_t const*)tb_iterator_item(&iterator, itor);
+		if (entry && entry->init)
 		{
 			// init
-			g2_svg_element_t* element = g_element_entries[i].init(reader);
-			if (element) element->type = g_element_entries[i].type;
+			g2_svg_element_t* element = entry->init(reader);
+			if (element) element->type = entry->type;
 			return element;
 		}
+	}
 
 	// none
 	return g2_svg_element_init_none(reader);

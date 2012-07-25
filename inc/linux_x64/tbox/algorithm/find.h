@@ -17,61 +17,33 @@
  * Copyright (C) 2009 - 2012, ruki All rights reserved.
  *
  * @author		ruki
- * @file		tbox.h
+ * @file		find.h
+ * @ingroup 	algorithm
  *
  */
-#ifndef TB_TBOX_H
-#define TB_TBOX_H
-
-// c plus plus
-#ifdef __cplusplus
-extern "C" {
-#endif
+#ifndef TB_ALGORITHM_FIND_H
+#define TB_ALGORITHM_FIND_H
 
 /* ///////////////////////////////////////////////////////////////////////
  * includes
  */
 #include "prefix.h"
-#include "algorithm/algorithm.h"
-#include "container/container.h"
-#include "encoding/encoding.h"
-#include "platform/platform.h"
-#include "network/network.h"
-#include "memory/memory.h"
-#include "stream/stream.h"
-#include "string/string.h"
-#include "utils/utils.h"
-#include "third/third.h"
-#include "math/math.h"
-#include "libc/libc.h"
-#include "libm/libm.h"
-#include "aio/aio.h"
-#include "xml/xml.h"
-#include "zip/zip.h"
 
 /* ///////////////////////////////////////////////////////////////////////
  * interfaces
  */
 
-/*!init the tbox library
- *
- * @param data 	the memory data, uses it when TB_CONFIG_MEMORY_POOL is enabled
- * @param size 	the memory size, uses it when TB_CONFIG_MEMORY_POOL is enabled
- *
- * @return ok: TB_TRUE, fail: TB_FALSE
- */
-tb_bool_t 			tb_init(tb_byte_t* data, tb_size_t size);
+/// the finder
+tb_size_t tb_find(tb_iterator_t* iterator, tb_size_t head, tb_size_t tail, tb_cpointer_t item);
 
-/// exit the tbox library
-tb_void_t 			tb_exit();
+// the finder for all
+tb_size_t tb_find_all(tb_iterator_t* iterator, tb_cpointer_t item);
 
-/// the tbox version string
-tb_char_t const* 	tb_version();
+/// the binary finder for ascending
+tb_size_t tb_binary_find(tb_iterator_t* iterator, tb_size_t head, tb_size_t tail, tb_cpointer_t item);
 
+/// the binary finder for all
+tb_size_t tb_binary_find_all(tb_iterator_t* iterator, tb_cpointer_t item);
 
-// c plus plus
-#ifdef __cplusplus
-}
-#endif
 
 #endif

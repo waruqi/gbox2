@@ -49,7 +49,10 @@ g2_svg_element_t* g2_svg_reader_load(tb_handle_t reader)
 	tb_assert_and_check_return_val(reader, TB_NULL);
 
 	// parent
-	g2_svg_element_t* parent = TB_NULL;
+	g2_svg_element_t* 	parent = TB_NULL;
+
+	// ignore?
+	tb_bool_t 			ignore = TB_FALSE;
 	
 	// walk
 	tb_size_t e = TB_XML_READER_EVENT_NONE;
@@ -70,9 +73,12 @@ g2_svg_element_t* g2_svg_reader_load(tb_handle_t reader)
 				if (!element->type)
 					tb_trace_impl("not_impl: <%s>", tb_xml_reader_element(reader));
 
-				// append
-				g2_svg_element_append_tail(parent, element); 
-				tb_assert_and_check_goto(element->parent, fail);
+				if (!ignore)
+				{
+					// append
+					g2_svg_element_append_tail(parent, element); 
+					tb_assert_and_check_goto(element->parent, fail);
+				}
 			}
 			break;
 		case TB_XML_READER_EVENT_ELEMENT_BEG: 
@@ -85,6 +91,13 @@ g2_svg_element_t* g2_svg_reader_load(tb_handle_t reader)
 				if (!element->type)
 					tb_trace_impl("not_impl: <%s>", tb_xml_reader_element(reader));
 
+				// metadata? ignore it
+				if (element->type == G2_SVG_ELEMENT_TYPE_METADATA) 
+				{
+					ignore = TB_TRUE;
+					tb_trace_impl("ignore: <metadata>...</metadata>");
+				}
+
 				// is svg?
 				if (!parent)
 				{
@@ -96,7 +109,7 @@ g2_svg_element_t* g2_svg_reader_load(tb_handle_t reader)
 						goto fail;
 					}
 				}
-				else
+				else if (!ignore)
 				{
 					// append
 					g2_svg_element_append_tail(parent, element); 
@@ -105,14 +118,24 @@ g2_svg_element_t* g2_svg_reader_load(tb_handle_t reader)
 					// enter
 					parent = element;
 				}
+				else g2_svg_element_exit(element);
 			}
 			break;
 		case TB_XML_READER_EVENT_ELEMENT_END: 
 			{
 				tb_assert_and_check_goto(parent, fail);
 
-				if (parent->type != G2_SVG_ELEMENT_TYPE_SVG) 
-					parent = parent->parent;
+				if (ignore)
+				{
+					tb_char_t const* name = tb_xml_reader_element(reader);
+					if (name && !tb_stricmp(name, "metadata")) ignore = TB_FALSE;
+				}
+				else
+				{
+					// leave
+					if (parent->type != G2_SVG_ELEMENT_TYPE_SVG) 
+						parent = parent->parent;
+				}
 			}
 			break;
 		case TB_XML_READER_EVENT_TEXT: 
