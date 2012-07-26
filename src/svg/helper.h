@@ -17,17 +17,59 @@
  * Copyright (C) 2009 - 2012, ruki All rights reserved.
  *
  * @author		ruki
- * @file		prefix.h
+ * @file		helper.h
  *
  */
-#ifndef G2_SVG_PREFIX_H
-#define G2_SVG_PREFIX_H
+#ifndef G2_SVG_HELPER_H
+#define G2_SVG_HELPER_H
 
 /* ///////////////////////////////////////////////////////////////////////
  * includes
  */
-#include "../prefix.h"
-#include "helper.h"
+#include "prefix.h"
+
+/* ///////////////////////////////////////////////////////////////////////
+ * inlines
+ */
+static __tb_inline__ tb_char_t const* g2_svg_skip_float(tb_char_t const* p)
+{
+	// skip sign
+	if (*p == '-') p++;
+
+	// skip '0'
+	while (*p == '0') p++;
+	
+	// skip float
+	tb_size_t bdecimal = 0;
+	while (*p)
+	{
+		// is decimal?
+		if (*p == '.')
+		{
+			if (!bdecimal) 
+			{
+				bdecimal = 1;
+				p++;
+				continue ;
+			}
+			else break;
+		}
+
+		// skip digit
+		if (!tb_isdigit(*p)) break;
+
+		// next
+		p++;
+	}
+
+	// ok
+	return p;
+}
+static __tb_inline__ tb_char_t const* g2_svg_skip_separator(tb_char_t const* p)
+{
+	while (*p && (tb_isspace(*p) || *p == ',')) p++;
+	return p;
+}
 
 #endif
 

@@ -81,11 +81,11 @@ g2_svg_element_t* g2_svg_element_init_svg(tb_handle_t reader)
 		else if (!tb_pstring_cstricmp(&attr->name, "viewBox"))
 		{
 			element->viewbox.x = tb_float_to_g2(tb_stof(p));
-			while (*p && !tb_isspace(*p)) p++; while (*p && tb_isspace(*p)) p++;
+			p = g2_svg_skip_float(p); while (*p && tb_isspace(*p)) p++;
 			element->viewbox.y = tb_float_to_g2(tb_stof(p));
-			while (*p && !tb_isspace(*p)) p++; while (*p && tb_isspace(*p)) p++;
+			p = g2_svg_skip_float(p); while (*p && tb_isspace(*p)) p++;
 			element->viewbox.w = tb_float_to_g2(tb_stof(p));
-			while (*p && !tb_isspace(*p)) p++; while (*p && tb_isspace(*p)) p++;
+			p = g2_svg_skip_float(p); while (*p && tb_isspace(*p)) p++;
 			element->viewbox.h = tb_float_to_g2(tb_stof(p));
 		}
 	}
