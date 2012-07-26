@@ -97,7 +97,7 @@ static g2_svg_element_entry_t 	g_element_entries[] =
 ,	{G2_SVG_ELEMENT_TYPE_MISSINGGLYPH, 			"missing-glyph", 		g2_svg_element_init_none 				}
 ,	{G2_SVG_ELEMENT_TYPE_OPERATORSCRIPT, 		"OperatorScript", 		g2_svg_element_init_none 				}
 ,	{G2_SVG_ELEMENT_TYPE_PARAGRAPH, 			"Paragraph", 			g2_svg_element_init_none 				}
-,	{G2_SVG_ELEMENT_TYPE_PATH, 					"path", 				g2_svg_element_init_none 				}
+,	{G2_SVG_ELEMENT_TYPE_PATH, 					"path", 				g2_svg_element_init_path 				}
 ,	{G2_SVG_ELEMENT_TYPE_PATTERN, 				"pattern", 				g2_svg_element_init_none 				}
 ,	{G2_SVG_ELEMENT_TYPE_POLYGON, 				"polygon", 				g2_svg_element_init_none 				}
 ,	{G2_SVG_ELEMENT_TYPE_POLYLINE, 				"polyline", 			g2_svg_element_init_none 				}
@@ -294,6 +294,11 @@ tb_void_t g2_svg_element_dump(g2_svg_element_t* element)
 	g2_svg_element_t* 	parent = element->parent;
 	for (; parent; parent = parent->parent) level++;
 
+	// the element attributes
+	tb_pstring_t 		attrs;
+	tb_pstring_init(&attrs);
+	if (element->dump) element->dump(element, &attrs);
+
 	// format
 	tb_size_t 			ntabs = level;
 	while (ntabs--) tb_printf("\t");
@@ -302,7 +307,7 @@ tb_void_t g2_svg_element_dump(g2_svg_element_t* element)
 	if (element->head)
 	{
 		// enter element
-		tb_printf("<%s>\n", name);
+		tb_printf("<%s%s>\n", name, tb_pstring_cstr(&attrs)? tb_pstring_cstr(&attrs) : "");
 
 		// dump childs
 		g2_svg_element_t* next = element->head;
@@ -323,6 +328,9 @@ tb_void_t g2_svg_element_dump(g2_svg_element_t* element)
 		tb_printf("</%s>\n", name);
 	}
 	// empty element
-	else tb_printf("<%s/>\n", name);
+	else tb_printf("<%s%s/>\n", name, tb_pstring_cstr(&attrs)? tb_pstring_cstr(&attrs) : "");
+
+	// exit attrs
+	tb_pstring_exit(&attrs);
 }
 #endif

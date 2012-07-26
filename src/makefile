@@ -13,6 +13,7 @@ gbox2_C_FILES 			+= \
 						svg/reader \
 						svg/element \
 						svg/svg \
+						svg/path \
 						core/path \
 						core/style \
 						core/pixmap \

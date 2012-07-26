@@ -122,6 +122,11 @@ typedef struct __g2_svg_element_t
 	// the parent
 	struct __g2_svg_element_t* 	parent;
 
+	// dump
+#ifdef G2_DEBUG
+	tb_void_t 					(*dump)(struct __g2_svg_element_t const* element, tb_pstring_t* attr);
+#endif
+
 	// exit it
 	tb_void_t 					(*exit)(struct __g2_svg_element_t* element);
 
@@ -133,8 +138,33 @@ typedef struct __g2_svg_element_svg_t
 	// the base
 	g2_svg_element_t 			base;
 
+	// the x
+	g2_float_t 					x;
+
+	// the y
+	g2_float_t 					y;
+
+	// the width
+	g2_float_t 					width;
+
+	// the height
+	g2_float_t 					height;
+
+	// the viewbox
+	g2_rect_t 					viewbox;
+
 }g2_svg_element_svg_t;
 
+/// the svg element type for <path ...>
+typedef struct __g2_svg_element_path_t
+{
+	// the base
+	g2_svg_element_t 			base;
+
+	// the path
+	tb_handle_t 				path;
+
+}g2_svg_element_path_t;
 
 /* ///////////////////////////////////////////////////////////////////////
  * interfaces
@@ -148,6 +178,9 @@ g2_svg_element_t* 	g2_svg_element_init_none(tb_handle_t reader);
 
 /// init element: <svg ...>
 g2_svg_element_t* 	g2_svg_element_init_svg(tb_handle_t reader);
+
+/// init element: <path ...>
+g2_svg_element_t* 	g2_svg_element_init_path(tb_handle_t reader);
 
 /// exit element
 tb_void_t 			g2_svg_element_exit(g2_svg_element_t* element);
