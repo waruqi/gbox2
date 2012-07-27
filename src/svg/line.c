@@ -30,6 +30,7 @@
  * includes
  */
 #include "element.h"
+#include "parser/parser.h"
 
 /* ///////////////////////////////////////////////////////////////////////
  * implementation
@@ -45,6 +46,17 @@ static tb_void_t g2_svg_element_line_dump(g2_svg_element_t const* element, tb_ps
 
 	// line
 	tb_pstring_cstrfcat(attr, " x1=\"%f\" y1=\"%f\" x2=\"%f\" y2=\"%f\"", g2_float_to_tb(line->line.p0.x), g2_float_to_tb(line->line.p0.y), g2_float_to_tb(line->line.p1.x), g2_float_to_tb(line->line.p1.y));
+
+	// transform 
+	if (!g2_matrix_identity(&line->matrix)) 
+	{
+		tb_pstring_cstrfcat(attr, " transform=\"matrix(%f,%f,%f,%f,%f,%f)\"" 	, g2_float_to_tb(line->matrix.sx)
+																				, g2_float_to_tb(line->matrix.ky)
+																				, g2_float_to_tb(line->matrix.kx)
+																				, g2_float_to_tb(line->matrix.sy)
+																				, g2_float_to_tb(line->matrix.tx)
+																				, g2_float_to_tb(line->matrix.ty));
+	}
 }
 #endif
 
@@ -62,19 +74,25 @@ g2_svg_element_t* g2_svg_element_init_line(tb_handle_t reader)
 	element->base.dump = g2_svg_element_line_dump;
 #endif
 
+	// init matrix
+	g2_matrix_clear(&element->matrix);
+
 	// attributes
 	tb_xml_node_t const* attr = tb_xml_reader_attributes(reader);
 	for (; attr; attr = attr->next)
 	{
 		tb_char_t const* p = tb_pstring_cstr(&attr->data);
 		if (!tb_pstring_cstricmp(&attr->name, "x1"))
-			element->line.p0.x = tb_float_to_g2(tb_stof(p));
+			g2_svg_parser_float(p, &element->line.p0.x);
 		else if (!tb_pstring_cstricmp(&attr->name, "y1"))
-			element->line.p0.y = tb_float_to_g2(tb_stof(p));
+			g2_svg_parser_float(p, &element->line.p0.y);
 		else if (!tb_pstring_cstricmp(&attr->name, "x2"))
-			element->line.p1.x = tb_float_to_g2(tb_stof(p));
+			g2_svg_parser_float(p, &element->line.p1.x);
 		else if (!tb_pstring_cstricmp(&attr->name, "y2"))
-			element->line.p1.y = tb_float_to_g2(tb_stof(p));
+			g2_svg_parser_float(p, &element->line.p1.y);
+		else if (!tb_pstring_cstricmp(&attr->name, "transform"));
+			g2_svg_parser_transform(p, &element->matrix);
+
 	}
 
 	// ok

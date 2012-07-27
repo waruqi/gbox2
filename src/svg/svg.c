@@ -30,6 +30,7 @@
  * includes
  */
 #include "element.h"
+#include "parser/parser.h"
 
 /* ///////////////////////////////////////////////////////////////////////
  * implementation
@@ -77,22 +78,19 @@ g2_svg_element_t* g2_svg_element_init_svg(tb_handle_t reader)
 	{
 		tb_char_t const* p = tb_pstring_cstr(&attr->data);
 		if (!tb_pstring_cstricmp(&attr->name, "x"))
-			element->x = tb_float_to_g2(tb_stof(p));	
+			g2_svg_parser_float(p, &element->x);	
 		else if (!tb_pstring_cstricmp(&attr->name, "y"))
-			element->y = tb_float_to_g2(tb_stof(p));	
+			g2_svg_parser_float(p, &element->y);	
 		else if (!tb_pstring_cstricmp(&attr->name, "width"))
-			element->width = tb_float_to_g2(tb_stof(p));	
+			g2_svg_parser_float(p, &element->width);	
 		else if (!tb_pstring_cstricmp(&attr->name, "height"))
-			element->height = tb_float_to_g2(tb_stof(p));	
+			g2_svg_parser_float(p, &element->height);	
 		else if (!tb_pstring_cstricmp(&attr->name, "viewBox"))
 		{
-			element->viewbox.x = tb_float_to_g2(tb_stof(p));
-			p = g2_svg_skip_float(p); while (*p && tb_isspace(*p)) p++;
-			element->viewbox.y = tb_float_to_g2(tb_stof(p));
-			p = g2_svg_skip_float(p); while (*p && tb_isspace(*p)) p++;
-			element->viewbox.w = tb_float_to_g2(tb_stof(p));
-			p = g2_svg_skip_float(p); while (*p && tb_isspace(*p)) p++;
-			element->viewbox.h = tb_float_to_g2(tb_stof(p));
+			p = g2_svg_parser_float(p, &element->viewbox.x); p = g2_svg_parser_separator_skip(p);
+			p = g2_svg_parser_float(p, &element->viewbox.y); p = g2_svg_parser_separator_skip(p);
+			p = g2_svg_parser_float(p, &element->viewbox.w); p = g2_svg_parser_separator_skip(p);
+			p = g2_svg_parser_float(p, &element->viewbox.h);
 		}
 	}
 

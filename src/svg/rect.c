@@ -30,6 +30,7 @@
  * includes
  */
 #include "element.h"
+#include "parser/parser.h"
 
 /* ///////////////////////////////////////////////////////////////////////
  * implementation
@@ -45,6 +46,17 @@ static tb_void_t g2_svg_element_rect_dump(g2_svg_element_t const* element, tb_ps
 
 	// rect
 	tb_pstring_cstrfcat(attr, " x=\"%f\" y=\"%f\" width=\"%f\" height=\"%f\"", g2_float_to_tb(rect->rect.x), g2_float_to_tb(rect->rect.y), g2_float_to_tb(rect->rect.w), g2_float_to_tb(rect->rect.h));
+
+	// transform 
+	if (!g2_matrix_identity(&rect->matrix)) 
+	{
+		tb_pstring_cstrfcat(attr, " transform=\"matrix(%f,%f,%f,%f,%f,%f)\"" 	, g2_float_to_tb(rect->matrix.sx)
+																				, g2_float_to_tb(rect->matrix.ky)
+																				, g2_float_to_tb(rect->matrix.kx)
+																				, g2_float_to_tb(rect->matrix.sy)
+																				, g2_float_to_tb(rect->matrix.tx)
+																				, g2_float_to_tb(rect->matrix.ty));
+	}
 }
 #endif
 
@@ -62,19 +74,24 @@ g2_svg_element_t* g2_svg_element_init_rect(tb_handle_t reader)
 	element->base.dump = g2_svg_element_rect_dump;
 #endif
 
+	// init matrix
+	g2_matrix_clear(&element->matrix);
+
 	// attributes
 	tb_xml_node_t const* attr = tb_xml_reader_attributes(reader);
 	for (; attr; attr = attr->next)
 	{
 		tb_char_t const* p = tb_pstring_cstr(&attr->data);
 		if (!tb_pstring_cstricmp(&attr->name, "x"))
-			element->rect.x = tb_float_to_g2(tb_stof(p));
+			g2_svg_parser_float(p, &element->rect.x);
 		else if (!tb_pstring_cstricmp(&attr->name, "y"))
-			element->rect.y = tb_float_to_g2(tb_stof(p));
+			g2_svg_parser_float(p, &element->rect.y);
 		else if (!tb_pstring_cstricmp(&attr->name, "width"))
-			element->rect.w = tb_float_to_g2(tb_stof(p));
+			g2_svg_parser_float(p, &element->rect.w);
 		else if (!tb_pstring_cstricmp(&attr->name, "height"))
-			element->rect.h = tb_float_to_g2(tb_stof(p));
+			g2_svg_parser_float(p, &element->rect.h);
+		else if (!tb_pstring_cstricmp(&attr->name, "transform"));
+			g2_svg_parser_transform(p, &element->matrix);
 	}
 
 	// ok

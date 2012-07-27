@@ -17,17 +17,25 @@
  * Copyright (C) 2009 - 2012, ruki All rights reserved.
  *
  * @author		ruki
- * @file		prefix.h
+ * @file		separator.h
  *
  */
-#ifndef G2_SVG_PREFIX_H
-#define G2_SVG_PREFIX_H
+#ifndef G2_SVG_PARSER_SEPARATOR_H
+#define G2_SVG_PARSER_SEPARATOR_H
 
 /* ///////////////////////////////////////////////////////////////////////
  * includes
  */
-#include "../prefix.h"
-#include "../core/core.h"
+#include "prefix.h"
+
+/* ///////////////////////////////////////////////////////////////////////
+ * inlines
+ */
+static __tb_inline__ tb_char_t const* g2_svg_parser_separator_skip(tb_char_t const* p)
+{
+	while (*p && (tb_isspace(*p) || *p == ',')) p++;
+	return p;
+}
 
 #endif
 

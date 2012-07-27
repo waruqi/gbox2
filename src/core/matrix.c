@@ -170,7 +170,7 @@ tb_bool_t g2_matrix_identity(g2_matrix_t const* matrix)
 {
 	return (g2_e1(matrix->sx) && g2_e1(matrix->sy)
 		&& g2_ez(matrix->kx) && g2_ez(matrix->ky)
-		&& g2_ez(matrix->tx) && g2_ez(matrix->tx))? TB_TRUE : TB_FALSE;
+		&& g2_ez(matrix->tx) && g2_ez(matrix->ty))? TB_TRUE : TB_FALSE;
 }
 tb_bool_t g2_matrix_rotate(g2_matrix_t* matrix, g2_float_t degrees)
 {

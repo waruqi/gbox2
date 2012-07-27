@@ -72,11 +72,7 @@ static tb_bool_t g2_skia_path_last_pt(tb_handle_t path, g2_point_t* pt)
 	G2SkiaPath const* spath = static_cast<G2SkiaPath const*>(path);
 	tb_assert_and_check_return_val(spath && pt, TB_TRUE);
 
-	SkPoint 	point;
-	tb_bool_t 	ok = spath->getLastPt(&point)? TB_TRUE : TB_FALSE;
-	pt->x = point.x();
-	pt->y = point.y();
-	return ok;
+	return spath->getLastPt((SkPoint*)pt)? TB_TRUE : TB_FALSE;
 }
 static tb_void_t g2_skia_path_move_to(tb_handle_t path, g2_point_t const* pt)
 {
@@ -108,11 +104,25 @@ static tb_void_t g2_skia_path_cube_to(tb_handle_t path, g2_point_t const* pt, g2
 }
 static tb_bool_t g2_skia_path_itor_init(tb_handle_t path)
 {
+	G2SkiaPath* spath = static_cast<G2SkiaPath*>(path);
+	tb_assert_and_check_return_val(spath, TB_FALSE);
+
+	// init
+	spath->iterator().setPath(*spath, false);
+	
+	// ok
 	return TB_TRUE;
 }
 static tb_size_t g2_skia_path_itor_next(tb_handle_t path, g2_point_t pt[4])
 {
-	return 0;
+	G2SkiaPath* spath = static_cast<G2SkiaPath*>(path);
+	tb_assert_and_check_return_val(spath, G2_PATH_CODE_NONE);
+
+	// next, @note hack: g2_point_t => SkPoint
+	SkPath::Verb verb = spath->iterator().next((SkPoint*)(pt));
+
+	// ok?
+	return verb != SkPath::kDone_Verb? (static_cast<tb_size_t>(verb) + 1) : G2_PATH_CODE_NONE;
 }
 static tb_void_t g2_skia_path_itor_exit(tb_handle_t path)
 {

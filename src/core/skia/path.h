@@ -37,18 +37,37 @@
 class G2SkiaPath : public SkPath
 {
 	// init & exit
+	// @{
 public:
+	// init
 	G2SkiaPath()
 	{
 	}
+	// init with path
 	G2SkiaPath(G2SkiaPath const& path)
 		: SkPath(path)
 	{
 	}
+	// exit
 	~G2SkiaPath()
 	{
 	}
-
+	// @}
+	
+	// accessors
+	// @{
+public:
+	// iterator
+	Iter& 			iterator() 			{return itor;}
+	Iter const& 	iterator() const 	{return itor;}
+	// @}
+	
+	// members
+	// @{
+private:
+	// the iterator
+	Iter 		itor;
+	// @}
 };
 
 #endif

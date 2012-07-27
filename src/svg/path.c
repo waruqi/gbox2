@@ -24,13 +24,13 @@
 /* ///////////////////////////////////////////////////////////////////////
  * trace
  */
-#define TB_TRACE_IMPL_TAG 		"svg"
+//#define TB_TRACE_IMPL_TAG 		"svg"
 
 /* ///////////////////////////////////////////////////////////////////////
  * includes
  */
 #include "element.h"
-#include "../core/core.h"
+#include "parser/parser.h"
 
 /* ///////////////////////////////////////////////////////////////////////
  * implementation
@@ -43,6 +43,56 @@ static tb_void_t g2_svg_element_path_dump(g2_svg_element_t const* element, tb_ps
 
 	// clear
 	tb_pstring_clear(attr);
+
+	// path
+	if (path->path && g2_path_itor_init(path->path))
+	{
+		// init d
+		tb_pstring_cstrfcat(attr, " d=\"");
+
+		// walk
+		g2_point_t 	pt[4];
+		tb_size_t 	co = G2_PATH_CODE_NONE;
+		while (co = g2_path_itor_next(path->path, pt))
+		{
+			switch (co)
+			{
+			case G2_PATH_CODE_MOVE:
+				tb_pstring_cstrfcat(attr, "M %f,%f ", g2_float_to_tb(pt[0].x), g2_float_to_tb(pt[0].y));
+				break;
+			case G2_PATH_CODE_LINE:
+				tb_pstring_cstrfcat(attr, "L %f,%f ", g2_float_to_tb(pt[0].x), g2_float_to_tb(pt[0].y));
+				break;
+			case G2_PATH_CODE_QUAD:
+				tb_pstring_cstrfcat(attr, "Q %f,%f %f,%f ", g2_float_to_tb(pt[0].x), g2_float_to_tb(pt[0].y), g2_float_to_tb(pt[1].x), g2_float_to_tb(pt[1].y));
+				break;
+			case G2_PATH_CODE_CUBIC:
+				tb_pstring_cstrfcat(attr, "C %f,%f %f,%f %f,%f ", g2_float_to_tb(pt[0].x), g2_float_to_tb(pt[0].y), g2_float_to_tb(pt[1].x), g2_float_to_tb(pt[1].y), g2_float_to_tb(pt[2].x), g2_float_to_tb(pt[2].y));
+				break;
+			case G2_PATH_CODE_CLOSE:
+				tb_pstring_cstrfcat(attr, "Z");
+				break;
+			}
+		}
+
+		// exit d
+		tb_pstring_cstrfcat(attr, "\"");
+
+		// transform 
+		if (!g2_matrix_identity(&path->matrix)) 
+		{
+			tb_pstring_cstrfcat(attr, " transform=\"matrix(%f,%f,%f,%f,%f,%f)\"" 	, g2_float_to_tb(path->matrix.sx)
+																					, g2_float_to_tb(path->matrix.ky)
+																					, g2_float_to_tb(path->matrix.kx)
+																					, g2_float_to_tb(path->matrix.sy)
+																					, g2_float_to_tb(path->matrix.tx)
+																					, g2_float_to_tb(path->matrix.ty));
+		}
+
+
+		// exit
+		g2_path_itor_exit(path->path);
+	}
 }
 #endif
 static tb_void_t g2_svg_element_path_exit(g2_svg_element_t* element)
@@ -63,8 +113,7 @@ static tb_char_t const* g2_svg_element_path_d_xoy(g2_svg_element_path_t* element
 	tb_char_t mode = *p++;
 
 	// xoy
-	g2_float_t xoy = tb_float_to_g2(tb_stof(p));
-	p = g2_svg_skip_float(p); p = g2_svg_skip_separator(p);
+	g2_float_t xoy = 0; p = g2_svg_parser_float(p, &xoy); p = g2_svg_parser_separator_skip(p);
 
 	// trace
 	tb_trace_impl("path: d: %c: %f", mode, g2_float_to_tb(xoy));
@@ -109,12 +158,10 @@ static tb_char_t const* g2_svg_element_path_d_xy1(g2_svg_element_path_t* element
 	tb_char_t mode = *p++;
 
 	// x1
-	g2_float_t x1 = tb_float_to_g2(tb_stof(p));
-	p = g2_svg_skip_float(p); p = g2_svg_skip_separator(p);
+	g2_float_t x1 = 0; p = g2_svg_parser_float(p, &x1); p = g2_svg_parser_separator_skip(p);
 
 	// y1
-	g2_float_t y1 = tb_float_to_g2(tb_stof(p));
-	p = g2_svg_skip_float(p); p = g2_svg_skip_separator(p);
+	g2_float_t y1 = 0; p = g2_svg_parser_float(p, &y1); p = g2_svg_parser_separator_skip(p);
 
 	// trace
 	tb_trace_impl("path: d: %c: %f, %f", mode, g2_float_to_tb(x1), g2_float_to_tb(y1));
@@ -162,20 +209,16 @@ static tb_char_t const* g2_svg_element_path_d_xy2(g2_svg_element_path_t* element
 	tb_char_t mode = *p++;
 
 	// x1
-	g2_float_t x1 = tb_float_to_g2(tb_stof(p));
-	p = g2_svg_skip_float(p); p = g2_svg_skip_separator(p);
+	g2_float_t x1 = 0; p = g2_svg_parser_float(p, &x1); p = g2_svg_parser_separator_skip(p);
 
 	// y1
-	g2_float_t y1 = tb_float_to_g2(tb_stof(p));
-	p = g2_svg_skip_float(p); p = g2_svg_skip_separator(p);
+	g2_float_t y1 = 0; p = g2_svg_parser_float(p, &y1); p = g2_svg_parser_separator_skip(p);
 
 	// x2
-	g2_float_t x2 = tb_float_to_g2(tb_stof(p));
-	p = g2_svg_skip_float(p); p = g2_svg_skip_separator(p);
+	g2_float_t x2 = 0; p = g2_svg_parser_float(p, &x2); p = g2_svg_parser_separator_skip(p);
 
 	// y2
-	g2_float_t y2 = tb_float_to_g2(tb_stof(p));
-	p = g2_svg_skip_float(p); p = g2_svg_skip_separator(p);
+	g2_float_t y2 = 0; p = g2_svg_parser_float(p, &y2); p = g2_svg_parser_separator_skip(p);
 
 	// trace
 	tb_trace_impl("path: d: %c: %f, %f, %f, %f", mode, g2_float_to_tb(x1), g2_float_to_tb(y1), g2_float_to_tb(x2), g2_float_to_tb(y2));
@@ -217,28 +260,22 @@ static tb_char_t const* g2_svg_element_path_d_xy3(g2_svg_element_path_t* element
 	tb_char_t mode = *p++;
 
 	// x1
-	g2_float_t x1 = tb_float_to_g2(tb_stof(p));
-	p = g2_svg_skip_float(p); p = g2_svg_skip_separator(p);
+	g2_float_t x1 = 0; p = g2_svg_parser_float(p, &x1); p = g2_svg_parser_separator_skip(p);
 
 	// y1
-	g2_float_t y1 = tb_float_to_g2(tb_stof(p));
-	p = g2_svg_skip_float(p); p = g2_svg_skip_separator(p);
+	g2_float_t y1 = 0; p = g2_svg_parser_float(p, &y1); p = g2_svg_parser_separator_skip(p);
 
 	// x2
-	g2_float_t x2 = tb_float_to_g2(tb_stof(p));
-	p = g2_svg_skip_float(p); p = g2_svg_skip_separator(p);
+	g2_float_t x2 = 0; p = g2_svg_parser_float(p, &x2); p = g2_svg_parser_separator_skip(p);
 
 	// y2
-	g2_float_t y2 = tb_float_to_g2(tb_stof(p));
-	p = g2_svg_skip_float(p); p = g2_svg_skip_separator(p);
+	g2_float_t y2 = 0; p = g2_svg_parser_float(p, &y2); p = g2_svg_parser_separator_skip(p);
 
 	// x3
-	g2_float_t x3 = tb_float_to_g2(tb_stof(p));
-	p = g2_svg_skip_float(p); p = g2_svg_skip_separator(p);
+	g2_float_t x3 = 0; p = g2_svg_parser_float(p, &x3); p = g2_svg_parser_separator_skip(p);
 
 	// y3
-	g2_float_t y3 = tb_float_to_g2(tb_stof(p));
-	p = g2_svg_skip_float(p); p = g2_svg_skip_separator(p);
+	g2_float_t y3 = 0; p = g2_svg_parser_float(p, &y3); p = g2_svg_parser_separator_skip(p);
 
 	// trace
 	tb_trace_impl("path: d: %c: %f, %f, %f, %f, %f, %f", mode, g2_float_to_tb(x1), g2_float_to_tb(y1), g2_float_to_tb(x2), g2_float_to_tb(y2), g2_float_to_tb(x3), g2_float_to_tb(y3));
@@ -280,32 +317,25 @@ static tb_char_t const* g2_svg_element_path_d_a(g2_svg_element_path_t* element, 
 	tb_char_t mode = *p++;
 
 	// rx
-	g2_float_t rx = tb_float_to_g2(tb_stof(p));
-	p = g2_svg_skip_float(p); p = g2_svg_skip_separator(p);
+	g2_float_t rx = 0; p = g2_svg_parser_float(p, &rx); p = g2_svg_parser_separator_skip(p);
 
 	// ry
-	g2_float_t ry = tb_float_to_g2(tb_stof(p));
-	p = g2_svg_skip_float(p); p = g2_svg_skip_separator(p);
+	g2_float_t ry = 0; p = g2_svg_parser_float(p, &ry); p = g2_svg_parser_separator_skip(p);
 
 	// x-axis-rotation
-	g2_float_t xr = tb_float_to_g2(tb_stof(p));
-	p = g2_svg_skip_float(p); p = g2_svg_skip_separator(p);
+	g2_float_t xr = 0; p = g2_svg_parser_float(p, &xr); p = g2_svg_parser_separator_skip(p);
 
 	// large-arc-flag
-	g2_float_t af = tb_float_to_g2(tb_stof(p));
-	p = g2_svg_skip_float(p); p = g2_svg_skip_separator(p);
+	g2_float_t af = 0; p = g2_svg_parser_float(p, &af); p = g2_svg_parser_separator_skip(p);
 
 	// sweep-flag
-	g2_float_t sf = tb_float_to_g2(tb_stof(p));
-	p = g2_svg_skip_float(p); p = g2_svg_skip_separator(p);
+	g2_float_t sf = 0; p = g2_svg_parser_float(p, &sf); p = g2_svg_parser_separator_skip(p);
 
 	// x
-	g2_float_t x = tb_float_to_g2(tb_stof(p));
-	p = g2_svg_skip_float(p); p = g2_svg_skip_separator(p);
+	g2_float_t x = 0; p = g2_svg_parser_float(p, &x); p = g2_svg_parser_separator_skip(p);
 
 	// y
-	g2_float_t y = tb_float_to_g2(tb_stof(p));
-	p = g2_svg_skip_float(p); p = g2_svg_skip_separator(p);
+	g2_float_t y = 0; p = g2_svg_parser_float(p, &y); p = g2_svg_parser_separator_skip(p);
 
 	// trace
 	tb_trace_impl("path: a: %c: %f, %f, %f, %f, %f, %f, %f", mode, g2_float_to_tb(rx), g2_float_to_tb(ry), g2_float_to_tb(xr), g2_float_to_tb(af), g2_float_to_tb(sf), g2_float_to_tb(x), g2_float_to_tb(y));
@@ -392,12 +422,18 @@ g2_svg_element_t* g2_svg_element_init_path(tb_handle_t reader)
 	element->base.dump = g2_svg_element_path_dump;
 #endif
 
+	// init matrix
+	g2_matrix_clear(&element->matrix);
+
 	// attributes
 	tb_xml_node_t const* attr = tb_xml_reader_attributes(reader);
 	for (; attr; attr = attr->next)
 	{
-		if (!tb_pstring_cstricmp(&attr->name, "p"))
-			g2_svg_element_path_d(element, tb_pstring_cstr(&attr->data));
+		tb_char_t const* p = tb_pstring_cstr(&attr->data);
+		if (!tb_pstring_cstricmp(&attr->name, "d"))
+			g2_svg_element_path_d(element, p);
+		else if (!tb_pstring_cstricmp(&attr->name, "transform"));
+			g2_svg_parser_transform(p, &element->matrix);
 	}
 
 	// ok

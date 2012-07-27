@@ -20,14 +20,13 @@
  * @file		prefix.h
  *
  */
-#ifndef G2_SVG_PREFIX_H
-#define G2_SVG_PREFIX_H
+#ifndef G2_SVG_PARSER_PREFIX_H
+#define G2_SVG_PARSER_PREFIX_H
 
 /* ///////////////////////////////////////////////////////////////////////
  * includes
  */
 #include "../prefix.h"
-#include "../core/core.h"
 
 #endif
 
