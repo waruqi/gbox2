@@ -30,6 +30,7 @@
  * includes
  */
 #include "element.h"
+#include "../core/core.h"
 
 /* ///////////////////////////////////////////////////////////////////////
  * implementation
@@ -44,7 +45,16 @@ static tb_void_t g2_svg_element_path_dump(g2_svg_element_t const* element, tb_ps
 	tb_pstring_clear(attr);
 }
 #endif
-static tb_char_t const* g2_svg_element_path_d_xoy(g2_svg_element_path_t const* element, tb_char_t const* data)
+static tb_void_t g2_svg_element_path_exit(g2_svg_element_t* element)
+{
+	g2_svg_element_path_t* path = (g2_svg_element_path_t*)element;
+	if (path)
+	{
+		if (path->path) g2_path_exit(path->path);
+		path->path = TB_NULL;
+	}
+}
+static tb_char_t const* g2_svg_element_path_d_xoy(g2_svg_element_path_t* element, tb_char_t const* data)
 {
 	// init 
 	tb_char_t const* p = data;
@@ -59,10 +69,38 @@ static tb_char_t const* g2_svg_element_path_d_xoy(g2_svg_element_path_t const* e
 	// trace
 	tb_trace_impl("path: d: %c: %f", mode, g2_float_to_tb(xoy));
 
+	// done path
+	if (element->path)
+	{
+		// last point
+		g2_point_t pt = {0};
+		g2_path_last_pt(element->path, &pt);
+
+		// done
+		switch (mode)
+		{
+			case 'H':
+				g2_path_line2_to(element->path, xoy, pt.y);
+				break;
+			case 'h':
+				g2_path_line2_to(element->path, pt.x + xoy, pt.y);
+				break;
+			case 'V':
+				g2_path_line2_to(element->path, pt.x, xoy);
+				break;
+			case 'v':
+				g2_path_line2_to(element->path, pt.x, pt.y + xoy);
+				break;
+			default:
+				tb_trace_noimpl();
+				break;
+		}
+	}
+
 	// ok
 	return p;
 }
-static tb_char_t const* g2_svg_element_path_d_xy1(g2_svg_element_path_t const* element, tb_char_t const* data)
+static tb_char_t const* g2_svg_element_path_d_xy1(g2_svg_element_path_t* element, tb_char_t const* data)
 {
 	// init 
 	tb_char_t const* p = data;
@@ -81,10 +119,41 @@ static tb_char_t const* g2_svg_element_path_d_xy1(g2_svg_element_path_t const* e
 	// trace
 	tb_trace_impl("path: d: %c: %f, %f", mode, g2_float_to_tb(x1), g2_float_to_tb(y1));
 
+	// init path
+	if (!element->path) element->path = g2_path_init();
+
+	// done path
+	if (element->path)
+	{
+		// last point
+		g2_point_t pt = {0};
+		g2_path_last_pt(element->path, &pt);
+
+		// done
+		switch (mode)
+		{
+			case 'M':
+				g2_path_move2_to(element->path, x1, y1);
+				break;
+			case 'm':
+				g2_path_move2_to(element->path, pt.x + x1, pt.y + y1);
+				break;
+			case 'L':
+				g2_path_line2_to(element->path, x1, y1);
+				break;
+			case 'l':
+				g2_path_line2_to(element->path, pt.x + x1, pt.y + y1);
+				break;
+			default:
+				tb_trace_noimpl();
+				break;
+		}
+	}
+
 	// ok
 	return p;
 }
-static tb_char_t const* g2_svg_element_path_d_xy2(g2_svg_element_path_t const* element, tb_char_t const* data)
+static tb_char_t const* g2_svg_element_path_d_xy2(g2_svg_element_path_t* element, tb_char_t const* data)
 {
 	// init 
 	tb_char_t const* p = data;
@@ -111,10 +180,35 @@ static tb_char_t const* g2_svg_element_path_d_xy2(g2_svg_element_path_t const* e
 	// trace
 	tb_trace_impl("path: d: %c: %f, %f, %f, %f", mode, g2_float_to_tb(x1), g2_float_to_tb(y1), g2_float_to_tb(x2), g2_float_to_tb(y2));
 
+	// init path
+	if (!element->path) element->path = g2_path_init();
+
+	// done path
+	if (element->path)
+	{
+		// last point
+		g2_point_t pt = {0};
+		g2_path_last_pt(element->path, &pt);
+
+		// done
+		switch (mode)
+		{
+			case 'Q':
+				g2_path_quad2_to(element->path, x2, y2, x1, y1);
+				break;
+			case 'q':
+				g2_path_quad2_to(element->path, pt.x + x2, pt.y + y2, pt.x + x1, pt.y + y1);
+				break;
+			default:
+				tb_trace_noimpl();
+				break;
+		}
+	}
+
 	// ok
 	return p;
 }
-static tb_char_t const* g2_svg_element_path_d_xy3(g2_svg_element_path_t const* element, tb_char_t const* data)
+static tb_char_t const* g2_svg_element_path_d_xy3(g2_svg_element_path_t* element, tb_char_t const* data)
 {
 	// init 
 	tb_char_t const* p = data;
@@ -149,10 +243,35 @@ static tb_char_t const* g2_svg_element_path_d_xy3(g2_svg_element_path_t const* e
 	// trace
 	tb_trace_impl("path: d: %c: %f, %f, %f, %f, %f, %f", mode, g2_float_to_tb(x1), g2_float_to_tb(y1), g2_float_to_tb(x2), g2_float_to_tb(y2), g2_float_to_tb(x3), g2_float_to_tb(y3));
 
+	// init path
+	if (!element->path) element->path = g2_path_init();
+
+	// done path
+	if (element->path)
+	{
+		// last point
+		g2_point_t pt = {0};
+		g2_path_last_pt(element->path, &pt);
+
+		// done
+		switch (mode)
+		{
+			case 'C':
+				g2_path_cube2_to(element->path, x3, y3, x1, y1, x2, y2);
+				break;
+			case 'c':
+				g2_path_cube2_to(element->path, pt.x + x3, pt.y + y3, pt.x + x1, pt.y + y1, pt.x + x2, pt.y + y2);
+				break;
+			default:
+				tb_trace_noimpl();
+				break;
+		}
+	}
+
 	// ok
 	return p;
 }
-static tb_char_t const* g2_svg_element_path_d_a(g2_svg_element_path_t const* element, tb_char_t const* data)
+static tb_char_t const* g2_svg_element_path_d_a(g2_svg_element_path_t* element, tb_char_t const* data)
 {
 	// init 
 	tb_char_t const* p = data;
@@ -191,18 +310,24 @@ static tb_char_t const* g2_svg_element_path_d_a(g2_svg_element_path_t const* ele
 	// trace
 	tb_trace_impl("path: a: %c: %f, %f, %f, %f, %f, %f, %f", mode, g2_float_to_tb(rx), g2_float_to_tb(ry), g2_float_to_tb(xr), g2_float_to_tb(af), g2_float_to_tb(sf), g2_float_to_tb(x), g2_float_to_tb(y));
 
+	// no impl
+	tb_trace_noimpl();
+
 	// ok
 	return p;
 }
-static tb_char_t const* g2_svg_element_path_d_z(g2_svg_element_path_t const* element, tb_char_t const* data)
+static tb_char_t const* g2_svg_element_path_d_z(g2_svg_element_path_t* element, tb_char_t const* data)
 {
 	// trace
 	tb_trace_impl("path: d: z");
 
+	// close path
+	if (element->path) g2_path_close(element->path);
+
 	// ok
 	return data + 1;
 }
-static tb_void_t g2_svg_element_path_d(g2_svg_element_path_t const* element, tb_char_t const* data)
+static tb_void_t g2_svg_element_path_d(g2_svg_element_path_t* element, tb_char_t const* data)
 {
 	// init
 	tb_char_t const* p = data;

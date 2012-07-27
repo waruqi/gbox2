@@ -14,6 +14,10 @@ gbox2_C_FILES 			+= \
 						svg/element \
 						svg/svg \
 						svg/path \
+						svg/rect \
+						svg/line \
+						svg/circle \
+						svg/ellipse \
 						core/path \
 						core/style \
 						core/pixmap \

@@ -34,6 +34,23 @@ extern "C" {
 #include "prefix.h"
 
 /* ///////////////////////////////////////////////////////////////////////
+ * types
+ */
+
+// the path code type
+typedef enum __g2_path_code_t
+{
+	G2_PATH_CODE_NONE	= 0
+,	G2_PATH_CODE_MOVE 	= 1
+,	G2_PATH_CODE_LINE 	= 2
+,	G2_PATH_CODE_QUAD	= 3
+,	G2_PATH_CODE_CUBIC	= 4
+,	G2_PATH_CODE_CLOSE	= 5
+
+}g2_path_code_t;
+
+
+/* ///////////////////////////////////////////////////////////////////////
  * interfaces
  */
 
@@ -49,6 +66,9 @@ tb_void_t 		g2_path_close(tb_handle_t path);
 
 // null?
 tb_bool_t 		g2_path_null(tb_handle_t path);
+
+// last pt
+tb_bool_t 		g2_path_last_pt(tb_handle_t path, g2_point_t* pt);
 
 // move to
 tb_void_t 		g2_path_move_to(tb_handle_t path, g2_point_t const* pt);
@@ -73,6 +93,12 @@ tb_void_t 		g2_path_cube_to(tb_handle_t path, g2_point_t const* pt, g2_point_t c
 tb_void_t 		g2_path_cubei_to(tb_handle_t path, g2_ipoint_t const* pt, g2_ipoint_t const* c0, g2_ipoint_t const* c1);
 tb_void_t 		g2_path_cube2_to(tb_handle_t path, g2_float_t x, g2_float_t y, g2_float_t cx0, g2_float_t cy0, g2_float_t cx1, g2_float_t cy1);
 tb_void_t 		g2_path_cube2i_to(tb_handle_t path, tb_long_t x, tb_long_t y, tb_long_t cx0, tb_long_t cy0, tb_long_t cx1, tb_long_t cy1);
+
+// iterator
+tb_bool_t 		g2_path_itor_init(tb_handle_t path);
+tb_size_t 		g2_path_itor_next(tb_handle_t path, g2_point_t pt[4]);
+tb_void_t 		g2_path_itor_exit(tb_handle_t path);
+
 
 
 // c plus plus

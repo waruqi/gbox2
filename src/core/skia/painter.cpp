@@ -25,6 +25,7 @@
  * includes
  */
 #include "prefix.h"
+#include "path.h"
 
 /* ///////////////////////////////////////////////////////////////////////
  * macros
@@ -251,7 +252,7 @@ static tb_bool_t g2_skia_clip_path(tb_handle_t painter, tb_size_t mode, tb_handl
 	}
 
 	if (g2_quality() == G2_QUALITY_TOP) anti = true;
-	return spainter->canvas->clipPath(*static_cast<const SkPath*>(path), op, anti)? TB_TRUE : TB_FALSE;
+	return spainter->canvas->clipPath(*static_cast<const G2SkiaPath*>(path), op, anti)? TB_TRUE : TB_FALSE;
 }
 static tb_bool_t g2_skia_clip_rect(tb_handle_t painter, tb_size_t mode, g2_rect_t const* rect)
 {
@@ -296,7 +297,7 @@ static tb_void_t g2_skia_draw_path(tb_handle_t painter, tb_handle_t path)
 	g2_skia_painter_t* spainter = static_cast<g2_skia_painter_t*>(painter);
 	tb_assert_and_check_return(spainter && spainter->canvas && spainter->style_usr && path);
 
-	spainter->canvas->drawPath(*((SkPath const*)path), *spainter->style_usr);
+	spainter->canvas->drawPath(*((G2SkiaPath const*)path), *spainter->style_usr);
 }
 static tb_void_t g2_skia_draw_arc(tb_handle_t painter, g2_arc_t const* arc)
 {
@@ -345,7 +346,7 @@ static tb_void_t g2_skia_draw_triangle(tb_handle_t painter, g2_triangle_t const*
 	g2_skia_painter_t* spainter = static_cast<g2_skia_painter_t*>(painter);
 	tb_assert_and_check_return(spainter && spainter->canvas && spainter->style_usr && triangle);
  
-	SkPath path;
+	G2SkiaPath path;
     path.incReserve(3);
 	path.moveTo(triangle->p0.x, triangle->p0.y);
 	path.lineTo(triangle->p1.x, triangle->p1.y);

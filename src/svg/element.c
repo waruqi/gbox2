@@ -55,12 +55,12 @@ static g2_svg_element_entry_t 	g_element_entries[] =
 ,	{G2_SVG_ELEMENT_TYPE_ANIMATECOLOR, 			"animateColor", 		g2_svg_element_init_none 				}
 ,	{G2_SVG_ELEMENT_TYPE_ANIMATEMOTION, 		"animateMotion", 		g2_svg_element_init_none 				}
 ,	{G2_SVG_ELEMENT_TYPE_ANIMATETRANSFORM, 		"animateTransform", 	g2_svg_element_init_none 				}
-,	{G2_SVG_ELEMENT_TYPE_CIRCLE, 				"circle", 				g2_svg_element_init_none 				}
+,	{G2_SVG_ELEMENT_TYPE_CIRCLE, 				"circle", 				g2_svg_element_init_circle 				}
 ,	{G2_SVG_ELEMENT_TYPE_CLIPPATH, 				"clipPath", 			g2_svg_element_init_none 				}
 ,	{G2_SVG_ELEMENT_TYPE_CURSOR, 				"cursor", 				g2_svg_element_init_none 				}
 ,	{G2_SVG_ELEMENT_TYPE_DEFS, 					"defs", 				g2_svg_element_init_none 				}
 ,	{G2_SVG_ELEMENT_TYPE_DESC, 					"desc", 				g2_svg_element_init_none 				}
-,	{G2_SVG_ELEMENT_TYPE_ELLIPSE, 				"ellipse", 				g2_svg_element_init_none 				}
+,	{G2_SVG_ELEMENT_TYPE_ELLIPSE, 				"ellipse", 				g2_svg_element_init_ellipse 			}
 ,	{G2_SVG_ELEMENT_TYPE_FEBLEND, 				"feBlend", 				g2_svg_element_init_none 				}
 ,	{G2_SVG_ELEMENT_TYPE_FECOLORMATRIX, 		"feColorMatrix", 		g2_svg_element_init_none 				}
 ,	{G2_SVG_ELEMENT_TYPE_FECOMPONENTTRANSFER, 	"feComponentTransfer", 	g2_svg_element_init_none 				}
@@ -90,7 +90,7 @@ static g2_svg_element_entry_t 	g_element_entries[] =
 ,	{G2_SVG_ELEMENT_TYPE_GLYPH, 				"glyph", 				g2_svg_element_init_none 				}
 ,	{G2_SVG_ELEMENT_TYPE_HKERN, 				"hkern", 				g2_svg_element_init_none 				}
 ,	{G2_SVG_ELEMENT_TYPE_IMAGE, 				"image", 				g2_svg_element_init_none 				}
-,	{G2_SVG_ELEMENT_TYPE_LINE, 					"line", 				g2_svg_element_init_none 				}
+,	{G2_SVG_ELEMENT_TYPE_LINE, 					"line", 				g2_svg_element_init_line 				}
 ,	{G2_SVG_ELEMENT_TYPE_LINEARGRADIENT, 		"linearGradient", 		g2_svg_element_init_none 				}
 ,	{G2_SVG_ELEMENT_TYPE_MASK, 					"mask", 				g2_svg_element_init_none 				}
 ,	{G2_SVG_ELEMENT_TYPE_METADATA, 				"metadata", 			g2_svg_element_init_none 				}
@@ -102,7 +102,7 @@ static g2_svg_element_entry_t 	g_element_entries[] =
 ,	{G2_SVG_ELEMENT_TYPE_POLYGON, 				"polygon", 				g2_svg_element_init_none 				}
 ,	{G2_SVG_ELEMENT_TYPE_POLYLINE, 				"polyline", 			g2_svg_element_init_none 				}
 ,	{G2_SVG_ELEMENT_TYPE_RADIALGRADIENT, 		"radialGradient", 		g2_svg_element_init_none 				}
-,	{G2_SVG_ELEMENT_TYPE_RECT, 					"rect", 				g2_svg_element_init_none 				}
+,	{G2_SVG_ELEMENT_TYPE_RECT, 					"rect", 				g2_svg_element_init_rect 				}
 ,	{G2_SVG_ELEMENT_TYPE_SCRIPT, 				"script", 				g2_svg_element_init_none 				}
 ,	{G2_SVG_ELEMENT_TYPE_STOP, 					"stop", 				g2_svg_element_init_none 				}
 ,	{G2_SVG_ELEMENT_TYPE_SVG, 					"svg", 					g2_svg_element_init_svg 				}

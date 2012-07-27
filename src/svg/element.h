@@ -166,6 +166,50 @@ typedef struct __g2_svg_element_path_t
 
 }g2_svg_element_path_t;
 
+/// the svg element type for <rect ...>
+typedef struct __g2_svg_element_rect_t
+{
+	// the base
+	g2_svg_element_t 			base;
+
+	// the rect
+	g2_rect_t 					rect;
+
+}g2_svg_element_rect_t;
+
+/// the svg element type for <line ...>
+typedef struct __g2_svg_element_line_t
+{
+	// the base
+	g2_svg_element_t 			base;
+
+	// the line
+	g2_line_t 					line;
+
+}g2_svg_element_line_t;
+
+/// the svg element type for <circle ...>
+typedef struct __g2_svg_element_circle_t
+{
+	// the base
+	g2_svg_element_t 			base;
+
+	// the circle
+	g2_circle_t 				circle;
+
+}g2_svg_element_circle_t;
+
+/// the svg element type for <ellipse ...>
+typedef struct __g2_svg_element_ellipse_t
+{
+	// the base
+	g2_svg_element_t 			base;
+
+	// the ellipse
+	g2_ellipse_t 				ellipse;
+
+}g2_svg_element_ellipse_t;
+
 /* ///////////////////////////////////////////////////////////////////////
  * interfaces
  */
@@ -181,6 +225,18 @@ g2_svg_element_t* 	g2_svg_element_init_svg(tb_handle_t reader);
 
 /// init element: <path ...>
 g2_svg_element_t* 	g2_svg_element_init_path(tb_handle_t reader);
+
+/// init element: <rect ...>
+g2_svg_element_t* 	g2_svg_element_init_rect(tb_handle_t reader);
+
+/// init element: <line ...>
+g2_svg_element_t* 	g2_svg_element_init_line(tb_handle_t reader);
+
+/// init element: <circle ...>
+g2_svg_element_t* 	g2_svg_element_init_circle(tb_handle_t reader);
+
+/// init element: <ellipse ...>
+g2_svg_element_t* 	g2_svg_element_init_ellipse(tb_handle_t reader);
 
 /// exit element
 tb_void_t 			g2_svg_element_exit(g2_svg_element_t* element);

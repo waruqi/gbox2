@@ -24,8 +24,7 @@
 /* ///////////////////////////////////////////////////////////////////////
  * includes
  */
-#include "prefix.h"
-#include "../path.h"
+#include "path.h"
 
 /* ///////////////////////////////////////////////////////////////////////
  * implementation
@@ -33,7 +32,7 @@
 static tb_handle_t g2_skia_path_init()
 {
 	// alloc
-	SkPath* spath = new SkPath();
+	G2SkiaPath* spath = new G2SkiaPath();
 	tb_assert_and_check_return_val(spath, TB_NULL);
 
 	// ok
@@ -41,7 +40,7 @@ static tb_handle_t g2_skia_path_init()
 }
 static tb_void_t g2_skia_path_exit(tb_handle_t path)
 {
-	SkPath* spath = static_cast<SkPath*>(path);
+	G2SkiaPath* spath = static_cast<G2SkiaPath*>(path);
 	tb_assert_and_check_return(spath);
  
 	// free it
@@ -49,54 +48,75 @@ static tb_void_t g2_skia_path_exit(tb_handle_t path)
 }
 static tb_void_t g2_skia_path_clear(tb_handle_t path)
 {
-	SkPath* spath = static_cast<SkPath*>(path);
+	G2SkiaPath* spath = static_cast<G2SkiaPath*>(path);
 	tb_assert_and_check_return(spath);
 
 	spath->reset();
 }
 static tb_void_t g2_skia_path_close(tb_handle_t path)
 {
-	SkPath* spath = static_cast<SkPath*>(path);
+	G2SkiaPath* spath = static_cast<G2SkiaPath*>(path);
 	tb_assert_and_check_return(spath);
 
 	spath->close();
 }
 static tb_bool_t g2_skia_path_null(tb_handle_t path)
 {	
-	SkPath const* spath = static_cast<SkPath const*>(path);
+	G2SkiaPath const* spath = static_cast<G2SkiaPath const*>(path);
 	tb_assert_and_check_return_val(spath, TB_TRUE);
 
 	return spath->isEmpty()? TB_TRUE : TB_FALSE;
 }
+static tb_bool_t g2_skia_path_last_pt(tb_handle_t path, g2_point_t* pt)
+{	
+	G2SkiaPath const* spath = static_cast<G2SkiaPath const*>(path);
+	tb_assert_and_check_return_val(spath && pt, TB_TRUE);
+
+	SkPoint 	point;
+	tb_bool_t 	ok = spath->getLastPt(&point)? TB_TRUE : TB_FALSE;
+	pt->x = point.x();
+	pt->y = point.y();
+	return ok;
+}
 static tb_void_t g2_skia_path_move_to(tb_handle_t path, g2_point_t const* pt)
 {
-	SkPath* spath = static_cast<SkPath*>(path);
+	G2SkiaPath* spath = static_cast<G2SkiaPath*>(path);
 	tb_assert_and_check_return(spath && pt);
 
 	spath->moveTo(pt->x, pt->y);
 }
 static tb_void_t g2_skia_path_line_to(tb_handle_t path, g2_point_t const* pt)
 {
-	SkPath* spath = static_cast<SkPath*>(path);
+	G2SkiaPath* spath = static_cast<G2SkiaPath*>(path);
 	tb_assert_and_check_return(spath && pt);
 
 	spath->lineTo(pt->x, pt->y);
 }
 static tb_void_t g2_skia_path_quad_to(tb_handle_t path, g2_point_t const* pt, g2_point_t const* cp)
 {
-	SkPath* spath = static_cast<SkPath*>(path);
+	G2SkiaPath* spath = static_cast<G2SkiaPath*>(path);
 	tb_assert_and_check_return(spath && pt && cp);
 
 	spath->quadTo(cp->x, cp->y, pt->x, pt->y);
 }
 static tb_void_t g2_skia_path_cube_to(tb_handle_t path, g2_point_t const* pt, g2_point_t const* c0, g2_point_t const* c1)
 {
-	SkPath* spath = static_cast<SkPath*>(path);
+	G2SkiaPath* spath = static_cast<G2SkiaPath*>(path);
 	tb_assert_and_check_return(spath && pt && c0 && c1);
 
 	spath->cubicTo(c0->x, c0->y, c1->x, c1->y, pt->x, pt->y);
 }
-
+static tb_bool_t g2_skia_path_itor_init(tb_handle_t path)
+{
+	return TB_TRUE;
+}
+static tb_size_t g2_skia_path_itor_next(tb_handle_t path, g2_point_t pt[4])
+{
+	return 0;
+}
+static tb_void_t g2_skia_path_itor_exit(tb_handle_t path)
+{
+}
 /* ///////////////////////////////////////////////////////////////////////
  * interfaces
  */
@@ -122,6 +142,10 @@ extern "C"
 	{
 		return g2_skia_path_null(path);		
 	}
+	tb_bool_t g2_path_last_pt(tb_handle_t path, g2_point_t* pt)
+	{
+		return g2_skia_path_last_pt(path, pt);		
+	}
 	tb_void_t g2_path_move_to(tb_handle_t path, g2_point_t const* pt)
 	{
 		g2_skia_path_move_to(path, pt);		
@@ -137,6 +161,18 @@ extern "C"
 	tb_void_t g2_path_cube_to(tb_handle_t path, g2_point_t const* pt, g2_point_t const* c0, g2_point_t const* c1)
 	{
 		g2_skia_path_cube_to(path, pt, c0, c1);		
+	}
+	tb_bool_t g2_path_itor_init(tb_handle_t path)
+	{
+		return g2_skia_path_itor_init(path);
+	}
+	tb_size_t g2_path_itor_next(tb_handle_t path, g2_point_t pt[4])
+	{
+		return g2_skia_path_itor_next(path, pt);
+	}
+	tb_void_t g2_path_itor_exit(tb_handle_t path)
+	{
+		g2_skia_path_itor_exit(path);
 	}
 }
 
