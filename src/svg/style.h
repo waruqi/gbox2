@@ -17,20 +17,25 @@
  * Copyright (C) 2009 - 2012, ruki All rights reserved.
  *
  * @author		ruki
- * @file		svg.h
+ * @file		style.h
  *
  */
-#ifndef G2_SVG_H
-#define G2_SVG_H
+#ifndef G2_SVG_STYLE_H
+#define G2_SVG_STYLE_H
 
 /* ///////////////////////////////////////////////////////////////////////
  * includes
  */
 #include "prefix.h"
-#include "style.h"
-#include "reader.h"
-#include "writer.h"
-#include "element.h"
+
+/* ///////////////////////////////////////////////////////////////////////
+ * types
+ */
+
+
+/* ///////////////////////////////////////////////////////////////////////
+ * interfaces
+ */
 
 #endif
 

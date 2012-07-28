@@ -10,6 +10,7 @@ gbox2_TYPE 				= LIB
 # basic files
 gbox2_C_FILES 			+= \
 						gbox2 \
+						svg/style \
 						svg/reader \
 						svg/writer \
 						svg/element \
@@ -62,6 +63,7 @@ INC_FILES 				= \
 						prefix/version.h \
 						svg/prefix.h \
 						svg/svg.h \
+						svg/style.h \
 						svg/reader.h \
 						svg/writer.h \
 						svg/element.h \

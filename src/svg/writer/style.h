@@ -47,6 +47,14 @@ static __tb_inline__ tb_void_t g2_svg_writer_style_fill(tb_gstream_t* gst, g2_sv
 }
 static __tb_inline__ tb_void_t g2_svg_writer_style_stroke(tb_gstream_t* gst, g2_svg_style_t* style)
 {
+	// init
+	static tb_char_t const* joins[] =
+	{
+		"miter"
+	, 	"round"
+	, 	"bevel"
+	};
+
 	// color
 	union __g2_c2p_t
 	{
@@ -62,6 +70,10 @@ static __tb_inline__ tb_void_t g2_svg_writer_style_stroke(tb_gstream_t* gst, g2_
 	// stroke width
 	g2_float_t width = g2_style_width(style->stroke);
 	if (width != G2_ONE) tb_gstream_printf(gst, "; stroke-width:%f", g2_float_to_tb(width));
+
+	// stroke linejoin
+	tb_size_t join = g2_style_join(style->stroke);
+	if (join && join - 1 < tb_arrayn(joins)) tb_gstream_printf(gst, "; stroke-linejoin:%s", joins[join - 1]);
 }
 static __tb_inline__ tb_void_t g2_svg_writer_style(tb_gstream_t* gst, g2_svg_style_t* style)
 {

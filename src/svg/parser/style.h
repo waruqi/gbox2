@@ -163,6 +163,32 @@ static __tb_inline__ tb_char_t const* g2_svg_parser_style_stroke_width(tb_char_t
 	// ok
 	return p;
 }
+static __tb_inline__ tb_char_t const* g2_svg_parser_style_stroke_linejoin(tb_char_t const* p, g2_svg_style_t* style)
+{
+	// init
+	g2_svg_parser_style_stroke_init(style);
+
+	// skip space
+	while (tb_isspace(*p)) p++;
+
+	// join
+	tb_size_t join = G2_STYLE_JOIN_NONE;
+	if (!tb_strnicmp(p, "miter", 5)) join = G2_STYLE_JOIN_MITER;
+	else if (!tb_strnicmp(p, "round", 5)) join = G2_STYLE_JOIN_ROUND;
+	else if (!tb_strnicmp(p, "bevel", 5)) join = G2_STYLE_JOIN_BEVEL;
+	
+	// skip join
+	if (join) p += 5;
+
+	// set join
+	g2_style_join_set(style->stroke, join);
+
+	// trace
+	tb_trace_impl("stroke: linejoin: %lu", join);
+
+	// ok
+	return p;
+}
 static __tb_inline__ tb_char_t const* g2_svg_parser_style(tb_char_t const* p, g2_svg_style_t* style)
 {
 	// check
@@ -179,6 +205,8 @@ static __tb_inline__ tb_char_t const* g2_svg_parser_style(tb_char_t const* p, g2
 				p = g2_svg_parser_style_stroke(p + 7, style);
 			else if (!tb_strnicmp(p, "stroke-width:", 13))
 				p = g2_svg_parser_style_stroke_width(p + 13, style);
+			else if (!tb_strnicmp(p, "stroke-linejoin:", 16))
+				p = g2_svg_parser_style_stroke_linejoin(p + 16, style);
 			else p++;
 		}
 		else p++;
