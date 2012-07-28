@@ -100,7 +100,40 @@ static __tb_inline__ tb_char_t const* g2_svg_parser_transform_scale(tb_char_t co
 // rotate(<rotate-angle> [<cx> <cy>])
 static __tb_inline__ tb_char_t const* g2_svg_parser_transform_rotate(tb_char_t const* p, g2_matrix_t* matrix)
 {
-	return p + 1;
+	// init
+	g2_float_t 	ra = 0; 
+	g2_float_t 	cx = 0; 
+	g2_float_t 	cy = 0; 
+	tb_size_t 	bc = 0;
+
+	// skip name
+	p += 6;
+
+	// skip '('
+	while (*p && *p != '(') p++; p++;
+
+	// ra
+	p = g2_svg_parser_float(p, &ra); p = g2_svg_parser_separator_skip(p);
+
+	// cx
+	if (*p != ')') { p = g2_svg_parser_float(p, &cx); p = g2_svg_parser_separator_skip(p); bc = 1; }
+
+	// cy
+	if (*p != ')') { p = g2_svg_parser_float(p, &cy); p = g2_svg_parser_separator_skip(p); bc = 1; }
+
+	// skip ')'
+	while (*p && *p != ')') p++; p++;
+
+	// rotate
+	if (bc) g2_matrix_translate(matrix, cx, cy);
+	g2_matrix_rotate(matrix, ra);
+	if (bc) g2_matrix_translate(matrix, -cx, -cy);
+
+	// trace
+	tb_trace_impl("rotate: %f, %f, %f", g2_float_to_tb(ra), g2_float_to_tb(cx), g2_float_to_tb(cy));
+
+	// ok
+	return p;
 }
 // skewX(<skew-angle>)
 static __tb_inline__ tb_char_t const* g2_svg_parser_transform_skew_x(tb_char_t const* p, g2_matrix_t* matrix)
