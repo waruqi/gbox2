@@ -35,28 +35,23 @@
 /* ///////////////////////////////////////////////////////////////////////
  * implementation
  */
-#ifdef G2_DEBUG
-static tb_void_t g2_svg_element_svg_dump(g2_svg_element_t const* element, tb_pstring_t* attr)
+static tb_void_t g2_svg_element_svg_writ(g2_svg_element_t const* element, tb_gstream_t* gst)
 {
 	g2_svg_element_svg_t const* svg = (g2_svg_element_svg_t const*)element;
 	tb_assert_and_check_return(svg);
 
-	// clear
-	tb_pstring_clear(attr);
-
 	// x & y
 	if (g2_nz(svg->x) || g2_nz(svg->y)) 
-		tb_pstring_cstrfcat(attr, " x=\"%f\" y=\"%f\"", g2_float_to_tb(svg->x), g2_float_to_tb(svg->y));
+		tb_gstream_printf(gst, " x=\"%f\" y=\"%f\"", g2_float_to_tb(svg->x), g2_float_to_tb(svg->y));
 
 	// width & height
 	if (g2_nz(svg->width) || g2_nz(svg->height)) 
-		tb_pstring_cstrfcat(attr, " width=\"%f\" height=\"%f\"", g2_float_to_tb(svg->width), g2_float_to_tb(svg->height));
+		tb_gstream_printf(gst, " width=\"%f\" height=\"%f\"", g2_float_to_tb(svg->width), g2_float_to_tb(svg->height));
 
 	// viewbox
 	if (g2_nz(svg->viewbox.w) || g2_nz(svg->viewbox.h))
-		tb_pstring_cstrfcat(attr, " viewBox=\"%f %f %f %f\"", g2_float_to_tb(svg->viewbox.x), g2_float_to_tb(svg->viewbox.y), g2_float_to_tb(svg->viewbox.w), g2_float_to_tb(svg->viewbox.h));
+		tb_gstream_printf(gst, " viewBox=\"%f %f %f %f\"", g2_float_to_tb(svg->viewbox.x), g2_float_to_tb(svg->viewbox.y), g2_float_to_tb(svg->viewbox.w), g2_float_to_tb(svg->viewbox.h));
 }
-#endif
 
 /* ///////////////////////////////////////////////////////////////////////
  * initializer
@@ -68,9 +63,7 @@ g2_svg_element_t* g2_svg_element_init_svg(tb_handle_t reader)
 	tb_assert_and_check_return_val(element, TB_NULL);
 
 	// init
-#ifdef G2_DEBUG
-	element->base.dump = g2_svg_element_svg_dump;
-#endif
+	element->base.writ = g2_svg_element_svg_writ;
 
 	// attributes
 	tb_xml_node_t const* attr = tb_xml_reader_attributes(reader);

@@ -60,7 +60,7 @@ static __tb_inline__ tb_char_t const* g2_svg_parser_transform_translate(tb_char_
 	g2_matrix_translate(matrix, tx, ty);
 
 	// trace
-	tb_trace_impl("translate: %f, %f", g2_float_to_tb(tx), g2_float_to_tb(ty));
+	tb_trace_impl("transform: translate: %f, %f", g2_float_to_tb(tx), g2_float_to_tb(ty));
 
 	// ok
 	return p;
@@ -92,7 +92,7 @@ static __tb_inline__ tb_char_t const* g2_svg_parser_transform_scale(tb_char_t co
 	g2_matrix_scale(matrix, sx, sy);
 
 	// trace
-	tb_trace_impl("scale: %f, %f", g2_float_to_tb(sx), g2_float_to_tb(sy));
+	tb_trace_impl("transform: scale: %f, %f", g2_float_to_tb(sx), g2_float_to_tb(sy));
 
 	// ok
 	return p;
@@ -130,7 +130,7 @@ static __tb_inline__ tb_char_t const* g2_svg_parser_transform_rotate(tb_char_t c
 	if (bc) g2_matrix_translate(matrix, -cx, -cy);
 
 	// trace
-	tb_trace_impl("rotate: %f, %f, %f", g2_float_to_tb(ra), g2_float_to_tb(cx), g2_float_to_tb(cy));
+	tb_trace_impl("transform: rotate: %f, %f, %f", g2_float_to_tb(ra), g2_float_to_tb(cx), g2_float_to_tb(cy));
 
 	// ok
 	return p;
@@ -157,7 +157,7 @@ static __tb_inline__ tb_char_t const* g2_svg_parser_transform_skew_x(tb_char_t c
 	g2_matrix_skew(matrix, kx, 0);
 
 	// trace
-	tb_trace_impl("skew_x: %f", g2_float_to_tb(kx));
+	tb_trace_impl("transform: skew_x: %f", g2_float_to_tb(kx));
 
 	// ok
 	return p;
@@ -184,7 +184,7 @@ static __tb_inline__ tb_char_t const* g2_svg_parser_transform_skew_y(tb_char_t c
 	g2_matrix_skew(matrix, 0, ky);
 
 	// trace
-	tb_trace_impl("skew_y: %f", g2_float_to_tb(ky));
+	tb_trace_impl("transform: skew_y: %f", g2_float_to_tb(ky));
 
 	// ok
 	return p;
@@ -230,7 +230,7 @@ static __tb_inline__ tb_char_t const* g2_svg_parser_transform_matrix(tb_char_t c
 	g2_matrix_multiply(matrix, &mx);
 
 	// trace
-	tb_trace_impl("matrix: %f, %f, %f, %f, %f, %f", g2_float_to_tb(sx), g2_float_to_tb(ky), g2_float_to_tb(kx), g2_float_to_tb(sy), g2_float_to_tb(tx), g2_float_to_tb(ty));
+	tb_trace_impl("transform: matrix: %f, %f, %f, %f, %f, %f", g2_float_to_tb(sx), g2_float_to_tb(ky), g2_float_to_tb(kx), g2_float_to_tb(sy), g2_float_to_tb(tx), g2_float_to_tb(ty));
 
 	// ok
 	return p;

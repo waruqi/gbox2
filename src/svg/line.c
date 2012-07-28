@@ -31,35 +31,25 @@
  */
 #include "element.h"
 #include "parser/parser.h"
+#include "writer/writer.h"
 
 /* ///////////////////////////////////////////////////////////////////////
  * implementation
  */
-#ifdef G2_DEBUG
-static tb_void_t g2_svg_element_line_dump(g2_svg_element_t const* element, tb_pstring_t* attr)
+static tb_void_t g2_svg_element_line_writ(g2_svg_element_t const* element, tb_gstream_t* gst)
 {
 	g2_svg_element_line_t const* line = (g2_svg_element_line_t const*)element;
 	tb_assert_and_check_return(line);
 
-	// clear
-	tb_pstring_clear(attr);
-
 	// line
-	tb_pstring_cstrfcat(attr, " x1=\"%f\" y1=\"%f\" x2=\"%f\" y2=\"%f\"", g2_float_to_tb(line->line.p0.x), g2_float_to_tb(line->line.p0.y), g2_float_to_tb(line->line.p1.x), g2_float_to_tb(line->line.p1.y));
+	tb_gstream_printf(gst, " x1=\"%f\" y1=\"%f\" x2=\"%f\" y2=\"%f\"", g2_float_to_tb(line->line.p0.x), g2_float_to_tb(line->line.p0.y), g2_float_to_tb(line->line.p1.x), g2_float_to_tb(line->line.p1.y));
+
+	// style 
+	g2_svg_writer_style(gst, line->style); 
 
 	// transform 
-	if (!g2_matrix_identity(&line->matrix)) 
-	{
-		tb_pstring_cstrfcat(attr, " transform=\"matrix(%f,%f,%f,%f,%f,%f)\"" 	, g2_float_to_tb(line->matrix.sx)
-																				, g2_float_to_tb(line->matrix.ky)
-																				, g2_float_to_tb(line->matrix.kx)
-																				, g2_float_to_tb(line->matrix.sy)
-																				, g2_float_to_tb(line->matrix.tx)
-																				, g2_float_to_tb(line->matrix.ty));
-	}
+	g2_svg_writer_transform(gst, &line->matrix); 
 }
-#endif
-
 static tb_void_t g2_svg_element_line_exit(g2_svg_element_t* element)
 {
 	g2_svg_element_line_t* line = (g2_svg_element_line_t*)element;
@@ -81,9 +71,7 @@ g2_svg_element_t* g2_svg_element_init_line(tb_handle_t reader)
 
 	// init
 	element->base.exit = g2_svg_element_line_exit;
-#ifdef G2_DEBUG
-	element->base.dump = g2_svg_element_line_dump;
-#endif
+	element->base.writ = g2_svg_element_line_writ;
 
 	// init style
 	element->style = g2_style_init();
@@ -104,6 +92,8 @@ g2_svg_element_t* g2_svg_element_init_line(tb_handle_t reader)
 			g2_svg_parser_float(p, &element->line.p1.x);
 		else if (!tb_pstring_cstricmp(&attr->name, "y2"))
 			g2_svg_parser_float(p, &element->line.p1.y);
+		else if (!tb_pstring_cstricmp(&attr->name, "stroke"))
+			g2_svg_parser_style_stroke(p, element->style);
 		else if (!tb_pstring_cstricmp(&attr->name, "transform"))
 			g2_svg_parser_transform(p, &element->matrix);
 

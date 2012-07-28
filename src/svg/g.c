@@ -17,7 +17,7 @@
  * Copyright (C) 2009 - 2012, ruki All rights reserved.
  *
  * @author		ruki
- * @file		circle.c
+ * @file		g.c
  *
  */
 
@@ -36,44 +36,39 @@
 /* ///////////////////////////////////////////////////////////////////////
  * implementation
  */
-static tb_void_t g2_svg_element_circle_writ(g2_svg_element_t const* element, tb_gstream_t* gst)
+static tb_void_t g2_svg_element_g_writ(g2_svg_element_t const* element, tb_gstream_t* gst)
 {
-	g2_svg_element_circle_t const* circle = (g2_svg_element_circle_t const*)element;
-	tb_assert_and_check_return(circle);
-
-	// circle
-	if (g2_nz(circle->circle.c.x)) tb_gstream_printf(gst, " cx=\"%f\"", g2_float_to_tb(circle->circle.c.x));
-	if (g2_nz(circle->circle.c.y)) tb_gstream_printf(gst, " cy=\"%f\"", g2_float_to_tb(circle->circle.c.y));
-	if (g2_nz(circle->circle.r)) tb_gstream_printf(gst, " r=\"%f\"", g2_float_to_tb(circle->circle.r));
+	g2_svg_element_g_t const* g = (g2_svg_element_g_t const*)element;
+	tb_assert_and_check_return(g);
 
 	// style 
-	g2_svg_writer_style(gst, circle->style); 
+	g2_svg_writer_style(gst, g->style); 
 
 	// transform 
-	g2_svg_writer_transform(gst, &circle->matrix); 
+	g2_svg_writer_transform(gst, &g->matrix); 
 }
-static tb_void_t g2_svg_element_circle_exit(g2_svg_element_t* element)
+static tb_void_t g2_svg_element_g_exit(g2_svg_element_t* element)
 {
-	g2_svg_element_circle_t* circle = (g2_svg_element_circle_t*)element;
-	if (circle)
+	g2_svg_element_g_t* g = (g2_svg_element_g_t*)element;
+	if (g)
 	{
 		// exit style
-		if (circle->style) g2_style_exit(circle->style);
-		circle->style = TB_NULL;
+		if (g->style) g2_style_exit(g->style);
+		g->style = TB_NULL;
 	}
 }
 /* ///////////////////////////////////////////////////////////////////////
  * initializer
  */
-g2_svg_element_t* g2_svg_element_init_circle(tb_handle_t reader)
+g2_svg_element_t* g2_svg_element_init_g(tb_handle_t reader)
 {
 	// alloc 
-	g2_svg_element_circle_t* element = tb_malloc0(sizeof(g2_svg_element_circle_t));
+	g2_svg_element_g_t* element = tb_malloc0(sizeof(g2_svg_element_g_t));
 	tb_assert_and_check_return_val(element, TB_NULL);
 
 	// init
-	element->base.exit = g2_svg_element_circle_exit;
-	element->base.writ = g2_svg_element_circle_writ;
+	element->base.exit = g2_svg_element_g_exit;
+	element->base.writ = g2_svg_element_g_writ;
 
 	// init style
 	element->style = g2_style_init();
@@ -86,19 +81,12 @@ g2_svg_element_t* g2_svg_element_init_circle(tb_handle_t reader)
 	for (; attr; attr = attr->next)
 	{
 		tb_char_t const* p = tb_pstring_cstr(&attr->data);
-		if (!tb_pstring_cstricmp(&attr->name, "cx"))
-			g2_svg_parser_float(p, &element->circle.c.x);
-		else if (!tb_pstring_cstricmp(&attr->name, "cy"))
-			g2_svg_parser_float(p, &element->circle.c.y);
-		else if (!tb_pstring_cstricmp(&attr->name, "r"))
-			g2_svg_parser_float(p, &element->circle.r);
+		if (!tb_pstring_cstricmp(&attr->name, "transform"))
+			g2_svg_parser_transform(p, &element->matrix);
 		else if (!tb_pstring_cstricmp(&attr->name, "fill"))
 			g2_svg_parser_style_fill(p, element->style);
 		else if (!tb_pstring_cstricmp(&attr->name, "stroke"))
 			g2_svg_parser_style_stroke(p, element->style);
-		else if (!tb_pstring_cstricmp(&attr->name, "transform"))
-			g2_svg_parser_transform(p, &element->matrix);
-
 	}
 
 	// ok

@@ -17,20 +17,16 @@
  * Copyright (C) 2009 - 2012, ruki All rights reserved.
  *
  * @author		ruki
- * @file		parser.h
+ * @file		prefix.h
  *
  */
-#ifndef G2_SVG_PARSER_H
-#define G2_SVG_PARSER_H
+#ifndef G2_SVG_WRITER_PREFIX_H
+#define G2_SVG_WRITER_PREFIX_H
 
 /* ///////////////////////////////////////////////////////////////////////
  * includes
  */
-#include "prefix.h"
-#include "float.h"
-#include "style.h"
-#include "separator.h"
-#include "transform.h"
+#include "../prefix.h"
 
 #endif
 

@@ -122,15 +122,27 @@ typedef struct __g2_svg_element_t
 	// the parent
 	struct __g2_svg_element_t* 	parent;
 
-	// dump
-#ifdef G2_DEBUG
-	tb_void_t 					(*dump)(struct __g2_svg_element_t const* element, tb_pstring_t* attr);
-#endif
+	// writ it
+	tb_void_t 					(*writ)(struct __g2_svg_element_t const* element, tb_gstream_t* gst);
 
 	// exit it
 	tb_void_t 					(*exit)(struct __g2_svg_element_t* element);
 
 }g2_svg_element_t;
+
+/// the svg element type for <g ...>
+typedef struct __g2_svg_element_g_t
+{
+	// the base
+	g2_svg_element_t 			base;
+
+	// the style
+	tb_handle_t 				style;
+
+	// the matrix
+	g2_matrix_t 				matrix;
+
+}g2_svg_element_g_t;
 
 /// the svg element type for <svg ...>
 typedef struct __g2_svg_element_svg_t
@@ -250,6 +262,9 @@ g2_svg_element_t* 	g2_svg_element_init(tb_handle_t reader);
 /// init element: none tag
 g2_svg_element_t* 	g2_svg_element_init_none(tb_handle_t reader);
 
+/// init element: <g ...>
+g2_svg_element_t* 	g2_svg_element_init_g(tb_handle_t reader);
+
 /// init element: <svg ...>
 g2_svg_element_t* 	g2_svg_element_init_svg(tb_handle_t reader);
 
@@ -270,9 +285,6 @@ g2_svg_element_t* 	g2_svg_element_init_ellipse(tb_handle_t reader);
 
 /// exit element
 tb_void_t 			g2_svg_element_exit(g2_svg_element_t* element);
-
-/// dump element
-tb_void_t 			g2_svg_element_dump(g2_svg_element_t* element);
 
 /// the element name
 tb_char_t const* 	g2_svg_element_name(g2_svg_element_t const* element);

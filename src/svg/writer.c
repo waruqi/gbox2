@@ -83,11 +83,6 @@ tb_void_t g2_svg_writer_save(tb_handle_t writer, g2_svg_element_t* element)
 	g2_svg_element_t* 	parent = element->parent;
 	for (; parent; parent = parent->parent) level++;
 
-	// the element attributes
-	tb_pstring_t 		attrs;
-	tb_pstring_init(&attrs);
-	if (element->dump) element->dump(element, &attrs);
-
 	// format
 	tb_size_t 			ntabs = level;
 	if (gwriter->bformat) while (ntabs--) tb_gstream_printf(gwriter->wstream, "\t");
@@ -96,7 +91,9 @@ tb_void_t g2_svg_writer_save(tb_handle_t writer, g2_svg_element_t* element)
 	if (element->head)
 	{
 		// enter element
-		tb_gstream_printf(gwriter->wstream, "<%s%s>", name, tb_pstring_cstr(&attrs)? tb_pstring_cstr(&attrs) : "");
+		tb_gstream_printf(gwriter->wstream, "<%s", name);
+		if (element->writ) element->writ(element, gwriter->wstream);
+		tb_gstream_printf(gwriter->wstream, ">");
 		if (gwriter->bformat) tb_gstream_printf(gwriter->wstream, "\n");
 
 		// dump childs
@@ -104,7 +101,7 @@ tb_void_t g2_svg_writer_save(tb_handle_t writer, g2_svg_element_t* element)
 		while (next)
 		{
 			// dump
-			g2_svg_element_dump(next);
+			g2_svg_writer_save(writer, next);
 
 			// next
 			next = next->next;
@@ -121,11 +118,10 @@ tb_void_t g2_svg_writer_save(tb_handle_t writer, g2_svg_element_t* element)
 	// empty element
 	else 
 	{
-		tb_gstream_printf(gwriter->wstream, "<%s%s/>", name, tb_pstring_cstr(&attrs)? tb_pstring_cstr(&attrs) : "");
+		tb_gstream_printf(gwriter->wstream, "<%s", name);
+		if (element->writ) element->writ(element, gwriter->wstream);
+		tb_gstream_printf(gwriter->wstream, "/>");
 		if (gwriter->bformat) tb_gstream_printf(gwriter->wstream, "\n");
 	}
-
-	// exit attrs
-	tb_pstring_exit(&attrs);
 }
 

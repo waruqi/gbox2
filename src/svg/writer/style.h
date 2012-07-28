@@ -17,70 +17,53 @@
  * Copyright (C) 2009 - 2012, ruki All rights reserved.
  *
  * @author		ruki
- * @file		paint.h
+ * @file		style.h
  *
  */
-#ifndef G2_SVG_PARSER_PAINT_H
-#define G2_SVG_PARSER_PAINT_H
+#ifndef G2_SVG_WRITER_STYLE_H
+#define G2_SVG_WRITER_STYLE_H
 
 /* ///////////////////////////////////////////////////////////////////////
  * includes
  */
 #include "prefix.h"
-#include "float.h"
-#include "separator.h"
 
 /* ///////////////////////////////////////////////////////////////////////
  * inlines
  */
-static __tb_inline__ tb_char_t const* g2_svg_parser_paint_fill_pixel(tb_char_t const* p, tb_handle_t style)
+
+static __tb_inline__ tb_void_t g2_svg_writer_style(tb_gstream_t* gst, tb_handle_t style)
 {
-	// init
-	union __g2_p2c_t
+	// check
+	tb_assert(gst && style);
+
+	// mode
+	tb_size_t mode = g2_style_mode(style);
+
+	// color
+	union __g2_c2p_t
 	{
 		g2_color_t c;
 		g2_pixel_t p;
 
-	}p2c;
+	}c2p;
+	c2p.c = g2_style_color(style);
 
-	// skip '#'
-	p++;
-
-	// skip space
-	while (*p && tb_isspace(*p)) p++;
-
-	// pixel
-	p2c.p = tb_s16tou32(p);
-
-	// skip pixel
-	while (*p && tb_isdigit16(*p)) p++;
-
-	// set color
-	g2_style_color_set(style, p2c.c);
-
-	// trace
-	tb_trace_impl("color: %#x", p2c.p);
-
-	// ok
-	return p;
-}
-static __tb_inline__ tb_char_t const* g2_svg_parser_paint_fill(tb_char_t const* p, tb_handle_t style)
-{
-	// check
-	tb_assert(style);
-
-	// done
-	while (*p)
+	// fill?
+	if (mode & G2_STYLE_MODE_FILL)
 	{
-		if (!tb_isspace(*p))
-		{
-			if (*p == '#')
-				p = g2_svg_parser_paint_fill_pixel(p, style);
-			else p++;
-		}
-		else p++;
+		// is not black? fill it
+		if (c2p.p != 0xff000000)
+			tb_gstream_printf(gst, " fill=\"#%06x\"", c2p.c.a != 0xff? c2p.p : (c2p.p & 0x00ffffff));
 	}
-	return p;
+
+	// stroke?
+	if (mode & G2_STYLE_MODE_STROKE)
+	{
+		// is not black? fill it
+		if (c2p.p != 0xff000000)
+			tb_gstream_printf(gst, " stroke=\"#%06x\"", c2p.c.a != 0xff? c2p.p : (c2p.p & 0x00ffffff));
+	}
 }
 
 #endif

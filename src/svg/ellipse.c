@@ -31,34 +31,28 @@
  */
 #include "element.h"
 #include "parser/parser.h"
+#include "writer/writer.h"
 
 /* ///////////////////////////////////////////////////////////////////////
  * implementation
  */
-#ifdef G2_DEBUG
-static tb_void_t g2_svg_element_ellipse_dump(g2_svg_element_t const* element, tb_pstring_t* attr)
+static tb_void_t g2_svg_element_ellipse_writ(g2_svg_element_t const* element, tb_gstream_t* gst)
 {
 	g2_svg_element_ellipse_t const* ellipse = (g2_svg_element_ellipse_t const*)element;
 	tb_assert_and_check_return(ellipse);
 
-	// clear
-	tb_pstring_clear(attr);
-
 	// ellipse
-	tb_pstring_cstrfcat(attr, " cx=\"%f\" cy=\"%f\" rx=\"%f\" ry=\"%f\"", g2_float_to_tb(ellipse->ellipse.c0.x), g2_float_to_tb(ellipse->ellipse.c0.y), g2_float_to_tb(ellipse->ellipse.rx), g2_float_to_tb(ellipse->ellipse.ry));
+	if (g2_nz(ellipse->ellipse.c0.x)) tb_gstream_printf(gst, " cx=\"%f\"", g2_float_to_tb(ellipse->ellipse.c0.x));
+	if (g2_nz(ellipse->ellipse.c0.y)) tb_gstream_printf(gst, " cy=\"%f\"", g2_float_to_tb(ellipse->ellipse.c0.y));
+	if (g2_nz(ellipse->ellipse.rx)) tb_gstream_printf(gst, " rx=\"%f\"", g2_float_to_tb(ellipse->ellipse.rx));
+	if (g2_nz(ellipse->ellipse.ry)) tb_gstream_printf(gst, " ry=\"%f\"", g2_float_to_tb(ellipse->ellipse.ry));
+
+	// style 
+	g2_svg_writer_style(gst, ellipse->style); 
 
 	// transform 
-	if (!g2_matrix_identity(&ellipse->matrix)) 
-	{
-		tb_pstring_cstrfcat(attr, " transform=\"matrix(%f,%f,%f,%f,%f,%f)\"" 	, g2_float_to_tb(ellipse->matrix.sx)
-																				, g2_float_to_tb(ellipse->matrix.ky)
-																				, g2_float_to_tb(ellipse->matrix.kx)
-																				, g2_float_to_tb(ellipse->matrix.sy)
-																				, g2_float_to_tb(ellipse->matrix.tx)
-																				, g2_float_to_tb(ellipse->matrix.ty));
-	}
+	g2_svg_writer_transform(gst, &ellipse->matrix); 
 }
-#endif
 
 static tb_void_t g2_svg_element_ellipse_exit(g2_svg_element_t* element)
 {
@@ -81,9 +75,7 @@ g2_svg_element_t* g2_svg_element_init_ellipse(tb_handle_t reader)
 
 	// init
 	element->base.exit = g2_svg_element_ellipse_exit;
-#ifdef G2_DEBUG
-	element->base.dump = g2_svg_element_ellipse_dump;
-#endif
+	element->base.writ = g2_svg_element_ellipse_writ;
 
 	// init style
 	element->style = g2_style_init();
@@ -105,7 +97,9 @@ g2_svg_element_t* g2_svg_element_init_ellipse(tb_handle_t reader)
 		else if (!tb_pstring_cstricmp(&attr->name, "ry"))
 			g2_svg_parser_float(p, &element->ellipse.ry);
 		else if (!tb_pstring_cstricmp(&attr->name, "fill"))
-			g2_svg_parser_paint_fill(p, element->style);
+			g2_svg_parser_style_fill(p, element->style);
+		else if (!tb_pstring_cstricmp(&attr->name, "stroke"))
+			g2_svg_parser_style_stroke(p, element->style);
 		else if (!tb_pstring_cstricmp(&attr->name, "transform"))
 			g2_svg_parser_transform(p, &element->matrix);
 	}

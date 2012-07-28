@@ -41,6 +41,9 @@ static tb_handle_t g2_skia_style_init()
 	if (g2_quality() > G2_QUALITY_LOW) sstyle->setFlags(sstyle->getFlags() | flag);
 	else sstyle->setFlags(sstyle->getFlags() & ~flag);
 
+	// none fill & stroke
+	sstyle->setStyle(static_cast<SkPaint::Style>(G2_STYLE_MODE_NONE));
+
 	// ok
 	return sstyle;
 }
@@ -66,6 +69,9 @@ static tb_void_t g2_skia_style_clear(tb_handle_t style)
 	if (g2_quality() > G2_QUALITY_LOW) sstyle->setFlags(sstyle->getFlags() | flag);
 	else sstyle->setFlags(sstyle->getFlags() & ~flag);
 
+	// none fill & stroke
+	sstyle->setStyle(static_cast<SkPaint::Style>(G2_STYLE_MODE_NONE));
+
 	// ref--
 	if (shader) SkSafeUnref(shader);
 }
@@ -74,24 +80,14 @@ static tb_size_t g2_skia_style_mode(tb_handle_t style)
 	SkPaint* sstyle = static_cast<SkPaint*>(style);
 	tb_assert_and_check_return_val(sstyle, G2_STYLE_MODE_NONE);
 
-	tb_size_t mode = G2_STYLE_MODE_NONE;
-	switch (sstyle->getStyle())
-	{
-	case SkPaint::kFill_Style: mode |= G2_STYLE_MODE_FILL; break;
-	case SkPaint::kStroke_Style: mode |= G2_STYLE_MODE_STROKE; break;
-	case SkPaint::kStrokeAndFill_Style: mode |= G2_STYLE_MODE_FILL | G2_STYLE_MODE_STROKE; break;
-	default: break;
-	}
-	return mode;
+	return static_cast<tb_size_t>(sstyle->getStyle());
 }
 static tb_void_t g2_skia_style_mode_set(tb_handle_t style, tb_size_t mode)
 {
 	SkPaint* sstyle = static_cast<SkPaint*>(style);
-	tb_assert_and_check_return(sstyle && mode);
+	tb_assert_and_check_return(sstyle);
 
-	if (mode & G2_STYLE_MODE_FILL && mode & G2_STYLE_MODE_STROKE) sstyle->setStyle(SkPaint::kStrokeAndFill_Style);
-	else if (mode & G2_STYLE_MODE_FILL) sstyle->setStyle(SkPaint::kFill_Style);
-	else if (mode & G2_STYLE_MODE_STROKE) sstyle->setStyle(SkPaint::kStroke_Style);
+	sstyle->setStyle(static_cast<SkPaint::Style>(mode));
 }
 static tb_size_t g2_skia_style_flag(tb_handle_t style)
 {

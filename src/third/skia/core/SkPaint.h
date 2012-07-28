@@ -285,6 +285,7 @@ public:
         then stroked.
     */
     enum Style {
+        kNone_Style,            //!< fill the geometry
         kFill_Style,            //!< fill the geometry
         kStroke_Style,          //!< stroke the geometry
         kStrokeAndFill_Style,   //!< fill and stroke the geometry

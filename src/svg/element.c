@@ -86,7 +86,7 @@ static g2_svg_element_entry_t 	g_element_entries[] =
 ,	{G2_SVG_ELEMENT_TYPE_FONTFACESRC, 			"font-face-src", 		g2_svg_element_init_none 				}
 ,	{G2_SVG_ELEMENT_TYPE_FONTFACEURI, 			"font-face-uri", 		g2_svg_element_init_none 				}
 ,	{G2_SVG_ELEMENT_TYPE_FOREIGNOBJECT, 		"foreignObject", 		g2_svg_element_init_none 				}
-,	{G2_SVG_ELEMENT_TYPE_G, 					"g", 					g2_svg_element_init_none 				}
+,	{G2_SVG_ELEMENT_TYPE_G, 					"g", 					g2_svg_element_init_g 					}
 ,	{G2_SVG_ELEMENT_TYPE_GLYPH, 				"glyph", 				g2_svg_element_init_none 				}
 ,	{G2_SVG_ELEMENT_TYPE_HKERN, 				"hkern", 				g2_svg_element_init_none 				}
 ,	{G2_SVG_ELEMENT_TYPE_IMAGE, 				"image", 				g2_svg_element_init_none 				}
@@ -282,56 +282,3 @@ tb_char_t const* g2_svg_element_name(g2_svg_element_t const* element)
 	return element->type < tb_arrayn(g_element_entries)? g_element_entries[element->type].name : TB_NULL;
 }
 
-#ifdef G2_DEBUG
-tb_void_t g2_svg_element_dump(g2_svg_element_t* element)
-{
-	tb_assert_and_check_return(element);
-
-	// the element name
-	tb_char_t const* name = element->type < tb_arrayn(g_element_entries)? g_element_entries[element->type].name : TB_NULL;
-
-	// the element level
-	tb_size_t 			level = 0;
-	g2_svg_element_t* 	parent = element->parent;
-	for (; parent; parent = parent->parent) level++;
-
-	// the element attributes
-	tb_pstring_t 		attrs;
-	tb_pstring_init(&attrs);
-	if (element->dump) element->dump(element, &attrs);
-
-	// format
-	tb_size_t 			ntabs = level;
-	while (ntabs--) tb_printf("\t");
-
-	// walk
-	if (element->head)
-	{
-		// enter element
-		tb_printf("<%s%s>\n", name, tb_pstring_cstr(&attrs)? tb_pstring_cstr(&attrs) : "");
-
-		// dump childs
-		g2_svg_element_t* next = element->head;
-		while (next)
-		{
-			// dump
-			g2_svg_element_dump(next);
-
-			// next
-			next = next->next;
-		}
-
-		// format
-		ntabs = level;
-		while (ntabs--) tb_printf("\t");
-
-		// leave element
-		tb_printf("</%s>\n", name);
-	}
-	// empty element
-	else tb_printf("<%s%s/>\n", name, tb_pstring_cstr(&attrs)? tb_pstring_cstr(&attrs) : "");
-
-	// exit attrs
-	tb_pstring_exit(&attrs);
-}
-#endif

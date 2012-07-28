@@ -31,48 +31,25 @@
  */
 #include "element.h"
 #include "parser/parser.h"
+#include "writer/writer.h"
 
 /* ///////////////////////////////////////////////////////////////////////
  * implementation
  */
-#ifdef G2_DEBUG
-static tb_void_t g2_svg_element_rect_dump(g2_svg_element_t const* element, tb_pstring_t* attr)
+static tb_void_t g2_svg_element_rect_writ(g2_svg_element_t const* element, tb_gstream_t* gst)
 {
 	g2_svg_element_rect_t const* rect = (g2_svg_element_rect_t const*)element;
 	tb_assert_and_check_return(rect);
 
-	// clear
-	tb_pstring_clear(attr);
-
 	// rect
-	tb_pstring_cstrfcat(attr, " x=\"%f\" y=\"%f\" width=\"%f\" height=\"%f\"", g2_float_to_tb(rect->rect.x), g2_float_to_tb(rect->rect.y), g2_float_to_tb(rect->rect.w), g2_float_to_tb(rect->rect.h));
+	tb_gstream_printf(gst, " x=\"%f\" y=\"%f\" width=\"%f\" height=\"%f\"", g2_float_to_tb(rect->rect.x), g2_float_to_tb(rect->rect.y), g2_float_to_tb(rect->rect.w), g2_float_to_tb(rect->rect.h));
 
-	// style
-	if (rect->style)
-	{
-		union __g2_c2p_t
-		{
-			g2_color_t c;
-			g2_pixel_t p;
-
-		}c2p;
-		c2p.c = g2_style_color(rect->style);
-		tb_pstring_cstrfcat(attr, " fill=\"#%x\"", c2p.p);
-	}
+	// style 
+	g2_svg_writer_style(gst, rect->style); 
 
 	// transform 
-	if (!g2_matrix_identity(&rect->matrix)) 
-	{
-		tb_pstring_cstrfcat(attr, " transform=\"matrix(%f,%f,%f,%f,%f,%f)\"" 	, g2_float_to_tb(rect->matrix.sx)
-																				, g2_float_to_tb(rect->matrix.ky)
-																				, g2_float_to_tb(rect->matrix.kx)
-																				, g2_float_to_tb(rect->matrix.sy)
-																				, g2_float_to_tb(rect->matrix.tx)
-																				, g2_float_to_tb(rect->matrix.ty));
-	}
+	g2_svg_writer_transform(gst, &rect->matrix); 
 }
-#endif
-
 static tb_void_t g2_svg_element_rect_exit(g2_svg_element_t* element)
 {
 	g2_svg_element_rect_t* rect = (g2_svg_element_rect_t*)element;
@@ -94,9 +71,7 @@ g2_svg_element_t* g2_svg_element_init_rect(tb_handle_t reader)
 
 	// init
 	element->base.exit = g2_svg_element_rect_exit;
-#ifdef G2_DEBUG
-	element->base.dump = g2_svg_element_rect_dump;
-#endif
+	element->base.writ = g2_svg_element_rect_writ;
 
 	// init style
 	element->style = g2_style_init();
@@ -118,7 +93,9 @@ g2_svg_element_t* g2_svg_element_init_rect(tb_handle_t reader)
 		else if (!tb_pstring_cstricmp(&attr->name, "height"))
 			g2_svg_parser_float(p, &element->rect.h);
 		else if (!tb_pstring_cstricmp(&attr->name, "fill"))
-			g2_svg_parser_paint_fill(p, element->style);
+			g2_svg_parser_style_fill(p, element->style);
+		else if (!tb_pstring_cstricmp(&attr->name, "stroke"))
+			g2_svg_parser_style_stroke(p, element->style);
 		else if (!tb_pstring_cstricmp(&attr->name, "transform"))
 			g2_svg_parser_transform(p, &element->matrix);
 	}

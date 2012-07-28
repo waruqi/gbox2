@@ -17,20 +17,37 @@
  * Copyright (C) 2009 - 2012, ruki All rights reserved.
  *
  * @author		ruki
- * @file		parser.h
+ * @file		transform.h
  *
  */
-#ifndef G2_SVG_PARSER_H
-#define G2_SVG_PARSER_H
+#ifndef G2_SVG_WRITER_TRANSFORM_H
+#define G2_SVG_WRITER_TRANSFORM_H
 
 /* ///////////////////////////////////////////////////////////////////////
  * includes
  */
 #include "prefix.h"
-#include "float.h"
-#include "style.h"
-#include "separator.h"
-#include "transform.h"
+
+/* ///////////////////////////////////////////////////////////////////////
+ * inlines
+ */
+
+static __tb_inline__ tb_void_t g2_svg_writer_transform(tb_gstream_t* gst, g2_matrix_t* matrix)
+{
+	// check
+	tb_assert(gst && matrix);
+
+	// transform 
+	if (!g2_matrix_identity(matrix)) 
+	{
+		tb_gstream_printf(gst, " transform=\"matrix(%f,%f,%f,%f,%f,%f)\"" 	, g2_float_to_tb(matrix->sx)
+																			, g2_float_to_tb(matrix->ky)
+																			, g2_float_to_tb(matrix->kx)
+																			, g2_float_to_tb(matrix->sy)
+																			, g2_float_to_tb(matrix->tx)
+																			, g2_float_to_tb(matrix->ty));
+	}
+}
 
 #endif
 
