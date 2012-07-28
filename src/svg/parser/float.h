@@ -119,15 +119,32 @@ static __tb_inline__ tb_char_t const* g2_svg_parser_float(tb_char_t const* p, g2
 	 * "1in" equals "90px"
 	 */
 	if (p[0] == 'p' && p[1] == 't')
+	{
 		res *= 1.25f;
+		p += 2;
+	}
 	else if (p[0] == 'p' && p[1] == 'c')
+	{
 		res *= 15;	
+		p += 2;
+	}
 	else if (p[0] == 'm' && p[1] == 'm')
+	{
 		res *= 3.543307f;
+		p += 2;
+	}
 	else if (p[0] == 'c' && p[1] == 'm')
+	{
 		res *= 35.43307f;
+		p += 2;
+	}
 	else if (p[0] == 'i' && p[1] == 'n')
+	{
 		res *= 90;
+		p += 2;
+	}
+	else if (p[0] == 'p' && p[1] == 'x')
+		p += 2;
 
 	// value
 	if (value) *value = tb_float_to_g2(res);

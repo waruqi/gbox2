@@ -47,7 +47,7 @@ static tb_void_t g2_svg_element_circle_writ(g2_svg_element_t const* element, tb_
 	if (g2_nz(circle->circle.r)) tb_gstream_printf(gst, " r=\"%f\"", g2_float_to_tb(circle->circle.r));
 
 	// style 
-	g2_svg_writer_style(gst, circle->style); 
+	g2_svg_writer_style(gst, &circle->style); 
 
 	// transform 
 	g2_svg_writer_transform(gst, &circle->matrix); 
@@ -57,9 +57,13 @@ static tb_void_t g2_svg_element_circle_exit(g2_svg_element_t* element)
 	g2_svg_element_circle_t* circle = (g2_svg_element_circle_t*)element;
 	if (circle)
 	{
-		// exit style
-		if (circle->style) g2_style_exit(circle->style);
-		circle->style = TB_NULL;
+		// exit fill
+		if (circle->style.fill) g2_style_exit(circle->style.fill);
+		circle->style.fill = TB_NULL;
+
+		// exit stroke
+		if (circle->style.stroke) g2_style_exit(circle->style.stroke);
+		circle->style.stroke = TB_NULL;
 	}
 }
 /* ///////////////////////////////////////////////////////////////////////
@@ -74,9 +78,6 @@ g2_svg_element_t* g2_svg_element_init_circle(tb_handle_t reader)
 	// init
 	element->base.exit = g2_svg_element_circle_exit;
 	element->base.writ = g2_svg_element_circle_writ;
-
-	// init style
-	element->style = g2_style_init();
 
 	// init matrix
 	g2_matrix_clear(&element->matrix);
@@ -93,12 +94,15 @@ g2_svg_element_t* g2_svg_element_init_circle(tb_handle_t reader)
 		else if (!tb_pstring_cstricmp(&attr->name, "r"))
 			g2_svg_parser_float(p, &element->circle.r);
 		else if (!tb_pstring_cstricmp(&attr->name, "fill"))
-			g2_svg_parser_style_fill(p, element->style);
+			g2_svg_parser_style_fill(p, &element->style);
 		else if (!tb_pstring_cstricmp(&attr->name, "stroke"))
-			g2_svg_parser_style_stroke(p, element->style);
+			g2_svg_parser_style_stroke(p, &element->style);
+		else if (!tb_pstring_cstricmp(&attr->name, "stroke-width"))
+			g2_svg_parser_style_stroke_width(p, &element->style);
+		else if (!tb_pstring_cstricmp(&attr->name, "style"))
+			g2_svg_parser_style(p, &element->style);
 		else if (!tb_pstring_cstricmp(&attr->name, "transform"))
 			g2_svg_parser_transform(p, &element->matrix);
-
 	}
 
 	// ok

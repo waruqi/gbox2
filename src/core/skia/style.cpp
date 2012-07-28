@@ -44,6 +44,9 @@ static tb_handle_t g2_skia_style_init()
 	// none fill & stroke
 	sstyle->setStyle(static_cast<SkPaint::Style>(G2_STYLE_MODE_NONE));
 
+	// width: 1
+	sstyle->setStrokeWidth(G2_ONE);
+
 	// ok
 	return sstyle;
 }
@@ -71,6 +74,9 @@ static tb_void_t g2_skia_style_clear(tb_handle_t style)
 
 	// none fill & stroke
 	sstyle->setStyle(static_cast<SkPaint::Style>(G2_STYLE_MODE_NONE));
+
+	// width: 1
+	sstyle->setStrokeWidth(G2_ONE);
 
 	// ref--
 	if (shader) SkSafeUnref(shader);

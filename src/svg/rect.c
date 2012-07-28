@@ -45,7 +45,7 @@ static tb_void_t g2_svg_element_rect_writ(g2_svg_element_t const* element, tb_gs
 	tb_gstream_printf(gst, " x=\"%f\" y=\"%f\" width=\"%f\" height=\"%f\"", g2_float_to_tb(rect->rect.x), g2_float_to_tb(rect->rect.y), g2_float_to_tb(rect->rect.w), g2_float_to_tb(rect->rect.h));
 
 	// style 
-	g2_svg_writer_style(gst, rect->style); 
+	g2_svg_writer_style(gst, &rect->style); 
 
 	// transform 
 	g2_svg_writer_transform(gst, &rect->matrix); 
@@ -55,9 +55,13 @@ static tb_void_t g2_svg_element_rect_exit(g2_svg_element_t* element)
 	g2_svg_element_rect_t* rect = (g2_svg_element_rect_t*)element;
 	if (rect)
 	{
-		// exit style
-		if (rect->style) g2_style_exit(rect->style);
-		rect->style = TB_NULL;
+		// exit fill
+		if (rect->style.fill) g2_style_exit(rect->style.fill);
+		rect->style.fill = TB_NULL;
+
+		// exit stroke
+		if (rect->style.stroke) g2_style_exit(rect->style.stroke);
+		rect->style.stroke = TB_NULL;
 	}
 }
 /* ///////////////////////////////////////////////////////////////////////
@@ -72,9 +76,6 @@ g2_svg_element_t* g2_svg_element_init_rect(tb_handle_t reader)
 	// init
 	element->base.exit = g2_svg_element_rect_exit;
 	element->base.writ = g2_svg_element_rect_writ;
-
-	// init style
-	element->style = g2_style_init();
 
 	// init matrix
 	g2_matrix_clear(&element->matrix);
@@ -93,9 +94,13 @@ g2_svg_element_t* g2_svg_element_init_rect(tb_handle_t reader)
 		else if (!tb_pstring_cstricmp(&attr->name, "height"))
 			g2_svg_parser_float(p, &element->rect.h);
 		else if (!tb_pstring_cstricmp(&attr->name, "fill"))
-			g2_svg_parser_style_fill(p, element->style);
+			g2_svg_parser_style_fill(p, &element->style);
 		else if (!tb_pstring_cstricmp(&attr->name, "stroke"))
-			g2_svg_parser_style_stroke(p, element->style);
+			g2_svg_parser_style_stroke(p, &element->style);
+		else if (!tb_pstring_cstricmp(&attr->name, "stroke-width"))
+			g2_svg_parser_style_stroke_width(p, &element->style);
+		else if (!tb_pstring_cstricmp(&attr->name, "style"))
+			g2_svg_parser_style(p, &element->style);
 		else if (!tb_pstring_cstricmp(&attr->name, "transform"))
 			g2_svg_parser_transform(p, &element->matrix);
 	}

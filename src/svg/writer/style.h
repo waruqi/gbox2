@@ -31,15 +31,8 @@
 /* ///////////////////////////////////////////////////////////////////////
  * inlines
  */
-
-static __tb_inline__ tb_void_t g2_svg_writer_style(tb_gstream_t* gst, tb_handle_t style)
+static __tb_inline__ tb_void_t g2_svg_writer_style_fill(tb_gstream_t* gst, g2_svg_style_t* style)
 {
-	// check
-	tb_assert(gst && style);
-
-	// mode
-	tb_size_t mode = g2_style_mode(style);
-
 	// color
 	union __g2_c2p_t
 	{
@@ -47,22 +40,51 @@ static __tb_inline__ tb_void_t g2_svg_writer_style(tb_gstream_t* gst, tb_handle_
 		g2_pixel_t p;
 
 	}c2p;
-	c2p.c = g2_style_color(style);
+	c2p.c = g2_style_color(style->fill);
 
-	// fill?
-	if (mode & G2_STYLE_MODE_FILL)
+	// fill color
+	tb_gstream_printf(gst, "fill:#%06x", c2p.c.a != 0xff? c2p.p : (c2p.p & 0x00ffffff));
+}
+static __tb_inline__ tb_void_t g2_svg_writer_style_stroke(tb_gstream_t* gst, g2_svg_style_t* style)
+{
+	// color
+	union __g2_c2p_t
 	{
-		// is not black? fill it
-		if (c2p.p != 0xff000000)
-			tb_gstream_printf(gst, " fill=\"#%06x\"", c2p.c.a != 0xff? c2p.p : (c2p.p & 0x00ffffff));
-	}
+		g2_color_t c;
+		g2_pixel_t p;
 
-	// stroke?
-	if (mode & G2_STYLE_MODE_STROKE)
+	}c2p;
+	c2p.c = g2_style_color(style->stroke);
+
+	// stroke color
+	tb_gstream_printf(gst, "stroke:#%06x", c2p.c.a != 0xff? c2p.p : (c2p.p & 0x00ffffff));
+
+	// stroke width
+	g2_float_t width = g2_style_width(style->stroke);
+	if (width != G2_ONE) tb_gstream_printf(gst, "; stroke-width:%f", g2_float_to_tb(width));
+}
+static __tb_inline__ tb_void_t g2_svg_writer_style(tb_gstream_t* gst, g2_svg_style_t* style)
+{
+	// check
+	tb_assert(gst && style);
+
+	// has style
+	if (style->fill || style->stroke)
 	{
-		// is not black? fill it
-		if (c2p.p != 0xff000000)
-			tb_gstream_printf(gst, " stroke=\"#%06x\"", c2p.c.a != 0xff? c2p.p : (c2p.p & 0x00ffffff));
+		// enter
+		tb_gstream_printf(gst, " style=\"");
+
+		// fill?
+		if (style->fill) g2_svg_writer_style_fill(gst, style);
+		
+		// separator
+		if (style->fill && style->stroke) tb_gstream_printf(gst, "; ");
+
+		// stroke?
+		if (style->stroke) g2_svg_writer_style_stroke(gst, style);
+
+		// leave
+		tb_gstream_printf(gst, "\"");
 	}
 }
 

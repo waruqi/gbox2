@@ -130,6 +130,17 @@ typedef struct __g2_svg_element_t
 
 }g2_svg_element_t;
 
+// the svg style type
+typedef struct __g2_svg_style_t
+{
+	// the fill style
+	tb_handle_t 				fill;
+
+	// the stroke style
+	tb_handle_t 				stroke;
+
+}g2_svg_style_t;
+
 /// the svg element type for <g ...>
 typedef struct __g2_svg_element_g_t
 {
@@ -137,7 +148,7 @@ typedef struct __g2_svg_element_g_t
 	g2_svg_element_t 			base;
 
 	// the style
-	tb_handle_t 				style;
+	g2_svg_style_t 				style;
 
 	// the matrix
 	g2_matrix_t 				matrix;
@@ -174,7 +185,7 @@ typedef struct __g2_svg_element_path_t
 	g2_svg_element_t 			base;
 
 	// the style
-	tb_handle_t 				style;
+	g2_svg_style_t 				style;
 
 	// the matrix
 	g2_matrix_t 				matrix;
@@ -191,7 +202,7 @@ typedef struct __g2_svg_element_rect_t
 	g2_svg_element_t 			base;
 
 	// the style
-	tb_handle_t 				style;
+	g2_svg_style_t 				style;
 
 	// the matrix
 	g2_matrix_t 				matrix;
@@ -208,7 +219,7 @@ typedef struct __g2_svg_element_line_t
 	g2_svg_element_t 			base;
 
 	// the style
-	tb_handle_t 				style;
+	g2_svg_style_t 				style;
 
 	// the matrix
 	g2_matrix_t 				matrix;
@@ -225,7 +236,7 @@ typedef struct __g2_svg_element_circle_t
 	g2_svg_element_t 			base;
 
 	// the style
-	tb_handle_t 				style;
+	g2_svg_style_t 				style;
 
 	// the matrix
 	g2_matrix_t 				matrix;
@@ -242,7 +253,7 @@ typedef struct __g2_svg_element_ellipse_t
 	g2_svg_element_t 			base;
 
 	// the style
-	tb_handle_t 				style;
+	g2_svg_style_t 				style;
 
 	// the matrix
 	g2_matrix_t 				matrix;

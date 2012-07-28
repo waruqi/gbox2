@@ -48,7 +48,7 @@ static tb_void_t g2_svg_element_ellipse_writ(g2_svg_element_t const* element, tb
 	if (g2_nz(ellipse->ellipse.ry)) tb_gstream_printf(gst, " ry=\"%f\"", g2_float_to_tb(ellipse->ellipse.ry));
 
 	// style 
-	g2_svg_writer_style(gst, ellipse->style); 
+	g2_svg_writer_style(gst, &ellipse->style); 
 
 	// transform 
 	g2_svg_writer_transform(gst, &ellipse->matrix); 
@@ -59,9 +59,13 @@ static tb_void_t g2_svg_element_ellipse_exit(g2_svg_element_t* element)
 	g2_svg_element_ellipse_t* ellipse = (g2_svg_element_ellipse_t*)element;
 	if (ellipse)
 	{
-		// exit style
-		if (ellipse->style) g2_style_exit(ellipse->style);
-		ellipse->style = TB_NULL;
+		// exit fill
+		if (ellipse->style.fill) g2_style_exit(ellipse->style.fill);
+		ellipse->style.fill = TB_NULL;
+
+		// exit stroke
+		if (ellipse->style.stroke) g2_style_exit(ellipse->style.stroke);
+		ellipse->style.stroke = TB_NULL;
 	}
 }
 /* ///////////////////////////////////////////////////////////////////////
@@ -76,9 +80,6 @@ g2_svg_element_t* g2_svg_element_init_ellipse(tb_handle_t reader)
 	// init
 	element->base.exit = g2_svg_element_ellipse_exit;
 	element->base.writ = g2_svg_element_ellipse_writ;
-
-	// init style
-	element->style = g2_style_init();
 
 	// init matrix
 	g2_matrix_clear(&element->matrix);
@@ -97,9 +98,13 @@ g2_svg_element_t* g2_svg_element_init_ellipse(tb_handle_t reader)
 		else if (!tb_pstring_cstricmp(&attr->name, "ry"))
 			g2_svg_parser_float(p, &element->ellipse.ry);
 		else if (!tb_pstring_cstricmp(&attr->name, "fill"))
-			g2_svg_parser_style_fill(p, element->style);
+			g2_svg_parser_style_fill(p, &element->style);
 		else if (!tb_pstring_cstricmp(&attr->name, "stroke"))
-			g2_svg_parser_style_stroke(p, element->style);
+			g2_svg_parser_style_stroke(p, &element->style);
+		else if (!tb_pstring_cstricmp(&attr->name, "stroke-width"))
+			g2_svg_parser_style_stroke_width(p, &element->style);
+		else if (!tb_pstring_cstricmp(&attr->name, "style"))
+			g2_svg_parser_style(p, &element->style);
 		else if (!tb_pstring_cstricmp(&attr->name, "transform"))
 			g2_svg_parser_transform(p, &element->matrix);
 	}

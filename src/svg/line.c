@@ -45,7 +45,7 @@ static tb_void_t g2_svg_element_line_writ(g2_svg_element_t const* element, tb_gs
 	tb_gstream_printf(gst, " x1=\"%f\" y1=\"%f\" x2=\"%f\" y2=\"%f\"", g2_float_to_tb(line->line.p0.x), g2_float_to_tb(line->line.p0.y), g2_float_to_tb(line->line.p1.x), g2_float_to_tb(line->line.p1.y));
 
 	// style 
-	g2_svg_writer_style(gst, line->style); 
+	g2_svg_writer_style(gst, &line->style); 
 
 	// transform 
 	g2_svg_writer_transform(gst, &line->matrix); 
@@ -55,9 +55,13 @@ static tb_void_t g2_svg_element_line_exit(g2_svg_element_t* element)
 	g2_svg_element_line_t* line = (g2_svg_element_line_t*)element;
 	if (line)
 	{
-		// exit style
-		if (line->style) g2_style_exit(line->style);
-		line->style = TB_NULL;
+		// exit fill
+		if (line->style.fill) g2_style_exit(line->style.fill);
+		line->style.fill = TB_NULL;
+
+		// exit stroke
+		if (line->style.stroke) g2_style_exit(line->style.stroke);
+		line->style.stroke = TB_NULL;
 	}
 }
 /* ///////////////////////////////////////////////////////////////////////
@@ -72,9 +76,6 @@ g2_svg_element_t* g2_svg_element_init_line(tb_handle_t reader)
 	// init
 	element->base.exit = g2_svg_element_line_exit;
 	element->base.writ = g2_svg_element_line_writ;
-
-	// init style
-	element->style = g2_style_init();
 
 	// init matrix
 	g2_matrix_clear(&element->matrix);
@@ -93,7 +94,11 @@ g2_svg_element_t* g2_svg_element_init_line(tb_handle_t reader)
 		else if (!tb_pstring_cstricmp(&attr->name, "y2"))
 			g2_svg_parser_float(p, &element->line.p1.y);
 		else if (!tb_pstring_cstricmp(&attr->name, "stroke"))
-			g2_svg_parser_style_stroke(p, element->style);
+			g2_svg_parser_style_stroke(p, &element->style);
+		else if (!tb_pstring_cstricmp(&attr->name, "stroke-width"))
+			g2_svg_parser_style_stroke_width(p, &element->style);
+		else if (!tb_pstring_cstricmp(&attr->name, "style"))
+			g2_svg_parser_style(p, &element->style);
 		else if (!tb_pstring_cstricmp(&attr->name, "transform"))
 			g2_svg_parser_transform(p, &element->matrix);
 

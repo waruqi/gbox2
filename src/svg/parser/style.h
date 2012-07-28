@@ -33,6 +33,38 @@
 /* ///////////////////////////////////////////////////////////////////////
  * inlines
  */
+static __tb_inline__ tb_void_t g2_svg_parser_style_fill_init(g2_svg_style_t* style)
+{
+	// check
+	tb_assert(style);
+
+	// no fill?
+	if (!style->fill) 
+	{
+		// init
+		style->fill = g2_style_init();
+		tb_assert(style->fill);
+
+		// set mode
+		g2_style_mode_set(style->fill, G2_STYLE_MODE_FILL);
+	}
+}
+static __tb_inline__ tb_void_t g2_svg_parser_style_stroke_init(g2_svg_style_t* style)
+{
+	// check
+	tb_assert(style);
+
+	// no stroke?
+	if (!style->stroke) 
+	{
+		// init
+		style->stroke = g2_style_init();
+		tb_assert(style->stroke);
+
+		// set mode
+		g2_style_mode_set(style->stroke, G2_STYLE_MODE_STROKE);
+	}
+}
 static __tb_inline__ tb_char_t const* g2_svg_parser_style_color(tb_char_t const* p, g2_color_t* color)
 {
 	if (*p == '#')
@@ -68,19 +100,20 @@ static __tb_inline__ tb_char_t const* g2_svg_parser_style_color(tb_char_t const*
 	// ok
 	return p;
 }
-static __tb_inline__ tb_char_t const* g2_svg_parser_style_fill_color(tb_char_t const* p, tb_handle_t style)
+static __tb_inline__ tb_char_t const* g2_svg_parser_style_fill(tb_char_t const* p, g2_svg_style_t* style)
 {
 	// init
-	g2_color_t color;
+	g2_svg_parser_style_fill_init(style);
+
+	// skip space
+	while (tb_isspace(*p)) p++;
 
 	// color
+	g2_color_t color;
 	p = g2_svg_parser_style_color(p, &color);
 
-	// set mode
-	g2_style_mode_set(style, g2_style_mode(style) | G2_STYLE_MODE_FILL);
-
 	// set color
-	g2_style_color_set(style, color);
+	g2_style_color_set(style->fill, color);
 
 	// trace
 	tb_trace_impl("fill: color: %x %x %x %x", color.a, color.r, color.g, color.b);
@@ -88,37 +121,20 @@ static __tb_inline__ tb_char_t const* g2_svg_parser_style_fill_color(tb_char_t c
 	// ok
 	return p;
 }
-static __tb_inline__ tb_char_t const* g2_svg_parser_style_fill(tb_char_t const* p, tb_handle_t style)
-{
-	// check
-	tb_assert(style);
-
-	// done
-	while (*p)
-	{
-		if (!tb_isspace(*p))
-		{
-			if (*p == '#')
-				p = g2_svg_parser_style_fill_color(p, style);
-			else p++;
-		}
-		else p++;
-	}
-	return p;
-}
-static __tb_inline__ tb_char_t const* g2_svg_parser_style_stroke_color(tb_char_t const* p, tb_handle_t style)
+static __tb_inline__ tb_char_t const* g2_svg_parser_style_stroke(tb_char_t const* p, g2_svg_style_t* style)
 {
 	// init
-	g2_color_t color;
+	g2_svg_parser_style_stroke_init(style);
+
+	// skip space
+	while (tb_isspace(*p)) p++;
 
 	// color
+	g2_color_t color;
 	p = g2_svg_parser_style_color(p, &color);
 
-	// set mode
-	g2_style_mode_set(style, g2_style_mode(style) | G2_STYLE_MODE_STROKE);
-
 	// set color
-	g2_style_color_set(style, color);
+	g2_style_color_set(style->stroke, color);
 
 	// trace
 	tb_trace_impl("stroke: color: %x %x %x %x", color.a, color.r, color.g, color.b);
@@ -126,7 +142,28 @@ static __tb_inline__ tb_char_t const* g2_svg_parser_style_stroke_color(tb_char_t
 	// ok
 	return p;
 }
-static __tb_inline__ tb_char_t const* g2_svg_parser_style_stroke(tb_char_t const* p, tb_handle_t style)
+static __tb_inline__ tb_char_t const* g2_svg_parser_style_stroke_width(tb_char_t const* p, g2_svg_style_t* style)
+{
+	// init
+	g2_svg_parser_style_stroke_init(style);
+
+	// skip space
+	while (tb_isspace(*p)) p++;
+
+	// width
+	g2_float_t width = 1;
+	p = g2_svg_parser_float(p, &width);
+
+	// set width
+	g2_style_width_set(style->stroke, width);
+
+	// trace
+	tb_trace_impl("stroke: width: %f", g2_float_to_tb(width));
+
+	// ok
+	return p;
+}
+static __tb_inline__ tb_char_t const* g2_svg_parser_style(tb_char_t const* p, g2_svg_style_t* style)
 {
 	// check
 	tb_assert(style);
@@ -136,8 +173,12 @@ static __tb_inline__ tb_char_t const* g2_svg_parser_style_stroke(tb_char_t const
 	{
 		if (!tb_isspace(*p))
 		{
-			if (*p == '#')
-				p = g2_svg_parser_style_stroke_color(p, style);
+			if (!tb_strnicmp(p, "fill:", 5))
+				p = g2_svg_parser_style_fill(p + 5, style);
+			else if (!tb_strnicmp(p, "stroke:", 7))
+				p = g2_svg_parser_style_stroke(p + 7, style);
+			else if (!tb_strnicmp(p, "stroke-width:", 13))
+				p = g2_svg_parser_style_stroke_width(p + 13, style);
 			else p++;
 		}
 		else p++;
