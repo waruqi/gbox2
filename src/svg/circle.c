@@ -60,6 +60,16 @@ static tb_void_t g2_svg_element_circle_dump(g2_svg_element_t const* element, tb_
 }
 #endif
 
+static tb_void_t g2_svg_element_circle_exit(g2_svg_element_t* element)
+{
+	g2_svg_element_circle_t* circle = (g2_svg_element_circle_t*)element;
+	if (circle)
+	{
+		// exit style
+		if (circle->style) g2_style_exit(circle->style);
+		circle->style = TB_NULL;
+	}
+}
 /* ///////////////////////////////////////////////////////////////////////
  * initializer
  */
@@ -70,9 +80,13 @@ g2_svg_element_t* g2_svg_element_init_circle(tb_handle_t reader)
 	tb_assert_and_check_return_val(element, TB_NULL);
 
 	// init
+	element->base.exit = g2_svg_element_circle_exit;
 #ifdef G2_DEBUG
 	element->base.dump = g2_svg_element_circle_dump;
 #endif
+
+	// init style
+	element->style = g2_style_init();
 
 	// init matrix
 	g2_matrix_clear(&element->matrix);
@@ -88,7 +102,9 @@ g2_svg_element_t* g2_svg_element_init_circle(tb_handle_t reader)
 			g2_svg_parser_float(p, &element->circle.c.y);
 		else if (!tb_pstring_cstricmp(&attr->name, "r"))
 			g2_svg_parser_float(p, &element->circle.r);
-		else if (!tb_pstring_cstricmp(&attr->name, "transform"));
+		else if (!tb_pstring_cstricmp(&attr->name, "fill"))
+			g2_svg_parser_paint_fill(p, element->style);
+		else if (!tb_pstring_cstricmp(&attr->name, "transform"))
 			g2_svg_parser_transform(p, &element->matrix);
 
 	}

@@ -60,6 +60,16 @@ static tb_void_t g2_svg_element_line_dump(g2_svg_element_t const* element, tb_ps
 }
 #endif
 
+static tb_void_t g2_svg_element_line_exit(g2_svg_element_t* element)
+{
+	g2_svg_element_line_t* line = (g2_svg_element_line_t*)element;
+	if (line)
+	{
+		// exit style
+		if (line->style) g2_style_exit(line->style);
+		line->style = TB_NULL;
+	}
+}
 /* ///////////////////////////////////////////////////////////////////////
  * initializer
  */
@@ -70,9 +80,13 @@ g2_svg_element_t* g2_svg_element_init_line(tb_handle_t reader)
 	tb_assert_and_check_return_val(element, TB_NULL);
 
 	// init
+	element->base.exit = g2_svg_element_line_exit;
 #ifdef G2_DEBUG
 	element->base.dump = g2_svg_element_line_dump;
 #endif
+
+	// init style
+	element->style = g2_style_init();
 
 	// init matrix
 	g2_matrix_clear(&element->matrix);
@@ -90,7 +104,7 @@ g2_svg_element_t* g2_svg_element_init_line(tb_handle_t reader)
 			g2_svg_parser_float(p, &element->line.p1.x);
 		else if (!tb_pstring_cstricmp(&attr->name, "y2"))
 			g2_svg_parser_float(p, &element->line.p1.y);
-		else if (!tb_pstring_cstricmp(&attr->name, "transform"));
+		else if (!tb_pstring_cstricmp(&attr->name, "transform"))
 			g2_svg_parser_transform(p, &element->matrix);
 
 	}

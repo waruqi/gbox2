@@ -276,6 +276,12 @@ tb_void_t g2_svg_element_append_tail(g2_svg_element_t* element, g2_svg_element_t
 		element->tail = element->head = child;
 	}
 }
+tb_char_t const* g2_svg_element_name(g2_svg_element_t const* element)
+{
+	tb_assert_and_check_return_val(element, TB_NULL);
+	return element->type < tb_arrayn(g_element_entries)? g_element_entries[element->type].name : TB_NULL;
+}
+
 #ifdef G2_DEBUG
 tb_void_t g2_svg_element_dump(g2_svg_element_t* element)
 {

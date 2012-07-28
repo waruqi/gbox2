@@ -60,6 +60,16 @@ static tb_void_t g2_svg_element_ellipse_dump(g2_svg_element_t const* element, tb
 }
 #endif
 
+static tb_void_t g2_svg_element_ellipse_exit(g2_svg_element_t* element)
+{
+	g2_svg_element_ellipse_t* ellipse = (g2_svg_element_ellipse_t*)element;
+	if (ellipse)
+	{
+		// exit style
+		if (ellipse->style) g2_style_exit(ellipse->style);
+		ellipse->style = TB_NULL;
+	}
+}
 /* ///////////////////////////////////////////////////////////////////////
  * initializer
  */
@@ -70,9 +80,13 @@ g2_svg_element_t* g2_svg_element_init_ellipse(tb_handle_t reader)
 	tb_assert_and_check_return_val(element, TB_NULL);
 
 	// init
+	element->base.exit = g2_svg_element_ellipse_exit;
 #ifdef G2_DEBUG
 	element->base.dump = g2_svg_element_ellipse_dump;
 #endif
+
+	// init style
+	element->style = g2_style_init();
 
 	// init matrix
 	g2_matrix_clear(&element->matrix);
@@ -90,7 +104,9 @@ g2_svg_element_t* g2_svg_element_init_ellipse(tb_handle_t reader)
 			g2_svg_parser_float(p, &element->ellipse.rx);
 		else if (!tb_pstring_cstricmp(&attr->name, "ry"))
 			g2_svg_parser_float(p, &element->ellipse.ry);
-		else if (!tb_pstring_cstricmp(&attr->name, "transform"));
+		else if (!tb_pstring_cstricmp(&attr->name, "fill"))
+			g2_svg_parser_paint_fill(p, element->style);
+		else if (!tb_pstring_cstricmp(&attr->name, "transform"))
 			g2_svg_parser_transform(p, &element->matrix);
 	}
 

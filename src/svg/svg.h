@@ -28,6 +28,7 @@
  */
 #include "prefix.h"
 #include "reader.h"
+#include "writer.h"
 #include "element.h"
 
 #endif

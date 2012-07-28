@@ -61,13 +61,13 @@ static tb_void_t g2_svg_element_path_dump(g2_svg_element_t const* element, tb_ps
 				tb_pstring_cstrfcat(attr, "M %f,%f ", g2_float_to_tb(pt[0].x), g2_float_to_tb(pt[0].y));
 				break;
 			case G2_PATH_CODE_LINE:
-				tb_pstring_cstrfcat(attr, "L %f,%f ", g2_float_to_tb(pt[0].x), g2_float_to_tb(pt[0].y));
+				tb_pstring_cstrfcat(attr, "L %f,%f ", g2_float_to_tb(pt[1].x), g2_float_to_tb(pt[1].y));
 				break;
 			case G2_PATH_CODE_QUAD:
-				tb_pstring_cstrfcat(attr, "Q %f,%f %f,%f ", g2_float_to_tb(pt[0].x), g2_float_to_tb(pt[0].y), g2_float_to_tb(pt[1].x), g2_float_to_tb(pt[1].y));
+				tb_pstring_cstrfcat(attr, "Q %f,%f %f,%f ", g2_float_to_tb(pt[1].x), g2_float_to_tb(pt[1].y), g2_float_to_tb(pt[2].x), g2_float_to_tb(pt[2].y));
 				break;
 			case G2_PATH_CODE_CUBIC:
-				tb_pstring_cstrfcat(attr, "C %f,%f %f,%f %f,%f ", g2_float_to_tb(pt[0].x), g2_float_to_tb(pt[0].y), g2_float_to_tb(pt[1].x), g2_float_to_tb(pt[1].y), g2_float_to_tb(pt[2].x), g2_float_to_tb(pt[2].y));
+				tb_pstring_cstrfcat(attr, "C %f,%f %f,%f %f,%f ", g2_float_to_tb(pt[1].x), g2_float_to_tb(pt[1].y), g2_float_to_tb(pt[2].x), g2_float_to_tb(pt[2].y), g2_float_to_tb(pt[3].x), g2_float_to_tb(pt[3].y));
 				break;
 			case G2_PATH_CODE_CLOSE:
 				tb_pstring_cstrfcat(attr, "Z");
@@ -77,6 +77,19 @@ static tb_void_t g2_svg_element_path_dump(g2_svg_element_t const* element, tb_ps
 
 		// exit d
 		tb_pstring_cstrfcat(attr, "\"");
+
+		// style
+		if (path->style)
+		{
+			union __g2_c2p_t
+			{
+				g2_color_t c;
+				g2_pixel_t p;
+
+			}c2p;
+			c2p.c = g2_style_color(path->style);
+			tb_pstring_cstrfcat(attr, " fill=\"#%x\"", c2p.p);
+		}
 
 		// transform 
 		if (!g2_matrix_identity(&path->matrix)) 
@@ -100,6 +113,11 @@ static tb_void_t g2_svg_element_path_exit(g2_svg_element_t* element)
 	g2_svg_element_path_t* path = (g2_svg_element_path_t*)element;
 	if (path)
 	{
+		// exit style
+		if (path->style) g2_style_exit(path->style);
+		path->style = TB_NULL;
+
+		// exit path
 		if (path->path) g2_path_exit(path->path);
 		path->path = TB_NULL;
 	}
@@ -418,9 +436,13 @@ g2_svg_element_t* g2_svg_element_init_path(tb_handle_t reader)
 	tb_assert_and_check_return_val(element, TB_NULL);
 
 	// init
+	element->base.exit = g2_svg_element_path_exit;
 #ifdef G2_DEBUG
 	element->base.dump = g2_svg_element_path_dump;
 #endif
+
+	// init style
+	element->style = g2_style_init();
 
 	// init matrix
 	g2_matrix_clear(&element->matrix);
@@ -432,7 +454,9 @@ g2_svg_element_t* g2_svg_element_init_path(tb_handle_t reader)
 		tb_char_t const* p = tb_pstring_cstr(&attr->data);
 		if (!tb_pstring_cstricmp(&attr->name, "d"))
 			g2_svg_element_path_d(element, p);
-		else if (!tb_pstring_cstricmp(&attr->name, "transform"));
+		else if (!tb_pstring_cstricmp(&attr->name, "fill"))
+			g2_svg_parser_paint_fill(p, element->style);
+		else if (!tb_pstring_cstricmp(&attr->name, "transform"))
 			g2_svg_parser_transform(p, &element->matrix);
 	}
 

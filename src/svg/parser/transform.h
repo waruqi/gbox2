@@ -238,6 +238,9 @@ static __tb_inline__ tb_char_t const* g2_svg_parser_transform_matrix(tb_char_t c
 // e.g. <g transform="translate(-10,-20) scale(2) rotate(45) translate(5,10)">
 static __tb_inline__ tb_char_t const* g2_svg_parser_transform(tb_char_t const* p, g2_matrix_t* matrix)
 {
+	// check
+	tb_assert(matrix);
+
 	// done
 	while (*p)
 	{
@@ -259,7 +262,7 @@ static __tb_inline__ tb_char_t const* g2_svg_parser_transform(tb_char_t const* p
 		}
 		else p++;
 	}
-	return TB_NULL;
+	return p;
 }
 
 #endif

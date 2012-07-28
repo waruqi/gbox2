@@ -11,6 +11,7 @@ gbox2_TYPE 				= LIB
 gbox2_C_FILES 			+= \
 						gbox2 \
 						svg/reader \
+						svg/writer \
 						svg/element \
 						svg/svg \
 						svg/path \

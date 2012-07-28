@@ -17,20 +17,28 @@
  * Copyright (C) 2009 - 2012, ruki All rights reserved.
  *
  * @author		ruki
- * @file		parser.h
+ * @file		writer.h
  *
  */
-#ifndef G2_SVG_PARSER_H
-#define G2_SVG_PARSER_H
+#ifndef G2_SVG_WRITER_H
+#define G2_SVG_WRITER_H
 
 /* ///////////////////////////////////////////////////////////////////////
  * includes
  */
 #include "prefix.h"
-#include "float.h"
-#include "paint.h"
-#include "separator.h"
-#include "transform.h"
+#include "element.h"
+
+/* ///////////////////////////////////////////////////////////////////////
+ * interfaces
+ */
+
+// init & exit
+tb_handle_t 		g2_svg_writer_init(tb_gstream_t* gst, tb_bool_t bformat);
+tb_void_t 			g2_svg_writer_exit(tb_handle_t writer);
+
+// save
+tb_void_t			g2_svg_writer_save(tb_handle_t writer, g2_svg_element_t* element);
 
 #endif
 

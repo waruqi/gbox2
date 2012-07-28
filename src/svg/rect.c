@@ -47,6 +47,19 @@ static tb_void_t g2_svg_element_rect_dump(g2_svg_element_t const* element, tb_ps
 	// rect
 	tb_pstring_cstrfcat(attr, " x=\"%f\" y=\"%f\" width=\"%f\" height=\"%f\"", g2_float_to_tb(rect->rect.x), g2_float_to_tb(rect->rect.y), g2_float_to_tb(rect->rect.w), g2_float_to_tb(rect->rect.h));
 
+	// style
+	if (rect->style)
+	{
+		union __g2_c2p_t
+		{
+			g2_color_t c;
+			g2_pixel_t p;
+
+		}c2p;
+		c2p.c = g2_style_color(rect->style);
+		tb_pstring_cstrfcat(attr, " fill=\"#%x\"", c2p.p);
+	}
+
 	// transform 
 	if (!g2_matrix_identity(&rect->matrix)) 
 	{
@@ -60,6 +73,16 @@ static tb_void_t g2_svg_element_rect_dump(g2_svg_element_t const* element, tb_ps
 }
 #endif
 
+static tb_void_t g2_svg_element_rect_exit(g2_svg_element_t* element)
+{
+	g2_svg_element_rect_t* rect = (g2_svg_element_rect_t*)element;
+	if (rect)
+	{
+		// exit style
+		if (rect->style) g2_style_exit(rect->style);
+		rect->style = TB_NULL;
+	}
+}
 /* ///////////////////////////////////////////////////////////////////////
  * initializer
  */
@@ -70,9 +93,13 @@ g2_svg_element_t* g2_svg_element_init_rect(tb_handle_t reader)
 	tb_assert_and_check_return_val(element, TB_NULL);
 
 	// init
+	element->base.exit = g2_svg_element_rect_exit;
 #ifdef G2_DEBUG
 	element->base.dump = g2_svg_element_rect_dump;
 #endif
+
+	// init style
+	element->style = g2_style_init();
 
 	// init matrix
 	g2_matrix_clear(&element->matrix);
@@ -90,7 +117,9 @@ g2_svg_element_t* g2_svg_element_init_rect(tb_handle_t reader)
 			g2_svg_parser_float(p, &element->rect.w);
 		else if (!tb_pstring_cstricmp(&attr->name, "height"))
 			g2_svg_parser_float(p, &element->rect.h);
-		else if (!tb_pstring_cstricmp(&attr->name, "transform"));
+		else if (!tb_pstring_cstricmp(&attr->name, "fill"))
+			g2_svg_parser_paint_fill(p, element->style);
+		else if (!tb_pstring_cstricmp(&attr->name, "transform"))
 			g2_svg_parser_transform(p, &element->matrix);
 	}
 
