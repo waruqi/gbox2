@@ -100,7 +100,7 @@ static g2_svg_element_entry_t 	g_element_entries[] =
 ,	{G2_SVG_ELEMENT_TYPE_PATH, 					"path", 				g2_svg_element_init_path 				}
 ,	{G2_SVG_ELEMENT_TYPE_PATTERN, 				"pattern", 				g2_svg_element_init_none 				}
 ,	{G2_SVG_ELEMENT_TYPE_POLYGON, 				"polygon", 				g2_svg_element_init_polygon 			}
-,	{G2_SVG_ELEMENT_TYPE_POLYLINE, 				"polyline", 			g2_svg_element_init_none 				}
+,	{G2_SVG_ELEMENT_TYPE_POLYLINE, 				"polyline", 			g2_svg_element_init_polyline 			}
 ,	{G2_SVG_ELEMENT_TYPE_RADIALGRADIENT, 		"radialGradient", 		g2_svg_element_init_none 				}
 ,	{G2_SVG_ELEMENT_TYPE_RECT, 					"rect", 				g2_svg_element_init_rect 				}
 ,	{G2_SVG_ELEMENT_TYPE_SCRIPT, 				"script", 				g2_svg_element_init_none 				}

@@ -270,6 +270,23 @@ typedef struct __g2_svg_element_polygon_t
 
 }g2_svg_element_polygon_t;
 
+/// the svg element type for <polyline ...>
+typedef struct __g2_svg_element_polyline_t
+{
+	// the base
+	g2_svg_element_t 			base;
+
+	// the style
+	g2_svg_style_t 				style;
+
+	// the matrix
+	g2_matrix_t 				matrix;
+
+	// the path
+	tb_handle_t 				path;
+
+}g2_svg_element_polyline_t;
+
 /* ///////////////////////////////////////////////////////////////////////
  * interfaces
  */
@@ -303,6 +320,9 @@ g2_svg_element_t* 	g2_svg_element_init_ellipse(tb_handle_t reader);
 
 /// init element: <polygon ...>
 g2_svg_element_t* 	g2_svg_element_init_polygon(tb_handle_t reader);
+
+/// init element: <polyline ...>
+g2_svg_element_t* 	g2_svg_element_init_polyline(tb_handle_t reader);
 
 /// exit element
 tb_void_t 			g2_svg_element_exit(g2_svg_element_t* element);

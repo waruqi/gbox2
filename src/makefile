@@ -22,6 +22,7 @@ gbox2_C_FILES 			+= \
 						svg/circle \
 						svg/ellipse \
 						svg/polygon \
+						svg/polyline \
 						prefix/color \
 						core/path \
 						core/style \
