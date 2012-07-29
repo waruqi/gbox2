@@ -82,6 +82,20 @@ static __tb_inline__ tb_void_t g2_svg_writer_style_stroke(tb_gstream_t* gst, g2_
 		separator = 1;
 	}
 
+	// stroke linecap
+	static tb_char_t const* caps[] =
+	{
+		"butt"
+	, 	"round"
+	, 	"square"
+	};
+	if (style->cap && style->cap - 1 < tb_arrayn(caps)) 
+	{
+		if (separator) tb_gstream_printf(gst, "; ");
+		tb_gstream_printf(gst, "stroke-linecap:%s", caps[style->cap - 1]);
+		separator = 1;
+	}
+
 	// stroke linejoin
 	static tb_char_t const* joins[] =
 	{

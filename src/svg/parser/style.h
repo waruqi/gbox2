@@ -132,6 +132,34 @@ static __tb_inline__ tb_char_t const* g2_svg_parser_style_stroke_linejoin(tb_cha
 	// ok
 	return p;
 }
+static __tb_inline__ tb_char_t const* g2_svg_parser_style_stroke_linecap(tb_char_t const* p, g2_svg_style_t* style)
+{
+	// skip space
+	while (tb_isspace(*p)) p++;
+
+	// mode
+	style->mode |= G2_SVG_STYLE_MODE_STROKE;
+
+	// join
+	if (!tb_strnicmp(p, "butt", 4)) 
+	{
+		style->cap = G2_SVG_STYLE_CAP_BUTT;
+		p += 4;
+	}
+	else if (!tb_strnicmp(p, "round", 5)) 
+	{
+		style->cap = G2_SVG_STYLE_CAP_ROUND;
+		p += 5;
+	}
+	else if (!tb_strnicmp(p, "square", 6)) 
+	{
+		style->cap = G2_SVG_STYLE_CAP_SQUARE;
+		p += 6;
+	}
+	
+	// ok
+	return p;
+}
 static __tb_inline__ tb_char_t const* g2_svg_parser_style(tb_char_t const* p, g2_svg_style_t* style)
 {
 	// check
@@ -148,6 +176,8 @@ static __tb_inline__ tb_char_t const* g2_svg_parser_style(tb_char_t const* p, g2
 				p = g2_svg_parser_style_stroke(p + 7, style);
 			else if (!tb_strnicmp(p, "stroke-width:", 13))
 				p = g2_svg_parser_style_stroke_width(p + 13, style);
+			else if (!tb_strnicmp(p, "stroke-linecap:", 15))
+				p = g2_svg_parser_style_stroke_linecap(p + 15, style);
 			else if (!tb_strnicmp(p, "stroke-linejoin:", 16))
 				p = g2_svg_parser_style_stroke_linejoin(p + 16, style);
 			else p++;

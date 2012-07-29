@@ -88,6 +88,8 @@ g2_svg_element_t* g2_svg_element_init_g(tb_handle_t reader)
 			g2_svg_parser_style_stroke(p, &element->style);
 		else if (!tb_pstring_cstricmp(&attr->name, "stroke-width"))
 			g2_svg_parser_style_stroke_width(p, &element->style);
+		else if (!tb_pstring_cstricmp(&attr->name, "stroke-linecap"))
+			g2_svg_parser_style_stroke_linecap(p, &element->style);
 		else if (!tb_pstring_cstricmp(&attr->name, "stroke-linejoin"))
 			g2_svg_parser_style_stroke_linejoin(p, &element->style);
 		else if (!tb_pstring_cstricmp(&attr->name, "style"))
