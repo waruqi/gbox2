@@ -33,47 +33,68 @@
  */
 static __tb_inline__ tb_void_t g2_svg_writer_style_fill(tb_gstream_t* gst, g2_svg_style_t* style)
 {
-	// color
-	union __g2_c2p_t
+	// fill: value
+	if (style->fill.mode == G2_SVG_STYLE_PAINT_MODE_VALUE)
 	{
-		g2_color_t c;
-		g2_pixel_t p;
+		union __g2_c2p_t
+		{
+			g2_color_t c;
+			g2_pixel_t p;
 
-	}c2p;
-	c2p.c = g2_style_color(style->fill);
-
-	// fill color
-	tb_gstream_printf(gst, "fill:#%06x", c2p.c.a != 0xff? c2p.p : (c2p.p & 0x00ffffff));
+		}c2p;
+		c2p.c = style->fill.color;
+		tb_gstream_printf(gst, "fill:#%06x", c2p.c.a != 0xff? c2p.p : (c2p.p & 0x00ffffff));
+	}
+	// fill: none
+	else if (style->fill.mode == G2_SVG_STYLE_PAINT_MODE_NONE)
+		tb_gstream_printf(gst, "fill:none");
 }
 static __tb_inline__ tb_void_t g2_svg_writer_style_stroke(tb_gstream_t* gst, g2_svg_style_t* style)
 {
 	// init
+	tb_size_t separator = 0;
+
+	// stroke: value
+	if (style->stroke.mode == G2_SVG_STYLE_PAINT_MODE_VALUE)
+	{
+		union __g2_c2p_t
+		{
+			g2_color_t c;
+			g2_pixel_t p;
+
+		}c2p;
+		c2p.c = style->stroke.color;
+		tb_gstream_printf(gst, "stroke:#%06x", c2p.c.a != 0xff? c2p.p : (c2p.p & 0x00ffffff));
+		separator = 1;
+	}
+	// stroke: none
+	else if (style->stroke.mode == G2_SVG_STYLE_PAINT_MODE_NONE)
+	{
+		tb_gstream_printf(gst, "stroke:none");
+		separator = 1;
+	}
+
+	// stroke width
+	if (g2_nz(style->width)) 
+	{
+		if (separator) tb_gstream_printf(gst, "; ");
+		tb_gstream_printf(gst, "stroke-width:%f", g2_float_to_tb(style->width));
+		separator = 1;
+	}
+
+	// stroke linejoin
 	static tb_char_t const* joins[] =
 	{
 		"miter"
 	, 	"round"
 	, 	"bevel"
 	};
-
-	// color
-	union __g2_c2p_t
+	if (style->join && style->join - 1 < tb_arrayn(joins)) 
 	{
-		g2_color_t c;
-		g2_pixel_t p;
-
-	}c2p;
-	c2p.c = g2_style_color(style->stroke);
-
-	// stroke color
-	tb_gstream_printf(gst, "stroke:#%06x", c2p.c.a != 0xff? c2p.p : (c2p.p & 0x00ffffff));
-
-	// stroke width
-	g2_float_t width = g2_style_width(style->stroke);
-	if (width != G2_ONE) tb_gstream_printf(gst, "; stroke-width:%f", g2_float_to_tb(width));
-
-	// stroke linejoin
-	tb_size_t join = g2_style_join(style->stroke);
-	if (join && join - 1 < tb_arrayn(joins)) tb_gstream_printf(gst, "; stroke-linejoin:%s", joins[join - 1]);
+		if (separator) tb_gstream_printf(gst, "; ");
+		tb_gstream_printf(gst, "stroke-linejoin:%s", joins[style->join - 1]);
+		separator = 1;
+	}
 }
 static __tb_inline__ tb_void_t g2_svg_writer_style(tb_gstream_t* gst, g2_svg_style_t* style)
 {
@@ -81,19 +102,19 @@ static __tb_inline__ tb_void_t g2_svg_writer_style(tb_gstream_t* gst, g2_svg_sty
 	tb_assert(gst && style);
 
 	// has style
-	if (style->fill || style->stroke)
+	if (style->mode)
 	{
 		// enter
 		tb_gstream_printf(gst, " style=\"");
 
 		// fill?
-		if (style->fill) g2_svg_writer_style_fill(gst, style);
+		if (style->mode & G2_SVG_STYLE_MODE_FILL) g2_svg_writer_style_fill(gst, style);
 		
 		// separator
-		if (style->fill && style->stroke) tb_gstream_printf(gst, "; ");
+		if (style->mode == G2_SVG_STYLE_MODE_FILL_STROKE) tb_gstream_printf(gst, "; ");
 
 		// stroke?
-		if (style->stroke) g2_svg_writer_style_stroke(gst, style);
+		if (style->mode & G2_SVG_STYLE_MODE_STROKE) g2_svg_writer_style_stroke(gst, style);
 
 		// leave
 		tb_gstream_printf(gst, "\"");

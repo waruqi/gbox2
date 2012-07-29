@@ -131,17 +131,6 @@ typedef struct __g2_svg_element_t
 
 }g2_svg_element_t;
 
-// the svg style type
-typedef struct __g2_svg_style_t
-{
-	// the fill style
-	tb_handle_t 				fill;
-
-	// the stroke style
-	tb_handle_t 				stroke;
-
-}g2_svg_style_t;
-
 /// the svg element type for <g ...>
 typedef struct __g2_svg_element_g_t
 {

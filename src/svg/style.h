@@ -32,10 +32,86 @@
  * types
  */
 
+// the svg style mode type
+typedef enum __g2_svg_style_mode_t
+{
+	G2_SVG_STYLE_MODE_NONE 			= 0 	//!< none
+,	G2_SVG_STYLE_MODE_FILL 			= 1 	//!< fill
+,	G2_SVG_STYLE_MODE_STROKE 		= 2 	//!< stroke
+,	G2_SVG_STYLE_MODE_FILL_STROKE 	= 3 	//!< fill & stroke
+
+}g2_svg_style_mode_t;
+
+// the svg style paint type
+typedef enum __g2_svg_style_paint_mode_t
+{
+	G2_SVG_STYLE_PAINT_MODE_INHERIT = 0 	//!< inherit
+,	G2_SVG_STYLE_PAINT_MODE_NONE 	= 1 	//!< none
+,	G2_SVG_STYLE_PAINT_MODE_VALUE 	= 2 	//!< value
+
+}g2_svg_style_paint_mode_t;
+
+// the svg style cap type
+typedef enum __g2_svg_style_cap_t
+{
+	G2_SVG_STYLE_CAP_INHERIT 		= 0 	//!< inherit
+,	G2_SVG_STYLE_CAP_BUTT 			= 1 	//!< no extension
+,	G2_SVG_STYLE_CAP_ROUND 			= 2 	//!< a semi-circle extension
+,	G2_SVG_STYLE_CAP_SQUARE			= 3 	//!< a half square extension
+
+}g2_svg_style_cap_t;
+
+// the svg style join type
+typedef enum __g2_svg_style_join_t
+{
+	G2_SVG_STYLE_JOIN_INHERIT 		= 0 	//!< inherit
+,	G2_SVG_STYLE_JOIN_MITER 		= 1 	//!< a sharp join
+,	G2_SVG_STYLE_JOIN_ROUND 		= 2 	//!< a round join
+,	G2_SVG_STYLE_JOIN_BEVEL			= 3 	//!< a flat bevel join
+
+}g2_svg_style_join_t;
+
+// the svg style paint type
+typedef struct __g2_svg_style_paint_t
+{
+	// the paint mode
+	tb_size_t 					mode;
+
+	// the paint color
+	g2_color_t 					color;
+
+}g2_svg_style_paint_t;
+
+// the svg style type
+typedef struct __g2_svg_style_t
+{
+	// the style mode
+	tb_byte_t 					mode 		: 2;
+
+	// the stroke join
+	tb_byte_t 					join 		: 2;
+
+	// the stroke cap
+	tb_byte_t 					cap 		: 2;
+
+	// the stroke width
+	g2_float_t 					width;
+
+	// the fill paint
+	g2_svg_style_paint_t 		fill;
+
+	// the stroke color
+	g2_svg_style_paint_t 		stroke;
+
+}g2_svg_style_t;
 
 /* ///////////////////////////////////////////////////////////////////////
  * interfaces
  */
+
+// init & exit
+tb_bool_t 		g2_svg_style_init(g2_svg_style_t* style);
+tb_void_t 		g2_svg_style_exit(g2_svg_style_t* style);
 
 #endif
 

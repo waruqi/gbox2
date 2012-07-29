@@ -55,13 +55,8 @@ static tb_void_t g2_svg_element_rect_exit(g2_svg_element_t* element)
 	g2_svg_element_rect_t* rect = (g2_svg_element_rect_t*)element;
 	if (rect)
 	{
-		// exit fill
-		if (rect->style.fill) g2_style_exit(rect->style.fill);
-		rect->style.fill = TB_NULL;
-
-		// exit stroke
-		if (rect->style.stroke) g2_style_exit(rect->style.stroke);
-		rect->style.stroke = TB_NULL;
+		// exit style
+		g2_svg_style_exit(&rect->style);
 	}
 }
 /* ///////////////////////////////////////////////////////////////////////
@@ -76,6 +71,9 @@ g2_svg_element_t* g2_svg_element_init_rect(tb_handle_t reader)
 	// init
 	element->base.exit = g2_svg_element_rect_exit;
 	element->base.writ = g2_svg_element_rect_writ;
+
+	// init style
+	g2_svg_style_init(&element->style);
 
 	// init matrix
 	g2_matrix_clear(&element->matrix);

@@ -20,6 +20,7 @@
  * @file		style.c
  *
  */
+
 /* ///////////////////////////////////////////////////////////////////////
  * includes
  */
@@ -28,4 +29,22 @@
 /* ///////////////////////////////////////////////////////////////////////
  * implementation
  */
+tb_bool_t g2_svg_style_init(g2_svg_style_t* style)
+{
+	tb_assert_and_check_return_val(style, TB_FALSE);
+
+	style->mode 			= G2_SVG_STYLE_MODE_NONE;
+	style->join 			= G2_SVG_STYLE_JOIN_INHERIT;
+	style->cap 				= G2_SVG_STYLE_CAP_INHERIT;
+	style->width 			= 0;
+	style->fill.mode 		= G2_SVG_STYLE_PAINT_MODE_INHERIT;
+	style->fill.color 		= G2_COLOR_BLACK;
+	style->stroke.mode 		= G2_SVG_STYLE_PAINT_MODE_INHERIT;
+	style->stroke.color 	= G2_COLOR_BLACK;
+
+	return TB_TRUE;
+}
+tb_void_t g2_svg_style_exit(g2_svg_style_t* style)
+{
+}
 

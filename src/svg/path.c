@@ -90,13 +90,8 @@ static tb_void_t g2_svg_element_path_exit(g2_svg_element_t* element)
 	g2_svg_element_path_t* path = (g2_svg_element_path_t*)element;
 	if (path)
 	{
-		// exit fill
-		if (path->style.fill) g2_style_exit(path->style.fill);
-		path->style.fill = TB_NULL;
-
-		// exit stroke
-		if (path->style.stroke) g2_style_exit(path->style.stroke);
-		path->style.stroke = TB_NULL;
+		// exit style
+		g2_svg_style_exit(&path->style);
 		
 		// exit path
 		if (path->path) g2_path_exit(path->path);
@@ -419,6 +414,9 @@ g2_svg_element_t* g2_svg_element_init_path(tb_handle_t reader)
 	// init
 	element->base.exit = g2_svg_element_path_exit;
 	element->base.writ = g2_svg_element_path_writ;
+
+	// init style
+	g2_svg_style_init(&element->style);
 
 	// init matrix
 	g2_matrix_clear(&element->matrix);

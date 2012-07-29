@@ -33,39 +33,7 @@
 /* ///////////////////////////////////////////////////////////////////////
  * inlines
  */
-static __tb_inline__ tb_void_t g2_svg_parser_style_fill_init(g2_svg_style_t* style)
-{
-	// check
-	tb_assert(style);
-
-	// no fill?
-	if (!style->fill) 
-	{
-		// init
-		style->fill = g2_style_init();
-		tb_assert(style->fill);
-
-		// set mode
-		g2_style_mode_set(style->fill, G2_STYLE_MODE_FILL);
-	}
-}
-static __tb_inline__ tb_void_t g2_svg_parser_style_stroke_init(g2_svg_style_t* style)
-{
-	// check
-	tb_assert(style);
-
-	// no stroke?
-	if (!style->stroke) 
-	{
-		// init
-		style->stroke = g2_style_init();
-		tb_assert(style->stroke);
-
-		// set mode
-		g2_style_mode_set(style->stroke, G2_STYLE_MODE_STROKE);
-	}
-}
-static __tb_inline__ tb_char_t const* g2_svg_parser_style_color(tb_char_t const* p, g2_color_t* color)
+static __tb_inline__ tb_char_t const* g2_svg_parser_style_paint(tb_char_t const* p, g2_svg_style_paint_t* paint)
 {
 	if (*p == '#')
 	{
@@ -94,7 +62,13 @@ static __tb_inline__ tb_char_t const* g2_svg_parser_style_color(tb_char_t const*
 		if (!(p2c.p & 0xff000000)) p2c.p |= 0xff000000;
 
 		// color
-		*color = p2c.c;
+		paint->mode = G2_SVG_STYLE_PAINT_MODE_VALUE;
+		paint->color = p2c.c;
+	}
+	else if (!tb_strnicmp(p, "none", 4)) 
+	{
+		paint->mode = G2_SVG_STYLE_PAINT_MODE_NONE;
+		p += 4;
 	}
 
 	// ok
@@ -102,89 +76,52 @@ static __tb_inline__ tb_char_t const* g2_svg_parser_style_color(tb_char_t const*
 }
 static __tb_inline__ tb_char_t const* g2_svg_parser_style_fill(tb_char_t const* p, g2_svg_style_t* style)
 {
-	// init
-	g2_svg_parser_style_fill_init(style);
-
 	// skip space
 	while (tb_isspace(*p)) p++;
 
-	// color
-	g2_color_t color;
-	p = g2_svg_parser_style_color(p, &color);
+	// mode
+	style->mode |= G2_SVG_STYLE_MODE_FILL;
 
-	// set color
-	g2_style_color_set(style->fill, color);
-
-	// trace
-	tb_trace_impl("fill: color: %x %x %x %x", color.a, color.r, color.g, color.b);
-
-	// ok
-	return p;
+	// fill
+	return g2_svg_parser_style_paint(p, &style->fill);
 }
 static __tb_inline__ tb_char_t const* g2_svg_parser_style_stroke(tb_char_t const* p, g2_svg_style_t* style)
 {
-	// init
-	g2_svg_parser_style_stroke_init(style);
-
 	// skip space
 	while (tb_isspace(*p)) p++;
 
-	// color
-	g2_color_t color;
-	p = g2_svg_parser_style_color(p, &color);
+	// mode
+	style->mode |= G2_SVG_STYLE_MODE_STROKE;
 
-	// set color
-	g2_style_color_set(style->stroke, color);
-
-	// trace
-	tb_trace_impl("stroke: color: %x %x %x %x", color.a, color.r, color.g, color.b);
-
-	// ok
-	return p;
+	// stroke
+	return g2_svg_parser_style_paint(p, &style->stroke);
 }
 static __tb_inline__ tb_char_t const* g2_svg_parser_style_stroke_width(tb_char_t const* p, g2_svg_style_t* style)
 {
-	// init
-	g2_svg_parser_style_stroke_init(style);
-
 	// skip space
 	while (tb_isspace(*p)) p++;
 
+	// mode
+	style->mode |= G2_SVG_STYLE_MODE_STROKE;
+
 	// width
-	g2_float_t width = 1;
-	p = g2_svg_parser_float(p, &width);
-
-	// set width
-	g2_style_width_set(style->stroke, width);
-
-	// trace
-	tb_trace_impl("stroke: width: %f", g2_float_to_tb(width));
-
-	// ok
-	return p;
+	return g2_svg_parser_float(p, &style->width);
 }
 static __tb_inline__ tb_char_t const* g2_svg_parser_style_stroke_linejoin(tb_char_t const* p, g2_svg_style_t* style)
 {
-	// init
-	g2_svg_parser_style_stroke_init(style);
-
 	// skip space
 	while (tb_isspace(*p)) p++;
 
+	// mode
+	style->mode |= G2_SVG_STYLE_MODE_STROKE;
+
 	// join
-	tb_size_t join = G2_STYLE_JOIN_NONE;
-	if (!tb_strnicmp(p, "miter", 5)) join = G2_STYLE_JOIN_MITER;
-	else if (!tb_strnicmp(p, "round", 5)) join = G2_STYLE_JOIN_ROUND;
-	else if (!tb_strnicmp(p, "bevel", 5)) join = G2_STYLE_JOIN_BEVEL;
+	if (!tb_strnicmp(p, "miter", 5)) style->join = G2_SVG_STYLE_JOIN_MITER;
+	else if (!tb_strnicmp(p, "round", 5)) style->join = G2_SVG_STYLE_JOIN_ROUND;
+	else if (!tb_strnicmp(p, "bevel", 5)) style->join = G2_SVG_STYLE_JOIN_BEVEL;
 	
 	// skip join
-	if (join) p += 5;
-
-	// set join
-	g2_style_join_set(style->stroke, join);
-
-	// trace
-	tb_trace_impl("stroke: linejoin: %lu", join);
+	if (style->join) p += 5;
 
 	// ok
 	return p;
