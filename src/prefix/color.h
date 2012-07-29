@@ -23,6 +23,11 @@
 #ifndef G2_PREFIX_COLOR_H
 #define G2_PREFIX_COLOR_H
 
+// c plus plus
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /* ///////////////////////////////////////////////////////////////////////
  * includes
  */
@@ -32,19 +37,42 @@
  * macros
  */
 
-// the color constants
-#define G2_DEFINE_COLOR_CONST(color, r, g, b, a) static g2_color_t const g_g2_default_color_##color = {r, g, b, a};
-#define G2_COLOR_BLACK 				g_g2_default_color_black
-#define G2_COLOR_WHITE 				g_g2_default_color_white
-#define G2_COLOR_RED				g_g2_default_color_red
-#define G2_COLOR_GREEN 				g_g2_default_color_green
-#define G2_COLOR_YELLOW 			g_g2_default_color_yellow
-#define G2_COLOR_BLUE				g_g2_default_color_blue
-#define G2_COLOR_PINK				g_g2_default_color_pink
-#define G2_COLOR_BROWN 				g_g2_default_color_brown
-#define G2_COLOR_ORANGE 			g_g2_default_color_orange
-#define G2_COLOR_TRANSPARENT 		g_g2_default_color_transparent
-#define G2_COLOR_DEFAULT 			G2_COLOR_BLACK
+// the color initializer
+#ifdef TB_WORDS_BIGENDIAN
+// {a, r, g, b}
+# 	define G2_COLOR_INIT_BLACK 			{ 255, 	0, 		0, 		0 	}
+# 	define G2_COLOR_INIT_BLUE 			{ 255, 	0, 		0, 		255 }
+# 	define G2_COLOR_INIT_BROWN 			{ 255, 	128, 	0, 		0 	}
+# 	define G2_COLOR_INIT_GREEN 			{ 255, 	0, 		255, 	0 	}
+# 	define G2_COLOR_INIT_ORANGE 		{ 255, 	255, 	128, 	0 	}
+# 	define G2_COLOR_INIT_PINK 			{ 255, 	255, 	0, 		255 }
+# 	define G2_COLOR_INIT_RED 			{ 255, 	255, 	0, 		0 	}
+# 	define G2_COLOR_INIT_YELLOW 		{ 255, 	255, 	255, 	0 	}
+# 	define G2_COLOR_INIT_WHITE 			{ 255, 	255, 	255, 	255 }
+#else
+// {b, g, r, a}
+# 	define G2_COLOR_INIT_BLACK 			{ 0, 	0, 		0, 		255 }
+# 	define G2_COLOR_INIT_BLUE 			{ 255, 	0, 		0, 		255 }
+# 	define G2_COLOR_INIT_BROWN 			{ 0, 	0, 		128, 	255 }
+# 	define G2_COLOR_INIT_GREEN 			{ 0, 	255, 	0, 		255 }
+# 	define G2_COLOR_INIT_ORANGE 		{ 0, 	128, 	255, 	255 }
+# 	define G2_COLOR_INIT_PINK 			{ 255, 	0, 		255, 	255 }
+# 	define G2_COLOR_INIT_RED 			{ 0, 	0, 		255, 	255 }
+# 	define G2_COLOR_INIT_YELLOW 		{ 0, 	255, 	255, 	255 }
+# 	define G2_COLOR_INIT_WHITE 			{ 255, 	255, 	255, 	255 }
+#endif
+
+// the color contants
+#define G2_COLOR_BLACK 					(g2_color_from_index(0)->color)
+#define G2_COLOR_BLUE 					(g2_color_from_index(1)->color)
+#define G2_COLOR_BROWN 					(g2_color_from_index(2)->color)
+#define G2_COLOR_GREEN 					(g2_color_from_index(3)->color)
+#define G2_COLOR_ORANGE 				(g2_color_from_index(4)->color)
+#define G2_COLOR_PINK 					(g2_color_from_index(5)->color)
+#define G2_COLOR_RED 					(g2_color_from_index(6)->color)
+#define G2_COLOR_YELLOW 				(g2_color_from_index(7)->color)
+#define G2_COLOR_WHITE 					(g2_color_from_index(8)->color)
+#define G2_COLOR_DEFAULT 				G2_COLOR_BLACK
 
 /* ///////////////////////////////////////////////////////////////////////
  * types
@@ -84,40 +112,22 @@ typedef struct __g2_color_t
 }g2_color_t;
 #endif
 
-/* ////////////////////////////////////////////////////////////////////////
- * globals
- */
+// the named color type
+typedef struct __g2_named_color_t
+{
+	// the name
+	tb_char_t const* 	name;
 
-#ifdef TB_WORDS_BIGENDIAN
-// define color constants: (a, r, g, b)
-G2_DEFINE_COLOR_CONST(black, 		255, 	0, 		0, 		0)
-G2_DEFINE_COLOR_CONST(white, 		255, 	255, 	255, 	255)
-G2_DEFINE_COLOR_CONST(red, 			255, 	255, 	0, 		0)
-G2_DEFINE_COLOR_CONST(green, 		255, 	0, 		255, 	0)
-G2_DEFINE_COLOR_CONST(blue, 		255, 	0, 		0, 		255)
-G2_DEFINE_COLOR_CONST(yellow, 		255, 	255, 	255, 	0)
-G2_DEFINE_COLOR_CONST(pink, 		255, 	255, 	0, 		255)
-G2_DEFINE_COLOR_CONST(brown, 		255, 	128, 	0, 		0)
-G2_DEFINE_COLOR_CONST(orange, 		255, 	255, 	128, 	0)
-G2_DEFINE_COLOR_CONST(transparent, 	0, 		0, 		0, 		0)
-#else
-// define color constants: (b, g, r, a)
-G2_DEFINE_COLOR_CONST(black, 		0, 		0, 		0, 		255)
-G2_DEFINE_COLOR_CONST(white, 		255, 	255, 	255, 	255)
-G2_DEFINE_COLOR_CONST(red, 			0, 		0, 		255, 	255)
-G2_DEFINE_COLOR_CONST(green, 		0, 		255, 	0, 		255)
-G2_DEFINE_COLOR_CONST(blue, 		255, 	0, 		0, 		255)
-G2_DEFINE_COLOR_CONST(yellow, 		0, 		255, 	255, 	255)
-G2_DEFINE_COLOR_CONST(pink, 		255, 	0, 		255, 	255)
-G2_DEFINE_COLOR_CONST(brown, 		0, 		0, 		128, 	255)
-G2_DEFINE_COLOR_CONST(orange, 		0, 		128, 	255, 	255)
-G2_DEFINE_COLOR_CONST(transparent, 	0, 		0, 		0, 		0)
-#endif
+	// the color
+	g2_color_t 			color;
+
+}g2_named_color_t;
 
 /* ////////////////////////////////////////////////////////////////////////
  * inline
  */
-// make color
+
+// make
 static __tb_inline__ g2_color_t g2_color_make(tb_byte_t a, tb_byte_t r, tb_byte_t g, tb_byte_t b)
 {
 	g2_color_t c;
@@ -129,6 +139,21 @@ static __tb_inline__ g2_color_t g2_color_make(tb_byte_t a, tb_byte_t r, tb_byte_
 
 	return c;
 }
+
+/* ////////////////////////////////////////////////////////////////////////
+ * interfaces
+ */
+
+// name => color
+g2_named_color_t const* g2_color_from_name(tb_char_t const* name);
+
+// index => color
+g2_named_color_t const* g2_color_from_index(tb_size_t index);
+
+// c plus plus
+#ifdef __cplusplus
+}
+#endif
 
 
 #endif

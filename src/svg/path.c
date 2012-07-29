@@ -71,19 +71,20 @@ static tb_void_t g2_svg_element_path_writ(g2_svg_element_t const* element, tb_gs
 				break;
 			}
 		}
+		g2_path_itor_exit(path->path);
 
 		// exit d
 		tb_gstream_printf(gst, "\"");
-
-		// style 
-		g2_svg_writer_style(gst, &path->style); 
-
-		// transform 
-		g2_svg_writer_transform(gst, &path->matrix); 
-
-		// exit
-		g2_path_itor_exit(path->path);
 	}
+
+	// style 
+	g2_svg_writer_style(gst, &path->style); 
+
+	// transform 
+	g2_svg_writer_transform(gst, &path->matrix); 
+
+	// exit
+	g2_path_itor_exit(path->path);
 }
 static tb_void_t g2_svg_element_path_exit(g2_svg_element_t* element)
 {

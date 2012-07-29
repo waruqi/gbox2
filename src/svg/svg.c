@@ -66,6 +66,8 @@ g2_svg_element_t* g2_svg_element_init_svg(tb_handle_t reader)
 	element->base.writ = g2_svg_element_svg_writ;
 
 	// attributes
+	tb_size_t pw = 0;
+	tb_size_t ph = 0;
 	tb_xml_node_t const* attr = tb_xml_reader_attributes(reader);
 	for (; attr; attr = attr->next)
 	{
@@ -75,9 +77,15 @@ g2_svg_element_t* g2_svg_element_init_svg(tb_handle_t reader)
 		else if (!tb_pstring_cstricmp(&attr->name, "y"))
 			g2_svg_parser_float(p, &element->y);	
 		else if (!tb_pstring_cstricmp(&attr->name, "width"))
-			g2_svg_parser_float(p, &element->width);	
+		{
+			p = g2_svg_parser_float(p, &element->width);
+			if (*p == '%') pw = 1;
+		}
 		else if (!tb_pstring_cstricmp(&attr->name, "height"))
-			g2_svg_parser_float(p, &element->height);	
+		{
+			p = g2_svg_parser_float(p, &element->height);	
+			if (*p == '%') ph = 1;
+		}
 		else if (!tb_pstring_cstricmp(&attr->name, "viewBox"))
 		{
 			p = g2_svg_parser_float(p, &element->viewbox.x); p = g2_svg_parser_separator_skip(p);
@@ -86,6 +94,9 @@ g2_svg_element_t* g2_svg_element_init_svg(tb_handle_t reader)
 			p = g2_svg_parser_float(p, &element->viewbox.h);
 		}
 	}
+
+	if (pw && element->viewbox.w) element->width = g2_mul(element->viewbox.w, element->width / 100);
+	if (pw && element->viewbox.h) element->height = g2_mul(element->viewbox.h, element->height / 100);
 
 	// ok
 	return element;

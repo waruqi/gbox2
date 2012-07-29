@@ -21,6 +21,8 @@ gbox2_C_FILES 			+= \
 						svg/line \
 						svg/circle \
 						svg/ellipse \
+						svg/polygon \
+						prefix/color \
 						core/path \
 						core/style \
 						core/pixmap \

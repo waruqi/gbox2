@@ -35,6 +35,7 @@
  */
 static __tb_inline__ tb_char_t const* g2_svg_parser_style_paint(tb_char_t const* p, g2_svg_style_paint_t* paint)
 {
+	g2_named_color_t* color = TB_NULL;
 	if (*p == '#')
 	{
 		// init
@@ -64,6 +65,11 @@ static __tb_inline__ tb_char_t const* g2_svg_parser_style_paint(tb_char_t const*
 		// color
 		paint->mode = G2_SVG_STYLE_PAINT_MODE_VALUE;
 		paint->color = p2c.c;
+	}
+	else if (color = g2_color_from_name(p)) 
+	{
+		paint->mode = G2_SVG_STYLE_PAINT_MODE_VALUE;
+		paint->color = color->color;
 	}
 	else if (!tb_strnicmp(p, "none", 4)) 
 	{
