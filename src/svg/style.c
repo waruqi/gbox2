@@ -33,18 +33,31 @@ tb_bool_t g2_svg_style_init(g2_svg_style_t* style)
 {
 	tb_assert_and_check_return_val(style, TB_FALSE);
 
+	// init style
 	style->mode 			= G2_SVG_STYLE_MODE_NONE;
 	style->join 			= G2_SVG_STYLE_JOIN_INHERIT;
 	style->cap 				= G2_SVG_STYLE_CAP_INHERIT;
 	style->width 			= 0;
 	style->fill.mode 		= G2_SVG_STYLE_PAINT_MODE_INHERIT;
+	style->fill.flag 		= G2_SVG_STYLE_PAINT_FLAG_NONE;
 	style->fill.color 		= G2_COLOR_BLACK;
 	style->stroke.mode 		= G2_SVG_STYLE_PAINT_MODE_INHERIT;
+	style->stroke.flag 		= G2_SVG_STYLE_PAINT_FLAG_NONE;
 	style->stroke.color 	= G2_COLOR_BLACK;
+
+	// init url
+	tb_pstring_init(&style->fill.url);
+	tb_pstring_init(&style->stroke.url);
 
 	return TB_TRUE;
 }
 tb_void_t g2_svg_style_exit(g2_svg_style_t* style)
 {
+	if (style)
+	{
+		// exit url
+		tb_pstring_exit(&style->fill.url);
+		tb_pstring_exit(&style->stroke.url);
+	}
 }
 

@@ -41,6 +41,10 @@ static tb_void_t g2_svg_element_ellipse_writ(g2_svg_element_t const* element, tb
 	g2_svg_element_ellipse_t const* ellipse = (g2_svg_element_ellipse_t const*)element;
 	tb_assert_and_check_return(ellipse);
 
+	// id
+	if (tb_pstring_size(&ellipse->base.id))
+		tb_gstream_printf(gst, " id=\"%s\"", tb_pstring_cstr(&ellipse->base.id));
+
 	// ellipse
 	if (g2_nz(ellipse->ellipse.c0.x)) tb_gstream_printf(gst, " cx=\"%f\"", g2_float_to_tb(ellipse->ellipse.c0.x));
 	if (g2_nz(ellipse->ellipse.c0.y)) tb_gstream_printf(gst, " cy=\"%f\"", g2_float_to_tb(ellipse->ellipse.c0.y));
@@ -87,7 +91,9 @@ g2_svg_element_t* g2_svg_element_init_ellipse(tb_handle_t reader)
 	for (; attr; attr = attr->next)
 	{
 		tb_char_t const* p = tb_pstring_cstr(&attr->data);
-		if (!tb_pstring_cstricmp(&attr->name, "cx"))
+		if (!tb_pstring_cstricmp(&attr->name, "id"))
+			tb_pstring_strcpy(&element->base.id, &attr->data);
+		else if (!tb_pstring_cstricmp(&attr->name, "cx"))
 			g2_svg_parser_float(p, &element->ellipse.c0.x);
 		else if (!tb_pstring_cstricmp(&attr->name, "cy"))
 			g2_svg_parser_float(p, &element->ellipse.c0.y);

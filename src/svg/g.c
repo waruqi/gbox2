@@ -41,6 +41,10 @@ static tb_void_t g2_svg_element_g_writ(g2_svg_element_t const* element, tb_gstre
 	g2_svg_element_g_t const* g = (g2_svg_element_g_t const*)element;
 	tb_assert_and_check_return(g);
 
+	// id
+	if (tb_pstring_size(&g->base.id))
+		tb_gstream_printf(gst, " id=\"%s\"", tb_pstring_cstr(&g->base.id));
+
 	// style 
 	g2_svg_writer_style(gst, &g->style); 
 
@@ -80,7 +84,9 @@ g2_svg_element_t* g2_svg_element_init_g(tb_handle_t reader)
 	for (; attr; attr = attr->next)
 	{
 		tb_char_t const* p = tb_pstring_cstr(&attr->data);
-		if (!tb_pstring_cstricmp(&attr->name, "transform"))
+		if (!tb_pstring_cstricmp(&attr->name, "id"))
+			tb_pstring_strcpy(&element->base.id, &attr->data);
+		else if (!tb_pstring_cstricmp(&attr->name, "transform"))
 			g2_svg_parser_transform(p, &element->matrix);
 		else if (!tb_pstring_cstricmp(&attr->name, "fill"))
 			g2_svg_parser_style_fill(p, &element->style);

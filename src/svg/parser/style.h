@@ -33,43 +33,105 @@
 /* ///////////////////////////////////////////////////////////////////////
  * inlines
  */
+static __tb_inline__ tb_char_t const* g2_svg_parser_style_color_value(tb_char_t const* p, g2_color_t* color)
+{
+	// pixel: argb
+	g2_pixel_t pixel = tb_s16tou32(p);
+
+	// skip pixel
+	tb_size_t n = 0;
+	for (; tb_isdigit16(*p); p++, n++) ;
+
+	// only three digits? expand it. e.g. #123 => #112233
+	if (n == 3) pixel = (((pixel >> 8) & 0x0f) << 20) | (((pixel >> 8) & 0x0f) << 16) | (((pixel >> 4) & 0x0f) << 12) | (((pixel >> 4) & 0x0f) << 8) | ((pixel & 0x0f) << 4) | (pixel & 0x0f);
+
+	// no alpha? opaque it
+	if (!(pixel & 0xff000000)) pixel |= 0xff000000;
+
+	// color
+	*color = g2_pixel_color(pixel);
+
+	// ok
+	return p;
+}
+static __tb_inline__ tb_char_t const* g2_svg_parser_style_color_rgb(tb_char_t const* p, g2_color_t* color)
+{
+	// skip '('
+	while (*p && *p != '(') p++; p++;
+
+	// a
+	color->a = 0xff;
+
+	// r
+	color->r = tb_stou32(p);
+	while (*p && tb_isdigit(*p)) p++; p = g2_svg_parser_separator_skip(p);
+
+	// g
+	color->g = tb_stou32(p);
+	while (*p && tb_isdigit(*p)) p++; p = g2_svg_parser_separator_skip(p);
+
+	// b
+	color->b = tb_stou32(p);
+	while (*p && tb_isdigit(*p)) p++; p = g2_svg_parser_separator_skip(p);
+
+	// skip ')'
+	while (*p && *p != ')') p++; p++;
+
+	// ok
+	return p;
+}
+static __tb_inline__ tb_char_t const* g2_svg_parser_style_color(tb_char_t const* p, g2_color_t* color)
+{
+	// skip space
+	while (tb_isspace(*p)) p++;
+
+	// color
+	g2_named_color_t* ncolor = TB_NULL;
+	if (*p == '#') p = g2_svg_parser_style_color_value(p + 1, color);
+	else if (!tb_strnicmp(p, "rgb", 3)) p = g2_svg_parser_style_color_rgb(p + 3, color);
+	else if (ncolor = g2_color_from_name(p)) 
+	{
+		*color = ncolor->color;
+		p += tb_strlen(ncolor->name);
+	}
+
+	// ok
+	return p;
+}
 static __tb_inline__ tb_char_t const* g2_svg_parser_style_paint(tb_char_t const* p, g2_svg_style_paint_t* paint)
 {
-	g2_named_color_t* color = TB_NULL;
+	g2_named_color_t* ncolor = TB_NULL;
 	if (*p == '#')
 	{
-		// init
-		union __g2_p2c_t
-		{
-			g2_color_t c;
-			g2_pixel_t p;
-
-		}p2c;
-
-		// skip '#'
-		p++;
-
-		// pixel: argb
-		p2c.p = tb_s16tou32(p);
-
-		// skip pixel
-		tb_size_t n = 0;
-		for (; tb_isdigit16(*p); p++, n++) ;
-
-		// only three digits? expand it. e.g. #123 => #112233
-		if (n == 3) p2c.p = (((p2c.p >> 8) & 0x0f) << 20) | (((p2c.p >> 8) & 0x0f) << 16) | (((p2c.p >> 4) & 0x0f) << 12) | (((p2c.p >> 4) & 0x0f) << 8) | ((p2c.p & 0x0f) << 4) | (p2c.p & 0x0f);
-
-		// no alpha? opaque it
-		if (!(p2c.p & 0xff000000)) p2c.p |= 0xff000000;
-
-		// color
 		paint->mode = G2_SVG_STYLE_PAINT_MODE_VALUE;
-		paint->color = p2c.c;
+		p = g2_svg_parser_style_color_value(p + 1, &paint->color);
 	}
-	else if (color = g2_color_from_name(p)) 
+	else if (!tb_strnicmp(p, "rgb", 3)) 
 	{
 		paint->mode = G2_SVG_STYLE_PAINT_MODE_VALUE;
-		paint->color = color->color;
+		p = g2_svg_parser_style_color_rgb(p + 3, &paint->color);
+	}
+	else if (!tb_strnicmp(p, "url", 3)) 
+	{
+		// skip "url"
+		p += 3;
+
+		// skip '('
+		while (*p && *p != '(') p++; p++;
+
+		// url
+		paint->mode = G2_SVG_STYLE_PAINT_MODE_URL;
+		tb_pstring_clear(&paint->url);
+		while (*p && *p != ')') tb_pstring_chrcat(&paint->url, *p++); 
+		
+		// skip ')'
+		p++;
+	}
+	else if (ncolor = g2_color_from_name(p)) 
+	{
+		paint->mode = G2_SVG_STYLE_PAINT_MODE_VALUE;
+		paint->color = ncolor->color;
+		p += tb_strlen(ncolor->name);
 	}
 	else if (!tb_strnicmp(p, "none", 4)) 
 	{
@@ -79,6 +141,20 @@ static __tb_inline__ tb_char_t const* g2_svg_parser_style_paint(tb_char_t const*
 
 	// ok
 	return p;
+}
+static __tb_inline__ tb_char_t const* g2_svg_parser_style_fill_opacity(tb_char_t const* p, g2_svg_style_t* style)
+{
+	// skip space
+	while (tb_isspace(*p)) p++;
+
+	// mode
+	style->mode |= G2_SVG_STYLE_MODE_FILL;
+
+	// flag
+	style->fill.flag |= G2_SVG_STYLE_PAINT_FLAG_HAS_OPACITY;
+
+	// width
+	return g2_svg_parser_float(p, &style->fill.opacity);
 }
 static __tb_inline__ tb_char_t const* g2_svg_parser_style_fill(tb_char_t const* p, g2_svg_style_t* style)
 {
@@ -160,6 +236,98 @@ static __tb_inline__ tb_char_t const* g2_svg_parser_style_stroke_linecap(tb_char
 	// ok
 	return p;
 }
+static __tb_inline__ tb_char_t const* g2_svg_parser_style_stroke_opacity(tb_char_t const* p, g2_svg_style_t* style)
+{
+	// skip space
+	while (tb_isspace(*p)) p++;
+
+	// mode
+	style->mode |= G2_SVG_STYLE_MODE_STROKE;
+
+	// flag
+	style->stroke.flag |= G2_SVG_STYLE_PAINT_FLAG_HAS_OPACITY;
+
+	// width
+	return g2_svg_parser_float(p, &style->stroke.opacity);
+}
+static __tb_inline__ tb_char_t const* g2_svg_parser_style_gradient_spread(tb_char_t const* p, tb_size_t* spread)
+{
+	// skip space
+	while (tb_isspace(*p)) p++;
+
+	// join
+	if (!tb_strnicmp(p, "pad", 3)) 
+	{
+		*spread = G2_SVG_STYLE_GRADIENT_SPREAD_PAD;
+		p += 3;
+	}
+	else if (!tb_strnicmp(p, "reflect", 7)) 
+	{
+		*spread = G2_SVG_STYLE_GRADIENT_SPREAD_REFLECT;
+		p += 7;
+	}
+	else if (!tb_strnicmp(p, "repeat", 6)) 
+	{
+		*spread = G2_SVG_STYLE_GRADIENT_SPREAD_REPEAT;
+		p += 6;
+	}
+	else *spread = G2_SVG_STYLE_GRADIENT_SPREAD_NONE;
+	
+	// ok
+	return p;
+}
+static __tb_inline__ tb_char_t const* g2_svg_parser_style_gradient_units(tb_char_t const* p, tb_size_t* units)
+{
+	// skip space
+	while (tb_isspace(*p)) p++;
+
+	// unints
+	if (!tb_strnicmp(p, "userSpaceOnUse", 14)) 
+	{
+		*units = G2_SVG_STYLE_GRADIENT_UNITS_USER;
+		p += 14;
+	}
+	else if (!tb_strnicmp(p, "objectBoundingBox", 17)) 
+	{
+		*units = G2_SVG_STYLE_GRADIENT_UNITS_OBJB;
+		p += 17;
+	}
+	else *units = G2_SVG_STYLE_GRADIENT_UNITS_NONE;
+
+	// ok
+	return p;
+}
+static __tb_inline__ tb_char_t const* g2_svg_parser_style_stop_color(tb_char_t const* p, g2_color_t* color)
+{
+	return g2_svg_parser_style_color(p, color);
+}
+static __tb_inline__ tb_char_t const* g2_svg_parser_style_stop_opacity(tb_char_t const* p, g2_color_t* color)
+{
+	g2_float_t opacity;
+	p = g2_svg_parser_float(p, &opacity);
+	color->a = g2_float_to_long(opacity * color->a);
+	return p;
+}
+static __tb_inline__ tb_char_t const* g2_svg_parser_style_stop(tb_char_t const* p, g2_color_t* color)
+{
+	// check
+	tb_assert(color);
+
+	// done
+	while (*p)
+	{
+		if (!tb_isspace(*p))
+		{
+			if (!tb_strnicmp(p, "stop-color:", 11))
+				p = g2_svg_parser_style_stop_color(p + 11, color);
+			else if (!tb_strnicmp(p, "stop-opacity:", 13))
+				p = g2_svg_parser_style_stop_opacity(p + 13, color);
+			else p++;
+		}
+		else p++;
+	}
+	return p;
+}
 static __tb_inline__ tb_char_t const* g2_svg_parser_style(tb_char_t const* p, g2_svg_style_t* style)
 {
 	// check
@@ -172,6 +340,8 @@ static __tb_inline__ tb_char_t const* g2_svg_parser_style(tb_char_t const* p, g2
 		{
 			if (!tb_strnicmp(p, "fill:", 5))
 				p = g2_svg_parser_style_fill(p + 5, style);
+			else if (!tb_strnicmp(p, "fill-opacity:", 13))
+				p = g2_svg_parser_style_fill_opacity(p + 13, style);
 			else if (!tb_strnicmp(p, "stroke:", 7))
 				p = g2_svg_parser_style_stroke(p + 7, style);
 			else if (!tb_strnicmp(p, "stroke-width:", 13))
@@ -180,6 +350,8 @@ static __tb_inline__ tb_char_t const* g2_svg_parser_style(tb_char_t const* p, g2
 				p = g2_svg_parser_style_stroke_linecap(p + 15, style);
 			else if (!tb_strnicmp(p, "stroke-linejoin:", 16))
 				p = g2_svg_parser_style_stroke_linejoin(p + 16, style);
+			else if (!tb_strnicmp(p, "stroke-opacity:", 15))
+				p = g2_svg_parser_style_stroke_opacity(p + 15, style);
 			else p++;
 		}
 		else p++;

@@ -113,6 +113,9 @@ typedef struct __g2_svg_element_t
 	// the element type
 	tb_size_t 					type;
 
+	// the element id
+	tb_pstring_t 				id;
+
 	// the next
 	struct __g2_svg_element_t* 	next;
 
@@ -167,6 +170,26 @@ typedef struct __g2_svg_element_svg_t
 	g2_rect_t 					viewbox;
 
 }g2_svg_element_svg_t;
+
+/// the svg element type for <use ...>
+typedef struct __g2_svg_element_use_t
+{
+	// the base
+	g2_svg_element_t 			base;
+
+	// the xlink-href
+	tb_pstring_t 				xhref;
+
+	// the style
+	g2_svg_style_t 				style;
+
+	// the matrix
+	g2_matrix_t 				matrix;
+
+	// the rect
+	g2_rect_t 					rect;
+
+}g2_svg_element_use_t;
 
 /// the svg element type for <path ...>
 typedef struct __g2_svg_element_path_t
@@ -287,6 +310,68 @@ typedef struct __g2_svg_element_polyline_t
 
 }g2_svg_element_polyline_t;
 
+/// the svg element type for <stop ...>
+typedef struct __g2_svg_element_stop_t
+{
+	// the base
+	g2_svg_element_t 			base;
+
+	// the color
+	g2_color_t 					color;
+
+	// the offset
+	g2_float_t 					offset;
+
+}g2_svg_element_stop_t;
+
+/// the svg element type for <linearGradient ...>
+typedef struct __g2_svg_element_linear_gradient_t
+{
+	// the base
+	g2_svg_element_t 			base;
+
+	// the xlink-href
+	tb_pstring_t 				xhref;
+
+	// the matrix
+	g2_matrix_t 				matrix;
+
+	// the units
+	tb_size_t 					units;
+
+	// the spread
+	tb_size_t 					spread;
+
+	// the pb & pe
+	g2_point_t 					pb;
+	g2_point_t 					pe;
+
+}g2_svg_element_linear_gradient_t;
+
+/// the svg element type for <radialGradient ...>
+typedef struct __g2_svg_element_radial_gradient_t
+{
+	// the base
+	g2_svg_element_t 			base;
+
+	// the xlink-href
+	tb_pstring_t 				xhref;
+
+	// the matrix
+	g2_matrix_t 				matrix;
+
+	// the units
+	tb_size_t 					units;
+
+	// the spread
+	tb_size_t 					spread;
+
+	// the cp & fp
+	g2_circle_t 				cp;
+	g2_point_t 					fp;
+
+}g2_svg_element_radial_gradient_t;
+
 /* ///////////////////////////////////////////////////////////////////////
  * interfaces
  */
@@ -302,6 +387,9 @@ g2_svg_element_t* 	g2_svg_element_init_g(tb_handle_t reader);
 
 /// init element: <svg ...>
 g2_svg_element_t* 	g2_svg_element_init_svg(tb_handle_t reader);
+
+/// init element: <use ...>
+g2_svg_element_t* 	g2_svg_element_init_use(tb_handle_t reader);
 
 /// init element: <path ...>
 g2_svg_element_t* 	g2_svg_element_init_path(tb_handle_t reader);
@@ -323,6 +411,15 @@ g2_svg_element_t* 	g2_svg_element_init_polygon(tb_handle_t reader);
 
 /// init element: <polyline ...>
 g2_svg_element_t* 	g2_svg_element_init_polyline(tb_handle_t reader);
+
+/// init element: <stop ...>
+g2_svg_element_t* 	g2_svg_element_init_stop(tb_handle_t reader);
+
+/// init element: <linearGradient ...>
+g2_svg_element_t* 	g2_svg_element_init_linear_gradient(tb_handle_t reader);
+
+/// init element: <radialGradient ...>
+g2_svg_element_t* 	g2_svg_element_init_radial_gradient(tb_handle_t reader);
 
 /// exit element
 tb_void_t 			g2_svg_element_exit(g2_svg_element_t* element);

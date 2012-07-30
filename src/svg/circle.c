@@ -41,6 +41,10 @@ static tb_void_t g2_svg_element_circle_writ(g2_svg_element_t const* element, tb_
 	g2_svg_element_circle_t const* circle = (g2_svg_element_circle_t const*)element;
 	tb_assert_and_check_return(circle);
 
+	// id
+	if (tb_pstring_size(&circle->base.id))
+		tb_gstream_printf(gst, " id=\"%s\"", tb_pstring_cstr(&circle->base.id));
+
 	// circle
 	if (g2_nz(circle->circle.c.x)) tb_gstream_printf(gst, " cx=\"%f\"", g2_float_to_tb(circle->circle.c.x));
 	if (g2_nz(circle->circle.c.y)) tb_gstream_printf(gst, " cy=\"%f\"", g2_float_to_tb(circle->circle.c.y));
@@ -85,7 +89,9 @@ g2_svg_element_t* g2_svg_element_init_circle(tb_handle_t reader)
 	for (; attr; attr = attr->next)
 	{
 		tb_char_t const* p = tb_pstring_cstr(&attr->data);
-		if (!tb_pstring_cstricmp(&attr->name, "cx"))
+		if (!tb_pstring_cstricmp(&attr->name, "id"))
+			tb_pstring_strcpy(&element->base.id, &attr->data);
+		else if (!tb_pstring_cstricmp(&attr->name, "cx"))
 			g2_svg_parser_float(p, &element->circle.c.x);
 		else if (!tb_pstring_cstricmp(&attr->name, "cy"))
 			g2_svg_parser_float(p, &element->circle.c.y);

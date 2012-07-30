@@ -215,6 +215,9 @@ static __tb_inline__ tb_char_t const* g2_svg_parser_transform_matrix(tb_char_t c
 	// kx
 	if (*p != ')') { p = g2_svg_parser_float(p, &kx); p = g2_svg_parser_separator_skip(p); }
 
+	// sy
+	if (*p != ')') { p = g2_svg_parser_float(p, &sy); p = g2_svg_parser_separator_skip(p); }
+
 	// tx
 	if (*p != ')') { p = g2_svg_parser_float(p, &tx); p = g2_svg_parser_separator_skip(p); }
 

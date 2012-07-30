@@ -35,41 +35,69 @@
 // the svg style mode type
 typedef enum __g2_svg_style_mode_t
 {
-	G2_SVG_STYLE_MODE_NONE 			= 0 	//!< none
-,	G2_SVG_STYLE_MODE_FILL 			= 1 	//!< fill
-,	G2_SVG_STYLE_MODE_STROKE 		= 2 	//!< stroke
-,	G2_SVG_STYLE_MODE_FILL_STROKE 	= 3 	//!< fill & stroke
+	G2_SVG_STYLE_MODE_NONE 					= 0 	//!< none
+,	G2_SVG_STYLE_MODE_FILL 					= 1 	//!< fill
+,	G2_SVG_STYLE_MODE_STROKE 				= 2 	//!< stroke
+,	G2_SVG_STYLE_MODE_FILL_STROKE 			= 3 	//!< fill & stroke
 
 }g2_svg_style_mode_t;
 
-// the svg style paint type
+// the svg style paint mode type
 typedef enum __g2_svg_style_paint_mode_t
 {
-	G2_SVG_STYLE_PAINT_MODE_INHERIT = 0 	//!< inherit
-,	G2_SVG_STYLE_PAINT_MODE_NONE 	= 1 	//!< none
-,	G2_SVG_STYLE_PAINT_MODE_VALUE 	= 2 	//!< value
+	G2_SVG_STYLE_PAINT_MODE_INHERIT 		= 0 	//!< inherit
+,	G2_SVG_STYLE_PAINT_MODE_NONE 			= 1 	//!< none
+,	G2_SVG_STYLE_PAINT_MODE_VALUE 			= 2 	//!< value
+,	G2_SVG_STYLE_PAINT_MODE_URL 			= 3 	//!< url
 
 }g2_svg_style_paint_mode_t;
+
+// the svg style paint flag type
+typedef enum __g2_svg_style_paint_flag_t
+{
+	G2_SVG_STYLE_PAINT_FLAG_NONE 			= 0 	//!< inherit
+,	G2_SVG_STYLE_PAINT_FLAG_HAS_OPACITY 	= 1 	//!< opacity
+
+}g2_svg_style_paint_flag_t;
 
 // the svg style cap type
 typedef enum __g2_svg_style_cap_t
 {
-	G2_SVG_STYLE_CAP_INHERIT 		= 0 	//!< inherit
-,	G2_SVG_STYLE_CAP_BUTT 			= 1 	//!< no extension
-,	G2_SVG_STYLE_CAP_ROUND 			= 2 	//!< a semi-circle extension
-,	G2_SVG_STYLE_CAP_SQUARE			= 3 	//!< a half square extension
+	G2_SVG_STYLE_CAP_INHERIT 				= 0 	//!< inherit
+,	G2_SVG_STYLE_CAP_BUTT 					= 1 	//!< no extension
+,	G2_SVG_STYLE_CAP_ROUND 					= 2 	//!< a semi-circle extension
+,	G2_SVG_STYLE_CAP_SQUARE					= 3 	//!< a half square extension
 
 }g2_svg_style_cap_t;
 
 // the svg style join type
 typedef enum __g2_svg_style_join_t
 {
-	G2_SVG_STYLE_JOIN_INHERIT 		= 0 	//!< inherit
-,	G2_SVG_STYLE_JOIN_MITER 		= 1 	//!< a sharp join
-,	G2_SVG_STYLE_JOIN_ROUND 		= 2 	//!< a round join
-,	G2_SVG_STYLE_JOIN_BEVEL			= 3 	//!< a flat bevel join
+	G2_SVG_STYLE_JOIN_INHERIT 				= 0 	//!< inherit
+,	G2_SVG_STYLE_JOIN_MITER 				= 1 	//!< a sharp join
+,	G2_SVG_STYLE_JOIN_ROUND 				= 2 	//!< a round join
+,	G2_SVG_STYLE_JOIN_BEVEL					= 3 	//!< a flat bevel join
 
 }g2_svg_style_join_t;
+
+// the svg style gradient spread type
+typedef enum __g2_svg_style_gradient_spread_t
+{
+	G2_SVG_STYLE_GRADIENT_SPREAD_NONE 		= 0 	//!< none
+,	G2_SVG_STYLE_GRADIENT_SPREAD_PAD 		= 1 	//!< spread pad
+,	G2_SVG_STYLE_GRADIENT_SPREAD_REFLECT 	= 2 	//!< spread reflect
+,	G2_SVG_STYLE_GRADIENT_SPREAD_REPEAT		= 3 	//!< spread repeat
+
+}g2_svg_style_gradient_spread_t;
+
+// the svg style gradient units type
+typedef enum __g2_svg_style_gradient_units_t
+{
+	G2_SVG_STYLE_GRADIENT_UNITS_NONE 		= 0 	//!< none
+,	G2_SVG_STYLE_GRADIENT_UNITS_USER 		= 1 	//!< user space on use
+,	G2_SVG_STYLE_GRADIENT_UNITS_OBJB 		= 2 	//!< object bounding box
+
+}g2_svg_style_gradient_units_t;
 
 // the svg style paint type
 typedef struct __g2_svg_style_paint_t
@@ -77,8 +105,17 @@ typedef struct __g2_svg_style_paint_t
 	// the paint mode
 	tb_size_t 					mode;
 
+	// the paint flag
+	tb_size_t 					flag;
+
+	// the paint opacity
+	g2_float_t 					opacity;
+
 	// the paint color
 	g2_color_t 					color;
+
+	// the url
+	tb_pstring_t 				url;
 
 }g2_svg_style_paint_t;
 
@@ -100,7 +137,7 @@ typedef struct __g2_svg_style_t
 	// the fill paint
 	g2_svg_style_paint_t 		fill;
 
-	// the stroke color
+	// the stroke paint
 	g2_svg_style_paint_t 		stroke;
 
 }g2_svg_style_t;

@@ -17,7 +17,7 @@
  * Copyright (C) 2009 - 2012, ruki All rights reserved.
  *
  * @author		ruki
- * @file		rect.c
+ * @file		use.c
  *
  */
 
@@ -36,45 +36,54 @@
 /* ///////////////////////////////////////////////////////////////////////
  * implementation
  */
-static tb_void_t g2_svg_element_rect_writ(g2_svg_element_t const* element, tb_gstream_t* gst)
+static tb_void_t g2_svg_element_use_writ(g2_svg_element_t const* element, tb_gstream_t* gst)
 {
-	g2_svg_element_rect_t const* rect = (g2_svg_element_rect_t const*)element;
-	tb_assert_and_check_return(rect);
+	g2_svg_element_use_t const* use = (g2_svg_element_use_t const*)element;
+	tb_assert_and_check_return(use);
 
 	// id
-	if (tb_pstring_size(&rect->base.id))
-		tb_gstream_printf(gst, " id=\"%s\"", tb_pstring_cstr(&rect->base.id));
+	if (tb_pstring_size(&use->base.id))
+		tb_gstream_printf(gst, " id=\"%s\"", tb_pstring_cstr(&use->base.id));
 
-	// rect
-	tb_gstream_printf(gst, " x=\"%f\" y=\"%f\" width=\"%f\" height=\"%f\"", g2_float_to_tb(rect->rect.x), g2_float_to_tb(rect->rect.y), g2_float_to_tb(rect->rect.w), g2_float_to_tb(rect->rect.h));
+	// xhref
+	if (tb_pstring_size(&use->xhref))
+		tb_gstream_printf(gst, " xlink:href=\"%s\"", tb_pstring_cstr(&use->xhref));
+
+	// x & y
+	if (g2_nz(use->rect.x) || g2_nz(use->rect.y)) 
+		tb_gstream_printf(gst, " x=\"%f\" y=\"%f\"", g2_float_to_tb(use->rect.x), g2_float_to_tb(use->rect.y));
+
+	// width & height
+	if (g2_nz(use->rect.w) || g2_nz(use->rect.h)) 
+		tb_gstream_printf(gst, " width=\"%f\" height=\"%f\"", g2_float_to_tb(use->rect.w), g2_float_to_tb(use->rect.h));
 
 	// style 
-	g2_svg_writer_style(gst, &rect->style); 
+	g2_svg_writer_style(gst, &use->style); 
 
 	// transform 
-	g2_svg_writer_transform(gst, &rect->matrix); 
+	g2_svg_writer_transform(gst, &use->matrix); 
 }
-static tb_void_t g2_svg_element_rect_exit(g2_svg_element_t* element)
+static tb_void_t g2_svg_element_use_exit(g2_svg_element_t* element)
 {
-	g2_svg_element_rect_t* rect = (g2_svg_element_rect_t*)element;
-	if (rect)
+	g2_svg_element_use_t* use = (g2_svg_element_use_t*)element;
+	if (use)
 	{
 		// exit style
-		g2_svg_style_exit(&rect->style);
+		g2_svg_style_exit(&use->style);
 	}
 }
 /* ///////////////////////////////////////////////////////////////////////
  * initializer
  */
-g2_svg_element_t* g2_svg_element_init_rect(tb_handle_t reader)
+g2_svg_element_t* g2_svg_element_init_use(tb_handle_t reader)
 {
 	// alloc 
-	g2_svg_element_rect_t* element = tb_malloc0(sizeof(g2_svg_element_rect_t));
+	g2_svg_element_use_t* element = tb_malloc0(sizeof(g2_svg_element_use_t));
 	tb_assert_and_check_return_val(element, TB_NULL);
 
 	// init
-	element->base.exit = g2_svg_element_rect_exit;
-	element->base.writ = g2_svg_element_rect_writ;
+	element->base.exit = g2_svg_element_use_exit;
+	element->base.writ = g2_svg_element_use_writ;
 
 	// init style
 	g2_svg_style_init(&element->style);
@@ -89,6 +98,8 @@ g2_svg_element_t* g2_svg_element_init_rect(tb_handle_t reader)
 		tb_char_t const* p = tb_pstring_cstr(&attr->data);
 		if (!tb_pstring_cstricmp(&attr->name, "id"))
 			tb_pstring_strcpy(&element->base.id, &attr->data);
+		else if (!tb_pstring_cstricmp(&attr->name, "xlink:href"))
+			tb_pstring_strcpy(&element->xhref, &attr->data);
 		else if (!tb_pstring_cstricmp(&attr->name, "x"))
 			g2_svg_parser_float(p, &element->rect.x);
 		else if (!tb_pstring_cstricmp(&attr->name, "y"))

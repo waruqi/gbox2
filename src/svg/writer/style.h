@@ -33,21 +33,36 @@
  */
 static __tb_inline__ tb_void_t g2_svg_writer_style_fill(tb_gstream_t* gst, g2_svg_style_t* style)
 {
+	// init
+	tb_size_t separator = 0;
+
 	// fill: value
 	if (style->fill.mode == G2_SVG_STYLE_PAINT_MODE_VALUE)
 	{
-		union __g2_c2p_t
-		{
-			g2_color_t c;
-			g2_pixel_t p;
-
-		}c2p;
-		c2p.c = style->fill.color;
-		tb_gstream_printf(gst, "fill:#%06x", c2p.c.a != 0xff? c2p.p : (c2p.p & 0x00ffffff));
+		g2_pixel_t pixel = g2_color_pixel(style->fill.color);
+		tb_gstream_printf(gst, "fill:#%06x", style->fill.color.a != 0xff? pixel : (pixel & 0x00ffffff));
+		separator = 1;
+	}
+	// fill: url
+	else if (style->fill.mode == G2_SVG_STYLE_PAINT_MODE_URL)
+	{
+		tb_gstream_printf(gst, "fill:url(%s)", tb_pstring_cstr(&style->fill.url));
+		separator = 1;
 	}
 	// fill: none
 	else if (style->fill.mode == G2_SVG_STYLE_PAINT_MODE_NONE)
+	{
 		tb_gstream_printf(gst, "fill:none");
+		separator = 1;
+	}
+
+	// fill-opacity
+	if (style->fill.flag & G2_SVG_STYLE_PAINT_FLAG_HAS_OPACITY) 
+	{
+		if (separator) tb_gstream_printf(gst, "; ");
+		tb_gstream_printf(gst, "fill-opacity:%f", g2_float_to_tb(style->fill.opacity));
+		separator = 1;
+	}
 }
 static __tb_inline__ tb_void_t g2_svg_writer_style_stroke(tb_gstream_t* gst, g2_svg_style_t* style)
 {
@@ -57,16 +72,13 @@ static __tb_inline__ tb_void_t g2_svg_writer_style_stroke(tb_gstream_t* gst, g2_
 	// stroke: value
 	if (style->stroke.mode == G2_SVG_STYLE_PAINT_MODE_VALUE)
 	{
-		union __g2_c2p_t
-		{
-			g2_color_t c;
-			g2_pixel_t p;
-
-		}c2p;
-		c2p.c = style->stroke.color;
-		tb_gstream_printf(gst, "stroke:#%06x", c2p.c.a != 0xff? c2p.p : (c2p.p & 0x00ffffff));
+		g2_pixel_t pixel = g2_color_pixel(style->stroke.color);
+		tb_gstream_printf(gst, "stroke:#%06x", style->stroke.color.a != 0xff? pixel : (pixel & 0x00ffffff));
 		separator = 1;
 	}
+	// stroke: url
+	else if (style->stroke.mode == G2_SVG_STYLE_PAINT_MODE_URL)
+		tb_gstream_printf(gst, "stroke:url(%s)", tb_pstring_cstr(&style->stroke.url));
 	// stroke: none
 	else if (style->stroke.mode == G2_SVG_STYLE_PAINT_MODE_NONE)
 	{
@@ -107,6 +119,14 @@ static __tb_inline__ tb_void_t g2_svg_writer_style_stroke(tb_gstream_t* gst, g2_
 	{
 		if (separator) tb_gstream_printf(gst, "; ");
 		tb_gstream_printf(gst, "stroke-linejoin:%s", joins[style->join - 1]);
+		separator = 1;
+	}
+
+	// stroke-opacity
+	if (style->stroke.flag & G2_SVG_STYLE_PAINT_FLAG_HAS_OPACITY) 
+	{
+		if (separator) tb_gstream_printf(gst, "; ");
+		tb_gstream_printf(gst, "stroke-opacity:%f", g2_float_to_tb(style->stroke.opacity));
 		separator = 1;
 	}
 }

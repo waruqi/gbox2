@@ -91,7 +91,7 @@ static g2_svg_element_entry_t 	g_element_entries[] =
 ,	{G2_SVG_ELEMENT_TYPE_HKERN, 				"hkern", 				g2_svg_element_init_none 				}
 ,	{G2_SVG_ELEMENT_TYPE_IMAGE, 				"image", 				g2_svg_element_init_none 				}
 ,	{G2_SVG_ELEMENT_TYPE_LINE, 					"line", 				g2_svg_element_init_line 				}
-,	{G2_SVG_ELEMENT_TYPE_LINEARGRADIENT, 		"linearGradient", 		g2_svg_element_init_none 				}
+,	{G2_SVG_ELEMENT_TYPE_LINEARGRADIENT, 		"linearGradient", 		g2_svg_element_init_linear_gradient 	}
 ,	{G2_SVG_ELEMENT_TYPE_MASK, 					"mask", 				g2_svg_element_init_none 				}
 ,	{G2_SVG_ELEMENT_TYPE_METADATA, 				"metadata", 			g2_svg_element_init_none 				}
 ,	{G2_SVG_ELEMENT_TYPE_MISSINGGLYPH, 			"missing-glyph", 		g2_svg_element_init_none 				}
@@ -101,10 +101,10 @@ static g2_svg_element_entry_t 	g_element_entries[] =
 ,	{G2_SVG_ELEMENT_TYPE_PATTERN, 				"pattern", 				g2_svg_element_init_none 				}
 ,	{G2_SVG_ELEMENT_TYPE_POLYGON, 				"polygon", 				g2_svg_element_init_polygon 			}
 ,	{G2_SVG_ELEMENT_TYPE_POLYLINE, 				"polyline", 			g2_svg_element_init_polyline 			}
-,	{G2_SVG_ELEMENT_TYPE_RADIALGRADIENT, 		"radialGradient", 		g2_svg_element_init_none 				}
+,	{G2_SVG_ELEMENT_TYPE_RADIALGRADIENT, 		"radialGradient", 		g2_svg_element_init_radial_gradient		}
 ,	{G2_SVG_ELEMENT_TYPE_RECT, 					"rect", 				g2_svg_element_init_rect 				}
 ,	{G2_SVG_ELEMENT_TYPE_SCRIPT, 				"script", 				g2_svg_element_init_none 				}
-,	{G2_SVG_ELEMENT_TYPE_STOP, 					"stop", 				g2_svg_element_init_none 				}
+,	{G2_SVG_ELEMENT_TYPE_STOP, 					"stop", 				g2_svg_element_init_stop 				}
 ,	{G2_SVG_ELEMENT_TYPE_SVG, 					"svg", 					g2_svg_element_init_svg 				}
 ,	{G2_SVG_ELEMENT_TYPE_SVGTESTCASE, 			"SVGTestCase", 			g2_svg_element_init_none 				}
 ,	{G2_SVG_ELEMENT_TYPE_SWITCH, 				"switch", 				g2_svg_element_init_none 				}
@@ -113,7 +113,7 @@ static g2_svg_element_entry_t 	g_element_entries[] =
 ,	{G2_SVG_ELEMENT_TYPE_TEXTPATH, 				"textPath", 			g2_svg_element_init_none 				}
 ,	{G2_SVG_ELEMENT_TYPE_TITLE, 				"title", 				g2_svg_element_init_none 				}
 ,	{G2_SVG_ELEMENT_TYPE_TSPAN, 				"tspan", 				g2_svg_element_init_none 				}
-,	{G2_SVG_ELEMENT_TYPE_USE, 					"use", 					g2_svg_element_init_none 				}
+,	{G2_SVG_ELEMENT_TYPE_USE, 					"use", 					g2_svg_element_init_use 				}
 ,	{G2_SVG_ELEMENT_TYPE_VIDEO, 				"video", 				g2_svg_element_init_none 				}
 ,	{G2_SVG_ELEMENT_TYPE_VIEW, 					"view", 				g2_svg_element_init_none 				}
 ,	{G2_SVG_ELEMENT_TYPE_VKERN, 				"vkern", 				g2_svg_element_init_none 				}
@@ -173,6 +173,9 @@ g2_svg_element_t* g2_svg_element_init_none(tb_handle_t reader)
 	// init
 	element->type = G2_SVG_ELEMENT_TYPE_NONE;
 
+	// init id
+	tb_pstring_init(&element->id);
+
 	// ok
 	return element;
 }
@@ -198,6 +201,9 @@ tb_void_t g2_svg_element_exit(g2_svg_element_t* element)
 				next = save;
 			}
 		}
+
+		// exit id
+		tb_pstring_exit(&element->id);
 
 		// exit it
 		if (element->exit) element->exit(element);

@@ -41,6 +41,10 @@ static tb_void_t g2_svg_element_line_writ(g2_svg_element_t const* element, tb_gs
 	g2_svg_element_line_t const* line = (g2_svg_element_line_t const*)element;
 	tb_assert_and_check_return(line);
 
+	// id
+	if (tb_pstring_size(&line->base.id))
+		tb_gstream_printf(gst, " id=\"%s\"", tb_pstring_cstr(&line->base.id));
+
 	// line
 	tb_gstream_printf(gst, " x1=\"%f\" y1=\"%f\" x2=\"%f\" y2=\"%f\"", g2_float_to_tb(line->line.p0.x), g2_float_to_tb(line->line.p0.y), g2_float_to_tb(line->line.p1.x), g2_float_to_tb(line->line.p1.y));
 
@@ -83,7 +87,9 @@ g2_svg_element_t* g2_svg_element_init_line(tb_handle_t reader)
 	for (; attr; attr = attr->next)
 	{
 		tb_char_t const* p = tb_pstring_cstr(&attr->data);
-		if (!tb_pstring_cstricmp(&attr->name, "x1"))
+		if (!tb_pstring_cstricmp(&attr->name, "id"))
+			tb_pstring_strcpy(&element->base.id, &attr->data);
+		else if (!tb_pstring_cstricmp(&attr->name, "x1"))
 			g2_svg_parser_float(p, &element->line.p0.x);
 		else if (!tb_pstring_cstricmp(&attr->name, "y1"))
 			g2_svg_parser_float(p, &element->line.p0.y);

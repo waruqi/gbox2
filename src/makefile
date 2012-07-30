@@ -16,13 +16,16 @@ gbox2_C_FILES 			+= \
 						svg/element \
 						svg/g \
 						svg/svg \
+						svg/use \
 						svg/path \
 						svg/rect \
 						svg/line \
+						svg/stop \
 						svg/circle \
 						svg/ellipse \
 						svg/polygon \
 						svg/polyline \
+						svg/gradient \
 						prefix/color \
 						core/path \
 						core/style \
