@@ -236,10 +236,10 @@ static tb_char_t const* g2_svg_element_path_d_xy2(g2_svg_element_path_t* element
 		switch (mode)
 		{
 			case 'Q':
-				g2_path_quad2_to(element->path, x2, y2, x1, y1);
+				g2_path_quad2_to(element->path, x1, y1, x2, y2);
 				break;
 			case 'q':
-				g2_path_quad2_to(element->path, pt.x + x2, pt.y + y2, pt.x + x1, pt.y + y1);
+				g2_path_quad2_to(element->path, pt.x + x1, pt.y + y1, pt.x + x2, pt.y + y2);
 				break;
 			default:
 				tb_trace_noimpl();
@@ -293,10 +293,10 @@ static tb_char_t const* g2_svg_element_path_d_xy3(g2_svg_element_path_t* element
 		switch (mode)
 		{
 			case 'C':
-				g2_path_cube2_to(element->path, x3, y3, x1, y1, x2, y2);
+				g2_path_cube2_to(element->path, x1, y1, x2, y2, x3, y3);
 				break;
 			case 'c':
-				g2_path_cube2_to(element->path, pt.x + x3, pt.y + y3, pt.x + x1, pt.y + y1, pt.x + x2, pt.y + y2);
+				g2_path_cube2_to(element->path, pt.x + x1, pt.y + y1, pt.x + x2, pt.y + y2, pt.x + x3, pt.y + y3);
 				break;
 			default:
 				tb_trace_noimpl();

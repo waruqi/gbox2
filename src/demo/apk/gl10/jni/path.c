@@ -158,7 +158,7 @@ static tb_bool_t g2_demo_init()
 				}
 				else 
 				{
-					g2_path_quadi_to(g_path[i], &g_pts[i][j], &g_cpts[i][j - 1]);
+					g2_path_quadi_to(g_path[i], &g_cpts[i][j - 1], &g_pts[i][j]);
 					if (g_pts[i][j].x == g_pts[i][h].x && g_pts[i][j].y == g_pts[i][h].y) c = 1;
 				}
 			}

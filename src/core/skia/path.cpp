@@ -88,14 +88,14 @@ static tb_void_t g2_skia_path_line_to(tb_handle_t path, g2_point_t const* pt)
 
 	spath->lineTo(pt->x, pt->y);
 }
-static tb_void_t g2_skia_path_quad_to(tb_handle_t path, g2_point_t const* pt, g2_point_t const* cp)
+static tb_void_t g2_skia_path_quad_to(tb_handle_t path, g2_point_t const* cp, g2_point_t const* pt)
 {
 	G2SkiaPath* spath = static_cast<G2SkiaPath*>(path);
 	tb_assert_and_check_return(spath && pt && cp);
 
 	spath->quadTo(cp->x, cp->y, pt->x, pt->y);
 }
-static tb_void_t g2_skia_path_cube_to(tb_handle_t path, g2_point_t const* pt, g2_point_t const* c0, g2_point_t const* c1)
+static tb_void_t g2_skia_path_cube_to(tb_handle_t path, g2_point_t const* c0, g2_point_t const* c1, g2_point_t const* pt)
 {
 	G2SkiaPath* spath = static_cast<G2SkiaPath*>(path);
 	tb_assert_and_check_return(spath && pt && c0 && c1);
@@ -164,13 +164,13 @@ extern "C"
 	{
 		g2_skia_path_line_to(path, pt);		
 	}
-	tb_void_t g2_path_quad_to(tb_handle_t path, g2_point_t const* pt, g2_point_t const* cp)
+	tb_void_t g2_path_quad_to(tb_handle_t path, g2_point_t const* cp, g2_point_t const* pt)
 	{
-		g2_skia_path_quad_to(path, pt, cp);		
+		g2_skia_path_quad_to(path, cp, pt);		
 	}
-	tb_void_t g2_path_cube_to(tb_handle_t path, g2_point_t const* pt, g2_point_t const* c0, g2_point_t const* c1)
+	tb_void_t g2_path_cube_to(tb_handle_t path, g2_point_t const* c0, g2_point_t const* c1, g2_point_t const* pt)
 	{
-		g2_skia_path_cube_to(path, pt, c0, c1);		
+		g2_skia_path_cube_to(path, c0, c1, pt);		
 	}
 	tb_bool_t g2_path_itor_init(tb_handle_t path)
 	{
