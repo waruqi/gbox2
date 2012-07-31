@@ -94,6 +94,12 @@ tb_void_t 		g2_path_cubei_to(tb_handle_t path, g2_ipoint_t const* c0, g2_ipoint_
 tb_void_t 		g2_path_cube2_to(tb_handle_t path, g2_float_t cx0, g2_float_t cy0, g2_float_t cx1, g2_float_t cy1, g2_float_t x, g2_float_t y);
 tb_void_t 		g2_path_cube2i_to(tb_handle_t path, tb_long_t cx0, tb_long_t cy0, tb_long_t cx1, tb_long_t cy1, tb_long_t x, tb_long_t y);
 
+// arc to
+tb_void_t 		g2_path_arc_to(tb_handle_t path, g2_arc_t const* arc);
+tb_void_t 		g2_path_arci_to(tb_handle_t path, g2_iarc_t const* arc);
+tb_void_t 		g2_path_arc2_to(tb_handle_t path, g2_float_t x0, g2_float_t y0, g2_float_t rx, g2_float_t ry, g2_float_t ab, g2_float_t an);
+tb_void_t 		g2_path_arc2i_to(tb_handle_t path, tb_long_t x0, tb_long_t y0, tb_size_t rx, tb_size_t ry, tb_size_t ab, tb_size_t an);
+
 // iterator
 tb_bool_t 		g2_path_itor_init(tb_handle_t path);
 tb_size_t 		g2_path_itor_next(tb_handle_t path, g2_point_t pt[4]);

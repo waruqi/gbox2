@@ -160,4 +160,35 @@ tb_void_t g2_path_cube2i_to(tb_handle_t path, tb_long_t cx0, tb_long_t cy0, tb_l
 	g2_path_cube_to(path, &cp0, &cp1, &p);
 }
 
+tb_void_t g2_path_arci_to(tb_handle_t path, g2_iarc_t const* arc)
+{
+	g2_arc_t a = g2_iarc_to_arc(arc);
+	g2_path_arc_to(path, &a);
+}
+tb_void_t g2_path_arc2_to(tb_handle_t path, g2_float_t x0, g2_float_t y0, g2_float_t rx, g2_float_t ry, g2_float_t ab, g2_float_t an)
+{
+	g2_iarc_t a;
+
+	a.c0.x 	= x0;
+	a.c0.y 	= y0;
+	a.rx 	= rx;
+	a.ry 	= ry;
+	a.ab 	= ab;
+	a.an 	= an;
+
+	g2_path_arc_to(path, &a);
+}
+tb_void_t g2_path_arc2i_to(tb_handle_t path, tb_long_t x0, tb_long_t y0, tb_size_t rx, tb_size_t ry, tb_size_t ab, tb_size_t an)
+{
+	g2_arc_t a;
+
+	a.c0.x 	= g2_long_to_float(x0);
+	a.c0.y 	= g2_long_to_float(y0);
+	a.rx 	= g2_long_to_float(rx);
+	a.ry 	= g2_long_to_float(ry);
+	a.ab 	= g2_long_to_float(ab);
+	a.an 	= g2_long_to_float(an);
+
+	g2_path_arc_to(path, &a);
+}
 

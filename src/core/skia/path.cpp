@@ -102,6 +102,13 @@ static tb_void_t g2_skia_path_cube_to(tb_handle_t path, g2_point_t const* c0, g2
 
 	spath->cubicTo(c0->x, c0->y, c1->x, c1->y, pt->x, pt->y);
 }
+static tb_void_t g2_skia_path_arc_to(tb_handle_t path, g2_arc_t const* arc)
+{
+	G2SkiaPath* spath = static_cast<G2SkiaPath*>(path);
+	tb_assert_and_check_return(spath && arc);
+
+	spath->arcTo(SkRect::MakeXYWH(arc->c0.x - arc->rx, arc->c0.y - arc->ry, arc->rx + arc->rx, arc->ry + arc->ry), arc->ab, arc->an, false);
+}
 static tb_bool_t g2_skia_path_itor_init(tb_handle_t path)
 {
 	G2SkiaPath* spath = static_cast<G2SkiaPath*>(path);
@@ -171,6 +178,10 @@ extern "C"
 	tb_void_t g2_path_cube_to(tb_handle_t path, g2_point_t const* c0, g2_point_t const* c1, g2_point_t const* pt)
 	{
 		g2_skia_path_cube_to(path, c0, c1, pt);		
+	}
+	tb_void_t g2_path_arc_to(tb_handle_t path, g2_arc_t const* arc)
+	{
+		g2_skia_path_arc_to(path, arc);		
 	}
 	tb_bool_t g2_path_itor_init(tb_handle_t path)
 	{

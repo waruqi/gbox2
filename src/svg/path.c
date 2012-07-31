@@ -339,8 +339,25 @@ static tb_char_t const* g2_svg_element_path_d_a(g2_svg_element_path_t* element, 
 	// trace
 	tb_trace_impl("path: a: %c: %f, %f, %f, %f, %f, %f, %f", mode, g2_float_to_tb(rx), g2_float_to_tb(ry), g2_float_to_tb(xr), g2_float_to_tb(af), g2_float_to_tb(sf), g2_float_to_tb(x), g2_float_to_tb(y));
 
-	// no impl
-	tb_trace_noimpl();
+	// init path
+	if (!element->path) element->path = g2_path_init();
+
+	// done path
+	if (element->path)
+	{
+		// last point
+		g2_point_t pt = {0};
+		g2_path_last_pt(element->path, &pt);
+
+		// absolute x & y
+		if (mode == 'a') 
+		{
+			x += pt.x;
+			y += pt.y;
+		}
+
+		//g2_path_arc2_to(element->path, x0, y0, rx, ry, ab, an);
+	}
 
 	// ok
 	return p;
