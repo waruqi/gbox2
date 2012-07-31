@@ -17,7 +17,7 @@
  * Copyright (C) 2009 - 2012, ruki All rights reserved.
  *
  * @author		ruki
- * @file		circle.c
+ * @file		clippath.c
  *
  */
 
@@ -36,48 +36,55 @@
 /* ///////////////////////////////////////////////////////////////////////
  * implementation
  */
-static tb_void_t g2_svg_element_circle_writ(g2_svg_element_t const* element, tb_gstream_t* gst)
+static tb_void_t g2_svg_element_clippath_writ(g2_svg_element_t const* element, tb_gstream_t* gst)
 {
-	g2_svg_element_circle_t const* circle = (g2_svg_element_circle_t const*)element;
-	tb_assert_and_check_return(circle);
+	g2_svg_element_clippath_t const* clippath = (g2_svg_element_clippath_t const*)element;
+	tb_assert_and_check_return(clippath);
 
 	// id
-	if (tb_pstring_size(&circle->base.id))
-		tb_gstream_printf(gst, " id=\"%s\"", tb_pstring_cstr(&circle->base.id));
+	if (tb_pstring_size(&clippath->base.id))
+		tb_gstream_printf(gst, " id=\"%s\"", tb_pstring_cstr(&clippath->base.id));
 
-	// circle
-	if (g2_nz(circle->circle.c.x)) tb_gstream_printf(gst, " cx=\"%f\"", g2_float_to_tb(circle->circle.c.x));
-	if (g2_nz(circle->circle.c.y)) tb_gstream_printf(gst, " cy=\"%f\"", g2_float_to_tb(circle->circle.c.y));
-	if (g2_nz(circle->circle.r)) tb_gstream_printf(gst, " r=\"%f\"", g2_float_to_tb(circle->circle.r));
+	// units
+	if (clippath->units)
+	{
+		static tb_char_t const* units[] =
+		{
+			"userSpaceOnUse"
+		, 	"objectBoundingBox"
+		};
+		if (clippath->units && clippath->units - 1 < tb_arrayn(units)) 
+			tb_gstream_printf(gst, " clipPathUnits=\"%s\"", units[clippath->units - 1]);
+	}
 
 	// style 
-	g2_svg_writer_style(gst, &circle->style); 
+	g2_svg_writer_style(gst, &clippath->style); 
 
 	// transform 
-	g2_svg_writer_transform(gst, &circle->matrix); 
+	g2_svg_writer_transform(gst, &clippath->matrix); 
 }
-static tb_void_t g2_svg_element_circle_exit(g2_svg_element_t* element)
+static tb_void_t g2_svg_element_clippath_exit(g2_svg_element_t* element)
 {
-	g2_svg_element_circle_t* circle = (g2_svg_element_circle_t*)element;
-	if (circle)
+	g2_svg_element_clippath_t* clippath = (g2_svg_element_clippath_t*)element;
+	if (clippath)
 	{
 		// exit style
-		g2_svg_style_exit(&circle->style);
+		g2_svg_style_exit(&clippath->style);
 	}
 }
 /* ///////////////////////////////////////////////////////////////////////
  * initializer
  */
-g2_svg_element_t* g2_svg_element_init_circle(tb_handle_t reader)
+g2_svg_element_t* g2_svg_element_init_clippath(tb_handle_t reader)
 {
 	// alloc 
-	g2_svg_element_circle_t* element = tb_malloc0(sizeof(g2_svg_element_circle_t));
+	g2_svg_element_clippath_t* element = tb_malloc0(sizeof(g2_svg_element_clippath_t));
 	tb_assert_and_check_return_val(element, TB_NULL);
 
 	// init
-	element->base.exit = g2_svg_element_circle_exit;
-	element->base.writ = g2_svg_element_circle_writ;
-
+	element->base.exit = g2_svg_element_clippath_exit;
+	element->base.writ = g2_svg_element_clippath_writ;
+	
 	// init style
 	g2_svg_style_init(&element->style);
 
@@ -91,20 +98,8 @@ g2_svg_element_t* g2_svg_element_init_circle(tb_handle_t reader)
 		tb_char_t const* p = tb_pstring_cstr(&attr->data);
 		if (!tb_pstring_cstricmp(&attr->name, "id"))
 			tb_pstring_strcpy(&element->base.id, &attr->data);
-		else if (!tb_pstring_cstricmp(&attr->name, "cx"))
-			g2_svg_parser_float(p, &element->circle.c.x);
-		else if (!tb_pstring_cstricmp(&attr->name, "cy"))
-			g2_svg_parser_float(p, &element->circle.c.y);
-		else if (!tb_pstring_cstricmp(&attr->name, "r"))
-			g2_svg_parser_float(p, &element->circle.r);
-		else if (!tb_pstring_cstricmp(&attr->name, "fill"))
-			g2_svg_parser_style_fill(p, &element->style);
-		else if (!tb_pstring_cstricmp(&attr->name, "stroke"))
-			g2_svg_parser_style_stroke(p, &element->style);
-		else if (!tb_pstring_cstricmp(&attr->name, "stroke-width"))
-			g2_svg_parser_style_stroke_width(p, &element->style);
-		else if (!tb_pstring_cstricmp(&attr->name, "stroke-linejoin"))
-			g2_svg_parser_style_stroke_linejoin(p, &element->style);
+		else if (!tb_pstring_cstricmp(&attr->name, "clipPathUnits"))
+			g2_svg_parser_style_units(p, &element->units);
 		else if (!tb_pstring_cstricmp(&attr->name, "style"))
 			g2_svg_parser_style(p, &element->style);
 		else if (!tb_pstring_cstricmp(&attr->name, "clip-path"))

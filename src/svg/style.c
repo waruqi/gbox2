@@ -48,6 +48,7 @@ tb_bool_t g2_svg_style_init(g2_svg_style_t* style)
 	// init url
 	tb_pstring_init(&style->fill.url);
 	tb_pstring_init(&style->stroke.url);
+	tb_pstring_init(&style->clippath.url);
 
 	return TB_TRUE;
 }
@@ -58,6 +59,7 @@ tb_void_t g2_svg_style_exit(g2_svg_style_t* style)
 		// exit url
 		tb_pstring_exit(&style->fill.url);
 		tb_pstring_exit(&style->stroke.url);
+		tb_pstring_exit(&style->clippath.url);
 	}
 }
 

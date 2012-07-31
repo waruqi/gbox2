@@ -41,6 +41,10 @@ static tb_void_t g2_svg_element_polyline_writ(g2_svg_element_t const* element, t
 	g2_svg_element_polyline_t const* polyline = (g2_svg_element_polyline_t const*)element;
 	tb_assert_and_check_return(polyline);
 
+	// id
+	if (tb_pstring_size(&polyline->base.id))
+		tb_gstream_printf(gst, " id=\"%s\"", tb_pstring_cstr(&polyline->base.id));
+
 	// polyline
 	if (polyline->path && g2_path_itor_init(polyline->path))
 	{
@@ -166,7 +170,9 @@ g2_svg_element_t* g2_svg_element_init_polyline(tb_handle_t reader)
 	for (; attr; attr = attr->next)
 	{
 		tb_char_t const* p = tb_pstring_cstr(&attr->data);
-		if (!tb_pstring_cstricmp(&attr->name, "points"))
+		if (!tb_pstring_cstricmp(&attr->name, "id"))
+			tb_pstring_strcpy(&element->base.id, &attr->data);
+		else if (!tb_pstring_cstricmp(&attr->name, "points"))
 			g2_svg_element_polyline_points(element, p);
 		else if (!tb_pstring_cstricmp(&attr->name, "verts"))
 			g2_svg_element_polyline_points(element, p);
@@ -182,6 +188,8 @@ g2_svg_element_t* g2_svg_element_init_polyline(tb_handle_t reader)
 			g2_svg_parser_style_stroke_linejoin(p, &element->style);
 		else if (!tb_pstring_cstricmp(&attr->name, "style"))
 			g2_svg_parser_style(p, &element->style);
+		else if (!tb_pstring_cstricmp(&attr->name, "clip-path"))
+			g2_svg_parser_style_clippath(p, &element->style);
 		else if (!tb_pstring_cstricmp(&attr->name, "transform"))
 			g2_svg_parser_transform(p, &element->matrix);
 	}

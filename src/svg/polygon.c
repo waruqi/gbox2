@@ -41,6 +41,10 @@ static tb_void_t g2_svg_element_polygon_writ(g2_svg_element_t const* element, tb
 	g2_svg_element_polygon_t const* polygon = (g2_svg_element_polygon_t const*)element;
 	tb_assert_and_check_return(polygon);
 
+	// id
+	if (tb_pstring_size(&polygon->base.id))
+		tb_gstream_printf(gst, " id=\"%s\"", tb_pstring_cstr(&polygon->base.id));
+
 	// polygon
 	if (polygon->path && g2_path_itor_init(polygon->path))
 	{
@@ -169,7 +173,9 @@ g2_svg_element_t* g2_svg_element_init_polygon(tb_handle_t reader)
 	for (; attr; attr = attr->next)
 	{
 		tb_char_t const* p = tb_pstring_cstr(&attr->data);
-		if (!tb_pstring_cstricmp(&attr->name, "points"))
+		if (!tb_pstring_cstricmp(&attr->name, "id"))
+			tb_pstring_strcpy(&element->base.id, &attr->data);
+		else if (!tb_pstring_cstricmp(&attr->name, "points"))
 			g2_svg_element_polygon_points(element, p);
 		else if (!tb_pstring_cstricmp(&attr->name, "fill"))
 			g2_svg_parser_style_fill(p, &element->style);
@@ -183,6 +189,8 @@ g2_svg_element_t* g2_svg_element_init_polygon(tb_handle_t reader)
 			g2_svg_parser_style_stroke_linejoin(p, &element->style);
 		else if (!tb_pstring_cstricmp(&attr->name, "style"))
 			g2_svg_parser_style(p, &element->style);
+		else if (!tb_pstring_cstricmp(&attr->name, "clip-path"))
+			g2_svg_parser_style_clippath(p, &element->style);
 		else if (!tb_pstring_cstricmp(&attr->name, "transform"))
 			g2_svg_parser_transform(p, &element->matrix);
 	}

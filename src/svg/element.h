@@ -310,6 +310,23 @@ typedef struct __g2_svg_element_polyline_t
 
 }g2_svg_element_polyline_t;
 
+/// the svg element type for <clipPath ...>
+typedef struct __g2_svg_element_clippath_t
+{
+	// the base
+	g2_svg_element_t 			base;
+
+	// the matrix
+	g2_matrix_t 				matrix;
+
+	// the units
+	tb_size_t 					units;
+
+	// the style
+	g2_svg_style_t 				style;
+
+}g2_svg_element_clippath_t;
+
 /// the svg element type for <stop ...>
 typedef struct __g2_svg_element_stop_t
 {
@@ -411,6 +428,9 @@ g2_svg_element_t* 	g2_svg_element_init_polygon(tb_handle_t reader);
 
 /// init element: <polyline ...>
 g2_svg_element_t* 	g2_svg_element_init_polyline(tb_handle_t reader);
+
+/// init element: <clipPath ...>
+g2_svg_element_t* 	g2_svg_element_init_clippath(tb_handle_t reader);
 
 /// init element: <stop ...>
 g2_svg_element_t* 	g2_svg_element_init_stop(tb_handle_t reader);

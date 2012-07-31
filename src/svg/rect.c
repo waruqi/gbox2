@@ -109,6 +109,8 @@ g2_svg_element_t* g2_svg_element_init_rect(tb_handle_t reader)
 			g2_svg_parser_style_stroke_linejoin(p, &element->style);
 		else if (!tb_pstring_cstricmp(&attr->name, "style"))
 			g2_svg_parser_style(p, &element->style);
+		else if (!tb_pstring_cstricmp(&attr->name, "clip-path"))
+			g2_svg_parser_style_clippath(p, &element->style);
 		else if (!tb_pstring_cstricmp(&attr->name, "transform"))
 			g2_svg_parser_transform(p, &element->matrix);
 	}

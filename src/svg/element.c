@@ -56,7 +56,7 @@ static g2_svg_element_entry_t 	g_element_entries[] =
 ,	{G2_SVG_ELEMENT_TYPE_ANIMATEMOTION, 		"animateMotion", 		g2_svg_element_init_none 				}
 ,	{G2_SVG_ELEMENT_TYPE_ANIMATETRANSFORM, 		"animateTransform", 	g2_svg_element_init_none 				}
 ,	{G2_SVG_ELEMENT_TYPE_CIRCLE, 				"circle", 				g2_svg_element_init_circle 				}
-,	{G2_SVG_ELEMENT_TYPE_CLIPPATH, 				"clipPath", 			g2_svg_element_init_none 				}
+,	{G2_SVG_ELEMENT_TYPE_CLIPPATH, 				"clipPath", 			g2_svg_element_init_clippath 			}
 ,	{G2_SVG_ELEMENT_TYPE_CURSOR, 				"cursor", 				g2_svg_element_init_none 				}
 ,	{G2_SVG_ELEMENT_TYPE_DEFS, 					"defs", 				g2_svg_element_init_none 				}
 ,	{G2_SVG_ELEMENT_TYPE_DESC, 					"desc", 				g2_svg_element_init_none 				}

@@ -63,6 +63,9 @@ static __tb_inline__ tb_void_t g2_svg_writer_style_fill(tb_gstream_t* gst, g2_sv
 		tb_gstream_printf(gst, "fill-opacity:%f", g2_float_to_tb(style->fill.opacity));
 		separator = 1;
 	}
+
+	// end
+	if (separator) tb_gstream_printf(gst, "; ");
 }
 static __tb_inline__ tb_void_t g2_svg_writer_style_stroke(tb_gstream_t* gst, g2_svg_style_t* style)
 {
@@ -129,6 +132,30 @@ static __tb_inline__ tb_void_t g2_svg_writer_style_stroke(tb_gstream_t* gst, g2_
 		tb_gstream_printf(gst, "stroke-opacity:%f", g2_float_to_tb(style->stroke.opacity));
 		separator = 1;
 	}
+
+	// end
+	if (separator) tb_gstream_printf(gst, "; ");
+}
+static __tb_inline__ tb_void_t g2_svg_writer_style_clippath(tb_gstream_t* gst, g2_svg_style_t* style)
+{
+	// init
+	tb_size_t separator = 0;
+
+	// clip-path: url
+	if (style->clippath.mode == G2_SVG_STYLE_CLIPPATH_MODE_URL)
+	{
+		tb_gstream_printf(gst, "clip-path:url(%s)", tb_pstring_cstr(&style->clippath.url));
+		separator = 1;
+	}
+	// clip-path: none
+	else if (style->fill.mode == G2_SVG_STYLE_PAINT_MODE_NONE)
+	{
+		tb_gstream_printf(gst, "clip-path:none");
+		separator = 1;
+	}
+
+	// end
+	if (separator) tb_gstream_printf(gst, "; ");
 }
 static __tb_inline__ tb_void_t g2_svg_writer_style(tb_gstream_t* gst, g2_svg_style_t* style)
 {
@@ -143,12 +170,12 @@ static __tb_inline__ tb_void_t g2_svg_writer_style(tb_gstream_t* gst, g2_svg_sty
 
 		// fill?
 		if (style->mode & G2_SVG_STYLE_MODE_FILL) g2_svg_writer_style_fill(gst, style);
-		
-		// separator
-		if (style->mode == G2_SVG_STYLE_MODE_FILL_STROKE) tb_gstream_printf(gst, "; ");
-
+	
 		// stroke?
 		if (style->mode & G2_SVG_STYLE_MODE_STROKE) g2_svg_writer_style_stroke(gst, style);
+
+		// clippath?
+		if (style->mode & G2_SVG_STYLE_MODE_CLIPPATH) g2_svg_writer_style_clippath(gst, style);
 
 		// leave
 		tb_gstream_printf(gst, "\"");

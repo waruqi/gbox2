@@ -215,7 +215,7 @@ g2_svg_element_t* g2_svg_element_init_linear_gradient(tb_handle_t reader)
 		else if (!tb_pstring_cstricmp(&attr->name, "spreadMethod"))
 			g2_svg_parser_style_gradient_spread(p, &element->spread);
 		else if (!tb_pstring_cstricmp(&attr->name, "gradientUnits"))
-			g2_svg_parser_style_gradient_units(p, &element->units);
+			g2_svg_parser_style_units(p, &element->units);
 		else if (!tb_pstring_cstricmp(&attr->name, "xlink:href"))
 			tb_pstring_strcpy(&element->xhref, &attr->data);
 	}
@@ -261,7 +261,7 @@ g2_svg_element_t* g2_svg_element_init_radial_gradient(tb_handle_t reader)
 		else if (!tb_pstring_cstricmp(&attr->name, "spreadMethod"))
 			g2_svg_parser_style_gradient_spread(p, &element->spread);
 		else if (!tb_pstring_cstricmp(&attr->name, "gradientUnits"))
-			g2_svg_parser_style_gradient_units(p, &element->units);
+			g2_svg_parser_style_units(p, &element->units);
 		else if (!tb_pstring_cstricmp(&attr->name, "xlink:href"))
 			tb_pstring_strcpy(&element->xhref, &attr->data);
 	}
