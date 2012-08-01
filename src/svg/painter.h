@@ -17,21 +17,22 @@
  * Copyright (C) 2009 - 2012, ruki All rights reserved.
  *
  * @author		ruki
- * @file		svg.h
+ * @file		painter.h
  *
  */
-#ifndef G2_SVG_H
-#define G2_SVG_H
+#ifndef G2_SVG_PAINTER_H
+#define G2_SVG_PAINTER_H
 
 /* ///////////////////////////////////////////////////////////////////////
  * includes
  */
 #include "prefix.h"
-#include "style.h"
-#include "reader.h"
-#include "writer.h"
-#include "painter.h"
 #include "element.h"
+
+/* ///////////////////////////////////////////////////////////////////////
+ * interfaces
+ */
+tb_void_t			g2_draw_svg(tb_handle_t painter, g2_svg_element_t const* element);
 
 #endif
 

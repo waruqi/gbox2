@@ -17,22 +17,26 @@
  * Copyright (C) 2009 - 2012, ruki All rights reserved.
  *
  * @author		ruki
- * @file		svg.h
+ * @file		painter.c
  *
  */
-#ifndef G2_SVG_H
-#define G2_SVG_H
+
+/* ///////////////////////////////////////////////////////////////////////
+ * trace
+ */
+#define TB_TRACE_IMPL_TAG 		"svg"
 
 /* ///////////////////////////////////////////////////////////////////////
  * includes
  */
-#include "prefix.h"
-#include "style.h"
-#include "reader.h"
-#include "writer.h"
 #include "painter.h"
-#include "element.h"
 
-#endif
+/* ///////////////////////////////////////////////////////////////////////
+ * implementation
+ */
+tb_void_t g2_draw_svg(tb_handle_t painter, g2_svg_element_t const* element)
+{
+	tb_assert_and_check_return(painter && element);
 
+}
 
