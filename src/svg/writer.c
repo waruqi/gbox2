@@ -115,6 +115,16 @@ tb_void_t g2_svg_writer_save(tb_handle_t writer, g2_svg_element_t* element)
 		tb_gstream_printf(gwriter->wstream, "</%s>", name);
 		if (gwriter->bformat) tb_gstream_printf(gwriter->wstream, "\n");
 	}
+	// data element
+	else if (element->type == G2_SVG_ELEMENT_TYPE_DATA)
+	{
+		tb_char_t const* data = tb_pstring_cstr(&((g2_svg_element_data_t*)element)->data);
+		if (data)
+		{
+			tb_gstream_printf(gwriter->wstream, "<![CDATA[%s]]>", data);
+			if (gwriter->bformat) tb_gstream_printf(gwriter->wstream, "\n");
+		}
+	}
 	// empty element
 	else 
 	{

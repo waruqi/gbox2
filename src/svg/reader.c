@@ -64,16 +64,16 @@ g2_svg_element_t* g2_svg_reader_load(tb_handle_t reader)
 			break;
 		case TB_XML_READER_EVENT_ELEMENT_EMPTY: 
 			{
-				// init
-				g2_svg_element_t* element = g2_svg_element_init(reader);
-				tb_assert_and_check_goto(element, fail);
-
-				// trace
-				if (!element->type)
-					tb_trace_impl("not_impl: <%s>", tb_xml_reader_element(reader));
-
 				if (!ignore)
 				{
+					// init
+					g2_svg_element_t* element = g2_svg_element_init(reader);
+					tb_assert_and_check_goto(element, fail);
+
+					// trace
+					if (!element->type)
+						tb_trace_impl("not_impl: <%s>", tb_xml_reader_element(reader));
+
 					// append
 					g2_svg_element_append_tail(parent, element); 
 					tb_assert_and_check_goto(element->parent, fail);
@@ -139,10 +139,43 @@ g2_svg_element_t* g2_svg_reader_load(tb_handle_t reader)
 			break;
 		case TB_XML_READER_EVENT_TEXT: 
 			{
+				tb_char_t const* text = tb_xml_reader_text(reader);
+				if (parent && text && !ignore)
+				{
+					// is spaces?
+					tb_char_t const* p = text;
+					while (*p && tb_isspace(*p)) p++;
+					tb_check_break(*p);
+					
+					// init
+					g2_svg_element_t* element = g2_svg_element_init_data(reader);
+					tb_assert_and_check_goto(element, fail);
+
+					// data
+					tb_pstring_cstrcpy(&((g2_svg_element_data_t*)element)->data, text);
+
+					// append
+					g2_svg_element_append_tail(parent, element); 
+					tb_assert_and_check_goto(element->parent, fail);
+				}
 			}
 			break;
 		case TB_XML_READER_EVENT_CDATA: 
 			{
+				tb_char_t const* cdata = tb_xml_reader_cdata(reader);
+				if (parent && cdata && !ignore)
+				{
+					// init
+					g2_svg_element_t* element = g2_svg_element_init_data(reader);
+					tb_assert_and_check_goto(element, fail);
+
+					// data
+					tb_pstring_cstrcpy(&((g2_svg_element_data_t*)element)->data, cdata);
+
+					// append
+					g2_svg_element_append_tail(parent, element); 
+					tb_assert_and_check_goto(element->parent, fail);
+				}
 			}
 			break;
 		case TB_XML_READER_EVENT_COMMENT: 

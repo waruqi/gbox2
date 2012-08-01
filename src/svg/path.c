@@ -356,6 +356,7 @@ static tb_char_t const* g2_svg_element_path_d_a(g2_svg_element_path_t* element, 
 			y += pt.y;
 		}
 
+		tb_trace_noimpl();
 		//g2_path_arc2_to(element->path, x0, y0, rx, ry, ab, an);
 	}
 

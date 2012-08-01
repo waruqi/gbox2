@@ -105,6 +105,9 @@ typedef enum __g2_svg_element_type_t
 ,	G2_SVG_ELEMENT_TYPE_VIEW
 ,	G2_SVG_ELEMENT_TYPE_VKERN
 
+	// data ...
+,	G2_SVG_ELEMENT_TYPE_DATA
+
 }g2_svg_element_type_t;
 
 /// the svg element type
@@ -191,6 +194,17 @@ typedef struct __g2_svg_element_use_t
 
 }g2_svg_element_use_t;
 
+/// the svg element type for <>data</> or cdata
+typedef struct __g2_svg_element_data_t
+{
+	// the base
+	g2_svg_element_t 			base;
+
+	// the data
+	tb_pstring_t 				data;
+
+}g2_svg_element_data_t;
+
 /// the svg element type for <path ...>
 typedef struct __g2_svg_element_path_t
 {
@@ -241,6 +255,46 @@ typedef struct __g2_svg_element_line_t
 	g2_line_t 					line;
 
 }g2_svg_element_line_t;
+
+/// the svg element type for <text ...>
+typedef struct __g2_svg_element_text_t
+{
+	// the base
+	g2_svg_element_t 			base;
+
+	// the style
+	g2_svg_style_t 				style;
+
+	// the matrix
+	g2_matrix_t 				matrix;
+
+	// the rect
+	g2_rect_t 					rect;
+
+	// the text
+	tb_pstring_t 				text;
+
+}g2_svg_element_text_t;
+
+/// the svg element type for <image ...>
+typedef struct __g2_svg_element_image_t
+{
+	// the base
+	g2_svg_element_t 			base;
+
+	// the xlink-href
+	tb_pstring_t 				xhref;
+
+	// the style
+	g2_svg_style_t 				style;
+
+	// the matrix
+	g2_matrix_t 				matrix;
+
+	// the rect
+	g2_rect_t 					rect;
+
+}g2_svg_element_image_t;
 
 /// the svg element type for <circle ...>
 typedef struct __g2_svg_element_circle_t
@@ -408,6 +462,12 @@ g2_svg_element_t* 	g2_svg_element_init_svg(tb_handle_t reader);
 /// init element: <use ...>
 g2_svg_element_t* 	g2_svg_element_init_use(tb_handle_t reader);
 
+/// init element: <>data</> or cdata
+g2_svg_element_t* 	g2_svg_element_init_data(tb_handle_t reader);
+
+/// init element: <text ...>
+g2_svg_element_t* 	g2_svg_element_init_text(tb_handle_t reader);
+
 /// init element: <path ...>
 g2_svg_element_t* 	g2_svg_element_init_path(tb_handle_t reader);
 
@@ -416,6 +476,9 @@ g2_svg_element_t* 	g2_svg_element_init_rect(tb_handle_t reader);
 
 /// init element: <line ...>
 g2_svg_element_t* 	g2_svg_element_init_line(tb_handle_t reader);
+
+/// init element: <image ...>
+g2_svg_element_t* 	g2_svg_element_init_image(tb_handle_t reader);
 
 /// init element: <circle ...>
 g2_svg_element_t* 	g2_svg_element_init_circle(tb_handle_t reader);

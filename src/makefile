@@ -17,10 +17,13 @@ gbox2_C_FILES 			+= \
 						svg/g \
 						svg/svg \
 						svg/use \
+						svg/data \
 						svg/path \
 						svg/rect \
+						svg/text \
 						svg/line \
 						svg/stop \
+						svg/image \
 						svg/circle \
 						svg/ellipse \
 						svg/polygon \

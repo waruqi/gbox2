@@ -89,7 +89,7 @@ static g2_svg_element_entry_t 	g_element_entries[] =
 ,	{G2_SVG_ELEMENT_TYPE_G, 					"g", 					g2_svg_element_init_g 					}
 ,	{G2_SVG_ELEMENT_TYPE_GLYPH, 				"glyph", 				g2_svg_element_init_none 				}
 ,	{G2_SVG_ELEMENT_TYPE_HKERN, 				"hkern", 				g2_svg_element_init_none 				}
-,	{G2_SVG_ELEMENT_TYPE_IMAGE, 				"image", 				g2_svg_element_init_none 				}
+,	{G2_SVG_ELEMENT_TYPE_IMAGE, 				"image", 				g2_svg_element_init_image 				}
 ,	{G2_SVG_ELEMENT_TYPE_LINE, 					"line", 				g2_svg_element_init_line 				}
 ,	{G2_SVG_ELEMENT_TYPE_LINEARGRADIENT, 		"linearGradient", 		g2_svg_element_init_linear_gradient 	}
 ,	{G2_SVG_ELEMENT_TYPE_MASK, 					"mask", 				g2_svg_element_init_none 				}
@@ -109,7 +109,7 @@ static g2_svg_element_entry_t 	g_element_entries[] =
 ,	{G2_SVG_ELEMENT_TYPE_SVGTESTCASE, 			"SVGTestCase", 			g2_svg_element_init_none 				}
 ,	{G2_SVG_ELEMENT_TYPE_SWITCH, 				"switch", 				g2_svg_element_init_none 				}
 ,	{G2_SVG_ELEMENT_TYPE_SYMBOL, 				"symbol", 				g2_svg_element_init_none 				}
-,	{G2_SVG_ELEMENT_TYPE_TEXT, 					"text", 				g2_svg_element_init_none 				}
+,	{G2_SVG_ELEMENT_TYPE_TEXT, 					"text", 				g2_svg_element_init_text 				}
 ,	{G2_SVG_ELEMENT_TYPE_TEXTPATH, 				"textPath", 			g2_svg_element_init_none 				}
 ,	{G2_SVG_ELEMENT_TYPE_TITLE, 				"title", 				g2_svg_element_init_none 				}
 ,	{G2_SVG_ELEMENT_TYPE_TSPAN, 				"tspan", 				g2_svg_element_init_none 				}

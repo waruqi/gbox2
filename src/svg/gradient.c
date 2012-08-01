@@ -50,11 +50,18 @@ static tb_void_t g2_svg_element_linear_gradient_writ(g2_svg_element_t const* ele
 		tb_gstream_printf(gst, " xlink:href=\"%s\"", tb_pstring_cstr(&linear_gradient->xhref));
 
 	// linear_gradient
-	tb_gstream_printf(gst, " x1=\"%f\" y1=\"%f\" x2=\"%f\" y2=\"%f\""
-		, g2_float_to_tb(linear_gradient->pb.x)
-		, g2_float_to_tb(linear_gradient->pb.y)
-		, g2_float_to_tb(linear_gradient->pe.x)
-		, g2_float_to_tb(linear_gradient->pe.y));
+	if (g2_nz(linear_gradient->pb.x) || g2_nz(linear_gradient->pb.y))
+	{
+		tb_gstream_printf(gst, " x1=\"%f\" y1=\"%f\""
+			, g2_float_to_tb(linear_gradient->pb.x)
+			, g2_float_to_tb(linear_gradient->pb.y));
+	}
+	if (g2_nz(linear_gradient->pe.x) || g2_nz(linear_gradient->pe.y))
+	{
+		tb_gstream_printf(gst, " x2=\"%f\" y2=\"%f\""
+			, g2_float_to_tb(linear_gradient->pe.x)
+			, g2_float_to_tb(linear_gradient->pe.y));
+	}
 
 	// units
 	if (linear_gradient->units)
