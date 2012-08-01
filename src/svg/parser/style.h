@@ -255,7 +255,7 @@ static __tb_inline__ tb_char_t const* g2_svg_parser_style_gradient_spread(tb_cha
 	// skip space
 	while (tb_isspace(*p)) p++;
 
-	// join
+	// spread
 	if (!tb_strnicmp(p, "pad", 3)) 
 	{
 		*spread = G2_SVG_STYLE_GRADIENT_SPREAD_PAD;
@@ -281,7 +281,7 @@ static __tb_inline__ tb_char_t const* g2_svg_parser_style_units(tb_char_t const*
 	// skip space
 	while (tb_isspace(*p)) p++;
 
-	// unints
+	// units
 	if (!tb_strnicmp(p, "userSpaceOnUse", 14)) 
 	{
 		*units = G2_SVG_STYLE_UNITS_USER;
@@ -369,6 +369,132 @@ static __tb_inline__ tb_char_t const* g2_svg_parser_style_stop(tb_char_t const* 
 	}
 	return p;
 }
+static __tb_inline__ tb_char_t const* g2_svg_parser_style_font_size(tb_char_t const* p, g2_svg_style_t* style)
+{
+	// mode
+	style->mode |= G2_SVG_STYLE_MODE_FONT;
+
+	// size
+	return g2_svg_parser_float(p, &style->font.size);
+}
+static __tb_inline__ tb_char_t const* g2_svg_parser_style_font_family(tb_char_t const* p, g2_svg_style_t* style)
+{
+	// skip space
+	while (tb_isspace(*p)) p++;
+
+	// mode
+	style->mode |= G2_SVG_STYLE_MODE_FONT;
+
+	// family
+	tb_pstring_clear(&style->font.family);
+	while (*p && *p != ';') tb_pstring_chrcat(&style->font.family, *p++); 
+	
+	// skip ';'
+	if (*p == ';') p++;
+
+	// ok
+	return p;
+}
+static __tb_inline__ tb_char_t const* g2_svg_parser_style_font_weight(tb_char_t const* p, g2_svg_style_t* style)
+{
+	// skip space
+	while (tb_isspace(*p)) p++;
+
+	// mode
+	style->mode |= G2_SVG_STYLE_MODE_FONT;
+
+	// weight
+	if (!tb_strnicmp(p, "normal", 6)) 
+	{
+		style->font.weight = G2_SVG_STYLE_FONT_WEIGHT_NORMAL;
+		p += 6;
+	}
+	else if (!tb_strnicmp(p, "bold", 4)) 
+	{
+		style->font.weight = G2_SVG_STYLE_FONT_WEIGHT_BORD;
+		p += 4;
+	}
+	else if (!tb_strnicmp(p, "bolder", 6)) 
+	{
+		style->font.weight = G2_SVG_STYLE_FONT_WEIGHT_BOLDER;
+		p += 6;
+	}
+	else if (!tb_strnicmp(p, "lighter", 7)) 
+	{
+		style->font.weight = G2_SVG_STYLE_FONT_WEIGHT_LIGHTER;
+		p += 7;
+	}
+	else 
+	{
+		// 100 - 900 or 0
+		style->font.weight = tb_stou32(p);
+		if (style->font.weight < 100 || style->font.weight > 900) style->font.weight = G2_SVG_STYLE_FONT_WEIGHT_INHERIT;
+
+		// skip
+		while (*p && *p != ';') p++; if (*p == ';') p++;
+	}
+	
+	// ok
+	return p;
+}
+static __tb_inline__ tb_char_t const* g2_svg_parser_style_font_style(tb_char_t const* p, g2_svg_style_t* style)
+{
+	// skip space
+	while (tb_isspace(*p)) p++;
+
+	// mode
+	style->mode |= G2_SVG_STYLE_MODE_FONT;
+
+	// style
+	if (!tb_strnicmp(p, "normal", 6)) 
+	{
+		style->font.style = G2_SVG_STYLE_FONT_STYLE_NORMAL;
+		p += 6;
+	}
+	else if (!tb_strnicmp(p, "italic", 6)) 
+	{
+		style->font.style = G2_SVG_STYLE_FONT_STYLE_ITALIC;
+		p += 6;
+	}
+	else if (!tb_strnicmp(p, "oblique", 7)) 
+	{
+		style->font.style = G2_SVG_STYLE_FONT_STYLE_OBLIQUE;
+		p += 7;
+	}
+	else style->font.style = G2_SVG_STYLE_FONT_STYLE_INHERIT;
+
+	// ok
+	return p;
+}
+static __tb_inline__ tb_char_t const* g2_svg_parser_style_text_anchor(tb_char_t const* p, g2_svg_style_t* style)
+{
+	// skip space
+	while (tb_isspace(*p)) p++;
+
+	// mode
+	style->mode |= G2_SVG_STYLE_MODE_TEXT;
+
+	// anchor
+	if (!tb_strnicmp(p, "start", 5)) 
+	{
+		style->text.anchor = G2_SVG_STYLE_TEXT_ANCHOR_START;
+		p += 5;
+	}
+	else if (!tb_strnicmp(p, "middle", 6)) 
+	{
+		style->text.anchor = G2_SVG_STYLE_TEXT_ANCHOR_MIDDLE;
+		p += 6;
+	}
+	else if (!tb_strnicmp(p, "end", 3)) 
+	{
+		style->text.anchor = G2_SVG_STYLE_TEXT_ANCHOR_END;
+		p += 3;
+	}
+	else style->text.anchor = G2_SVG_STYLE_TEXT_ANCHOR_INHERIT;
+
+	// ok
+	return p;
+}
 static __tb_inline__ tb_char_t const* g2_svg_parser_style(tb_char_t const* p, g2_svg_style_t* style)
 {
 	// check
@@ -395,6 +521,18 @@ static __tb_inline__ tb_char_t const* g2_svg_parser_style(tb_char_t const* p, g2
 				p = g2_svg_parser_style_stroke_opacity(p + 15, style);
 			else if (!tb_strnicmp(p, "clip-path:", 10))
 				p = g2_svg_parser_style_clippath(p + 10, style);
+			else if (!tb_strnicmp(p, "font-size:", 10))
+				p = g2_svg_parser_style_font_size(p + 10, style);
+			else if (!tb_strnicmp(p, "line-height:", 12))
+				p = g2_svg_parser_style_font_size(p + 12, style);
+			else if (!tb_strnicmp(p, "font-family:", 12))
+				p = g2_svg_parser_style_font_family(p + 12, style);
+			else if (!tb_strnicmp(p, "font-weight:", 12))
+				p = g2_svg_parser_style_font_weight(p + 12, style);
+			else if (!tb_strnicmp(p, "font-style:", 11))
+				p = g2_svg_parser_style_font_style(p + 11, style);
+			else if (!tb_strnicmp(p, "text-anchor:", 12))
+				p = g2_svg_parser_style_text_anchor(p + 12, style);
 			else p++;
 		}
 		else p++;

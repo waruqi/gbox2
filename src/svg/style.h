@@ -39,6 +39,8 @@ typedef enum __g2_svg_style_mode_t
 ,	G2_SVG_STYLE_MODE_FILL 					= 1 	//!< fill
 ,	G2_SVG_STYLE_MODE_STROKE 				= 2 	//!< stroke
 ,	G2_SVG_STYLE_MODE_CLIPPATH 				= 4 	//!< clippath
+,	G2_SVG_STYLE_MODE_FONT 					= 8 	//!< font
+,	G2_SVG_STYLE_MODE_TEXT 					= 16 	//!< text
 
 }g2_svg_style_mode_t;
 
@@ -139,6 +141,74 @@ typedef struct __g2_svg_style_clippath_t
 
 }g2_svg_style_clippath_t;
 
+// the svg style font weight type
+typedef enum __g2_svg_style_font_weight_t
+{
+	G2_SVG_STYLE_FONT_WEIGHT_INHERIT 		= 0 	//!< inherit
+,	G2_SVG_STYLE_FONT_WEIGHT_NORMAL 		= 1 	//!< normal
+,	G2_SVG_STYLE_FONT_WEIGHT_BORD 			= 2 	//!< bord
+,	G2_SVG_STYLE_FONT_WEIGHT_BOLDER 		= 3 	//!< bolder
+,	G2_SVG_STYLE_FONT_WEIGHT_LIGHTER 		= 4 	//!< lighter
+,	G2_SVG_STYLE_FONT_WEIGHT_100 			= 100 	//!< 100
+,	G2_SVG_STYLE_FONT_WEIGHT_200 			= 200 	//!< 200
+,	G2_SVG_STYLE_FONT_WEIGHT_300 			= 300 	//!< 300
+,	G2_SVG_STYLE_FONT_WEIGHT_400 			= 400 	//!< 400
+,	G2_SVG_STYLE_FONT_WEIGHT_500 			= 500 	//!< 500
+,	G2_SVG_STYLE_FONT_WEIGHT_600 			= 600 	//!< 600
+,	G2_SVG_STYLE_FONT_WEIGHT_700 			= 700 	//!< 700
+,	G2_SVG_STYLE_FONT_WEIGHT_800 			= 800 	//!< 800
+,	G2_SVG_STYLE_FONT_WEIGHT_900 			= 900 	//!< 900
+
+}g2_svg_style_font_weight_t;
+
+// the svg style font style type
+typedef enum __g2_svg_style_font_style_t
+{
+	G2_SVG_STYLE_FONT_STYLE_INHERIT 		= 0 	//!< inherit
+,	G2_SVG_STYLE_FONT_STYLE_NORMAL 			= 1 	//!< normal
+,	G2_SVG_STYLE_FONT_STYLE_ITALIC 			= 2 	//!< italic
+,	G2_SVG_STYLE_FONT_STYLE_OBLIQUE 		= 3 	//!< oblique
+
+}g2_svg_style_font_style_t;
+
+// the svg style font type
+typedef struct __g2_svg_style_font_t
+{
+	// the font style
+	tb_size_t 					style 		: 16;
+
+	// the font weight
+	tb_size_t 					weight 		: 16;
+
+	// the font size
+	g2_float_t 					size;
+
+	// the font family
+	tb_pstring_t 				family;
+
+}g2_svg_style_font_t;
+
+// the svg style text anchor type
+typedef enum __g2_svg_style_text_anchor_t
+{
+	G2_SVG_STYLE_TEXT_ANCHOR_INHERIT 		= 0 	//!< inherit
+,	G2_SVG_STYLE_TEXT_ANCHOR_START 			= 1 	//!< start
+,	G2_SVG_STYLE_TEXT_ANCHOR_MIDDLE 		= 2 	//!< middle
+,	G2_SVG_STYLE_TEXT_ANCHOR_END 			= 3 	//!< end
+
+}g2_svg_style_text_anchor_t;
+
+// the svg style text type
+typedef struct __g2_svg_style_text_t
+{
+	// the text align
+	tb_size_t 					align;
+
+	// the text anchor
+	tb_size_t 					anchor;
+
+}g2_svg_style_text_t;
+
 // the svg style type
 typedef struct __g2_svg_style_t
 {
@@ -162,6 +232,12 @@ typedef struct __g2_svg_style_t
 
 	// the clip path
 	g2_svg_style_clippath_t 	clippath;
+
+	// the font
+	g2_svg_style_font_t 		font;
+
+	// the text
+	g2_svg_style_text_t 		text;
 
 }g2_svg_style_t;
 

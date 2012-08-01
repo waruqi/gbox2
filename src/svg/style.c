@@ -33,21 +33,33 @@ tb_bool_t g2_svg_style_init(g2_svg_style_t* style)
 {
 	tb_assert_and_check_return_val(style, TB_FALSE);
 
-	// init style
+	// init
 	style->mode 			= G2_SVG_STYLE_MODE_NONE;
-	style->join 			= G2_SVG_STYLE_JOIN_INHERIT;
-	style->cap 				= G2_SVG_STYLE_CAP_INHERIT;
-	style->width 			= 0;
+
+	// init fill
 	style->fill.mode 		= G2_SVG_STYLE_PAINT_MODE_INHERIT;
 	style->fill.flag 		= G2_SVG_STYLE_PAINT_FLAG_NONE;
 	style->fill.color 		= G2_COLOR_BLACK;
+	tb_pstring_init(&style->fill.url);
+
+	// init stroke
 	style->stroke.mode 		= G2_SVG_STYLE_PAINT_MODE_INHERIT;
 	style->stroke.flag 		= G2_SVG_STYLE_PAINT_FLAG_NONE;
 	style->stroke.color 	= G2_COLOR_BLACK;
-
-	// init url
-	tb_pstring_init(&style->fill.url);
+	style->join 			= G2_SVG_STYLE_JOIN_INHERIT;
+	style->cap 				= G2_SVG_STYLE_CAP_INHERIT;
+	style->width 			= 0;
 	tb_pstring_init(&style->stroke.url);
+
+	// init font
+	style->font.style 		= G2_SVG_STYLE_FONT_STYLE_INHERIT;
+	style->font.weight 		= G2_SVG_STYLE_FONT_WEIGHT_INHERIT;
+	tb_pstring_init(&style->font.family);
+
+	// init text
+	style->text.anchor 		= G2_SVG_STYLE_TEXT_ANCHOR_INHERIT;
+
+	// init clippath
 	tb_pstring_init(&style->clippath.url);
 
 	return TB_TRUE;
@@ -56,10 +68,17 @@ tb_void_t g2_svg_style_exit(g2_svg_style_t* style)
 {
 	if (style)
 	{
-		// exit url
+		// exit fill
 		tb_pstring_exit(&style->fill.url);
+
+		// exit stroke
 		tb_pstring_exit(&style->stroke.url);
+
+		// exit clippath
 		tb_pstring_exit(&style->clippath.url);
+
+		// exit font
+		tb_pstring_exit(&style->font.family);
 	}
 }
 

@@ -381,6 +381,23 @@ typedef struct __g2_svg_element_clippath_t
 
 }g2_svg_element_clippath_t;
 
+/// the svg element type for <textPath ...>
+typedef struct __g2_svg_element_textpath_t
+{
+	// the base
+	g2_svg_element_t 			base;
+
+	// the xlink-href
+	tb_pstring_t 				xhref;
+
+	// the style
+	g2_svg_style_t 				style;
+
+	// the matrix
+	g2_matrix_t 				matrix;
+
+}g2_svg_element_textpath_t;
+
 /// the svg element type for <stop ...>
 typedef struct __g2_svg_element_stop_t
 {
@@ -494,6 +511,9 @@ g2_svg_element_t* 	g2_svg_element_init_polyline(tb_handle_t reader);
 
 /// init element: <clipPath ...>
 g2_svg_element_t* 	g2_svg_element_init_clippath(tb_handle_t reader);
+
+/// init element: <textPath ...>
+g2_svg_element_t* 	g2_svg_element_init_textpath(tb_handle_t reader);
 
 /// init element: <stop ...>
 g2_svg_element_t* 	g2_svg_element_init_stop(tb_handle_t reader);

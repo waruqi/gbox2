@@ -30,6 +30,7 @@ gbox2_C_FILES 			+= \
 						svg/polyline \
 						svg/gradient \
 						svg/clippath \
+						svg/textpath \
 						prefix/color \
 						core/path \
 						core/style \

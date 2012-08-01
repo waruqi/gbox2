@@ -110,7 +110,7 @@ static g2_svg_element_entry_t 	g_element_entries[] =
 ,	{G2_SVG_ELEMENT_TYPE_SWITCH, 				"switch", 				g2_svg_element_init_none 				}
 ,	{G2_SVG_ELEMENT_TYPE_SYMBOL, 				"symbol", 				g2_svg_element_init_none 				}
 ,	{G2_SVG_ELEMENT_TYPE_TEXT, 					"text", 				g2_svg_element_init_text 				}
-,	{G2_SVG_ELEMENT_TYPE_TEXTPATH, 				"textPath", 			g2_svg_element_init_none 				}
+,	{G2_SVG_ELEMENT_TYPE_TEXTPATH, 				"textPath", 			g2_svg_element_init_textpath 			}
 ,	{G2_SVG_ELEMENT_TYPE_TITLE, 				"title", 				g2_svg_element_init_none 				}
 ,	{G2_SVG_ELEMENT_TYPE_TSPAN, 				"tspan", 				g2_svg_element_init_none 				}
 ,	{G2_SVG_ELEMENT_TYPE_USE, 					"use", 					g2_svg_element_init_use 				}

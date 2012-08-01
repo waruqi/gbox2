@@ -81,7 +81,10 @@ static __tb_inline__ tb_void_t g2_svg_writer_style_stroke(tb_gstream_t* gst, g2_
 	}
 	// stroke: url
 	else if (style->stroke.mode == G2_SVG_STYLE_PAINT_MODE_URL)
+	{
 		tb_gstream_printf(gst, "stroke:url(%s)", tb_pstring_cstr(&style->stroke.url));
+		separator = 1;
+	}
 	// stroke: none
 	else if (style->stroke.mode == G2_SVG_STYLE_PAINT_MODE_NONE)
 	{
@@ -157,6 +160,89 @@ static __tb_inline__ tb_void_t g2_svg_writer_style_clippath(tb_gstream_t* gst, g
 	// end
 	if (separator) tb_gstream_printf(gst, "; ");
 }
+static __tb_inline__ tb_void_t g2_svg_writer_style_font(tb_gstream_t* gst, g2_svg_style_t* style)
+{
+	// init
+	tb_size_t separator = 0;
+
+	// font-size
+	if (g2_nz(style->font.size))
+	{
+		tb_gstream_printf(gst, "font-size:%f", g2_float_to_tb(style->font.size));
+		separator = 1;
+	}
+	
+	// font-family
+	if (tb_pstring_size(&style->font.family))
+	{
+		if (separator) tb_gstream_printf(gst, "; ");
+		tb_gstream_printf(gst, "font-family:%s", tb_pstring_cstr(&style->font.family));
+		separator = 1;
+	}
+	
+	// font-weight
+	if (style->font.weight)
+	{
+		if (separator) tb_gstream_printf(gst, "; ");
+		switch (style->font.weight)
+		{
+		case G2_SVG_STYLE_FONT_WEIGHT_NORMAL:
+			tb_gstream_printf(gst, "font-weight:normal");
+			break;
+		case G2_SVG_STYLE_FONT_WEIGHT_BORD:
+			tb_gstream_printf(gst, "font-weight:bord");
+			break;
+		case G2_SVG_STYLE_FONT_WEIGHT_BOLDER:
+			tb_gstream_printf(gst, "font-weight:bolder");
+			break;
+		case G2_SVG_STYLE_FONT_WEIGHT_LIGHTER:
+			tb_gstream_printf(gst, "font-weight:lighter");
+			break;
+		default:
+			tb_gstream_printf(gst, "font-weight:%lu", style->font.weight);
+			break;
+		}
+		separator = 1;
+	}
+
+	// font-style
+	static tb_char_t const* styles[] =
+	{
+		"normal"
+	, 	"italic"
+	, 	"oblique"
+	};
+	if (style->font.style && style->font.style - 1 < tb_arrayn(styles)) 
+	{
+		if (separator) tb_gstream_printf(gst, "; ");
+		tb_gstream_printf(gst, "font-style:%s", styles[style->font.style - 1]);
+		separator = 1;
+	}
+
+	// end
+	if (separator) tb_gstream_printf(gst, "; ");
+}
+static __tb_inline__ tb_void_t g2_svg_writer_style_text(tb_gstream_t* gst, g2_svg_style_t* style)
+{
+	// init
+	tb_size_t separator = 0;
+
+	// text-anchor
+	static tb_char_t const* anchors[] =
+	{
+		"start"
+	, 	"middle"
+	, 	"end"
+	};
+	if (style->text.anchor && style->text.anchor - 1 < tb_arrayn(anchors)) 
+	{
+		tb_gstream_printf(gst, "text-anchor:%s", anchors[style->text.anchor - 1]);
+		separator = 1;
+	}
+
+	// end
+	if (separator) tb_gstream_printf(gst, "; ");
+}
 static __tb_inline__ tb_void_t g2_svg_writer_style(tb_gstream_t* gst, g2_svg_style_t* style)
 {
 	// check
@@ -173,6 +259,12 @@ static __tb_inline__ tb_void_t g2_svg_writer_style(tb_gstream_t* gst, g2_svg_sty
 	
 		// stroke?
 		if (style->mode & G2_SVG_STYLE_MODE_STROKE) g2_svg_writer_style_stroke(gst, style);
+
+		// font?
+		if (style->mode & G2_SVG_STYLE_MODE_FONT) g2_svg_writer_style_font(gst, style);
+
+		// text?
+		if (style->mode & G2_SVG_STYLE_MODE_TEXT) g2_svg_writer_style_text(gst, style);
 
 		// clippath?
 		if (style->mode & G2_SVG_STYLE_MODE_CLIPPATH) g2_svg_writer_style_clippath(gst, style);
