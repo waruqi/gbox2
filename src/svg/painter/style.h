@@ -17,46 +17,47 @@
  * Copyright (C) 2009 - 2012, ruki All rights reserved.
  *
  * @author		ruki
- * @file		painter.h
+ * @file		style.h
  *
  */
-#ifndef G2_SVG_PAINTER_H
-#define G2_SVG_PAINTER_H
+#ifndef G2_SVG_PAINTER_STYLE_H
+#define G2_SVG_PAINTER_STYLE_H
 
 /* ///////////////////////////////////////////////////////////////////////
  * includes
  */
 #include "prefix.h"
-#include "element.h"
 
 /* ///////////////////////////////////////////////////////////////////////
- * types
+ * inlines
  */
-
-// the svg painter type
-typedef struct __g2_svg_painter_t
+static __tb_inline__ tb_bool_t g2_svg_painter_style_fill(g2_svg_painter_t* painter, g2_svg_style_t const* style)
 {
-	// the element 
-	g2_svg_element_t const* element;
+	// has fill?
+	tb_check_return_val(style->mode & G2_SVG_STYLE_MODE_FILL, TB_FALSE);
 
-	// the painter
-	tb_handle_t 			painter;
+	// init
+	tb_size_t separator = 0;
 
-	// the style
-	tb_handle_t 			style;
+	// fill: value
+	switch (style->fill.mode)
+	{
+	case G2_SVG_STYLE_PAINT_MODE_VALUE:
+		{
+		}
+	case G2_SVG_STYLE_PAINT_MODE_URL:
+	case G2_SVG_STYLE_PAINT_MODE_NONE:
+	default:
+		break;
+	}
 
-	// the pool
-	tb_handle_t 			pool;
+	return TB_FALSE;
+}
+static __tb_inline__ tb_bool_t g2_svg_painter_style_stroke(g2_svg_painter_t* painter, g2_svg_style_t const* style)
+{
 
-	// the hash
-	tb_hash_t* 				hash;
-
-}g2_svg_painter_t;
-
-/* ///////////////////////////////////////////////////////////////////////
- * interfaces
- */
-tb_void_t			g2_draw_svg(tb_handle_t painter, g2_svg_element_t const* element);
+	return TB_FALSE;
+}
 
 #endif
 

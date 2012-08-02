@@ -41,27 +41,6 @@
 #endif
 
 /* ///////////////////////////////////////////////////////////////////////
- * types
- */
-
-// the svg painter type
-typedef struct __g2_svg_painter_t
-{
-	// the painter
-	tb_handle_t 			painter;
-
-	// the element 
-	g2_svg_element_t const* element;
-
-	// the pool
-	tb_handle_t 			pool;
-
-	// the hash
-	tb_hash_t* 				hash;
-
-}g2_svg_painter_t;
-
-/* ///////////////////////////////////////////////////////////////////////
  * implementation
  */
 static tb_void_t g2_svg_painter_load_element(g2_svg_painter_t* spainter, g2_svg_element_t const* element)
@@ -86,7 +65,7 @@ static tb_void_t g2_svg_painter_load_element(g2_svg_painter_t* spainter, g2_svg_
 		while (next)
 		{
 			// load
-			g2_svg_painter_load(spainter, element);
+			g2_svg_painter_load_element(spainter, element);
 
 			// next
 			next = next->next;
@@ -95,6 +74,9 @@ static tb_void_t g2_svg_painter_load_element(g2_svg_painter_t* spainter, g2_svg_
 }
 static tb_void_t g2_svg_painter_draw_element(g2_svg_painter_t* spainter, g2_svg_element_t const* element)
 {
+	// draw
+	if (element->draw) element->draw(element, spainter);
+
 	// walk
 	if (element->head)
 	{
@@ -112,9 +94,12 @@ static tb_void_t g2_svg_painter_draw_element(g2_svg_painter_t* spainter, g2_svg_
 static tb_bool_t g2_svg_painter_init(g2_svg_painter_t* spainter, tb_handle_t painter, g2_svg_element_t const* element)
 {
 	// init
-	spainter->painter 	= painter;
 	spainter->element 	= element;
+	spainter->painter 	= painter;
+	spainter->style 	= g2_style(painter);
+	spainter->pool 		= TB_NULL;
 	spainter->hash 		= TB_NULL;
+	tb_assert_and_check_return_val(spainter->style, TB_FALSE);
 
 	// load
 	g2_svg_painter_load_element(spainter, element);

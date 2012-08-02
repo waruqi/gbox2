@@ -32,6 +32,7 @@
 #include "element.h"
 #include "parser/parser.h"
 #include "writer/writer.h"
+#include "painter/painter.h"
 
 /* ///////////////////////////////////////////////////////////////////////
  * implementation
@@ -55,6 +56,19 @@ static tb_void_t g2_svg_element_circle_writ(g2_svg_element_t const* element, tb_
 
 	// transform 
 	g2_svg_writer_transform(gst, &circle->matrix); 
+}
+static tb_void_t g2_svg_element_circle_draw(g2_svg_element_t const* element, g2_svg_painter_t* painter)
+{
+	g2_svg_element_circle_t const* circle = (g2_svg_element_circle_t const*)element;
+	tb_assert_and_check_return(circle && painter && painter->painter);
+
+	// fill
+	if (g2_svg_painter_style_fill(painter, &circle->style))
+		g2_draw_circle(painter->painter, &circle->circle);
+
+	// stroke
+	if (g2_svg_painter_style_stroke(painter, &circle->style))
+		g2_draw_circle(painter->painter, &circle->circle);
 }
 static tb_void_t g2_svg_element_circle_exit(g2_svg_element_t* element)
 {

@@ -111,6 +111,7 @@ typedef enum __g2_svg_element_type_t
 }g2_svg_element_type_t;
 
 /// the svg element type
+struct __g2_svg_painter_t;
 typedef struct __g2_svg_element_t
 {
 	// the element type
@@ -131,6 +132,9 @@ typedef struct __g2_svg_element_t
 
 	// writ it
 	tb_void_t 					(*writ)(struct __g2_svg_element_t const* element, tb_gstream_t* gst);
+
+	// draw it
+	tb_void_t 					(*draw)(struct __g2_svg_element_t const* element, struct __g2_svg_painter_t* painter);
 
 	// exit it
 	tb_void_t 					(*exit)(struct __g2_svg_element_t* element);

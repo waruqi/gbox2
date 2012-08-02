@@ -17,46 +17,17 @@
  * Copyright (C) 2009 - 2012, ruki All rights reserved.
  *
  * @author		ruki
- * @file		painter.h
+ * @file		prefix.h
  *
  */
-#ifndef G2_SVG_PAINTER_H
-#define G2_SVG_PAINTER_H
+#ifndef G2_SVG_PAINTER_PREFIX_H
+#define G2_SVG_PAINTER_PREFIX_H
 
 /* ///////////////////////////////////////////////////////////////////////
  * includes
  */
-#include "prefix.h"
-#include "element.h"
-
-/* ///////////////////////////////////////////////////////////////////////
- * types
- */
-
-// the svg painter type
-typedef struct __g2_svg_painter_t
-{
-	// the element 
-	g2_svg_element_t const* element;
-
-	// the painter
-	tb_handle_t 			painter;
-
-	// the style
-	tb_handle_t 			style;
-
-	// the pool
-	tb_handle_t 			pool;
-
-	// the hash
-	tb_hash_t* 				hash;
-
-}g2_svg_painter_t;
-
-/* ///////////////////////////////////////////////////////////////////////
- * interfaces
- */
-tb_void_t			g2_draw_svg(tb_handle_t painter, g2_svg_element_t const* element);
+#include "../prefix.h"
+#include "../painter.h"
 
 #endif
 
