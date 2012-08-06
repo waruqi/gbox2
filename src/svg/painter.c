@@ -72,10 +72,10 @@ static tb_void_t g2_svg_painter_load_element(g2_svg_painter_t* spainter, g2_svg_
 		}
 	}
 }
-static tb_void_t g2_svg_painter_draw_element(g2_svg_painter_t* spainter, g2_svg_element_t const* element)
+static tb_void_t g2_svg_painter_draw_element(g2_svg_painter_t* spainter, g2_svg_element_t const* element, tb_size_t mode)
 {
 	// draw
-	if (element->draw) element->draw(element, spainter);
+	if (element->draw) element->draw(element, spainter, mode);
 
 	// walk
 	if (element->head)
@@ -84,7 +84,7 @@ static tb_void_t g2_svg_painter_draw_element(g2_svg_painter_t* spainter, g2_svg_
 		while (next)
 		{
 			// load
-			g2_svg_painter_draw_element(spainter, next);
+			g2_svg_painter_draw_element(spainter, next, mode);
 
 			// next
 			next = next->next;
@@ -122,7 +122,19 @@ static tb_void_t g2_svg_painter_exit(g2_svg_painter_t* spainter)
 }
 static tb_void_t g2_svg_painter_draw(g2_svg_painter_t* spainter)
 {
-	g2_svg_painter_draw_element(spainter, spainter->element);
+	// fill
+	g2_style_clear(spainter->style);
+	g2_style_mode_set(painter->style, G2_STYLE_MODE_FILL);
+	g2_save(spainter->painter, G2_SAVE_MODE_MATRIX_CLIP);
+	g2_svg_painter_draw_element(spainter, spainter->element, G2_STYLE_MODE_FILL);
+	g2_load(spainter->painter);
+
+	// stroke
+	g2_style_clear(spainter->style);
+	g2_style_mode_set(painter->style, G2_STYLE_MODE_STROKE);
+	g2_save(spainter->painter, G2_SAVE_MODE_MATRIX_CLIP);
+	g2_svg_painter_draw_element(spainter, spainter->element, G2_STYLE_MODE_STROKE);
+	g2_load(spainter->painter);
 }
 /* ///////////////////////////////////////////////////////////////////////
  * interfaces

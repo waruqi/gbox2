@@ -32,6 +32,7 @@
 #include "element.h"
 #include "parser/parser.h"
 #include "writer/writer.h"
+#include "painter/painter.h"
 
 /* ///////////////////////////////////////////////////////////////////////
  * implementation
@@ -57,7 +58,25 @@ static tb_void_t g2_svg_element_ellipse_writ(g2_svg_element_t const* element, tb
 	// transform 
 	g2_svg_writer_transform(gst, &ellipse->matrix); 
 }
+static tb_void_t g2_svg_element_ellipse_draw(g2_svg_element_t const* element, g2_svg_painter_t* painter, tb_size_t mode)
+{
+	g2_svg_element_ellipse_t const* ellipse = (g2_svg_element_ellipse_t const*)element;
+	tb_assert_and_check_return(ellipse && painter && painter->painter);
 
+	// transform
+	g2_svg_painter_transform(painter->painter, &ellipse->matrix); 
+
+	// fill
+	if (mode & G2_STYLE_MODE_FILL)
+		g2_svg_painter_style_fill(painter, &ellipse->style);
+
+	// stroke
+	if (mode & G2_STYLE_MODE_STROKE)
+		g2_svg_painter_style_stroke(painter, &ellipse->style);
+
+	// draw
+	g2_draw_ellipse(painter->painter, &ellipse->ellipse);
+}
 static tb_void_t g2_svg_element_ellipse_exit(g2_svg_element_t* element)
 {
 	g2_svg_element_ellipse_t* ellipse = (g2_svg_element_ellipse_t*)element;
@@ -79,6 +98,7 @@ g2_svg_element_t* g2_svg_element_init_ellipse(tb_handle_t reader)
 	// init
 	element->base.exit = g2_svg_element_ellipse_exit;
 	element->base.writ = g2_svg_element_ellipse_writ;
+	element->base.draw = g2_svg_element_ellipse_draw;
 
 	// init style
 	g2_svg_style_init(&element->style);

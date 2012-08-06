@@ -24,7 +24,7 @@
 /* ///////////////////////////////////////////////////////////////////////
  * trace
  */
-#define TB_TRACE_IMPL_TAG 		"svg"
+//#define TB_TRACE_IMPL_TAG 		"svg"
 
 /* ///////////////////////////////////////////////////////////////////////
  * includes
@@ -32,6 +32,7 @@
 #include "element.h"
 #include "parser/parser.h"
 #include "writer/writer.h"
+#include "painter/painter.h"
 
 /* ///////////////////////////////////////////////////////////////////////
  * implementation
@@ -82,6 +83,21 @@ static tb_void_t g2_svg_element_polyline_writ(g2_svg_element_t const* element, t
 
 	// transform 
 	g2_svg_writer_transform(gst, &polyline->matrix); 
+}
+static tb_void_t g2_svg_element_polyline_draw(g2_svg_element_t const* element, g2_svg_painter_t* painter, tb_size_t mode)
+{
+	g2_svg_element_polyline_t const* polyline = (g2_svg_element_polyline_t const*)element;
+	tb_assert_and_check_return(polyline && painter && painter->painter);
+
+	// transform
+	g2_svg_painter_transform(painter->painter, &polyline->matrix); 
+
+	// stroke
+	if (mode & G2_STYLE_MODE_STROKE)
+		g2_svg_painter_style_stroke(painter, &polyline->style);
+
+	// draw
+	if (polyline->path) g2_draw_path(painter->painter, polyline->path);
 }
 static tb_void_t g2_svg_element_polyline_exit(g2_svg_element_t* element)
 {
@@ -158,6 +174,7 @@ g2_svg_element_t* g2_svg_element_init_polyline(tb_handle_t reader)
 	// init
 	element->base.exit = g2_svg_element_polyline_exit;
 	element->base.writ = g2_svg_element_polyline_writ;
+	element->base.draw = g2_svg_element_polyline_draw;
 
 	// init style
 	g2_svg_style_init(&element->style);

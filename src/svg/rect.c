@@ -32,6 +32,7 @@
 #include "element.h"
 #include "parser/parser.h"
 #include "writer/writer.h"
+#include "painter/painter.h"
 
 /* ///////////////////////////////////////////////////////////////////////
  * implementation
@@ -54,6 +55,25 @@ static tb_void_t g2_svg_element_rect_writ(g2_svg_element_t const* element, tb_gs
 	// transform 
 	g2_svg_writer_transform(gst, &rect->matrix); 
 }
+static tb_void_t g2_svg_element_rect_draw(g2_svg_element_t const* element, g2_svg_painter_t* painter, tb_size_t mode)
+{
+	g2_svg_element_rect_t const* rect = (g2_svg_element_rect_t const*)element;
+	tb_assert_and_check_return(rect && painter && painter->painter);
+
+	// transform
+	g2_svg_painter_transform(painter->painter, &rect->matrix); 
+
+	// fill
+	if (mode & G2_STYLE_MODE_FILL)
+		g2_svg_painter_style_fill(painter, &rect->style);
+
+	// stroke
+	if (mode & G2_STYLE_MODE_STROKE)
+		g2_svg_painter_style_stroke(painter, &rect->style);
+
+	// draw
+	g2_draw_rect(painter->painter, &rect->rect);
+}
 static tb_void_t g2_svg_element_rect_exit(g2_svg_element_t* element)
 {
 	g2_svg_element_rect_t* rect = (g2_svg_element_rect_t*)element;
@@ -75,6 +95,7 @@ g2_svg_element_t* g2_svg_element_init_rect(tb_handle_t reader)
 	// init
 	element->base.exit = g2_svg_element_rect_exit;
 	element->base.writ = g2_svg_element_rect_writ;
+	element->base.draw = g2_svg_element_rect_draw;
 
 	// init style
 	g2_svg_style_init(&element->style);

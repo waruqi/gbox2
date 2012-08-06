@@ -134,7 +134,7 @@ typedef struct __g2_svg_element_t
 	tb_void_t 					(*writ)(struct __g2_svg_element_t const* element, tb_gstream_t* gst);
 
 	// draw it
-	tb_void_t 					(*draw)(struct __g2_svg_element_t const* element, struct __g2_svg_painter_t* painter);
+	tb_void_t 					(*draw)(struct __g2_svg_element_t const* element, struct __g2_svg_painter_t* painter, tb_size_t mode);
 
 	// exit it
 	tb_void_t 					(*exit)(struct __g2_svg_element_t* element);
