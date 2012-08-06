@@ -20,8 +20,8 @@
  * @file		painter.h
  *
  */
-#ifndef G2_SVG_PAINTER_H
-#define G2_SVG_PAINTER_H
+#ifndef G2_SVG_PAINTER_PAINTER_H
+#define G2_SVG_PAINTER_PAINTER_H
 
 /* ///////////////////////////////////////////////////////////////////////
  * includes

@@ -42,6 +42,9 @@ static tb_void_t g2_svg_element_data_exit(g2_svg_element_t* element)
 	g2_svg_element_data_t* data = (g2_svg_element_data_t*)element;
 	if (data)
 	{
+		// exit id
+		tb_pstring_exit(&data->base.id);
+
 		// exit data
 		tb_pstring_exit(&data->data);
 	}
@@ -58,6 +61,9 @@ g2_svg_element_t* g2_svg_element_init_data(tb_handle_t reader)
 	// init
 	element->base.exit = g2_svg_element_data_exit;
 	element->base.type = G2_SVG_ELEMENT_TYPE_DATA;
+
+	// init id
+	tb_pstring_init(&element->base.id);
 
 	// init data
 	tb_pstring_init(&element->data);

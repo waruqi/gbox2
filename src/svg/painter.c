@@ -65,7 +65,7 @@ static tb_void_t g2_svg_painter_load_element(g2_svg_painter_t* spainter, g2_svg_
 		while (next)
 		{
 			// load
-			g2_svg_painter_load_element(spainter, element);
+			g2_svg_painter_load_element(spainter, next);
 
 			// next
 			next = next->next;
@@ -84,7 +84,7 @@ static tb_void_t g2_svg_painter_draw_element(g2_svg_painter_t* spainter, g2_svg_
 		while (next)
 		{
 			// load
-			g2_svg_painter_draw_element(spainter, element);
+			g2_svg_painter_draw_element(spainter, next);
 
 			// next
 			next = next->next;

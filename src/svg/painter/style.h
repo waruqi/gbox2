@@ -33,18 +33,21 @@
  */
 static __tb_inline__ tb_bool_t g2_svg_painter_style_fill(g2_svg_painter_t* painter, g2_svg_style_t const* style)
 {
+	// check
+	tb_assert_and_check_return_val(painter->style, TB_FALSE);
+
 	// has fill?
 	tb_check_return_val(style->mode & G2_SVG_STYLE_MODE_FILL, TB_FALSE);
 
-	// init
-	tb_size_t separator = 0;
+	// mode
+	g2_style_mode_set(painter->style, G2_STYLE_MODE_FILL);
 
-	// fill: value
+	// fill it
 	switch (style->fill.mode)
 	{
 	case G2_SVG_STYLE_PAINT_MODE_VALUE:
-		{
-		}
+		g2_style_color_set(painter->style, style->fill.color);
+		return TB_TRUE;
 	case G2_SVG_STYLE_PAINT_MODE_URL:
 	case G2_SVG_STYLE_PAINT_MODE_NONE:
 	default:
@@ -55,6 +58,34 @@ static __tb_inline__ tb_bool_t g2_svg_painter_style_fill(g2_svg_painter_t* paint
 }
 static __tb_inline__ tb_bool_t g2_svg_painter_style_stroke(g2_svg_painter_t* painter, g2_svg_style_t const* style)
 {
+	tb_assert_and_check_return_val(painter->style, TB_FALSE);
+
+	// has stroke?
+	tb_check_return_val(style->mode & G2_SVG_STYLE_MODE_STROKE, TB_FALSE);
+
+	// mode
+	g2_style_mode_set(painter->style, G2_STYLE_MODE_STROKE);
+
+	// width
+	if (g2_nz(style->width)) g2_style_width_set(painter->style, style->width);
+	
+	// join
+	if (style->join) g2_style_join_set(painter->style, style->join);
+
+	// join
+	if (style->cap) g2_style_cap_set(painter->style, style->cap);
+
+	// stroke it
+	switch (style->stroke.mode)
+	{
+	case G2_SVG_STYLE_PAINT_MODE_VALUE:
+		g2_style_color_set(painter->style, style->stroke.color);
+		return TB_TRUE;
+	case G2_SVG_STYLE_PAINT_MODE_URL:
+	case G2_SVG_STYLE_PAINT_MODE_NONE:
+	default:
+		break;
+	}
 
 	return TB_FALSE;
 }

@@ -31,7 +31,15 @@
 /* ///////////////////////////////////////////////////////////////////////
  * inlines
  */
+static __tb_inline__ tb_void_t g2_svg_painter_transform(g2_svg_painter_t* painter, g2_matrix_t const* matrix)
+{
+	// check
+	tb_assert_and_check_return(matrix);
 
+	// transform 
+	if (!g2_matrix_identity(matrix)) 
+		g2_multiply(painter->painter, matrix);
+}
 
 #endif
 

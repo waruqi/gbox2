@@ -62,6 +62,9 @@ static tb_void_t g2_svg_element_circle_draw(g2_svg_element_t const* element, g2_
 	g2_svg_element_circle_t const* circle = (g2_svg_element_circle_t const*)element;
 	tb_assert_and_check_return(circle && painter && painter->painter);
 
+	// transform
+	g2_svg_painter_transform(painter->painter, &circle->matrix); 
+
 	// fill
 	if (g2_svg_painter_style_fill(painter, &circle->style))
 		g2_draw_circle(painter->painter, &circle->circle);
@@ -91,6 +94,7 @@ g2_svg_element_t* g2_svg_element_init_circle(tb_handle_t reader)
 	// init
 	element->base.exit = g2_svg_element_circle_exit;
 	element->base.writ = g2_svg_element_circle_writ;
+	element->base.draw = g2_svg_element_circle_draw;
 
 	// init style
 	g2_svg_style_init(&element->style);

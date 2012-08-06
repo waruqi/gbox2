@@ -27,6 +27,7 @@
  * includes
  */
 #include "../prefix.h"
+#include "../style.h"
 #include "../painter.h"
 
 #endif
