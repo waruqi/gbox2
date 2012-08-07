@@ -124,14 +124,14 @@ static tb_void_t g2_svg_painter_draw(g2_svg_painter_t* spainter)
 {
 	// fill
 	g2_style_clear(spainter->style);
-	g2_style_mode_set(painter->style, G2_STYLE_MODE_FILL);
+	g2_style_mode_set(spainter->style, G2_STYLE_MODE_FILL);
 	g2_save(spainter->painter, G2_SAVE_MODE_MATRIX_CLIP);
 	g2_svg_painter_draw_element(spainter, spainter->element, G2_STYLE_MODE_FILL);
 	g2_load(spainter->painter);
 
 	// stroke
 	g2_style_clear(spainter->style);
-	g2_style_mode_set(painter->style, G2_STYLE_MODE_STROKE);
+	g2_style_mode_set(spainter->style, G2_STYLE_MODE_STROKE);
 	g2_save(spainter->painter, G2_SAVE_MODE_MATRIX_CLIP);
 	g2_svg_painter_draw_element(spainter, spainter->element, G2_STYLE_MODE_STROKE);
 	g2_load(spainter->painter);

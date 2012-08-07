@@ -7,7 +7,7 @@ PLAT = linux_x86
 # root
 PRO_DIR = /home/ruki/projects/personal/gbox2
 PRO_NAME = gbox2
-DEBUG = y
+DEBUG = n
 SDK = /home/ruki/programs/android-sdk-linux_x86
 NDK = /home/ruki/programs/android-ndk-r8
 BIN = /home/ruki/programs/android-ndk-r8/toolchains/arm-linux-androideabi-4.4.3/prebuilt/linux-x86/bin

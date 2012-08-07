@@ -50,7 +50,7 @@ static tb_void_t g2_skia_bitmap_exit(tb_handle_t bitmap)
 	tb_assert_and_check_return(sbitmap);
  
 	// free it
- 	delete sbitmap;
+ //	delete sbitmap;
 }
 static tb_pointer_t g2_skia_bitmap_make(tb_handle_t bitmap)
 {

@@ -195,7 +195,7 @@ tb_void_t g2_svg_element_exit(g2_svg_element_t* element)
 				save = next->next;
 				
 				// exit
-				g2_svg_element_exit(element);
+				g2_svg_element_exit(next);
 
 				// next
 				next = save;
