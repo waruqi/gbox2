@@ -51,6 +51,11 @@ tb_bool_t g2_path_null(tb_handle_t path)
 	tb_trace_noimpl();
 	return TB_NULL;
 }
+tb_bool_t g2_path_last_pt(tb_handle_t path, g2_point_t* pt)
+{
+	tb_trace_noimpl();
+	return TB_FALSE;
+}
 tb_void_t g2_path_move_to(tb_handle_t path, g2_point_t const* pt)
 {
 	tb_trace_noimpl();
@@ -67,6 +72,24 @@ tb_void_t g2_path_cube_to(tb_handle_t path, g2_point_t const* pt, g2_point_t con
 {
 	tb_trace_noimpl();
 }
+tb_void_t g2_path_arc_to(tb_handle_t path, g2_arc_t const* arc)
+{
+	tb_trace_noimpl();
+}
+tb_bool_t g2_path_itor_init(tb_handle_t path)
+{
+	tb_trace_noimpl();
+	return TB_FALSE;
+}
+tb_size_t g2_path_itor_next(tb_handle_t path, g2_point_t pt[4])
+{
+	tb_trace_noimpl();
+}
+tb_void_t g2_path_itor_exit(tb_handle_t path)
+{
+	tb_trace_noimpl();
+}
+
 #endif
 tb_void_t g2_path_movei_to(tb_handle_t path, g2_ipoint_t const* pt)
 {

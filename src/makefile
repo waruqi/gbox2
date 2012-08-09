@@ -211,7 +211,6 @@ skia_CPP_FILES 			= \
 						core/SkMatrix \
 						core/SkMemory_stdlib \
 						core/SkMetaData \
-						core/SkMMapStream \
 						core/SkOrderedReadBuffer \
 						core/SkOrderedWriteBuffer \
 						core/SkPackBits \
@@ -274,6 +273,10 @@ skia_CPP_FILES 			= \
 						ports/SkTime_Unix \
 						ports/SkXMLParser_empty \
 						utils/SkOSFile
+
+ifneq ($(TB_CONFIG_PLAT),mingw_x86)
+skia_CPP_FILES 			+= core/SkMMapStream
+endif
 
 ifeq ($(TB_CONFIG_ARCH),x86)
 skia_CPP_FILES 			+= \

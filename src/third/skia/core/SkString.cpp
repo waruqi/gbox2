@@ -11,11 +11,13 @@
 #include "SkFixed.h"
 #include "SkThread.h"
 #include "SkUtils.h"
-#include <stdarg.h>
-#include <stdio.h>
 
 // number of bytes (on the stack) to receive the printf result
 static const size_t kBufferSize = 256;
+
+#if 0
+#include <stdarg.h>
+#include <stdio.h>
 
 #ifdef SK_BUILD_FOR_WIN
     #define VSNPRINTF(buffer, size, format, args) \
@@ -25,13 +27,17 @@ static const size_t kBufferSize = 256;
     #define VSNPRINTF   vsnprintf
     #define SNPRINTF    snprintf
 #endif
+#else
+    #define VSNPRINTF   tb_vsnprintf
+    #define SNPRINTF    tb_snprintf
+#endif
 
 #define ARGS_TO_BUFFER(format, buffer, size)        \
     do {                                            \
-        va_list args;                               \
-        va_start(args, format);                     \
+        tb_va_list_t args;                               \
+        tb_va_start(args, format);                     \
         VSNPRINTF(buffer, size, format, args);      \
-        va_end(args);                               \
+        tb_va_end(args);                               \
     } while (0)
 
 ///////////////////////////////////////////////////////////////////////////////

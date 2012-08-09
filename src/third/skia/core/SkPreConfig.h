@@ -71,7 +71,7 @@
     #if !defined(SK_WARN_UNUSED_RESULT)
         #define SK_WARN_UNUSED_RESULT
     #endif
-    #include "sk_stdint.h"
+    #include "../sk_stdint.h"
 #endif
 
 //////////////////////////////////////////////////////////////////////

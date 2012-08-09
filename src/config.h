@@ -3,8 +3,8 @@
 
 // core
 //#define G2_CONFIG_CORE_SOFT
-#define G2_CONFIG_CORE_SKIA
-//#define G2_CONFIG_CORE_GL10
+//#define G2_CONFIG_CORE_SKIA
+#define G2_CONFIG_CORE_GL10
 
 // float
 #define G2_CONFIG_FLOAT_FIXED
@@ -16,5 +16,5 @@
 // config
 #ifndef gbox2_AUTO_CONFIG_H
 #define gbox2_AUTO_CONFIG_H
-#define gbox2_CONFIG_DEBUG 0
+#define gbox2_CONFIG_DEBUG 1
 #endif

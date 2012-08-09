@@ -22,6 +22,10 @@ ifeq ($(TB_CONFIG_PLAT),linux_x64)
 demo_LIBS 				= glut GLU z m dl pthread
 endif
 
+ifeq ($(TB_CONFIG_PLAT),mingw_x86)
+demo_LIBS 				= glut gl ws2_32
+endif
+
 ifeq ($(TB_CONFIG_PLAT),mac_x64)
 demo_LIBS 				= z m dl pthread
 demo_LDFLAGS 			= -framework GLUT -framework OpenGL -framework Cocoa -framework CoreFoundation \
