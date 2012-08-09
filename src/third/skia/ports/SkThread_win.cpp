@@ -9,8 +9,8 @@
 
 #include <windows.h>
 #include <intrin.h>
-#include "SkThread.h"
-#include "SkTLS.h"
+#include "../core/SkThread.h"
+#include "../core/SkTLS.h"
 
 //MSDN says in order to declare an interlocked function for use as an
 //intrinsic, include intrin.h and put the function in a #pragma intrinsic
@@ -31,7 +31,7 @@ void sk_membar_aquire__after_atomic_dec() { }
 
 int32_t sk_atomic_conditional_inc(int32_t* addr) {
     while (true) {
-        LONG value = static_cast<LONG const volatile&>(*addr);
+        LONG value = static_cast<LONG const volatile>(*addr);
         if (value == 0) {
             return 0;
         }

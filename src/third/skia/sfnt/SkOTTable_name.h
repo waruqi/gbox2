@@ -8,7 +8,7 @@
 #ifndef SkOTTable_name_DEFINED
 #define SkOTTable_name_DEFINED
 
-#include "SkEndian.h"
+#include "../core/SkEndian.h"
 #include "SkOTTableTypes.h"
 #include "SkTypedEnum.h"
 

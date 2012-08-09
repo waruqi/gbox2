@@ -262,22 +262,33 @@ skia_CPP_FILES 			= \
 						effects/SkClampRange \
 						ports/SkDebug_stdio \
 						ports/SkFontHost_sandbox_none \
-						ports/SkFontHost_FreeType \
 						ports/SkFontHost_gamma_none \
 						ports/SkFontHost_linux \
 						ports/SkFontHost_tables \
 						ports/SkFontDescriptor \
 						ports/SkMemory_malloc \
 						ports/SkOSFile_stdio \
-						ports/SkThread_pthread \
 						ports/SkTime_Unix \
 						ports/SkXMLParser_empty \
 						utils/SkOSFile
 
-ifneq ($(TB_CONFIG_PLAT),mingw_x86)
+ifeq ($(TB_CONFIG_PLAT),mingw_x86)
+skia_CPP_FILES 			+= ports/SkFontHost_win
+skia_CPP_FILES 			+= ports/SkThread_win
+skia_CPP_FILES 			+= utils/SkBase64
+skia_CPP_FILES 			+= sfnt/SkOTUtils
+else
 skia_CPP_FILES 			+= core/SkMMapStream
+skia_CPP_FILES 			+= ports/SkFontHost_FreeType
+skia_CPP_FILES 			+= ports/SkThread_pthread
 endif
 
+ifeq ($(TB_CONFIG_PLAT),mingw_x86)
+skia_CPP_FILES 			+= \
+						opts/SkBitmapProcState_opts_none \
+						opts/SkBlitRow_opts_none \
+						opts/SkUtils_opts_none
+else
 ifeq ($(TB_CONFIG_ARCH),x86)
 skia_CPP_FILES 			+= \
 						opts/opts_check_SSE2 \
@@ -309,6 +320,7 @@ skia_ASM_FILES 			+= opts/memset16_neon
 skia_ASM_FILES 			+= opts/memset32_neon
 else
 skia_ASM_FILES 			+= opts/memset.arm
+endif
 endif
 endif
 

@@ -6,21 +6,21 @@
  * found in the LICENSE file.
  */
 
-#include "SkAdvancedTypefaceMetrics.h"
-#include "SkBase64.h"
-#include "SkData.h"
-#include "SkDescriptor.h"
+#include "../core/SkAdvancedTypefaceMetrics.h"
+#include "../utils/SkBase64.h"
+#include "../core/SkData.h"
+#include "../core/SkDescriptor.h"
 #include "SkFontDescriptor.h"
-#include "SkFontHost.h"
-#include "SkOTUtils.h"
-#include "SkStream.h"
-#include "SkString.h"
-#include "SkThread.h"
+#include "../core/SkFontHost.h"
+#include "../sfnt/SkOTUtils.h"
+#include "../core/SkStream.h"
+#include "../core/SkString.h"
+#include "../core/SkThread.h"
 #include "SkTypeface_win.h"
-#include "SkTypefaceCache.h"
-#include "SkUtils.h"
+#include "../core/SkTypefaceCache.h"
+#include "../core/SkUtils.h"
 
-#include "SkTypes.h"
+#include "../core/SkTypes.h"
 #include <tchar.h>
 #include <usp10.h>
 #include <objbase.h>
@@ -936,7 +936,7 @@ static const uint8_t* getInverseGammaTable() {
     return gTable;
 }
 
-#include "SkColorPriv.h"
+#include "../core/SkColorPriv.h"
 
 // gdi's bitmap is upside-down, so we reverse dst walking in Y
 // whenever we copy it into skia's buffer

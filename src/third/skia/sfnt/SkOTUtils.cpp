@@ -5,10 +5,10 @@
  * found in the LICENSE file.
  */
 
-#include "SkData.h"
-#include "SkEndian.h"
+#include "../core/SkData.h"
+#include "../core/SkEndian.h"
 #include "SkSFNTHeader.h"
-#include "SkStream.h"
+#include "../core/SkStream.h"
 #include "SkOTTable_head.h"
 #include "SkOTTable_name.h"
 #include "SkOTTableTypes.h"

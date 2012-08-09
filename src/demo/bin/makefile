@@ -23,7 +23,7 @@ demo_LIBS 				= glut GLU z m dl pthread
 endif
 
 ifeq ($(TB_CONFIG_PLAT),mingw_x86)
-demo_LIBS 				= glut gl ws2_32
+demo_LIBS 				= glut gl gdi usp10 ole ws2_32
 endif
 
 ifeq ($(TB_CONFIG_PLAT),mac_x64)

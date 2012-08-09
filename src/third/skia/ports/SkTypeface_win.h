@@ -11,7 +11,7 @@
 #ifndef SkTypeface_win_DEFINED
 #define SkTypeface_win_DEFINED
 
-#include "SkTypeface.h"
+#include "../core/SkTypeface.h"
 
 /**
  *  Like the other Typeface create methods, this returns a new reference to the

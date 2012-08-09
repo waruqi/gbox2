@@ -201,7 +201,7 @@ static tb_void_t g2_demo_gl_reshape(tb_int_t w, tb_int_t h)
 	glViewport(0, 0, w, h);
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	gluOrtho2D(0.0, (GLfloat)w, 0.0, (GLfloat)h);
+	glOrtho(0.0, (GLfloat)w, 0.0, (GLfloat)h, -1.0f, 1.0f);
 	glMatrixMode(GL_MODELVIEW);
 #endif
 
