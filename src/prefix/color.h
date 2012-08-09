@@ -37,41 +37,65 @@ extern "C" {
  * macros
  */
 
-// the color initializer
+// init color from argb
 #ifdef TB_WORDS_BIGENDIAN
-// {a, r, g, b}
-# 	define G2_COLOR_INIT_BLACK 			{ 255, 	0, 		0, 		0 	}
-# 	define G2_COLOR_INIT_BLUE 			{ 255, 	0, 		0, 		255 }
-# 	define G2_COLOR_INIT_BROWN 			{ 255, 	128, 	0, 		0 	}
-# 	define G2_COLOR_INIT_GREEN 			{ 255, 	0, 		255, 	0 	}
-# 	define G2_COLOR_INIT_ORANGE 		{ 255, 	255, 	128, 	0 	}
-# 	define G2_COLOR_INIT_PINK 			{ 255, 	255, 	0, 		255 }
-# 	define G2_COLOR_INIT_RED 			{ 255, 	255, 	0, 		0 	}
-# 	define G2_COLOR_INIT_YELLOW 		{ 255, 	255, 	255, 	0 	}
-# 	define G2_COLOR_INIT_WHITE 			{ 255, 	255, 	255, 	255 }
+# 	define G2_COLOR_INIT_ARGB(a, r, g, b) 		{ a, r, g, b }
 #else
-// {b, g, r, a}
-# 	define G2_COLOR_INIT_BLACK 			{ 0, 	0, 		0, 		255 }
-# 	define G2_COLOR_INIT_BLUE 			{ 255, 	0, 		0, 		255 }
-# 	define G2_COLOR_INIT_BROWN 			{ 0, 	0, 		128, 	255 }
-# 	define G2_COLOR_INIT_GREEN 			{ 0, 	255, 	0, 		255 }
-# 	define G2_COLOR_INIT_ORANGE 		{ 0, 	128, 	255, 	255 }
-# 	define G2_COLOR_INIT_PINK 			{ 255, 	0, 		255, 	255 }
-# 	define G2_COLOR_INIT_RED 			{ 0, 	0, 		255, 	255 }
-# 	define G2_COLOR_INIT_YELLOW 		{ 0, 	255, 	255, 	255 }
-# 	define G2_COLOR_INIT_WHITE 			{ 255, 	255, 	255, 	255 }
+# 	define G2_COLOR_INIT_ARGB(a, r, g, b) 		{ b, g, r, a }
 #endif
+
+// init color from name & argb
+#define G2_COLOR_INIT_NAME(name, a, r, g, b) 	{name, G2_COLOR_INIT_ARGB(a, r, g, b)}
+
+// init color contants
+#define G2_COLOR_INIT_BLACK 			G2_COLOR_INIT_NAME( "black", 		0xff, 	0x00, 	0x00, 	0x00 	)
+#define G2_COLOR_INIT_BLUE 				G2_COLOR_INIT_NAME( "blue", 		0xff, 	0x00, 	0x00, 	0xff 	)
+#define G2_COLOR_INIT_BROWN 			G2_COLOR_INIT_NAME( "brown", 		0xff, 	0x80, 	0x00, 	0x00 	)
+#define G2_COLOR_INIT_DARKBLUE 			G2_COLOR_INIT_NAME( "darkblue", 	0xff, 	0x00, 	0x00, 	0x8b 	)
+#define G2_COLOR_INIT_GOLD 				G2_COLOR_INIT_NAME( "gold", 		0xff, 	0xff, 	0xd7, 	0x00 	)
+#define G2_COLOR_INIT_GRAY 				G2_COLOR_INIT_NAME( "gray", 		0xff, 	0x80, 	0x80, 	0x80 	)
+#define G2_COLOR_INIT_GREY 				G2_COLOR_INIT_NAME( "grey", 		0xff, 	0x80, 	0x80, 	0x80 	)
+#define G2_COLOR_INIT_GREEN 			G2_COLOR_INIT_NAME( "green", 		0xff, 	0x00, 	0xff, 	0x00 	)
+#define G2_COLOR_INIT_LIGHTBLUE 		G2_COLOR_INIT_NAME( "lightblue", 	0xff, 	0xad, 	0xd8, 	0xa6 	)
+#define G2_COLOR_INIT_LIGHTGRAY 		G2_COLOR_INIT_NAME( "lightgray", 	0xff, 	0xd3, 	0xd3, 	0xd3 	)
+#define G2_COLOR_INIT_LIGHTGREY 		G2_COLOR_INIT_NAME( "lightgrey", 	0xff, 	0xd3, 	0xd3, 	0xd3 	)
+#define G2_COLOR_INIT_LIGHTPINK 		G2_COLOR_INIT_NAME( "lightpink", 	0xff, 	0xff, 	0xb6, 	0xc1 	)
+#define G2_COLOR_INIT_LIGHTYELLOW 		G2_COLOR_INIT_NAME( "lightyellow", 	0xff, 	0xff, 	0xff, 	0xe0 	)
+#define G2_COLOR_INIT_NAVY 				G2_COLOR_INIT_NAME( "navy", 		0xff, 	0x00, 	0x00, 	0x80 	)
+#define G2_COLOR_INIT_ORANGE 			G2_COLOR_INIT_NAME( "orange", 		0xff, 	0xff, 	0xa5, 	0x00 	)
+#define G2_COLOR_INIT_PINK 				G2_COLOR_INIT_NAME( "pink", 		0xff, 	0xff, 	0x00, 	0xff 	)
+#define G2_COLOR_INIT_PURPLE 			G2_COLOR_INIT_NAME( "purple", 		0xff, 	0x80, 	0x00, 	0x80 	)
+#define G2_COLOR_INIT_RED 				G2_COLOR_INIT_NAME( "red", 			0xff, 	0xff, 	0x00, 	0x00 	)
+#define G2_COLOR_INIT_SNOW 				G2_COLOR_INIT_NAME( "snow", 		0xff, 	0xff, 	0xfa, 	0xfa 	)
+#define G2_COLOR_INIT_TOMATO 			G2_COLOR_INIT_NAME( "tomato", 		0xff, 	0xff, 	0x63, 	0x47 	)
+#define G2_COLOR_INIT_YELLOW 			G2_COLOR_INIT_NAME( "yellow", 		0xff, 	0xff, 	0xff, 	0x00 	)
+#define G2_COLOR_INIT_WHEAT 			G2_COLOR_INIT_NAME( "wheat", 		0xff, 	0xf5, 	0xde, 	0xb3 	)
+#define G2_COLOR_INIT_WHITE 			G2_COLOR_INIT_NAME( "white", 		0xff, 	0xff, 	0xff, 	0xff 	)
 
 // the color contants
 #define G2_COLOR_BLACK 					(g2_color_from_index(0)->color)
 #define G2_COLOR_BLUE 					(g2_color_from_index(1)->color)
 #define G2_COLOR_BROWN 					(g2_color_from_index(2)->color)
-#define G2_COLOR_GREEN 					(g2_color_from_index(3)->color)
-#define G2_COLOR_ORANGE 				(g2_color_from_index(4)->color)
-#define G2_COLOR_PINK 					(g2_color_from_index(5)->color)
-#define G2_COLOR_RED 					(g2_color_from_index(6)->color)
-#define G2_COLOR_YELLOW 				(g2_color_from_index(7)->color)
-#define G2_COLOR_WHITE 					(g2_color_from_index(8)->color)
+#define G2_COLOR_DARKBLUE 				(g2_color_from_index(3)->color)
+#define G2_COLOR_GOLD 					(g2_color_from_index(4)->color)
+#define G2_COLOR_GRAY 					(g2_color_from_index(5)->color)
+#define G2_COLOR_GREY 					(g2_color_from_index(6)->color)
+#define G2_COLOR_GREEN 					(g2_color_from_index(7)->color)
+#define G2_COLOR_LIGHTBLUE 				(g2_color_from_index(8)->color)
+#define G2_COLOR_LIGHTGRAY 				(g2_color_from_index(9)->color)
+#define G2_COLOR_LIGHTGREY 				(g2_color_from_index(10)->color)
+#define G2_COLOR_LIGHTPINK 				(g2_color_from_index(11)->color)
+#define G2_COLOR_LIGHTYELLOW 			(g2_color_from_index(12)->color)
+#define G2_COLOR_NAVY					(g2_color_from_index(13)->color)
+#define G2_COLOR_ORANGE 				(g2_color_from_index(14)->color)
+#define G2_COLOR_PINK 					(g2_color_from_index(15)->color)
+#define G2_COLOR_PURPLE 				(g2_color_from_index(16)->color)
+#define G2_COLOR_RED 					(g2_color_from_index(17)->color)
+#define G2_COLOR_SNOW 					(g2_color_from_index(18)->color)
+#define G2_COLOR_TOMATO 				(g2_color_from_index(19)->color)
+#define G2_COLOR_YELLOW 				(g2_color_from_index(20)->color)
+#define G2_COLOR_WHEAT 					(g2_color_from_index(21)->color)
+#define G2_COLOR_WHITE 					(g2_color_from_index(22)->color)
 #define G2_COLOR_DEFAULT 				G2_COLOR_BLACK
 
 /* ///////////////////////////////////////////////////////////////////////
