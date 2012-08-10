@@ -30,9 +30,9 @@
  * includes
  */
 #include "element.h"
+#include "painter.h"
 #include "parser/parser.h"
 #include "writer/writer.h"
-#include "painter/painter.h"
 
 /* ///////////////////////////////////////////////////////////////////////
  * implementation
@@ -86,26 +86,15 @@ static tb_void_t g2_svg_element_path_writ(g2_svg_element_t const* element, tb_gs
 	g2_svg_writer_style(gst, &path->style); 
 
 	// transform 
-	g2_svg_writer_transform(gst, &path->matrix); 
+	g2_svg_writer_transform(gst, &path->transform); 
 
 	// exit
 	g2_path_itor_exit(path->path);
 }
-static tb_void_t g2_svg_element_path_draw(g2_svg_element_t const* element, g2_svg_painter_t* painter, tb_size_t mode)
+static tb_void_t g2_svg_element_path_draw(g2_svg_element_t const* element, g2_svg_painter_t* painter)
 {
 	g2_svg_element_path_t const* path = (g2_svg_element_path_t const*)element;
 	tb_assert_and_check_return(path && painter && painter->painter);
-
-	// transform
-	g2_svg_painter_transform(painter->painter, &path->matrix); 
-
-	// fill
-	if (mode & G2_STYLE_MODE_FILL)
-		g2_svg_painter_style_fill(painter, &path->style);
-
-	// stroke
-	if (mode & G2_STYLE_MODE_STROKE)
-		g2_svg_painter_style_stroke(painter, &path->style);
 
 	// draw
 	if (path->path) g2_draw_path(painter->painter, path->path);
@@ -455,15 +444,18 @@ g2_svg_element_t* g2_svg_element_init_path(tb_handle_t reader)
 	tb_assert_and_check_return_val(element, TB_NULL);
 
 	// init
-	element->base.exit = g2_svg_element_path_exit;
-	element->base.writ = g2_svg_element_path_writ;
-	element->base.draw = g2_svg_element_path_draw;
+	element->base.exit 		= g2_svg_element_path_exit;
+	element->base.writ 		= g2_svg_element_path_writ;
+	element->base.fill 		= g2_svg_element_path_draw;
+	element->base.stok 		= g2_svg_element_path_draw;
+	element->base.style 	= &element->style;
+	element->base.transform = &element->transform;
 
 	// init style
 	g2_svg_style_init(&element->style);
 
-	// init matrix
-	g2_matrix_clear(&element->matrix);
+	// init transform
+	g2_matrix_clear(&element->transform);
 
 	// attributes
 	tb_xml_node_t const* attr = tb_xml_reader_attributes(reader);
@@ -489,7 +481,7 @@ g2_svg_element_t* g2_svg_element_init_path(tb_handle_t reader)
 		else if (!tb_pstring_cstricmp(&attr->name, "clip-path"))
 			g2_svg_parser_style_clippath(p, &element->style);
 		else if (!tb_pstring_cstricmp(&attr->name, "transform"))
-			g2_svg_parser_transform(p, &element->matrix);
+			g2_svg_parser_transform(p, &element->transform);
 	}
 
 	// ok

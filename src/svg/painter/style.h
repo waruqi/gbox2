@@ -31,13 +31,13 @@
 /* ///////////////////////////////////////////////////////////////////////
  * inlines
  */
-static __tb_inline__ tb_void_t g2_svg_painter_style_fill(g2_svg_painter_t* painter, g2_svg_style_t const* style)
+static __tb_inline__ tb_long_t g2_svg_painter_style_fill(g2_svg_painter_t* painter, g2_svg_style_t const* style)
 {
 	// check
-	tb_assert_and_check_return(painter->style);
+	tb_assert_and_check_return_val(painter->style, -1);
 
-	// has fill?
-	tb_check_return(style->mode & G2_SVG_STYLE_MODE_FILL);
+	// no fill? next it
+	tb_check_return_val(style->mode & G2_SVG_STYLE_MODE_FILL, 0);
 
 	// fill it
 	switch (style->fill.mode)
@@ -46,17 +46,27 @@ static __tb_inline__ tb_void_t g2_svg_painter_style_fill(g2_svg_painter_t* paint
 		g2_style_color_set(painter->style, style->fill.color);
 		break;
 	case G2_SVG_STYLE_PAINT_MODE_URL:
-	case G2_SVG_STYLE_PAINT_MODE_NONE:
-	default:
 		break;
+	case G2_SVG_STYLE_PAINT_MODE_NONE:
+		break;
+	case G2_SVG_STYLE_PAINT_MODE_INHERIT:
+		// inherit? next it
+		return 0;
+	default:
+		tb_assert(0);
+		return -1;
 	}
-}
-static __tb_inline__ tb_void_t g2_svg_painter_style_stroke(g2_svg_painter_t* painter, g2_svg_style_t const* style)
-{
-	tb_assert_and_check_return(painter->style);
 
-	// has stroke?
-	tb_check_return(style->mode & G2_SVG_STYLE_MODE_STROKE);
+	// ok
+	return 1;
+}
+static __tb_inline__ tb_long_t g2_svg_painter_style_stroke(g2_svg_painter_t* painter, g2_svg_style_t const* style)
+{
+	// check
+	tb_assert_and_check_return_val(painter->style, -1);
+
+	// no stroke? next it
+	tb_check_return_val(style->mode & G2_SVG_STYLE_MODE_STROKE, 0);
 
 	// width
 	if (g2_nz(style->width)) g2_style_width_set(painter->style, style->width);
@@ -74,12 +84,20 @@ static __tb_inline__ tb_void_t g2_svg_painter_style_stroke(g2_svg_painter_t* pai
 		g2_style_color_set(painter->style, style->stroke.color);
 		break;
 	case G2_SVG_STYLE_PAINT_MODE_URL:
-	case G2_SVG_STYLE_PAINT_MODE_NONE:
-	default:
 		break;
+	case G2_SVG_STYLE_PAINT_MODE_NONE:
+		break;
+	case G2_SVG_STYLE_PAINT_MODE_INHERIT:
+		// inherit? next it
+		return 0;
+	default:
+		tb_assert(0);
+		return -1;
 	}
-}
 
+	// ok
+	return 1;
+}
 #endif
 
 

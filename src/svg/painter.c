@@ -30,6 +30,7 @@
  * includes
  */
 #include "painter.h"
+#include "painter/painter.h"
 
 /* ///////////////////////////////////////////////////////////////////////
  * macros
@@ -72,10 +73,64 @@ static tb_void_t g2_svg_painter_load_element(g2_svg_painter_t* spainter, g2_svg_
 		}
 	}
 }
-static tb_void_t g2_svg_painter_draw_element(g2_svg_painter_t* spainter, g2_svg_element_t const* element, tb_size_t mode)
+static tb_void_t g2_svg_painter_draw_element(g2_svg_painter_t* spainter, g2_svg_element_t const* element)
 {
 	// draw
-	if (element->draw) element->draw(element, spainter, mode);
+	if (element->fill || element->stok) 
+	{
+		// transform: enter
+		tb_bool_t enter = TB_FALSE;
+		if (element->transform) enter = g2_svg_painter_transform_enter(spainter, element->transform); 
+
+		// fill
+		if (element->fill)
+		{
+			// clear
+			g2_style_clear(spainter->style);
+
+			// walk
+			tb_long_t ok = 0;
+			g2_svg_element_t const* parent = element;
+			while (parent && !ok)
+			{
+				// apply
+				if (parent->style) ok = g2_svg_painter_style_fill(spainter, parent->style);
+			
+				// next
+				parent = parent->parent;
+			}
+
+			// fill
+			if (ok > 0) element->fill(element, spainter);
+		}
+
+#if 0
+		// stroke
+		if (element->stok)
+		{
+			// clear
+			g2_style_clear(spainter->style);
+
+			// walk
+			tb_long_t ok = 0;
+			g2_svg_element_t const* parent = element;
+			while (parent)
+			{
+				// apply
+				if (parent->style) ok = g2_svg_painter_style_stroke(spainter, parent->style);
+			
+				// next
+				parent = parent->parent;
+			}
+
+			// stroke
+			if (ok > 0) element->stok(element, spainter);
+		}
+#endif
+
+		// transform: leave
+		if (enter) g2_svg_painter_transform_leave(spainter);
+	}
 
 	// walk
 	if (element->head)
@@ -84,7 +139,7 @@ static tb_void_t g2_svg_painter_draw_element(g2_svg_painter_t* spainter, g2_svg_
 		while (next)
 		{
 			// load
-			g2_svg_painter_draw_element(spainter, next, mode);
+			g2_svg_painter_draw_element(spainter, next);
 
 			// next
 			next = next->next;
@@ -122,19 +177,7 @@ static tb_void_t g2_svg_painter_exit(g2_svg_painter_t* spainter)
 }
 static tb_void_t g2_svg_painter_draw(g2_svg_painter_t* spainter)
 {
-	// fill
-	g2_style_clear(spainter->style);
-	g2_style_mode_set(spainter->style, G2_STYLE_MODE_FILL);
-	g2_save(spainter->painter, G2_SAVE_MODE_MATRIX_CLIP);
-	g2_svg_painter_draw_element(spainter, spainter->element, G2_STYLE_MODE_FILL);
-	g2_load(spainter->painter);
-
-	// stroke
-	g2_style_clear(spainter->style);
-	g2_style_mode_set(spainter->style, G2_STYLE_MODE_STROKE);
-	g2_save(spainter->painter, G2_SAVE_MODE_MATRIX_CLIP);
-	g2_svg_painter_draw_element(spainter, spainter->element, G2_STYLE_MODE_STROKE);
-	g2_load(spainter->painter);
+	g2_svg_painter_draw_element(spainter, spainter->element);
 }
 /* ///////////////////////////////////////////////////////////////////////
  * interfaces

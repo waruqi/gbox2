@@ -82,23 +82,12 @@ static tb_void_t g2_svg_element_polygon_writ(g2_svg_element_t const* element, tb
 	g2_svg_writer_style(gst, &polygon->style); 
 
 	// transform 
-	g2_svg_writer_transform(gst, &polygon->matrix); 
+	g2_svg_writer_transform(gst, &polygon->transform); 
 }
-static tb_void_t g2_svg_element_polygon_draw(g2_svg_element_t const* element, g2_svg_painter_t* painter, tb_size_t mode)
+static tb_void_t g2_svg_element_polygon_draw(g2_svg_element_t const* element, g2_svg_painter_t* painter)
 {
 	g2_svg_element_polygon_t const* polygon = (g2_svg_element_polygon_t const*)element;
 	tb_assert_and_check_return(polygon && painter && painter->painter);
-
-	// transform
-	g2_svg_painter_transform(painter->painter, &polygon->matrix); 
-
-	// fill
-	if (mode & G2_STYLE_MODE_FILL)
-		g2_svg_painter_style_fill(painter, &polygon->style);
-
-	// stroke
-	if (mode & G2_STYLE_MODE_STROKE)
-		g2_svg_painter_style_stroke(painter, &polygon->style);
 
 	// draw
 	if (polygon->path) g2_draw_path(painter->painter, polygon->path);
@@ -179,15 +168,18 @@ g2_svg_element_t* g2_svg_element_init_polygon(tb_handle_t reader)
 	tb_assert_and_check_return_val(element, TB_NULL);
 
 	// init
-	element->base.exit = g2_svg_element_polygon_exit;
-	element->base.writ = g2_svg_element_polygon_writ;
-	element->base.draw = g2_svg_element_polygon_draw;
+	element->base.exit 		= g2_svg_element_polygon_exit;
+	element->base.writ 		= g2_svg_element_polygon_writ;
+	element->base.fill 		= g2_svg_element_polygon_draw;
+	element->base.stok 		= g2_svg_element_polygon_draw;
+	element->base.style 	= &element->style;
+	element->base.transform = &element->transform;
 
 	// init style
 	g2_svg_style_init(&element->style);
 
-	// init matrix
-	g2_matrix_clear(&element->matrix);
+	// init transform
+	g2_matrix_clear(&element->transform);
 
 	// attributes
 	tb_xml_node_t const* attr = tb_xml_reader_attributes(reader);
@@ -213,7 +205,7 @@ g2_svg_element_t* g2_svg_element_init_polygon(tb_handle_t reader)
 		else if (!tb_pstring_cstricmp(&attr->name, "clip-path"))
 			g2_svg_parser_style_clippath(p, &element->style);
 		else if (!tb_pstring_cstricmp(&attr->name, "transform"))
-			g2_svg_parser_transform(p, &element->matrix);
+			g2_svg_parser_transform(p, &element->transform);
 	}
 
 	// ok

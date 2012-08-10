@@ -55,7 +55,7 @@ static tb_void_t g2_svg_element_text_writ(g2_svg_element_t const* element, tb_gs
 	g2_svg_writer_style(gst, &text->style); 
 
 	// transform 
-	g2_svg_writer_transform(gst, &text->matrix); 
+	g2_svg_writer_transform(gst, &text->transform); 
 }
 static tb_void_t g2_svg_element_text_exit(g2_svg_element_t* element)
 {
@@ -88,8 +88,8 @@ g2_svg_element_t* g2_svg_element_init_text(tb_handle_t reader)
 	// init style
 	g2_svg_style_init(&element->style);
 
-	// init matrix
-	g2_matrix_clear(&element->matrix);
+	// init transform
+	g2_matrix_clear(&element->transform);
 
 	// attributes
 	tb_xml_node_t const* attr = tb_xml_reader_attributes(reader);
@@ -123,7 +123,7 @@ g2_svg_element_t* g2_svg_element_init_text(tb_handle_t reader)
 		else if (!tb_pstring_cstricmp(&attr->name, "text-anchor"))
 			g2_svg_parser_style_text_anchor(p, &element->style);
 		else if (!tb_pstring_cstricmp(&attr->name, "transform"))
-			g2_svg_parser_transform(p, &element->matrix);
+			g2_svg_parser_transform(p, &element->transform);
 	}
 
 	// ok

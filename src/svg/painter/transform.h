@@ -31,16 +31,35 @@
 /* ///////////////////////////////////////////////////////////////////////
  * inlines
  */
-static __tb_inline__ tb_void_t g2_svg_painter_transform(g2_svg_painter_t* painter, g2_matrix_t const* matrix)
+static __tb_inline__ tb_bool_t g2_svg_painter_transform_enter(g2_svg_painter_t* painter, g2_matrix_t const* matrix)
 {
 	// check
-	tb_assert_and_check_return(matrix);
+	tb_assert_and_check_return_val(painter && painter->painter && matrix, TB_FALSE);
 
 	// transform 
 	if (!g2_matrix_identity(matrix)) 
-		g2_multiply(painter->painter, matrix);
-}
+	{
+		// save
+		g2_save(painter->painter, G2_SAVE_MODE_MATRIX);
 
+		// apply
+		g2_multiply(painter->painter, matrix);
+
+		// ok
+		return TB_TRUE;
+	}
+
+	// no
+	return TB_FALSE;
+}
+static __tb_inline__ tb_void_t g2_svg_painter_transform_leave(g2_svg_painter_t* painter)
+{
+	// check
+	tb_assert_and_check_return(painter && painter->painter);
+
+	// load
+	g2_load(painter->painter);
+}
 #endif
 
 

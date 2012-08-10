@@ -59,7 +59,7 @@ static tb_void_t g2_svg_element_image_writ(g2_svg_element_t const* element, tb_g
 	g2_svg_writer_style(gst, &image->style); 
 
 	// transform 
-	g2_svg_writer_transform(gst, &image->matrix); 
+	g2_svg_writer_transform(gst, &image->transform); 
 }
 static tb_void_t g2_svg_element_image_exit(g2_svg_element_t* element)
 {
@@ -86,8 +86,8 @@ g2_svg_element_t* g2_svg_element_init_image(tb_handle_t reader)
 	// init style
 	g2_svg_style_init(&element->style);
 
-	// init matrix
-	g2_matrix_clear(&element->matrix);
+	// init transform
+	g2_matrix_clear(&element->transform);
 
 	// attributes
 	tb_xml_node_t const* attr = tb_xml_reader_attributes(reader);
@@ -107,7 +107,7 @@ g2_svg_element_t* g2_svg_element_init_image(tb_handle_t reader)
 		else if (!tb_pstring_cstricmp(&attr->name, "clip-path"))
 			g2_svg_parser_style_clippath(p, &element->style);
 		else if (!tb_pstring_cstricmp(&attr->name, "transform"))
-			g2_svg_parser_transform(p, &element->matrix);
+			g2_svg_parser_transform(p, &element->transform);
 		else if (!tb_pstring_cstricmp(&attr->name, "xlink:href"))
 			tb_pstring_strcpy(&element->xhref, &attr->data);
 	}

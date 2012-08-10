@@ -89,14 +89,14 @@ static tb_void_t g2_svg_element_linear_gradient_writ(g2_svg_element_t const* ele
 	}
 
 	// transform 
-	if (!g2_matrix_identity(&linear_gradient->matrix))
+	if (!g2_matrix_identity(&linear_gradient->transform))
 	{
-		tb_gstream_printf(gst, " gradientTransform=\"matrix(%f,%f,%f,%f,%f,%f)\"" 	, g2_float_to_tb(linear_gradient->matrix.sx)
-																					, g2_float_to_tb(linear_gradient->matrix.ky)
-																					, g2_float_to_tb(linear_gradient->matrix.kx)
-																					, g2_float_to_tb(linear_gradient->matrix.sy)
-																					, g2_float_to_tb(linear_gradient->matrix.tx)
-																					, g2_float_to_tb(linear_gradient->matrix.ty));
+		tb_gstream_printf(gst, " gradientTransform=\"matrix(%f,%f,%f,%f,%f,%f)\"" 	, g2_float_to_tb(linear_gradient->transform.sx)
+																					, g2_float_to_tb(linear_gradient->transform.ky)
+																					, g2_float_to_tb(linear_gradient->transform.kx)
+																					, g2_float_to_tb(linear_gradient->transform.sy)
+																					, g2_float_to_tb(linear_gradient->transform.tx)
+																					, g2_float_to_tb(linear_gradient->transform.ty));
 	}
 
 }
@@ -163,14 +163,14 @@ static tb_void_t g2_svg_element_radial_gradient_writ(g2_svg_element_t const* ele
 	}
 
 	// transform 
-	if (!g2_matrix_identity(&radial_gradient->matrix))
+	if (!g2_matrix_identity(&radial_gradient->transform))
 	{
-		tb_gstream_printf(gst, " gradientTransform=\"matrix(%f,%f,%f,%f,%f,%f)\"" 	, g2_float_to_tb(radial_gradient->matrix.sx)
-																					, g2_float_to_tb(radial_gradient->matrix.ky)
-																					, g2_float_to_tb(radial_gradient->matrix.kx)
-																					, g2_float_to_tb(radial_gradient->matrix.sy)
-																					, g2_float_to_tb(radial_gradient->matrix.tx)
-																					, g2_float_to_tb(radial_gradient->matrix.ty));
+		tb_gstream_printf(gst, " gradientTransform=\"matrix(%f,%f,%f,%f,%f,%f)\"" 	, g2_float_to_tb(radial_gradient->transform.sx)
+																					, g2_float_to_tb(radial_gradient->transform.ky)
+																					, g2_float_to_tb(radial_gradient->transform.kx)
+																					, g2_float_to_tb(radial_gradient->transform.sy)
+																					, g2_float_to_tb(radial_gradient->transform.tx)
+																					, g2_float_to_tb(radial_gradient->transform.ty));
 	}
 
 }
@@ -199,8 +199,8 @@ g2_svg_element_t* g2_svg_element_init_linear_gradient(tb_handle_t reader)
 	// init xhref
 	tb_pstring_init(&element->xhref);
 
-	// init matrix
-	g2_matrix_clear(&element->matrix);
+	// init transform
+	g2_matrix_clear(&element->transform);
 
 	// attributes
 	tb_xml_node_t const* attr = tb_xml_reader_attributes(reader);
@@ -218,7 +218,7 @@ g2_svg_element_t* g2_svg_element_init_linear_gradient(tb_handle_t reader)
 		else if (!tb_pstring_cstricmp(&attr->name, "y2") || !tb_pstring_cstricmp(&attr->name, "y3"))
 			g2_svg_parser_float(p, &element->pe.y);
 		else if (!tb_pstring_cstricmp(&attr->name, "gradientTransform"))
-			g2_svg_parser_transform(p, &element->matrix);
+			g2_svg_parser_transform(p, &element->transform);
 		else if (!tb_pstring_cstricmp(&attr->name, "spreadMethod"))
 			g2_svg_parser_style_gradient_spread(p, &element->spread);
 		else if (!tb_pstring_cstricmp(&attr->name, "gradientUnits"))
@@ -243,8 +243,8 @@ g2_svg_element_t* g2_svg_element_init_radial_gradient(tb_handle_t reader)
 	// init xhref
 	tb_pstring_init(&element->xhref);
 
-	// init matrix
-	g2_matrix_clear(&element->matrix);
+	// init transform
+	g2_matrix_clear(&element->transform);
 
 	// attributes
 	tb_xml_node_t const* attr = tb_xml_reader_attributes(reader);
@@ -264,7 +264,7 @@ g2_svg_element_t* g2_svg_element_init_radial_gradient(tb_handle_t reader)
 		else if (!tb_pstring_cstricmp(&attr->name, "fy"))
 			g2_svg_parser_float(p, &element->fp.y);
 		else if (!tb_pstring_cstricmp(&attr->name, "gradientTransform"))
-			g2_svg_parser_transform(p, &element->matrix);
+			g2_svg_parser_transform(p, &element->transform);
 		else if (!tb_pstring_cstricmp(&attr->name, "spreadMethod"))
 			g2_svg_parser_style_gradient_spread(p, &element->spread);
 		else if (!tb_pstring_cstricmp(&attr->name, "gradientUnits"))

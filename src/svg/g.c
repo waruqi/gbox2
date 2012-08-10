@@ -50,23 +50,7 @@ static tb_void_t g2_svg_element_g_writ(g2_svg_element_t const* element, tb_gstre
 	g2_svg_writer_style(gst, &g->style); 
 
 	// transform 
-	g2_svg_writer_transform(gst, &g->matrix); 
-}
-static tb_void_t g2_svg_element_g_draw(g2_svg_element_t const* element, g2_svg_painter_t* painter, tb_size_t mode)
-{
-	g2_svg_element_g_t const* g = (g2_svg_element_g_t const*)element;
-	tb_assert_and_check_return(g && painter && painter->painter);
-
-	// transform
-	g2_svg_painter_transform(painter->painter, &g->matrix); 
-
-	// fill
-	if (mode & G2_STYLE_MODE_FILL)
-		g2_svg_painter_style_fill(painter, &g->style);
-
-	// stroke
-	if (mode & G2_STYLE_MODE_STROKE)
-		g2_svg_painter_style_stroke(painter, &g->style);
+	g2_svg_writer_transform(gst, &g->transform); 
 }
 static tb_void_t g2_svg_element_g_exit(g2_svg_element_t* element)
 {
@@ -87,15 +71,16 @@ g2_svg_element_t* g2_svg_element_init_g(tb_handle_t reader)
 	tb_assert_and_check_return_val(element, TB_NULL);
 
 	// init
-	element->base.exit = g2_svg_element_g_exit;
-	element->base.writ = g2_svg_element_g_writ;
-	element->base.draw = g2_svg_element_g_draw;
-	
+	element->base.exit 		= g2_svg_element_g_exit;
+	element->base.writ 		= g2_svg_element_g_writ;
+	element->base.style 	= &element->style;
+	element->base.transform = &element->transform;
+
 	// init style
 	g2_svg_style_init(&element->style);
 
-	// init matrix
-	g2_matrix_clear(&element->matrix);
+	// init transform
+	g2_matrix_clear(&element->transform);
 
 	// attributes
 	tb_xml_node_t const* attr = tb_xml_reader_attributes(reader);
@@ -105,7 +90,7 @@ g2_svg_element_t* g2_svg_element_init_g(tb_handle_t reader)
 		if (!tb_pstring_cstricmp(&attr->name, "id"))
 			tb_pstring_strcpy(&element->base.id, &attr->data);
 		else if (!tb_pstring_cstricmp(&attr->name, "transform"))
-			g2_svg_parser_transform(p, &element->matrix);
+			g2_svg_parser_transform(p, &element->transform);
 		else if (!tb_pstring_cstricmp(&attr->name, "fill"))
 			g2_svg_parser_style_fill(p, &element->style);
 		else if (!tb_pstring_cstricmp(&attr->name, "stroke"))

@@ -53,19 +53,12 @@ static tb_void_t g2_svg_element_line_writ(g2_svg_element_t const* element, tb_gs
 	g2_svg_writer_style(gst, &line->style); 
 
 	// transform 
-	g2_svg_writer_transform(gst, &line->matrix); 
+	g2_svg_writer_transform(gst, &line->transform); 
 }
-static tb_void_t g2_svg_element_line_draw(g2_svg_element_t const* element, g2_svg_painter_t* painter, tb_size_t mode)
+static tb_void_t g2_svg_element_line_draw(g2_svg_element_t const* element, g2_svg_painter_t* painter)
 {
 	g2_svg_element_line_t const* line = (g2_svg_element_line_t const*)element;
 	tb_assert_and_check_return(line && painter && painter->painter);
-
-	// transform
-	g2_svg_painter_transform(painter->painter, &line->matrix); 
-
-	// stroke
-	if (mode & G2_STYLE_MODE_STROKE)
-		g2_svg_painter_style_stroke(painter, &line->style);
 
 	// draw
 	g2_draw_line(painter->painter, &line->line);
@@ -89,15 +82,17 @@ g2_svg_element_t* g2_svg_element_init_line(tb_handle_t reader)
 	tb_assert_and_check_return_val(element, TB_NULL);
 
 	// init
-	element->base.exit = g2_svg_element_line_exit;
-	element->base.writ = g2_svg_element_line_writ;
-	element->base.draw = g2_svg_element_line_draw;
+	element->base.exit 		= g2_svg_element_line_exit;
+	element->base.writ 		= g2_svg_element_line_writ;
+	element->base.stok 		= g2_svg_element_line_draw;
+	element->base.style 	= &element->style;
+	element->base.transform = &element->transform;
 
 	// init style
 	g2_svg_style_init(&element->style);
 
-	// init matrix
-	g2_matrix_clear(&element->matrix);
+	// init transform
+	g2_matrix_clear(&element->transform);
 
 	// attributes
 	tb_xml_node_t const* attr = tb_xml_reader_attributes(reader);
@@ -127,7 +122,7 @@ g2_svg_element_t* g2_svg_element_init_line(tb_handle_t reader)
 		else if (!tb_pstring_cstricmp(&attr->name, "clip-path"))
 			g2_svg_parser_style_clippath(p, &element->style);
 		else if (!tb_pstring_cstricmp(&attr->name, "transform"))
-			g2_svg_parser_transform(p, &element->matrix);
+			g2_svg_parser_transform(p, &element->transform);
 
 	}
 

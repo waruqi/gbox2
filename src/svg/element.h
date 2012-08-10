@@ -130,11 +130,20 @@ typedef struct __g2_svg_element_t
 	// the parent
 	struct __g2_svg_element_t* 	parent;
 
+	// the style
+	g2_svg_style_t const* 		style;
+
+	// the transform
+	g2_matrix_t const* 			transform;
+
 	// writ it
 	tb_void_t 					(*writ)(struct __g2_svg_element_t const* element, tb_gstream_t* gst);
 
-	// draw it
-	tb_void_t 					(*draw)(struct __g2_svg_element_t const* element, struct __g2_svg_painter_t* painter, tb_size_t mode);
+	// fill it
+	tb_void_t 					(*fill)(struct __g2_svg_element_t const* element, struct __g2_svg_painter_t* painter);
+
+	// stok it
+	tb_void_t 					(*stok)(struct __g2_svg_element_t const* element, struct __g2_svg_painter_t* painter);
 
 	// exit it
 	tb_void_t 					(*exit)(struct __g2_svg_element_t* element);
@@ -150,8 +159,8 @@ typedef struct __g2_svg_element_g_t
 	// the style
 	g2_svg_style_t 				style;
 
-	// the matrix
-	g2_matrix_t 				matrix;
+	// the transform
+	g2_matrix_t 				transform;
 
 }g2_svg_element_g_t;
 
@@ -190,8 +199,8 @@ typedef struct __g2_svg_element_use_t
 	// the style
 	g2_svg_style_t 				style;
 
-	// the matrix
-	g2_matrix_t 				matrix;
+	// the transform
+	g2_matrix_t 				transform;
 
 	// the rect
 	g2_rect_t 					rect;
@@ -218,8 +227,8 @@ typedef struct __g2_svg_element_path_t
 	// the style
 	g2_svg_style_t 				style;
 
-	// the matrix
-	g2_matrix_t 				matrix;
+	// the transform
+	g2_matrix_t 				transform;
 
 	// the path
 	tb_handle_t 				path;
@@ -235,8 +244,8 @@ typedef struct __g2_svg_element_rect_t
 	// the style
 	g2_svg_style_t 				style;
 
-	// the matrix
-	g2_matrix_t 				matrix;
+	// the transform
+	g2_matrix_t 				transform;
 
 	// the rect
 	g2_rect_t 					rect;
@@ -252,8 +261,8 @@ typedef struct __g2_svg_element_line_t
 	// the style
 	g2_svg_style_t 				style;
 
-	// the matrix
-	g2_matrix_t 				matrix;
+	// the transform
+	g2_matrix_t 				transform;
 
 	// the line
 	g2_line_t 					line;
@@ -269,8 +278,8 @@ typedef struct __g2_svg_element_text_t
 	// the style
 	g2_svg_style_t 				style;
 
-	// the matrix
-	g2_matrix_t 				matrix;
+	// the transform
+	g2_matrix_t 				transform;
 
 	// the rect
 	g2_rect_t 					rect;
@@ -292,8 +301,8 @@ typedef struct __g2_svg_element_image_t
 	// the style
 	g2_svg_style_t 				style;
 
-	// the matrix
-	g2_matrix_t 				matrix;
+	// the transform
+	g2_matrix_t 				transform;
 
 	// the rect
 	g2_rect_t 					rect;
@@ -309,8 +318,8 @@ typedef struct __g2_svg_element_circle_t
 	// the style
 	g2_svg_style_t 				style;
 
-	// the matrix
-	g2_matrix_t 				matrix;
+	// the transform
+	g2_matrix_t 				transform;
 
 	// the circle
 	g2_circle_t 				circle;
@@ -326,8 +335,8 @@ typedef struct __g2_svg_element_ellipse_t
 	// the style
 	g2_svg_style_t 				style;
 
-	// the matrix
-	g2_matrix_t 				matrix;
+	// the transform
+	g2_matrix_t 				transform;
 
 	// the ellipse
 	g2_ellipse_t 				ellipse;
@@ -343,8 +352,8 @@ typedef struct __g2_svg_element_polygon_t
 	// the style
 	g2_svg_style_t 				style;
 
-	// the matrix
-	g2_matrix_t 				matrix;
+	// the transform
+	g2_matrix_t 				transform;
 
 	// the path
 	tb_handle_t 				path;
@@ -360,8 +369,8 @@ typedef struct __g2_svg_element_polyline_t
 	// the style
 	g2_svg_style_t 				style;
 
-	// the matrix
-	g2_matrix_t 				matrix;
+	// the transform
+	g2_matrix_t 				transform;
 
 	// the path
 	tb_handle_t 				path;
@@ -374,8 +383,8 @@ typedef struct __g2_svg_element_clippath_t
 	// the base
 	g2_svg_element_t 			base;
 
-	// the matrix
-	g2_matrix_t 				matrix;
+	// the transform
+	g2_matrix_t 				transform;
 
 	// the units
 	tb_size_t 					units;
@@ -397,8 +406,8 @@ typedef struct __g2_svg_element_textpath_t
 	// the style
 	g2_svg_style_t 				style;
 
-	// the matrix
-	g2_matrix_t 				matrix;
+	// the transform
+	g2_matrix_t 				transform;
 
 }g2_svg_element_textpath_t;
 
@@ -425,8 +434,8 @@ typedef struct __g2_svg_element_linear_gradient_t
 	// the xlink-href
 	tb_pstring_t 				xhref;
 
-	// the matrix
-	g2_matrix_t 				matrix;
+	// the transform
+	g2_matrix_t 				transform;
 
 	// the units
 	tb_size_t 					units;
@@ -449,8 +458,8 @@ typedef struct __g2_svg_element_radial_gradient_t
 	// the xlink-href
 	tb_pstring_t 				xhref;
 
-	// the matrix
-	g2_matrix_t 				matrix;
+	// the transform
+	g2_matrix_t 				transform;
 
 	// the units
 	tb_size_t 					units;

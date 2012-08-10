@@ -61,7 +61,7 @@ static tb_void_t g2_svg_element_clippath_writ(g2_svg_element_t const* element, t
 	g2_svg_writer_style(gst, &clippath->style); 
 
 	// transform 
-	g2_svg_writer_transform(gst, &clippath->matrix); 
+	g2_svg_writer_transform(gst, &clippath->transform); 
 }
 static tb_void_t g2_svg_element_clippath_exit(g2_svg_element_t* element)
 {
@@ -88,8 +88,8 @@ g2_svg_element_t* g2_svg_element_init_clippath(tb_handle_t reader)
 	// init style
 	g2_svg_style_init(&element->style);
 
-	// init matrix
-	g2_matrix_clear(&element->matrix);
+	// init transform
+	g2_matrix_clear(&element->transform);
 
 	// attributes
 	tb_xml_node_t const* attr = tb_xml_reader_attributes(reader);
@@ -105,7 +105,7 @@ g2_svg_element_t* g2_svg_element_init_clippath(tb_handle_t reader)
 		else if (!tb_pstring_cstricmp(&attr->name, "clip-path"))
 			g2_svg_parser_style_clippath(p, &element->style);
 		else if (!tb_pstring_cstricmp(&attr->name, "transform"))
-			g2_svg_parser_transform(p, &element->matrix);
+			g2_svg_parser_transform(p, &element->transform);
 	}
 
 	// ok
