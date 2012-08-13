@@ -52,6 +52,10 @@ static __tb_inline__ tb_bool_t g2_svg_painter_style_fill(g2_svg_painter_t* paint
 		return TB_FALSE;
 	}
 
+	// opacity
+	if (style->fill.flag & G2_SVG_STYLE_PAINT_FLAG_HAS_OPACITY)
+		g2_style_alpha_set(g2_style(painter->painter), (tb_byte_t)g2_float_to_long(style->fill.opacity * 256));
+
 	// ok
 	return TB_TRUE;
 }
@@ -84,6 +88,10 @@ static __tb_inline__ tb_bool_t g2_svg_painter_style_stok(g2_svg_painter_t* paint
 	// join
 	if (style->cap) g2_style_cap_set(g2_style(painter->painter), style->cap);
 
+	// opacity
+	if (style->stroke.flag & G2_SVG_STYLE_PAINT_FLAG_HAS_OPACITY)
+		g2_style_alpha_set(g2_style(painter->painter), (tb_byte_t)g2_float_to_long(style->stroke.opacity * 256));
+
 	// ok
 	return TB_TRUE;
 }
@@ -111,6 +119,14 @@ static __tb_inline__ tb_void_t g2_svg_painter_style_walk(g2_svg_style_t* applied
 			default:
 				break;
 			}
+		}
+
+		// has opacity?
+		if (!(applied->fill.flag & G2_SVG_STYLE_PAINT_FLAG_HAS_OPACITY) 
+			&& style->fill.flag & G2_SVG_STYLE_PAINT_FLAG_HAS_OPACITY)
+		{
+			applied->fill.flag |= G2_SVG_STYLE_PAINT_FLAG_HAS_OPACITY;
+			applied->fill.opacity = style->fill.opacity;
 		}
 	}
 
@@ -143,6 +159,14 @@ static __tb_inline__ tb_void_t g2_svg_painter_style_walk(g2_svg_style_t* applied
 
 		// width
 		if (g2_ez(applied->width)) applied->width = style->width;
+
+		// has opacity?
+		if (!(applied->stroke.flag & G2_SVG_STYLE_PAINT_FLAG_HAS_OPACITY) 
+			&& style->stroke.flag & G2_SVG_STYLE_PAINT_FLAG_HAS_OPACITY)
+		{
+			applied->stroke.flag |= G2_SVG_STYLE_PAINT_FLAG_HAS_OPACITY;
+			applied->stroke.opacity = style->stroke.opacity;
+		}
 	}
 }
 

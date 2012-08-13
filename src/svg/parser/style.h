@@ -247,8 +247,29 @@ static __tb_inline__ tb_char_t const* g2_svg_parser_style_stroke_opacity(tb_char
 	// flag
 	style->stroke.flag |= G2_SVG_STYLE_PAINT_FLAG_HAS_OPACITY;
 
-	// width
+	// opacity
 	return g2_svg_parser_float(p, &style->stroke.opacity);
+}
+static __tb_inline__ tb_char_t const* g2_svg_parser_style_opacity(tb_char_t const* p, g2_svg_style_t* style)
+{
+	// skip space
+	while (tb_isspace(*p)) p++;
+
+	// mode
+	style->mode |= G2_SVG_STYLE_MODE_FILL | G2_SVG_STYLE_MODE_STROKE;
+
+	// flag
+	style->fill.flag |= G2_SVG_STYLE_PAINT_FLAG_HAS_OPACITY;
+	style->stroke.flag |= G2_SVG_STYLE_PAINT_FLAG_HAS_OPACITY;
+
+	// opacity
+	g2_float_t opacity;
+	p = g2_svg_parser_float(p, &opacity);
+	style->fill.opacity = opacity;
+	style->stroke.opacity = opacity;
+
+	// ok
+	return p;
 }
 static __tb_inline__ tb_char_t const* g2_svg_parser_style_gradient_spread(tb_char_t const* p, tb_size_t* spread)
 {
@@ -519,6 +540,8 @@ static __tb_inline__ tb_char_t const* g2_svg_parser_style(tb_char_t const* p, g2
 				p = g2_svg_parser_style_stroke_linejoin(p + 16, style);
 			else if (!tb_strnicmp(p, "stroke-opacity:", 15))
 				p = g2_svg_parser_style_stroke_opacity(p + 15, style);
+			else if (!tb_strnicmp(p, "opacity:", 8))
+				p = g2_svg_parser_style_opacity(p + 8, style);
 			else if (!tb_strnicmp(p, "clip-path:", 10))
 				p = g2_svg_parser_style_clippath(p + 10, style);
 			else if (!tb_strnicmp(p, "font-size:", 10))

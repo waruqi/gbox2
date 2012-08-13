@@ -40,12 +40,14 @@ tb_bool_t g2_svg_style_init(g2_svg_style_t* style)
 	style->fill.mode 		= G2_SVG_STYLE_PAINT_MODE_INHERIT;
 	style->fill.flag 		= G2_SVG_STYLE_PAINT_FLAG_NONE;
 	style->fill.color 		= G2_COLOR_BLACK;
+	style->fill.opacity 	= G2_ONE;
 	tb_pstring_init(&style->fill.url);
 
 	// init stroke
 	style->stroke.mode 		= G2_SVG_STYLE_PAINT_MODE_INHERIT;
 	style->stroke.flag 		= G2_SVG_STYLE_PAINT_FLAG_NONE;
 	style->stroke.color 	= G2_COLOR_BLACK;
+	style->stroke.opacity 	= G2_ONE;
 	style->join 			= G2_SVG_STYLE_JOIN_INHERIT;
 	style->cap 				= G2_SVG_STYLE_CAP_INHERIT;
 	style->width 			= 0;

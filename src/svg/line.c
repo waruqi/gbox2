@@ -108,6 +108,8 @@ g2_svg_element_t* g2_svg_element_init_line(tb_handle_t reader)
 			g2_svg_parser_float(p, &element->line.p1.x);
 		else if (!tb_pstring_cstricmp(&attr->name, "y2"))
 			g2_svg_parser_float(p, &element->line.p1.y);
+		else if (!tb_pstring_cstricmp(&attr->name, "style"))
+			g2_svg_parser_style(p, &element->style);
 		else if (!tb_pstring_cstricmp(&attr->name, "stroke"))
 			g2_svg_parser_style_stroke(p, &element->style);
 		else if (!tb_pstring_cstricmp(&attr->name, "stroke-width"))
@@ -116,13 +118,14 @@ g2_svg_element_t* g2_svg_element_init_line(tb_handle_t reader)
 			g2_svg_parser_style_stroke_linecap(p, &element->style);
 		else if (!tb_pstring_cstricmp(&attr->name, "stroke-linejoin"))
 			g2_svg_parser_style_stroke_linejoin(p, &element->style);
-		else if (!tb_pstring_cstricmp(&attr->name, "style"))
-			g2_svg_parser_style(p, &element->style);
+		else if (!tb_pstring_cstricmp(&attr->name, "stroke-opacity"))
+			g2_svg_parser_style_stroke_opacity(p, &element->style);
+		else if (!tb_pstring_cstricmp(&attr->name, "opacity"))
+			g2_svg_parser_style_opacity(p, &element->style);
 		else if (!tb_pstring_cstricmp(&attr->name, "clip-path"))
 			g2_svg_parser_style_clippath(p, &element->style);
 		else if (!tb_pstring_cstricmp(&attr->name, "transform"))
 			g2_svg_parser_transform(p, &element->transform);
-
 	}
 
 	// ok
