@@ -114,19 +114,16 @@ typedef enum __g2_svg_element_type_t
 typedef struct __g2_svg_painter_t
 {
 	// the painter
-	tb_handle_t 			painter;
-
-	// the style
-	tb_handle_t 			style;
+	tb_handle_t 				painter;
 
 	// the pool
-	tb_handle_t 			pool;
+	tb_handle_t 				pool;
 
 	// the hash
-	tb_hash_t* 				hash;
+	tb_hash_t* 					hash;
 
 	// is loaded?
-	tb_bool_t 				load;
+	tb_bool_t 					load;
 
 }g2_svg_painter_t;
 

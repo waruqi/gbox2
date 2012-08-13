@@ -81,7 +81,6 @@ g2_svg_element_t* g2_svg_element_init_svg(tb_handle_t reader)
 
 	// init painter
 	element->painter.painter 	= TB_NULL;
-	element->painter.style 		= TB_NULL;
 	element->painter.hash 		= TB_NULL;
 	element->painter.pool 		= TB_NULL;
 	element->painter.load 		= TB_FALSE;

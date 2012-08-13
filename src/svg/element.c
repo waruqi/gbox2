@@ -182,51 +182,33 @@ static tb_void_t g2_svg_element_painter_draw(g2_svg_painter_t* spainter, g2_svg_
 		tb_bool_t enter = TB_FALSE;
 		if (element->transform) enter = g2_svg_painter_transform_enter(spainter, element->transform); 
 
-		// fill
-		if (element->fill)
+		// init style
+		g2_svg_style_t style;
+		if (g2_svg_style_init(&style))
 		{
-			// clear
-			g2_style_clear(spainter->style);
-
-			// walk
-			tb_long_t ok = 0;
+			// walk style
 			g2_svg_element_t const* parent = element;
-			while (parent && !ok)
-			{
-				// apply
-				if (parent->style) ok = g2_svg_painter_style_fill(spainter, parent->style);
-			
-				// next
-				parent = parent->parent;
-			}
+			for (; parent; parent = parent->parent) 
+				if (parent->style) g2_svg_painter_style_walk(&style, parent->style);
 
 			// fill
-			if (ok > 0) element->fill(element, spainter);
-		}
-
-#if 0
-		// stroke
-		if (element->stok)
-		{
-			// clear
-			g2_style_clear(spainter->style);
-
-			// walk
-			tb_long_t ok = 0;
-			g2_svg_element_t const* parent = element;
-			while (parent)
+			if (element->fill && style.mode & G2_SVG_STYLE_MODE_FILL)
 			{
-				// apply
-				if (parent->style) ok = g2_svg_painter_style_stroke(spainter, parent->style);
-			
-				// next
-				parent = parent->parent;
+				if (g2_svg_painter_style_fill(spainter, &style))
+					element->fill(element, spainter);
 			}
 
 			// stroke
-			if (ok > 0) element->stok(element, spainter);
+			if (element->stok && style.mode & G2_SVG_STYLE_MODE_STROKE)
+			{
+				g2_style_clear(g2_style(spainter->painter));
+				if (g2_svg_painter_style_stok(spainter, &style))
+					element->stok(element, spainter);
+			}
+
+			// exit style
+			g2_svg_style_exit(&style);
 		}
-#endif
 
 		// transform: leave
 		if (enter) g2_svg_painter_transform_leave(spainter);
@@ -304,8 +286,7 @@ tb_void_t g2_svg_element_draw(g2_svg_element_t* element, tb_handle_t painter)
 
 	// init
 	svg->painter.painter 	= painter;
-	svg->painter.style 		= g2_style(painter);
-	tb_assert_and_check_return(svg->painter.painter && svg->painter.style);
+	tb_assert_and_check_return(svg->painter.painter);
 
 	// load
 	if (!svg->painter.load)
