@@ -32,7 +32,6 @@
 #include "element.h"
 #include "parser/parser.h"
 #include "writer/writer.h"
-#include "painter/painter.h"
 
 /* ///////////////////////////////////////////////////////////////////////
  * implementation

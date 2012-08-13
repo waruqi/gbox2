@@ -13,7 +13,6 @@ gbox2_C_FILES 			+= \
 						svg/style \
 						svg/reader \
 						svg/writer \
-						svg/painter \
 						svg/element \
 						svg/g \
 						svg/svg \
@@ -78,7 +77,6 @@ INC_FILES 				= \
 						svg/style.h \
 						svg/reader.h \
 						svg/writer.h \
-						svg/painter.h \
 						svg/element.h \
 						core/prefix.h \
 						core/path.h \

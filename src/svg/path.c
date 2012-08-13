@@ -30,7 +30,6 @@
  * includes
  */
 #include "element.h"
-#include "painter.h"
 #include "parser/parser.h"
 #include "writer/writer.h"
 

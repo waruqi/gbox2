@@ -63,6 +63,44 @@ static tb_void_t g2_svg_element_use_writ(g2_svg_element_t const* element, tb_gst
 	// transform 
 	g2_svg_writer_transform(gst, &use->transform); 
 }
+static tb_void_t g2_svg_element_use_fill(g2_svg_element_t const* element, g2_svg_painter_t* painter)
+{
+	g2_svg_element_use_t const* use = (g2_svg_element_use_t const*)element;
+	tb_assert_and_check_return(use && painter && painter->hash);
+
+	// href
+	tb_char_t const* href = tb_pstring_cstr(&use->xhref);
+	tb_assert_and_check_return(href);
+
+	// id?
+	if (href[0] == '#')
+	{
+		// element
+		g2_svg_element_t* e = tb_hash_get(painter->hash, &href[1]);
+
+		// fill
+		if (e && e->fill) e->fill(e, painter);
+	}
+}
+static tb_void_t g2_svg_element_use_stok(g2_svg_element_t const* element, g2_svg_painter_t* painter)
+{
+	g2_svg_element_use_t const* use = (g2_svg_element_use_t const*)element;
+	tb_assert_and_check_return(use && painter && painter->hash);
+
+	// href
+	tb_char_t const* href = tb_pstring_cstr(&use->xhref);
+	tb_assert_and_check_return(href);
+
+	// id?
+	if (href[0] == '#')
+	{
+		// element
+		g2_svg_element_t* e = tb_hash_get(painter->hash, &href[1]);
+
+		// stroke
+		if (e && e->stok) e->stok(e, painter);
+	}
+}
 static tb_void_t g2_svg_element_use_exit(g2_svg_element_t* element)
 {
 	g2_svg_element_use_t* use = (g2_svg_element_use_t*)element;
@@ -82,8 +120,12 @@ g2_svg_element_t* g2_svg_element_init_use(tb_handle_t reader)
 	tb_assert_and_check_return_val(element, TB_NULL);
 
 	// init
-	element->base.exit = g2_svg_element_use_exit;
-	element->base.writ = g2_svg_element_use_writ;
+	element->base.exit 		= g2_svg_element_use_exit;
+	element->base.writ 		= g2_svg_element_use_writ;
+	element->base.fill 		= g2_svg_element_use_fill;
+	element->base.stok 		= g2_svg_element_use_stok;
+	element->base.style 	= &element->style;
+	element->base.transform = &element->transform;
 
 	// init style
 	g2_svg_style_init(&element->style);

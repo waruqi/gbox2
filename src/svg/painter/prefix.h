@@ -28,7 +28,7 @@
  */
 #include "../prefix.h"
 #include "../style.h"
-#include "../painter.h"
+#include "../element.h"
 
 #endif
 

@@ -30,7 +30,6 @@
 #include "style.h"
 #include "reader.h"
 #include "writer.h"
-#include "painter.h"
 #include "element.h"
 
 #endif

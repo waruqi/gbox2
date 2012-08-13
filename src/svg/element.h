@@ -110,8 +110,27 @@ typedef enum __g2_svg_element_type_t
 
 }g2_svg_element_type_t;
 
+// the svg painter type
+typedef struct __g2_svg_painter_t
+{
+	// the painter
+	tb_handle_t 			painter;
+
+	// the style
+	tb_handle_t 			style;
+
+	// the pool
+	tb_handle_t 			pool;
+
+	// the hash
+	tb_hash_t* 				hash;
+
+	// is loaded?
+	tb_bool_t 				load;
+
+}g2_svg_painter_t;
+
 /// the svg element type
-struct __g2_svg_painter_t;
 typedef struct __g2_svg_element_t
 {
 	// the element type
@@ -140,10 +159,10 @@ typedef struct __g2_svg_element_t
 	tb_void_t 					(*writ)(struct __g2_svg_element_t const* element, tb_gstream_t* gst);
 
 	// fill it
-	tb_void_t 					(*fill)(struct __g2_svg_element_t const* element, struct __g2_svg_painter_t* painter);
+	tb_void_t 					(*fill)(struct __g2_svg_element_t const* element, g2_svg_painter_t* painter);
 
 	// stok it
-	tb_void_t 					(*stok)(struct __g2_svg_element_t const* element, struct __g2_svg_painter_t* painter);
+	tb_void_t 					(*stok)(struct __g2_svg_element_t const* element, g2_svg_painter_t* painter);
 
 	// exit it
 	tb_void_t 					(*exit)(struct __g2_svg_element_t* element);
@@ -184,6 +203,9 @@ typedef struct __g2_svg_element_svg_t
 
 	// the viewbox
 	g2_rect_t 					viewbox;
+	
+	// the painter
+	g2_svg_painter_t 			painter;
 
 }g2_svg_element_svg_t;
 
@@ -539,6 +561,9 @@ g2_svg_element_t* 	g2_svg_element_init_radial_gradient(tb_handle_t reader);
 
 /// exit element
 tb_void_t 			g2_svg_element_exit(g2_svg_element_t* element);
+
+/// draw element
+tb_void_t 			g2_svg_element_draw(g2_svg_element_t* element, tb_handle_t painter);
 
 /// the element name
 tb_char_t const* 	g2_svg_element_name(g2_svg_element_t const* element);

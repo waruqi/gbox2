@@ -24,6 +24,16 @@
  * includes
  */
 #include "element.h"
+#include "painter/painter.h"
+
+/* ///////////////////////////////////////////////////////////////////////
+ * macros
+ */
+#ifdef TB_CONFIG_MEMORY_MODE_SMALL
+# 	define G2_SVG_ELEMENT_PAINTER_HASH_MAXN 			(32)
+#else
+# 	define G2_SVG_ELEMENT_PAINTER_HASH_MAXN 			(64)
+#endif
 
 /* ///////////////////////////////////////////////////////////////////////
  * types
@@ -132,6 +142,111 @@ static tb_long_t g2_svg_element_entry_comp(tb_iterator_t* iterator, tb_cpointer_
 }
 
 /* ///////////////////////////////////////////////////////////////////////
+ * painter
+ */
+static tb_void_t g2_svg_element_painter_load(g2_svg_painter_t* spainter, g2_svg_element_t const* element)
+{
+	// has id?
+	if (tb_pstring_size(&element->id))
+	{
+		// init pool
+		if (!spainter->pool) spainter->pool = tb_spool_init(TB_SPOOL_GROW_SMALL, 0);
+
+		// init hash
+		if (!spainter->hash) spainter->hash = tb_hash_init(G2_SVG_ELEMENT_PAINTER_HASH_MAXN, tb_item_func_str(TB_TRUE, spainter->pool), tb_item_func_ptr());
+	
+		// set id => element
+		if (spainter->hash) tb_hash_set(spainter->hash, tb_pstring_cstr(&element->id), element);
+	}
+
+	// walk
+	if (element->head)
+	{
+		g2_svg_element_t* next = element->head;
+		while (next)
+		{
+			// load
+			g2_svg_element_painter_load(spainter, next);
+
+			// next
+			next = next->next;
+		}
+	}
+}
+static tb_void_t g2_svg_element_painter_draw(g2_svg_painter_t* spainter, g2_svg_element_t const* element)
+{
+	// draw
+	if (element->fill || element->stok) 
+	{
+		// transform: enter
+		tb_bool_t enter = TB_FALSE;
+		if (element->transform) enter = g2_svg_painter_transform_enter(spainter, element->transform); 
+
+		// fill
+		if (element->fill)
+		{
+			// clear
+			g2_style_clear(spainter->style);
+
+			// walk
+			tb_long_t ok = 0;
+			g2_svg_element_t const* parent = element;
+			while (parent && !ok)
+			{
+				// apply
+				if (parent->style) ok = g2_svg_painter_style_fill(spainter, parent->style);
+			
+				// next
+				parent = parent->parent;
+			}
+
+			// fill
+			if (ok > 0) element->fill(element, spainter);
+		}
+
+#if 0
+		// stroke
+		if (element->stok)
+		{
+			// clear
+			g2_style_clear(spainter->style);
+
+			// walk
+			tb_long_t ok = 0;
+			g2_svg_element_t const* parent = element;
+			while (parent)
+			{
+				// apply
+				if (parent->style) ok = g2_svg_painter_style_stroke(spainter, parent->style);
+			
+				// next
+				parent = parent->parent;
+			}
+
+			// stroke
+			if (ok > 0) element->stok(element, spainter);
+		}
+#endif
+
+		// transform: leave
+		if (enter) g2_svg_painter_transform_leave(spainter);
+	}
+
+	// walk
+	if (element->head)
+	{
+		g2_svg_element_t* next = element->head;
+		while (next)
+		{
+			// load
+			g2_svg_element_painter_draw(spainter, next);
+
+			// next
+			next = next->next;
+		}
+	}
+}
+/* ///////////////////////////////////////////////////////////////////////
  * implementation
  */
 g2_svg_element_t* g2_svg_element_init(tb_handle_t reader)
@@ -179,7 +294,32 @@ g2_svg_element_t* g2_svg_element_init_none(tb_handle_t reader)
 	// ok
 	return element;
 }
+tb_void_t g2_svg_element_draw(g2_svg_element_t* element, tb_handle_t painter)
+{
+	// check
+	tb_assert_and_check_return(element && element->type == G2_SVG_ELEMENT_TYPE_SVG && painter);
 
+	// svg
+	g2_svg_element_svg_t* svg = (g2_svg_element_svg_t*)element;
+
+	// init
+	svg->painter.painter 	= painter;
+	svg->painter.style 		= g2_style(painter);
+	tb_assert_and_check_return(svg->painter.painter && svg->painter.style);
+
+	// load
+	if (!svg->painter.load)
+	{
+		// load
+		g2_svg_element_painter_load(&svg->painter, element);
+
+		// load ok
+		svg->painter.load = TB_TRUE;
+	}
+	
+	// draw
+	g2_svg_element_painter_draw(&svg->painter, element);
+}
 tb_void_t g2_svg_element_exit(g2_svg_element_t* element)
 {
 	if (element)

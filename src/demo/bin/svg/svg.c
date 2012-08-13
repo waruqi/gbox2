@@ -108,7 +108,7 @@ static tb_void_t g2_demo_render()
 	g2_scale(g_painter, g2_div(rect.w, w), g2_div(rect.h, h));
 	
 	// draw
-	g2_draw_svg(g_painter, g_svg);
+	g2_svg_element_draw(g_svg, g_painter);
 
 	// load
 	g2_load(g_painter);

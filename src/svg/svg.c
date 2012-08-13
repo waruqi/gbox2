@@ -52,7 +52,20 @@ static tb_void_t g2_svg_element_svg_writ(g2_svg_element_t const* element, tb_gst
 	if (g2_nz(svg->viewbox.w) || g2_nz(svg->viewbox.h))
 		tb_gstream_printf(gst, " viewBox=\"%f %f %f %f\"", g2_float_to_tb(svg->viewbox.x), g2_float_to_tb(svg->viewbox.y), g2_float_to_tb(svg->viewbox.w), g2_float_to_tb(svg->viewbox.h));
 }
+static tb_void_t g2_svg_element_svg_exit(g2_svg_element_t* element)
+{
+	g2_svg_element_svg_t* svg = (g2_svg_element_svg_t*)element;
+	if (svg)
+	{
+		// exit hash
+		if (svg->painter.hash) tb_hash_exit(svg->painter.hash);
+		svg->painter.hash = TB_NULL;
 
+		// exit pool
+		if (svg->painter.pool) tb_spool_exit(svg->painter.pool);
+		svg->painter.pool = TB_NULL;	
+	}
+}
 /* ///////////////////////////////////////////////////////////////////////
  * initializer
  */
@@ -64,6 +77,14 @@ g2_svg_element_t* g2_svg_element_init_svg(tb_handle_t reader)
 
 	// init
 	element->base.writ = g2_svg_element_svg_writ;
+	element->base.exit = g2_svg_element_svg_exit;
+
+	// init painter
+	element->painter.painter 	= TB_NULL;
+	element->painter.style 		= TB_NULL;
+	element->painter.hash 		= TB_NULL;
+	element->painter.pool 		= TB_NULL;
+	element->painter.load 		= TB_FALSE;
 
 	// attributes
 	tb_size_t pw = 0;
