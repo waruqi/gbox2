@@ -213,9 +213,13 @@ static tb_void_t g2_svg_element_painter_draw(g2_svg_painter_t* spainter, g2_svg_
 		if (enter) g2_svg_painter_transform_leave(spainter);
 	}
 
-	// walk
 	if (element->head)
 	{
+		// transform: enter
+		tb_bool_t enter = TB_FALSE;
+		if (element->transform) enter = g2_svg_painter_transform_enter(spainter, element->transform); 
+
+		// walk
 		g2_svg_element_t* next = element->head;
 		while (next)
 		{
@@ -225,6 +229,9 @@ static tb_void_t g2_svg_element_painter_draw(g2_svg_painter_t* spainter, g2_svg_
 			// next
 			next = next->next;
 		}
+
+		// transform: leave
+		if (enter) g2_svg_painter_transform_leave(spainter);
 	}
 }
 /* ///////////////////////////////////////////////////////////////////////
