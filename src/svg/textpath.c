@@ -45,9 +45,9 @@ static tb_void_t g2_svg_element_textpath_writ(g2_svg_element_t const* element, t
 	if (tb_pstring_size(&textpath->base.id))
 		tb_gstream_printf(gst, " id=\"%s\"", tb_pstring_cstr(&textpath->base.id));
 
-	// xhref
-	if (tb_pstring_size(&textpath->xhref))
-		tb_gstream_printf(gst, " xlink:href=\"%s\"", tb_pstring_cstr(&textpath->xhref));
+	// href
+	if (tb_pstring_size(&textpath->href))
+		tb_gstream_printf(gst, " xlink:href=\"%s\"", tb_pstring_cstr(&textpath->href));
 
 	// style 
 	g2_svg_writer_style(gst, &textpath->style); 
@@ -60,8 +60,8 @@ static tb_void_t g2_svg_element_textpath_exit(g2_svg_element_t* element)
 	g2_svg_element_textpath_t* textpath = (g2_svg_element_textpath_t*)element;
 	if (textpath)
 	{
-		// exit xhref
-		tb_pstring_exit(&textpath->xhref);
+		// exit href
+		tb_pstring_exit(&textpath->href);
 
 		// exit style
 		g2_svg_style_exit(&textpath->style);
@@ -80,8 +80,8 @@ g2_svg_element_t* g2_svg_element_init_textpath(tb_handle_t reader)
 	element->base.exit = g2_svg_element_textpath_exit;
 	element->base.writ = g2_svg_element_textpath_writ;
 
-	// init xhref
-	tb_pstring_init(&element->xhref);
+	// init href
+	tb_pstring_init(&element->href);
 
 	// init style
 	g2_svg_style_init(&element->style);
@@ -97,7 +97,7 @@ g2_svg_element_t* g2_svg_element_init_textpath(tb_handle_t reader)
 		if (!tb_pstring_cstricmp(&attr->name, "id"))
 			tb_pstring_strcpy(&element->base.id, &attr->data);
 		else if (!tb_pstring_cstricmp(&attr->name, "xlink:href"))
-			tb_pstring_strcpy(&element->xhref, &attr->data);
+			tb_pstring_strcpy(&element->href, &attr->data);
 		else if (!tb_pstring_cstricmp(&attr->name, "fill"))
 			g2_svg_parser_style_fill(p, &element->style);
 		else if (!tb_pstring_cstricmp(&attr->name, "stroke"))

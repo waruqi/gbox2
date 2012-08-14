@@ -31,62 +31,133 @@
 /* ///////////////////////////////////////////////////////////////////////
  * inlines
  */
-static __tb_inline__ tb_bool_t g2_svg_painter_style_gradient(g2_svg_painter_t* painter, g2_svg_element_t const* element)
+static __tb_inline__ tb_bool_t g2_svg_painter_style_gradient_linear_build(g2_svg_painter_t* painter, g2_svg_element_linear_gradient_t const* element, g2_gradient_t* gradient, g2_point_t* pb, g2_point_t* pe)
 {
-	// init gradient
-	g2_color_t 		color[256];
-	g2_float_t 		radio[256];
-	tb_size_t 		count = 0;
-	g2_gradient_t 	gradient = {color, radio};
-	if (element->head)
+	if (element->base.head)
 	{
-		g2_svg_element_t* next = element->head;
+		g2_svg_element_t* next = element->base.head;
 		while (next)
 		{
 			// add stop
-			if (next->type == G2_SVG_ELEMENT_TYPE_STOP && count < 256)
+			if (next->type == G2_SVG_ELEMENT_TYPE_STOP && gradient->count < 256)
 			{
 				g2_svg_element_stop_t const* stop = (g2_svg_element_stop_t const*)next;
-				color[count] = stop->color;
-				radio[count] = stop->offset;
-				count++;
+				gradient->color[gradient->count] = stop->color;
+				gradient->radio[gradient->count] = stop->offset;
+				gradient->count++;
 			}
 
 			// next
 			next = next->next;
 		}
 	}
-	gradient.count = count;
-	tb_check_return_val(count, TB_FALSE);
+
+	// pb & pe
+	tb_bool_t b = TB_FALSE;
+	if (pb && (g2_nz(element->pb.x) || g2_nz(element->pb.y))) { *pb = element->pb; b = TB_TRUE; }
+	if (pe && (g2_nz(element->pe.x) || g2_nz(element->pe.y))) { *pe = element->pe; b = TB_TRUE; }
+
+	// href?
+	if (!gradient->count || !b)
+	{
+		tb_char_t const* url = tb_pstring_cstr(&element->href);
+		if (url && url[0] == '#') 
+		{
+			g2_svg_element_linear_gradient_t const* e = tb_hash_get(painter->hash, &url[1]);
+			if (e && e->base.type == G2_SVG_ELEMENT_TYPE_LINEARGRADIENT)
+				return g2_svg_painter_style_gradient_linear_build(painter, e, gradient, b? TB_NULL : pb, b? TB_NULL : pe);
+		}
+	}
+
+	// ok?
+	return gradient->count? TB_TRUE : TB_FALSE;
+}
+static __tb_inline__ tb_bool_t g2_svg_painter_style_gradient_radial_build(g2_svg_painter_t* painter, g2_svg_element_radial_gradient_t const* element, g2_gradient_t* gradient, g2_circle_t* cp)
+{
+	if (element->base.head)
+	{
+		g2_svg_element_t* next = element->base.head;
+		while (next)
+		{
+			// add stop
+			if (next->type == G2_SVG_ELEMENT_TYPE_STOP && gradient->count < 256)
+			{
+				g2_svg_element_stop_t const* stop = (g2_svg_element_stop_t const*)next;
+				gradient->color[gradient->count] = stop->color;
+				gradient->radio[gradient->count] = stop->offset;
+				gradient->count++;
+			}
+
+			// next
+			next = next->next;
+		}
+	}
+
+	// cp
+	tb_bool_t b = TB_FALSE;
+	if (cp && (g2_nz(element->cp.c.x) || g2_nz(element->cp.c.y) || g2_nz(element->cp.r))) { *cp = element->cp; b = TB_TRUE; }
+
+	// href?
+	if (!gradient->count || !b)
+	{
+		tb_char_t const* url = tb_pstring_cstr(&element->href);
+		if (url && url[0] == '#') 
+		{
+			g2_svg_element_radial_gradient_t const* e = tb_hash_get(painter->hash, &url[1]);
+			if (e && e->base.type == G2_SVG_ELEMENT_TYPE_RADIALGRADIENT)
+				return g2_svg_painter_style_gradient_radial_build(painter, e, gradient, b? TB_NULL : cp);
+		}
+	}
+
+	// ok?
+	return gradient->count? TB_TRUE : TB_FALSE;
+}
+static __tb_inline__ tb_bool_t g2_svg_painter_style_gradient_linear(g2_svg_painter_t* painter, g2_svg_element_linear_gradient_t const* element)
+{
+	// init gradient
+	g2_point_t 			pb = {0};
+	g2_point_t 			pe = {0};
+	g2_color_t 			color[256];
+	g2_float_t 			radio[256];
+	g2_gradient_t 		gradient = {color, radio};
+	if (!g2_svg_painter_style_gradient_linear_build(painter, element, &gradient, &pb, &pe)) return TB_FALSE;
+
+	// init mode
+	tb_size_t mode = G2_SHADER_MODE_CLAMP;
+	if (element->spread == G2_SVG_STYLE_GRADIENT_SPREAD_REFLECT) mode = G2_SHADER_MODE_MIRROR;
+	else if (element->spread == G2_SVG_STYLE_GRADIENT_SPREAD_REPEAT) mode = G2_SHADER_MODE_REPEAT;
 
 	// init shader
-	tb_handle_t shader = TB_NULL;
-	if (element->type == G2_SVG_ELEMENT_TYPE_LINEARGRADIENT)
+	tb_handle_t shader = g2_shader_init_linear(&pb, &pe, &gradient, mode);
+
+	// has shader?
+	if (shader)
 	{
-		// the gradient element 
-		g2_svg_element_linear_gradient_t const* gelement = (g2_svg_element_linear_gradient_t const*)element;
+		// set shader
+		g2_style_shader_set(g2_style(painter->painter), shader);
 
-		// init mode
-		tb_size_t mode = G2_SHADER_MODE_CLAMP;
-		if (gelement->spread == G2_SVG_STYLE_GRADIENT_SPREAD_REFLECT) mode = G2_SHADER_MODE_MIRROR;
-		else if (gelement->spread == G2_SVG_STYLE_GRADIENT_SPREAD_REPEAT) mode = G2_SHADER_MODE_REPEAT;
-
-		// init shader
-		shader = g2_shader_init_linear(&gelement->pb, &gelement->pe, &gradient, mode);
+		// ok
+		return TB_TRUE;
 	}
-	else
-	{	
-		// the gradient element 
-		g2_svg_element_radial_gradient_t const* gelement = (g2_svg_element_radial_gradient_t const*)element;
 
-		// init mode
-		tb_size_t mode = G2_SHADER_MODE_CLAMP;
-		if (gelement->spread == G2_SVG_STYLE_GRADIENT_SPREAD_REFLECT) mode = G2_SHADER_MODE_MIRROR;
-		else if (gelement->spread == G2_SVG_STYLE_GRADIENT_SPREAD_REPEAT) mode = G2_SHADER_MODE_REPEAT;
+	return TB_FALSE;
+}
+static __tb_inline__ tb_bool_t g2_svg_painter_style_gradient_radial(g2_svg_painter_t* painter, g2_svg_element_radial_gradient_t const* element)
+{	
+	// init gradient
+	g2_circle_t 		cp = {0};
+	g2_color_t 			color[256];
+	g2_float_t 			radio[256];
+	g2_gradient_t 		gradient = {color, radio};
+	if (!g2_svg_painter_style_gradient_radial_build(painter, element, &gradient, &cp)) return TB_FALSE;
 
-		// init shader
-		shader = g2_shader_init_radial(&gelement->cp, &gradient, mode);
-	}
+	// init mode
+	tb_size_t mode = G2_SHADER_MODE_CLAMP;
+	if (element->spread == G2_SVG_STYLE_GRADIENT_SPREAD_REFLECT) mode = G2_SHADER_MODE_MIRROR;
+	else if (element->spread == G2_SVG_STYLE_GRADIENT_SPREAD_REPEAT) mode = G2_SHADER_MODE_REPEAT;
+
+	// init shader
+	tb_handle_t shader = g2_shader_init_radial(&cp, &gradient, mode);
 
 	// has shader?
 	if (shader)
@@ -113,8 +184,9 @@ static __tb_inline__ tb_bool_t g2_svg_painter_style_url(g2_svg_painter_t* painte
 		switch (element->type)
 		{
 		case G2_SVG_ELEMENT_TYPE_LINEARGRADIENT:
+			return g2_svg_painter_style_gradient_linear(painter, (g2_svg_element_linear_gradient_t const*)element);
 		case G2_SVG_ELEMENT_TYPE_RADIALGRADIENT:
-			return g2_svg_painter_style_gradient(painter, element);
+			return g2_svg_painter_style_gradient_radial(painter, (g2_svg_element_radial_gradient_t const*)element);
 		default:
 			break;
 		}

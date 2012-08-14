@@ -213,7 +213,7 @@ typedef struct __g2_svg_element_use_t
 	g2_svg_element_t 			base;
 
 	// the xlink-href
-	tb_pstring_t 				xhref;
+	tb_pstring_t 				href;
 
 	// the style
 	g2_svg_style_t 				style;
@@ -315,7 +315,7 @@ typedef struct __g2_svg_element_image_t
 	g2_svg_element_t 			base;
 
 	// the xlink-href
-	tb_pstring_t 				xhref;
+	tb_pstring_t 				href;
 
 	// the style
 	g2_svg_style_t 				style;
@@ -420,7 +420,7 @@ typedef struct __g2_svg_element_textpath_t
 	g2_svg_element_t 			base;
 
 	// the xlink-href
-	tb_pstring_t 				xhref;
+	tb_pstring_t 				href;
 
 	// the style
 	g2_svg_style_t 				style;
@@ -451,7 +451,7 @@ typedef struct __g2_svg_element_linear_gradient_t
 	g2_svg_element_t 			base;
 
 	// the xlink-href
-	tb_pstring_t 				xhref;
+	tb_pstring_t 				href;
 
 	// the transform
 	g2_matrix_t 				transform;
@@ -475,7 +475,7 @@ typedef struct __g2_svg_element_radial_gradient_t
 	g2_svg_element_t 			base;
 
 	// the xlink-href
-	tb_pstring_t 				xhref;
+	tb_pstring_t 				href;
 
 	// the transform
 	g2_matrix_t 				transform;

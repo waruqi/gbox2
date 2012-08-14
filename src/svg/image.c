@@ -45,9 +45,9 @@ static tb_void_t g2_svg_element_image_writ(g2_svg_element_t const* element, tb_g
 	if (tb_pstring_size(&image->base.id))
 		tb_gstream_printf(gst, " id=\"%s\"", tb_pstring_cstr(&image->base.id));
 
-	// xhref
-	if (tb_pstring_size(&image->xhref))
-		tb_gstream_printf(gst, " xlink:href=\"%s\"", tb_pstring_cstr(&image->xhref));
+	// href
+	if (tb_pstring_size(&image->href))
+		tb_gstream_printf(gst, " xlink:href=\"%s\"", tb_pstring_cstr(&image->href));
 
 	// rect
 	if (g2_nz(image->rect.x) || g2_nz(image->rect.y))
@@ -109,7 +109,7 @@ g2_svg_element_t* g2_svg_element_init_image(tb_handle_t reader)
 		else if (!tb_pstring_cstricmp(&attr->name, "transform"))
 			g2_svg_parser_transform(p, &element->transform);
 		else if (!tb_pstring_cstricmp(&attr->name, "xlink:href"))
-			tb_pstring_strcpy(&element->xhref, &attr->data);
+			tb_pstring_strcpy(&element->href, &attr->data);
 	}
 
 	// ok

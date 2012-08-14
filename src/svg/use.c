@@ -45,9 +45,9 @@ static tb_void_t g2_svg_element_use_writ(g2_svg_element_t const* element, tb_gst
 	if (tb_pstring_size(&use->base.id))
 		tb_gstream_printf(gst, " id=\"%s\"", tb_pstring_cstr(&use->base.id));
 
-	// xhref
-	if (tb_pstring_size(&use->xhref))
-		tb_gstream_printf(gst, " xlink:href=\"%s\"", tb_pstring_cstr(&use->xhref));
+	// href
+	if (tb_pstring_size(&use->href))
+		tb_gstream_printf(gst, " xlink:href=\"%s\"", tb_pstring_cstr(&use->href));
 
 	// x & y
 	if (g2_nz(use->rect.x) || g2_nz(use->rect.y)) 
@@ -69,7 +69,7 @@ static tb_void_t g2_svg_element_use_fill(g2_svg_element_t const* element, g2_svg
 	tb_assert_and_check_return(use && painter && painter->hash);
 
 	// href
-	tb_char_t const* href = tb_pstring_cstr(&use->xhref);
+	tb_char_t const* href = tb_pstring_cstr(&use->href);
 	tb_assert_and_check_return(href);
 
 	// id?
@@ -88,7 +88,7 @@ static tb_void_t g2_svg_element_use_stok(g2_svg_element_t const* element, g2_svg
 	tb_assert_and_check_return(use && painter && painter->hash);
 
 	// href
-	tb_char_t const* href = tb_pstring_cstr(&use->xhref);
+	tb_char_t const* href = tb_pstring_cstr(&use->href);
 	tb_assert_and_check_return(href);
 
 	// id?
@@ -141,7 +141,7 @@ g2_svg_element_t* g2_svg_element_init_use(tb_handle_t reader)
 		if (!tb_pstring_cstricmp(&attr->name, "id"))
 			tb_pstring_strcpy(&element->base.id, &attr->data);
 		else if (!tb_pstring_cstricmp(&attr->name, "xlink:href"))
-			tb_pstring_strcpy(&element->xhref, &attr->data);
+			tb_pstring_strcpy(&element->href, &attr->data);
 		else if (!tb_pstring_cstricmp(&attr->name, "x"))
 			g2_svg_parser_float(p, &element->rect.x);
 		else if (!tb_pstring_cstricmp(&attr->name, "y"))

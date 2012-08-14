@@ -45,9 +45,9 @@ static tb_void_t g2_svg_element_linear_gradient_writ(g2_svg_element_t const* ele
 	if (tb_pstring_size(&linear_gradient->base.id))
 		tb_gstream_printf(gst, " id=\"%s\"", tb_pstring_cstr(&linear_gradient->base.id));
 
-	// xhref
-	if (tb_pstring_size(&linear_gradient->xhref))
-		tb_gstream_printf(gst, " xlink:href=\"%s\"", tb_pstring_cstr(&linear_gradient->xhref));
+	// href
+	if (tb_pstring_size(&linear_gradient->href))
+		tb_gstream_printf(gst, " xlink:href=\"%s\"", tb_pstring_cstr(&linear_gradient->href));
 
 	// linear_gradient
 	if (g2_nz(linear_gradient->pb.x) || g2_nz(linear_gradient->pb.y))
@@ -105,8 +105,8 @@ static tb_void_t g2_svg_element_linear_gradient_exit(g2_svg_element_t* element)
 	g2_svg_element_linear_gradient_t* linear_gradient = (g2_svg_element_linear_gradient_t*)element;
 	if (linear_gradient)
 	{
-		// exit xhref
-		tb_pstring_exit(&linear_gradient->xhref);
+		// exit href
+		tb_pstring_exit(&linear_gradient->href);
 	}
 }
 
@@ -123,9 +123,9 @@ static tb_void_t g2_svg_element_radial_gradient_writ(g2_svg_element_t const* ele
 	if (tb_pstring_size(&radial_gradient->base.id))
 		tb_gstream_printf(gst, " id=\"%s\"", tb_pstring_cstr(&radial_gradient->base.id));
 
-	// xhref
-	if (tb_pstring_size(&radial_gradient->xhref))
-		tb_gstream_printf(gst, " xlink:href=\"%s\"", tb_pstring_cstr(&radial_gradient->xhref));
+	// href
+	if (tb_pstring_size(&radial_gradient->href))
+		tb_gstream_printf(gst, " xlink:href=\"%s\"", tb_pstring_cstr(&radial_gradient->href));
 
 	// radial_gradient
 	tb_gstream_printf(gst, " cx=\"%f\" cy=\"%f\" r=\"%f\""
@@ -179,8 +179,8 @@ static tb_void_t g2_svg_element_radial_gradient_exit(g2_svg_element_t* element)
 	g2_svg_element_radial_gradient_t* radial_gradient = (g2_svg_element_radial_gradient_t*)element;
 	if (radial_gradient)
 	{
-		// exit xhref
-		tb_pstring_exit(&radial_gradient->xhref);
+		// exit href
+		tb_pstring_exit(&radial_gradient->href);
 	}
 }
 /* ///////////////////////////////////////////////////////////////////////
@@ -196,8 +196,8 @@ g2_svg_element_t* g2_svg_element_init_linear_gradient(tb_handle_t reader)
 	element->base.exit = g2_svg_element_linear_gradient_exit;
 	element->base.writ = g2_svg_element_linear_gradient_writ;
 
-	// init xhref
-	tb_pstring_init(&element->xhref);
+	// init href
+	tb_pstring_init(&element->href);
 
 	// init transform
 	g2_matrix_clear(&element->transform);
@@ -224,7 +224,7 @@ g2_svg_element_t* g2_svg_element_init_linear_gradient(tb_handle_t reader)
 		else if (!tb_pstring_cstricmp(&attr->name, "gradientUnits"))
 			g2_svg_parser_style_units(p, &element->units);
 		else if (!tb_pstring_cstricmp(&attr->name, "xlink:href"))
-			tb_pstring_strcpy(&element->xhref, &attr->data);
+			tb_pstring_strcpy(&element->href, &attr->data);
 	}
 
 	// ok
@@ -240,8 +240,8 @@ g2_svg_element_t* g2_svg_element_init_radial_gradient(tb_handle_t reader)
 	element->base.exit = g2_svg_element_radial_gradient_exit;
 	element->base.writ = g2_svg_element_radial_gradient_writ;
 
-	// init xhref
-	tb_pstring_init(&element->xhref);
+	// init href
+	tb_pstring_init(&element->href);
 
 	// init transform
 	g2_matrix_clear(&element->transform);
@@ -270,7 +270,7 @@ g2_svg_element_t* g2_svg_element_init_radial_gradient(tb_handle_t reader)
 		else if (!tb_pstring_cstricmp(&attr->name, "gradientUnits"))
 			g2_svg_parser_style_units(p, &element->units);
 		else if (!tb_pstring_cstricmp(&attr->name, "xlink:href"))
-			tb_pstring_strcpy(&element->xhref, &attr->data);
+			tb_pstring_strcpy(&element->href, &attr->data);
 	}
 
 	// ok

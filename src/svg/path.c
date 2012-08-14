@@ -111,13 +111,10 @@ static tb_void_t g2_svg_element_path_exit(g2_svg_element_t* element)
 		path->path = TB_NULL;
 	}
 }
-static tb_char_t const* g2_svg_element_path_d_xoy(g2_svg_element_path_t* element, tb_char_t const* data)
+static tb_char_t const* g2_svg_element_path_d_xoy(g2_svg_element_path_t* element, tb_char_t const* data, tb_char_t mode)
 {
 	// init 
 	tb_char_t const* p = data;
-
-	// mode
-	tb_char_t mode = *p++;
 
 	// xoy
 	g2_float_t xoy = 0; p = g2_svg_parser_float(p, &xoy); p = g2_svg_parser_separator_skip(p);
@@ -156,13 +153,10 @@ static tb_char_t const* g2_svg_element_path_d_xoy(g2_svg_element_path_t* element
 	// ok
 	return p;
 }
-static tb_char_t const* g2_svg_element_path_d_xy1(g2_svg_element_path_t* element, tb_char_t const* data)
+static tb_char_t const* g2_svg_element_path_d_xy1(g2_svg_element_path_t* element, tb_char_t const* data, tb_char_t mode)
 {
 	// init 
 	tb_char_t const* p = data;
-
-	// mode
-	tb_char_t mode = *p++;
 
 	// x1
 	g2_float_t x1 = 0; p = g2_svg_parser_float(p, &x1); p = g2_svg_parser_separator_skip(p);
@@ -207,13 +201,10 @@ static tb_char_t const* g2_svg_element_path_d_xy1(g2_svg_element_path_t* element
 	// ok
 	return p;
 }
-static tb_char_t const* g2_svg_element_path_d_xy2(g2_svg_element_path_t* element, tb_char_t const* data)
+static tb_char_t const* g2_svg_element_path_d_xy2(g2_svg_element_path_t* element, tb_char_t const* data, tb_char_t mode)
 {
 	// init 
 	tb_char_t const* p = data;
-
-	// mode
-	tb_char_t mode = *p++;
 
 	// x1
 	g2_float_t x1 = 0; p = g2_svg_parser_float(p, &x1); p = g2_svg_parser_separator_skip(p);
@@ -258,13 +249,10 @@ static tb_char_t const* g2_svg_element_path_d_xy2(g2_svg_element_path_t* element
 	// ok
 	return p;
 }
-static tb_char_t const* g2_svg_element_path_d_xy3(g2_svg_element_path_t* element, tb_char_t const* data)
+static tb_char_t const* g2_svg_element_path_d_xy3(g2_svg_element_path_t* element, tb_char_t const* data, tb_char_t mode)
 {
 	// init 
 	tb_char_t const* p = data;
-
-	// mode
-	tb_char_t mode = *p++;
 
 	// x1
 	g2_float_t x1 = 0; p = g2_svg_parser_float(p, &x1); p = g2_svg_parser_separator_skip(p);
@@ -315,13 +303,10 @@ static tb_char_t const* g2_svg_element_path_d_xy3(g2_svg_element_path_t* element
 	// ok
 	return p;
 }
-static tb_char_t const* g2_svg_element_path_d_a(g2_svg_element_path_t* element, tb_char_t const* data)
+static tb_char_t const* g2_svg_element_path_d_a(g2_svg_element_path_t* element, tb_char_t const* data, tb_char_t mode)
 {
 	// init 
 	tb_char_t const* p = data;
-
-	// mode
-	tb_char_t mode = *p++;
 
 	// rx
 	g2_float_t rx = 0; p = g2_svg_parser_float(p, &rx); p = g2_svg_parser_separator_skip(p);
@@ -371,7 +356,7 @@ static tb_char_t const* g2_svg_element_path_d_a(g2_svg_element_path_t* element, 
 	// ok
 	return p;
 }
-static tb_char_t const* g2_svg_element_path_d_z(g2_svg_element_path_t* element, tb_char_t const* data)
+static tb_char_t const* g2_svg_element_path_d_z(g2_svg_element_path_t* element, tb_char_t const* data, tb_char_t mode)
 {
 	// trace
 	tb_trace_impl("path: d: z");
@@ -380,19 +365,22 @@ static tb_char_t const* g2_svg_element_path_d_z(g2_svg_element_path_t* element, 
 	if (element->path) g2_path_close(element->path);
 
 	// ok
-	return data + 1;
+	return data;
 }
 static tb_void_t g2_svg_element_path_d(g2_svg_element_path_t* element, tb_char_t const* data)
 {
 	// init
 	tb_char_t const* p = data;
-	tb_assert_and_check_return(p);
+	tb_check_return(p && *p);
 
 	// trace
 	tb_trace_impl("path: d");
-	while (*p)
+	tb_char_t l = '\0';
+	tb_char_t m = *p++;
+	while (m)
 	{
-		switch (*p)
+		tb_size_t d = 0;
+		switch (m)
 		{
 		case 'M':
 		case 'm':
@@ -400,36 +388,44 @@ static tb_void_t g2_svg_element_path_d(g2_svg_element_path_t* element, tb_char_t
 		case 'l':
 		case 'T':
 		case 't':
-			p = g2_svg_element_path_d_xy1(element, p);
+			p = g2_svg_element_path_d_xy1(element, p, m); l = m;
 			break;
 		case 'H':
 		case 'h':
 		case 'V':
 		case 'v':
-			p = g2_svg_element_path_d_xoy(element, p);
+			p = g2_svg_element_path_d_xoy(element, p, m); l = m;
 			break;
 		case 'S':
 		case 's':
 		case 'Q':
 		case 'q':
-			p = g2_svg_element_path_d_xy2(element, p);
+			p = g2_svg_element_path_d_xy2(element, p, m); l = m;
 			break;
 		case 'C':
 		case 'c':
-			p = g2_svg_element_path_d_xy3(element, p);
+			p = g2_svg_element_path_d_xy3(element, p, m); l = m;
 			break;
 		case 'A':
 		case 'a':
-			p = g2_svg_element_path_d_a(element, p);
+			p = g2_svg_element_path_d_a(element, p, m); l = m;
 			break;
 		case 'Z':
 		case 'z':
-			p = g2_svg_element_path_d_z(element, p);
+			p = g2_svg_element_path_d_z(element, p, m); l = m;
 			break;
 		default:
-			p++;
+			d = 1;
 			break;
 		}
+
+		// no mode? use the last mode
+		if (d && (tb_isdigit(m) || m == '.' || m == '-')) 
+		{
+			m = l;
+			p--;
+		}
+		else m = *p++;
 	}
 }
 
