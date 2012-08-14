@@ -31,7 +31,97 @@
 /* ///////////////////////////////////////////////////////////////////////
  * inlines
  */
+static __tb_inline__ tb_bool_t g2_svg_painter_style_gradient(g2_svg_painter_t* painter, g2_svg_element_t const* element)
+{
+	// init gradient
+	g2_color_t 		color[256];
+	g2_float_t 		radio[256];
+	tb_size_t 		count = 0;
+	g2_gradient_t 	gradient = {color, radio};
+	if (element->head)
+	{
+		g2_svg_element_t* next = element->head;
+		while (next)
+		{
+			// add stop
+			if (next->type == G2_SVG_ELEMENT_TYPE_STOP && count < 256)
+			{
+				g2_svg_element_stop_t const* stop = (g2_svg_element_stop_t const*)next;
+				color[count] = stop->color;
+				radio[count] = stop->offset;
+				count++;
+			}
 
+			// next
+			next = next->next;
+		}
+	}
+	gradient.count = count;
+	tb_check_return_val(count, TB_FALSE);
+
+	// init shader
+	tb_handle_t shader = TB_NULL;
+	if (element->type == G2_SVG_ELEMENT_TYPE_LINEARGRADIENT)
+	{
+		// the gradient element 
+		g2_svg_element_linear_gradient_t const* gelement = (g2_svg_element_linear_gradient_t const*)element;
+
+		// init mode
+		tb_size_t mode = G2_SHADER_MODE_CLAMP;
+		if (gelement->spread == G2_SVG_STYLE_GRADIENT_SPREAD_REFLECT) mode = G2_SHADER_MODE_MIRROR;
+		else if (gelement->spread == G2_SVG_STYLE_GRADIENT_SPREAD_REPEAT) mode = G2_SHADER_MODE_REPEAT;
+
+		// init shader
+		shader = g2_shader_init_linear(&gelement->pb, &gelement->pe, &gradient, mode);
+	}
+	else
+	{	
+		// the gradient element 
+		g2_svg_element_radial_gradient_t const* gelement = (g2_svg_element_radial_gradient_t const*)element;
+
+		// init mode
+		tb_size_t mode = G2_SHADER_MODE_CLAMP;
+		if (gelement->spread == G2_SVG_STYLE_GRADIENT_SPREAD_REFLECT) mode = G2_SHADER_MODE_MIRROR;
+		else if (gelement->spread == G2_SVG_STYLE_GRADIENT_SPREAD_REPEAT) mode = G2_SHADER_MODE_REPEAT;
+
+		// init shader
+		shader = g2_shader_init_radial(&gelement->cp, &gradient, mode);
+	}
+
+	// has shader?
+	if (shader)
+	{
+		// set shader
+		g2_style_shader_set(g2_style(painter->painter), shader);
+
+		// ok
+		return TB_TRUE;
+	}
+
+	return TB_FALSE;
+}
+static __tb_inline__ tb_bool_t g2_svg_painter_style_url(g2_svg_painter_t* painter, tb_char_t const* url)
+{
+	// id?
+	if (url[0] == '#')
+	{
+		// id => element
+		g2_svg_element_t const* element = tb_hash_get(painter->hash, &url[1]);
+		tb_assert_and_check_return_val(element, TB_FALSE);
+
+		// done
+		switch (element->type)
+		{
+		case G2_SVG_ELEMENT_TYPE_LINEARGRADIENT:
+		case G2_SVG_ELEMENT_TYPE_RADIALGRADIENT:
+			return g2_svg_painter_style_gradient(painter, element);
+		default:
+			break;
+		}
+	}
+
+	return TB_FALSE;
+}
 static __tb_inline__ tb_bool_t g2_svg_painter_style_fill(g2_svg_painter_t* painter, g2_svg_style_t const* style)
 {
 	// no fill? next it
@@ -48,13 +138,15 @@ static __tb_inline__ tb_bool_t g2_svg_painter_style_fill(g2_svg_painter_t* paint
 		g2_style_color_set(g2_style(painter->painter), style->fill.color);
 		break;
 	case G2_SVG_STYLE_PAINT_MODE_URL:
+		if (!g2_svg_painter_style_url(painter, tb_pstring_cstr(&style->fill.url))) return TB_FALSE;
+		break;
 	default:
 		return TB_FALSE;
 	}
 
 	// opacity
 	if (style->fill.flag & G2_SVG_STYLE_PAINT_FLAG_HAS_OPACITY)
-		g2_style_alpha_set(g2_style(painter->painter), (tb_byte_t)g2_float_to_long(style->fill.opacity * 256));
+		g2_style_alpha_set(g2_style(painter->painter), (tb_byte_t)g2_float_to_long(style->fill.opacity * 0xff));
 
 	// ok
 	return TB_TRUE;
@@ -75,6 +167,8 @@ static __tb_inline__ tb_bool_t g2_svg_painter_style_stok(g2_svg_painter_t* paint
 		g2_style_color_set(g2_style(painter->painter), style->stroke.color);
 		break;
 	case G2_SVG_STYLE_PAINT_MODE_URL:
+		if (!g2_svg_painter_style_url(painter, tb_pstring_cstr(&style->stroke.url))) return TB_FALSE;
+		break;
 	default:
 		return TB_FALSE;
 	}
@@ -90,7 +184,7 @@ static __tb_inline__ tb_bool_t g2_svg_painter_style_stok(g2_svg_painter_t* paint
 
 	// opacity
 	if (style->stroke.flag & G2_SVG_STYLE_PAINT_FLAG_HAS_OPACITY)
-		g2_style_alpha_set(g2_style(painter->painter), (tb_byte_t)g2_float_to_long(style->stroke.opacity * 256));
+		g2_style_alpha_set(g2_style(painter->painter), (tb_byte_t)g2_float_to_long(style->stroke.opacity * 0xff));
 
 	// ok
 	return TB_TRUE;
