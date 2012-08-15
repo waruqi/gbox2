@@ -314,7 +314,7 @@ typedef struct __g2_svg_element_image_t
 	// the base
 	g2_svg_element_t 			base;
 
-	// the xlink-href
+	// the href
 	tb_pstring_t 				href;
 
 	// the style

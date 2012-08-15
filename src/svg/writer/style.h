@@ -249,7 +249,7 @@ static __tb_inline__ tb_void_t g2_svg_writer_style(tb_gstream_t* gst, g2_svg_sty
 	tb_assert(gst && style);
 
 	// has style
-	if (style->mode)
+	if (style->mode & G2_SVG_STYLE_MODE_STYLE)
 	{
 		// enter
 		tb_gstream_printf(gst, " style=\"");
@@ -268,6 +268,9 @@ static __tb_inline__ tb_void_t g2_svg_writer_style(tb_gstream_t* gst, g2_svg_sty
 
 		// clippath?
 		if (style->mode & G2_SVG_STYLE_MODE_CLIPPATH) g2_svg_writer_style_clippath(gst, style);
+
+		// opacity?
+		if (style->mode & G2_SVG_STYLE_MODE_OPACITY) tb_gstream_printf(gst, "opacity:%f; ", g2_float_to_tb(style->opacity));
 
 		// leave
 		tb_gstream_printf(gst, "\"");

@@ -159,6 +159,14 @@ static tb_void_t g2_svg_element_painter_load(g2_svg_painter_t* spainter, g2_svg_
 		if (spainter->hash) tb_hash_set(spainter->hash, tb_pstring_cstr(&element->id), element);
 	}
 
+	// load image
+	if (element->type == G2_SVG_ELEMENT_TYPE_IMAGE)
+	{
+		g2_svg_element_image_t* image = (g2_svg_element_image_t*)element;
+		if (!image->style.image.bitmap && image->style.image.url) 
+			image->style.image.bitmap = g2_bitmap_init_url(g2_pixfmt(spainter->painter), image->style.image.url);
+	}
+
 	// walk
 	if (element->head)
 	{
@@ -195,6 +203,12 @@ static tb_void_t g2_svg_element_painter_draw(g2_svg_painter_t* spainter, g2_svg_
 			if (element->fill && style.mode & G2_SVG_STYLE_MODE_FILL)
 			{
 				if (g2_svg_painter_style_fill(spainter, &style))
+					element->fill(element, spainter);
+			}
+			// image
+			else if (element->fill && style.mode & G2_SVG_STYLE_MODE_IMAGE)
+			{
+				if (g2_svg_painter_style_image(spainter, &style))
 					element->fill(element, spainter);
 			}
 

@@ -35,6 +35,7 @@ tb_bool_t g2_svg_style_init(g2_svg_style_t* style)
 
 	// init
 	style->mode 			= G2_SVG_STYLE_MODE_NONE;
+	style->opacity 			= G2_ONE;
 
 	// init fill
 	style->fill.mode 		= G2_SVG_STYLE_PAINT_MODE_INHERIT;
@@ -64,6 +65,7 @@ tb_bool_t g2_svg_style_init(g2_svg_style_t* style)
 	// init clippath
 	tb_pstring_init(&style->clippath.url);
 
+	// ok
 	return TB_TRUE;
 }
 tb_void_t g2_svg_style_exit(g2_svg_style_t* style)
@@ -76,11 +78,14 @@ tb_void_t g2_svg_style_exit(g2_svg_style_t* style)
 		// exit stroke
 		tb_pstring_exit(&style->stroke.url);
 
+		// exit font
+		tb_pstring_exit(&style->font.family);
+
 		// exit clippath
 		tb_pstring_exit(&style->clippath.url);
 
-		// exit font
-		tb_pstring_exit(&style->font.family);
+		// exit image
+		if (style->image.bitmap) g2_bitmap_exit(style->image.bitmap);
 	}
 }
 

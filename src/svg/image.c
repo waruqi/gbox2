@@ -61,11 +61,22 @@ static tb_void_t g2_svg_element_image_writ(g2_svg_element_t const* element, tb_g
 	// transform 
 	g2_svg_writer_transform(gst, &image->transform); 
 }
+static tb_void_t g2_svg_element_image_draw(g2_svg_element_t const* element, g2_svg_painter_t* painter)
+{
+	g2_svg_element_image_t const* image = (g2_svg_element_image_t const*)element;
+	tb_assert_and_check_return(image && painter && painter->painter);
+
+	// draw
+	g2_draw_rect(painter->painter, &image->rect);
+}
 static tb_void_t g2_svg_element_image_exit(g2_svg_element_t* element)
 {
 	g2_svg_element_image_t* image = (g2_svg_element_image_t*)element;
 	if (image)
 	{
+		// init href
+		tb_pstring_exit(&image->href);
+
 		// exit style
 		g2_svg_style_exit(&image->style);
 	}
@@ -80,8 +91,14 @@ g2_svg_element_t* g2_svg_element_init_image(tb_handle_t reader)
 	tb_assert_and_check_return_val(element, TB_NULL);
 
 	// init
-	element->base.exit = g2_svg_element_image_exit;
-	element->base.writ = g2_svg_element_image_writ;
+	element->base.exit 		= g2_svg_element_image_exit;
+	element->base.writ 		= g2_svg_element_image_writ;
+	element->base.fill 		= g2_svg_element_image_draw;
+	element->base.style 	= &element->style;
+	element->base.transform = &element->transform;
+
+	// init href
+	tb_pstring_init(&element->href);
 
 	// init style
 	g2_svg_style_init(&element->style);
@@ -104,12 +121,17 @@ g2_svg_element_t* g2_svg_element_init_image(tb_handle_t reader)
 			g2_svg_parser_float(p, &element->rect.w);
 		else if (!tb_pstring_cstricmp(&attr->name, "height"))
 			g2_svg_parser_float(p, &element->rect.h);
+		else if (!tb_pstring_cstricmp(&attr->name, "opacity"))
+			g2_svg_parser_style_opacity(p, &element->style);
 		else if (!tb_pstring_cstricmp(&attr->name, "clip-path"))
 			g2_svg_parser_style_clippath(p, &element->style);
 		else if (!tb_pstring_cstricmp(&attr->name, "transform"))
 			g2_svg_parser_transform(p, &element->transform);
 		else if (!tb_pstring_cstricmp(&attr->name, "xlink:href"))
-			tb_pstring_strcpy(&element->href, &attr->data);
+		{
+			element->style.mode |= G2_SVG_STYLE_MODE_IMAGE;
+			element->style.image.url = tb_pstring_strcpy(&element->href, &attr->data);
+		}
 	}
 
 	// ok

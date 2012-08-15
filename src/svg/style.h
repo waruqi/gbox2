@@ -41,6 +41,9 @@ typedef enum __g2_svg_style_mode_t
 ,	G2_SVG_STYLE_MODE_CLIPPATH 				= 4 	//!< clippath
 ,	G2_SVG_STYLE_MODE_FONT 					= 8 	//!< font
 ,	G2_SVG_STYLE_MODE_TEXT 					= 16 	//!< text
+,	G2_SVG_STYLE_MODE_IMAGE 				= 32 	//!< image
+,	G2_SVG_STYLE_MODE_OPACITY 				= 64 	//!< opacity
+,	G2_SVG_STYLE_MODE_STYLE 				= G2_SVG_STYLE_MODE_FILL | G2_SVG_STYLE_MODE_STROKE | G2_SVG_STYLE_MODE_CLIPPATH | G2_SVG_STYLE_MODE_FONT | G2_SVG_STYLE_MODE_TEXT | G2_SVG_STYLE_MODE_OPACITY
 
 }g2_svg_style_mode_t;
 
@@ -209,6 +212,17 @@ typedef struct __g2_svg_style_text_t
 
 }g2_svg_style_text_t;
 
+// the svg style image type
+typedef struct __g2_svg_style_image_t
+{
+	// the url
+	tb_char_t const* 			url;
+
+	// the bitmap
+	tb_handle_t 				bitmap;
+
+}g2_svg_style_image_t;
+
 // the svg style type
 typedef struct __g2_svg_style_t
 {
@@ -224,6 +238,9 @@ typedef struct __g2_svg_style_t
 	// the stroke width
 	g2_float_t 					width;
 
+	// the opacity
+	g2_float_t 					opacity;
+
 	// the fill paint
 	g2_svg_style_paint_t 		fill;
 
@@ -238,6 +255,9 @@ typedef struct __g2_svg_style_t
 
 	// the text
 	g2_svg_style_text_t 		text;
+
+	// the image
+	g2_svg_style_image_t 		image;
 
 }g2_svg_style_t;
 

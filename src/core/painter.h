@@ -68,6 +68,9 @@ typedef enum __g2_save_mode_t
 tb_handle_t 		g2_init(tb_handle_t context);
 tb_void_t 			g2_exit(tb_handle_t painter);
 
+// pixfmt
+tb_size_t 			g2_pixfmt(tb_handle_t painter);
+
 // save & load
 tb_size_t 			g2_save(tb_handle_t painter, tb_size_t mode);
 tb_void_t 			g2_load(tb_handle_t painter);

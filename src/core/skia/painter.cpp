@@ -109,6 +109,13 @@ fail:
 	if (spainter) g2_skia_exit(spainter);
 	return TB_NULL;
 }
+static tb_size_t g2_skia_pixfmt(tb_handle_t painter)
+{
+	g2_skia_painter_t* spainter = static_cast<g2_skia_painter_t*>(painter);
+	tb_assert_and_check_return_val(spainter && spainter->context, G2_PIXFMT_NONE);
+
+	return g2_bitmap_pixfmt(spainter->context);
+}
 static tb_size_t g2_skia_save(tb_handle_t painter, tb_size_t mode)
 {
 	g2_skia_painter_t* spainter = static_cast<g2_skia_painter_t*>(painter);
@@ -369,6 +376,10 @@ extern "C"
 	tb_void_t g2_exit(tb_handle_t painter)
 	{
 		g2_skia_exit(painter);
+	}
+	tb_size_t g2_pixfmt(tb_handle_t painter)
+	{
+		return g2_skia_pixfmt(painter);
 	}
 	tb_size_t g2_save(tb_handle_t painter, tb_size_t mode)
 	{

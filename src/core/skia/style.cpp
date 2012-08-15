@@ -49,8 +49,14 @@ static tb_void_t g2_skia_style_exit(tb_handle_t style)
 	SkPaint* sstyle = static_cast<SkPaint*>(style);
 	tb_assert_and_check_return(sstyle);
  
+	// shader
+	SkShader* shader = sstyle->getShader();
+
 	// free it
  	delete sstyle;
+
+	// ref--
+	if (shader) SkSafeUnref(shader);
 }
 static tb_void_t g2_skia_style_clear(tb_handle_t style)
 {

@@ -129,18 +129,16 @@ static __tb_inline__ tb_bool_t g2_svg_painter_style_gradient_linear(g2_svg_paint
 
 	// init shader
 	tb_handle_t shader = g2_shader_init_linear(&pb, &pe, &gradient, mode);
+	tb_assert_and_check_return_val(shader, TB_FALSE);
 
-	// has shader?
-	if (shader)
-	{
-		// set shader
-		g2_style_shader_set(g2_style(painter->painter), shader);
+	// set shader
+	g2_style_shader_set(g2_style(painter->painter), shader);
 
-		// ok
-		return TB_TRUE;
-	}
+	// exit shader 
+	g2_shader_exit(shader);
 
-	return TB_FALSE;
+	// ok
+	return TB_TRUE;
 }
 static __tb_inline__ tb_bool_t g2_svg_painter_style_gradient_radial(g2_svg_painter_t* painter, g2_svg_element_radial_gradient_t const* element)
 {	
@@ -158,18 +156,16 @@ static __tb_inline__ tb_bool_t g2_svg_painter_style_gradient_radial(g2_svg_paint
 
 	// init shader
 	tb_handle_t shader = g2_shader_init_radial(&cp, &gradient, mode);
+	tb_assert_and_check_return_val(shader, TB_FALSE);
 
-	// has shader?
-	if (shader)
-	{
-		// set shader
-		g2_style_shader_set(g2_style(painter->painter), shader);
+	// set shader
+	g2_style_shader_set(g2_style(painter->painter), shader);
 
-		// ok
-		return TB_TRUE;
-	}
+	// exit shader 
+	g2_shader_exit(shader);
 
-	return TB_FALSE;
+	// ok
+	return TB_TRUE;
 }
 static __tb_inline__ tb_bool_t g2_svg_painter_style_url(g2_svg_painter_t* painter, tb_char_t const* url)
 {
@@ -219,6 +215,8 @@ static __tb_inline__ tb_bool_t g2_svg_painter_style_fill(g2_svg_painter_t* paint
 	// opacity
 	if (style->fill.flag & G2_SVG_STYLE_PAINT_FLAG_HAS_OPACITY)
 		g2_style_alpha_set(g2_style(painter->painter), (tb_byte_t)g2_float_to_long(style->fill.opacity * 0xff));
+	else if (style->mode & G2_SVG_STYLE_MODE_OPACITY)
+		g2_style_alpha_set(g2_style(painter->painter), (tb_byte_t)g2_float_to_long(style->opacity * 0xff));
 
 	// ok
 	return TB_TRUE;
@@ -257,6 +255,34 @@ static __tb_inline__ tb_bool_t g2_svg_painter_style_stok(g2_svg_painter_t* paint
 	// opacity
 	if (style->stroke.flag & G2_SVG_STYLE_PAINT_FLAG_HAS_OPACITY)
 		g2_style_alpha_set(g2_style(painter->painter), (tb_byte_t)g2_float_to_long(style->stroke.opacity * 0xff));
+	else if (style->mode & G2_SVG_STYLE_MODE_OPACITY)
+		g2_style_alpha_set(g2_style(painter->painter), (tb_byte_t)g2_float_to_long(style->opacity * 0xff));
+
+	// ok
+	return TB_TRUE;
+}
+static __tb_inline__ tb_bool_t g2_svg_painter_style_image(g2_svg_painter_t* painter, g2_svg_style_t const* style)
+{
+	// no fill? next it
+	tb_check_return_val(style->mode & G2_SVG_STYLE_MODE_IMAGE && style->image.bitmap, TB_FALSE);
+
+	// image
+	g2_style_clear(g2_style(painter->painter));
+	g2_style_mode_set(g2_style(painter->painter), G2_STYLE_MODE_FILL);
+
+	// opacity
+	if (style->mode & G2_SVG_STYLE_MODE_OPACITY)
+		g2_style_alpha_set(g2_style(painter->painter), (tb_byte_t)g2_float_to_long(style->opacity * 0xff));
+
+	// init shader
+	tb_handle_t shader = g2_shader_init_bitmap(style->image.bitmap, G2_SHADER_MODE_CLAMP, G2_SHADER_MODE_CLAMP);
+	tb_assert_and_check_return_val(shader, TB_FALSE);
+
+	// set shader
+	g2_style_shader_set(g2_style(painter->painter), shader);
+
+	// exit shader 
+	g2_shader_exit(shader);
 
 	// ok
 	return TB_TRUE;
@@ -333,6 +359,23 @@ static __tb_inline__ tb_void_t g2_svg_painter_style_walk(g2_svg_style_t* applied
 			applied->stroke.flag |= G2_SVG_STYLE_PAINT_FLAG_HAS_OPACITY;
 			applied->stroke.opacity = style->stroke.opacity;
 		}
+	}
+
+	// has opacity?
+	if (!(applied->mode & G2_SVG_STYLE_MODE_OPACITY) 
+		&& style->mode & G2_SVG_STYLE_MODE_OPACITY)
+	{
+		applied->mode |= G2_SVG_STYLE_MODE_OPACITY;
+		applied->opacity = style->opacity;
+	}
+
+	// has image?
+	if (!(applied->mode & G2_SVG_STYLE_MODE_IMAGE) 
+		&& style->mode & G2_SVG_STYLE_MODE_IMAGE)
+	{
+		applied->mode |= G2_SVG_STYLE_MODE_IMAGE;
+		applied->image.url = style->image.url;
+		applied->image.bitmap = style->image.bitmap;
 	}
 }
 

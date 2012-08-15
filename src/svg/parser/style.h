@@ -256,20 +256,10 @@ static __tb_inline__ tb_char_t const* g2_svg_parser_style_opacity(tb_char_t cons
 	while (tb_isspace(*p)) p++;
 
 	// mode
-	style->mode |= G2_SVG_STYLE_MODE_FILL | G2_SVG_STYLE_MODE_STROKE;
-
-	// flag
-	style->fill.flag |= G2_SVG_STYLE_PAINT_FLAG_HAS_OPACITY;
-	style->stroke.flag |= G2_SVG_STYLE_PAINT_FLAG_HAS_OPACITY;
+	style->mode |= G2_SVG_STYLE_MODE_OPACITY;
 
 	// opacity
-	g2_float_t opacity;
-	p = g2_svg_parser_float(p, &opacity);
-	style->fill.opacity = opacity;
-	style->stroke.opacity = opacity;
-
-	// ok
-	return p;
+	return g2_svg_parser_float(p, &style->opacity);
 }
 static __tb_inline__ tb_char_t const* g2_svg_parser_style_gradient_spread(tb_char_t const* p, tb_size_t* spread)
 {
