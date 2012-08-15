@@ -29,17 +29,6 @@
 #include "prefix.h"
 
 /* ///////////////////////////////////////////////////////////////////////
- * types
- */
-// the bmp decoder type
-typedef struct __g2_bmp_decoder_t
-{
-	// the base
-	g2_image_decoder_t base;
-
-}g2_bmp_decoder_t;
-
-/* ///////////////////////////////////////////////////////////////////////
  * interfaces
  */
 g2_image_decoder_t* g2_bmp_decoder_init(tb_size_t pixfmt, tb_gstream_t* gst);

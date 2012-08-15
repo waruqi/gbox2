@@ -102,6 +102,17 @@
  */
 
 /* ///////////////////////////////////////////////////////////////////////
+ * types
+ */
+// the bmp decoder type
+typedef struct __g2_bmp_decoder_t
+{
+	// the base
+	g2_image_decoder_t base;
+
+}g2_bmp_decoder_t;
+
+/* ///////////////////////////////////////////////////////////////////////
  * implementation
  */
 static tb_bool_t g2_bmp_decoder_probe(tb_gstream_t* gst)

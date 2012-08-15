@@ -40,6 +40,7 @@ gbox2_C_FILES 			+= \
 						core/matrix \
 						core/painter \
 						core/image/decoder/bmp \
+						core/image/decoder/jpg \
 						core/image/decoder/decoder
 
 gbox2_C_FILES-$(G2_CONFIG_CORE_GL10) += \
@@ -147,6 +148,58 @@ freetype_C_FILES 		:= $(addprefix third/freetype/,$(freetype_C_FILES))
 gbox2_C_FILES-$(G2_CONFIG_CORE_SKIA) 	+= $(freetype_C_FILES)
 gbox2_CFLAGS-$(G2_CONFIG_CORE_SKIA) 	+= $(freetype_CFLAGS)
 gbox2_INC_DIR-$(G2_CONFIG_CORE_SKIA) 	+= $(freetype_INC_DIR)
+	
+# jpeg files
+jpeg_C_FILES 			= \
+						jcapimin \
+						jcapistd \
+						jccoefct \
+						jccolor \
+						jcdctmgr \
+						jchuff \
+						jcinit \
+						jcmainct \
+						jcmarker \
+						jcmaster \
+						jcomapi \
+						jcparam \
+						jcphuff \
+						jcprepct \
+						jcsample \
+						jctrans \
+						jdapimin \
+						jdapistd \
+						jdatadst \
+						jdatasrc \
+						jdcoefct \
+						jdcolor \
+						jddctmgr \
+						jdhuff \
+						jdinput \
+						jdmainct \
+						jdmarker \
+						jdmaster \
+						jdmerge \
+						jdphuff \
+						jdpostct \
+						jdsample \
+						jdtrans \
+						jerror \
+						jfdctflt \
+						jfdctfst \
+						jfdctint \
+						jidctflt \
+						jidctfst \
+						jidctint \
+						jidctred \
+						jquant1 \
+						jquant2 \
+						jutils \
+						jmemansi \
+						jmemmgr
+		
+jpeg_C_FILES 			:= $(addprefix third/jpeg/,$(jpeg_C_FILES))
+gbox2_C_FILES			+= $(jpeg_C_FILES)
 	
 # skia files
 skia_CPP_FILES 			= \
