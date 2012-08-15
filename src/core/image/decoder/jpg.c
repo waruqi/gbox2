@@ -91,7 +91,8 @@ static boolean g2_jpg_decoder_jsrc_fill_input_buffer(j_decompress_ptr jdec)
 
 	// read 
 	tb_long_t read = tb_gstream_aread(jsm->jgst, jsm->data, TB_GSTREAM_BLOCK_MAXN);
-	tb_check_return_val(read > 0, TB_FALSE);
+	tb_assert_and_check_return_val(read >= 0, TB_FALSE);
+	tb_check_return_val(read > 0, TB_TRUE);
 
 	// fill
 	jsm->jsrc.next_input_byte       = jsm->data;
@@ -154,9 +155,72 @@ static tb_bool_t g2_jpg_decoder_probe(tb_gstream_t* gst)
 }
 static tb_handle_t g2_jpg_decoder_done(g2_image_decoder_t* decoder)
 {
+	// check
 	tb_assert_and_check_return_val(decoder && decoder->type == G2_IMAGE_TYPE_JPG, TB_NULL);
 
-	tb_handle_t bitmap = TB_NULL;
+	// decoder
+	g2_jpg_decoder_t* jdecoder = (g2_jpg_decoder_t*)decoder;
+
+	// the pixfmt
+	tb_size_t pixfmt 	= decoder->pixfmt;
+	tb_assert_and_check_return_val(G2_PIXFMT_OK(pixfmt), TB_NULL);
+
+	// the pixmap
+	g2_pixmap_t* pixmap = g2_pixmap(pixfmt, 0xff);
+	tb_assert_and_check_return_val(pixmap, TB_NULL);
+
+	// the width & height
+	tb_size_t width 	= decoder->width;
+	tb_size_t height 	= decoder->height;
+	tb_assert_and_check_return_val(width & height, TB_NULL);
+
+	// init bitmap
+	tb_handle_t bitmap = g2_bitmap_init(pixfmt, width, height, 0);
+	tb_assert_and_check_return_val(bitmap, TB_NULL);
+
+	// make bitmap
+	tb_byte_t* data = g2_bitmap_make(bitmap);
+	tb_assert_and_check_goto(data, fail);
+
+	// init pixfmt: rgb
+	jdecoder->jdec.out_color_space = JCS_RGB;
+
+	// decode it
+	jpeg_start_decompress(&jdecoder->jdec);
+
+	// init line
+	tb_size_t 	lsize = jdecoder->jdec.output_components * jdecoder->jdec.output_width;
+	JSAMPROW 	ldata = jdecoder->jdec.mem->alloc_small((j_common_ptr)&jdecoder->jdec, JPOOL_IMAGE, lsize);
+	tb_assert_and_check_goto(ldata && lsize, fail);
+
+	// read lines
+	g2_color_t 	c;
+	tb_size_t 	b = pixmap->btp;
+	tb_size_t 	n = g2_bitmap_lpitch(bitmap);
+	tb_byte_t* 	p = data;
+	while (jdecoder->jdec.output_scanline < jdecoder->jdec.output_height)
+	{
+		// read line
+		jpeg_read_scanlines(&jdecoder->jdec, &ldata, 1);
+
+		// save data
+		tb_size_t 	i = 0;
+		tb_byte_t* 	d = p;
+		for (i = 0; i < lsize; i += 3, d += b)
+		{
+			c.r = GETJSAMPLE(ldata[i + 0]);
+			c.g = GETJSAMPLE(ldata[i + 1]);
+			c.b = GETJSAMPLE(ldata[i + 2]);
+			c.a = 0xff;
+			pixmap->color_set(d, c);
+		}
+
+		// next line
+		p += n;
+	}
+
+	// finish it
+	jpeg_finish_decompress(&jdecoder->jdec);
 
 	// ok
 	return bitmap;

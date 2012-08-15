@@ -53,6 +53,7 @@ typedef enum __tb_url_proto_t
 ,	TB_URL_PROTO_FILE 	= 1 	//!< file://... or files://...
 ,	TB_URL_PROTO_SOCK 	= 2 	//!< sock://... or socks://...
 ,	TB_URL_PROTO_HTTP 	= 3 	//!< http://... or https://...
+,	TB_URL_PROTO_RTSP 	= 4 	//!< rtsp://... or rtsps://...
 
 }tb_url_proto_t;
 
@@ -60,10 +61,16 @@ typedef enum __tb_url_proto_t
 typedef struct __tb_url_t
 {
 	// the protocol 
-	tb_uint16_t 	poto: 	14;
+	tb_uint16_t 	poto: 	6;
 
 	// is ssl?
 	tb_uint16_t 	bssl: 	1;
+
+	// is win?
+	tb_uint16_t 	bwin: 	1;
+
+	// the windows prefix 
+	tb_uint16_t 	pwin: 	8;
 
 	// the port
 	tb_uint16_t 	port;

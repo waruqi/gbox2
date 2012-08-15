@@ -98,10 +98,11 @@ static tb_void_t g2_demo_render()
 	g2_draw_rect(g_painter, &rect);
 
 	// save 
-	g2_save(g_painter, G2_SAVE_MODE_MATRIX_CLIP);
+	g2_save(g_painter, G2_SAVE_MODE_MATRIX);
+//	g2_save(g_painter, G2_SAVE_MODE_MATRIX_CLIP);
 
 	// clip
-	g2_clip_rect(g_painter, G2_CLIP_MODE_REPLACE, &rect);
+//	g2_clip_rect(g_painter, G2_CLIP_MODE_REPLACE, &rect);
 
 	// matrix
 	g2_translate(g_painter, rect.x, rect.y);
