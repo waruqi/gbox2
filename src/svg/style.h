@@ -221,6 +221,9 @@ typedef struct __g2_svg_style_image_t
 	// the bitmap
 	tb_handle_t 				bitmap;
 
+	// the bounds
+	g2_rect_t const* 			bounds;
+
 }g2_svg_style_image_t;
 
 // the svg style type

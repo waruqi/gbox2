@@ -41,6 +41,8 @@ gbox2_C_FILES 			+= \
 						core/painter \
 						core/image/decoder/bmp \
 						core/image/decoder/jpg \
+						core/image/decoder/png \
+						core/image/decoder/gif \
 						core/image/decoder/decoder
 
 gbox2_C_FILES-$(G2_CONFIG_CORE_GL10) += \
@@ -200,6 +202,27 @@ jpeg_C_FILES 			= \
 		
 jpeg_C_FILES 			:= $(addprefix third/jpeg/,$(jpeg_C_FILES))
 gbox2_C_FILES			+= $(jpeg_C_FILES)
+		
+# png files
+png_C_FILES 			= \
+						png \
+						pngerror \
+						pngget \
+						pngmem \
+						pngpread \
+						pngread \
+						pngrio \
+						pngrtran \
+						pngrutil \
+						pngset \
+						pngtrans \
+						pngwio \
+						pngwrite \
+						pngwtran \
+						pngwutil
+	
+png_C_FILES 			:= $(addprefix third/png/,$(png_C_FILES))
+gbox2_C_FILES			+= $(png_C_FILES)
 	
 # skia files
 skia_CPP_FILES 			= \

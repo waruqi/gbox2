@@ -36,6 +36,7 @@
 
 // constant
 #define G2_ONE 					TB_FIXED_ONE
+#define G2_TWO 					(TB_FIXED_ONE + TB_FIXED_ONE)
 #define G2_HAF 					TB_FIXED_HALF
 #define G2_MAF 					TB_FIXED_MAX
 #define G2_MIF 					TB_FIXED_MIN
@@ -112,6 +113,7 @@
 
 // constant
 #define G2_ONE 					(1.0f)
+#define G2_TWO 					(2.0f)
 #define G2_HAF 					(0.5f)
 #define G2_MAF 					TB_MAF
 #define G2_MIF 					TB_MIF

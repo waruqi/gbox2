@@ -134,6 +134,10 @@ g2_svg_element_t* g2_svg_element_init_image(tb_handle_t reader)
 		}
 	}
 
+	// bounds
+	if (element->style.mode & G2_SVG_STYLE_MODE_IMAGE) 
+		element->style.image.bounds = &element->rect;
+
 	// ok
 	return element;
 }

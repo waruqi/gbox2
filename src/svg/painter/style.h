@@ -278,6 +278,34 @@ static __tb_inline__ tb_bool_t g2_svg_painter_style_image(g2_svg_painter_t* pain
 	tb_handle_t shader = g2_shader_init_bitmap(style->image.bitmap, G2_SHADER_MODE_CLAMP, G2_SHADER_MODE_CLAMP);
 	tb_assert_and_check_return_val(shader, TB_FALSE);
 
+	// bounds
+	g2_rect_t const* bounds = style->image.bounds;
+	
+	// matrix
+	if (bounds)
+	{
+		// init size
+		tb_size_t 	rw = g2_bitmap_width(style->image.bitmap);
+		tb_size_t 	rh = g2_bitmap_height(style->image.bitmap);
+		g2_float_t 	bw = bounds->w;
+		g2_float_t 	bh = bounds->h;
+		g2_float_t 	cw = bw;
+		g2_float_t 	ch = bh;
+		g2_float_t 	fw = g2_long_to_float((g2_float_to_long(ch) * rw) / rh);
+		g2_float_t 	fh = g2_long_to_float((g2_float_to_long(cw) * rh) / rw);
+		if (fw < cw) cw = fw;
+		if (fh < ch) ch = fh;
+
+		// init matrix
+		g2_matrix_t matrix;
+		g2_matrix_clear(&matrix);
+		g2_matrix_init_translate(&matrix, g2_rsh((bw - cw), 1), g2_rsh((bh - ch), 1));
+		g2_matrix_scale(&matrix, cw / rw, ch / rh);
+
+		// set matrix
+		g2_shader_matrix_set(shader, &matrix);
+	}
+
 	// set shader
 	g2_style_shader_set(g2_style(painter->painter), shader);
 
@@ -376,6 +404,7 @@ static __tb_inline__ tb_void_t g2_svg_painter_style_walk(g2_svg_style_t* applied
 		applied->mode |= G2_SVG_STYLE_MODE_IMAGE;
 		applied->image.url = style->image.url;
 		applied->image.bitmap = style->image.bitmap;
+		applied->image.bounds = style->image.bounds;
 	}
 }
 

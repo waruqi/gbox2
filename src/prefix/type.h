@@ -324,6 +324,46 @@ static __tb_inline__ g2_rect_t g2_irect_to_rect(g2_irect_t const* rect)
 	return r;
 }
 
+// inflate rect
+static __tb_inline__ tb_void_t g2_rect_inflate(g2_rect_t* rect, g2_float_t inc)
+{
+	rect->x -= inc;
+	rect->y -= inc;
+	rect->w += inc + inc;
+	rect->h += inc + inc;
+}
+
+// deflate rect
+static __tb_inline__ tb_void_t g2_rect_deflate(g2_rect_t* rect, g2_float_t dec)
+{
+	g2_float_t dec2 = dec + dec;
+
+	rect->x += dec;
+	rect->y += dec;
+	if (rect->w >= dec2) rect->w -= dec2;
+	if (rect->h >= dec2) rect->h -= dec2;
+}
+
+// inflate irect
+static __tb_inline__ tb_void_t g2_irect_inflate(g2_irect_t* rect, tb_size_t inc)
+{
+	rect->x -= inc;
+	rect->y -= inc;
+	rect->w += inc + inc;
+	rect->h += inc + inc;
+}
+
+// deflate irect
+static __tb_inline__ tb_void_t g2_irect_deflate(g2_irect_t* rect, tb_size_t dec)
+{
+	tb_size_t dec2 = dec + dec;
+
+	rect->x += dec;
+	rect->y += dec;
+	if (rect->w >= dec2) rect->w -= dec2;
+	if (rect->h >= dec2) rect->h -= dec2;
+}
+
 // make line
 static __tb_inline__ g2_line_t g2_line_make(g2_float_t x0, g2_float_t y0, g2_float_t x1, g2_float_t y1)
 {

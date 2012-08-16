@@ -90,13 +90,13 @@ static boolean g2_jpg_decoder_jsrc_fill_input_buffer(j_decompress_ptr jdec)
 	tb_assert_and_check_return_val(jsm && jsm->jgst, TB_FALSE);
 
 	// read 
-	tb_long_t read = tb_gstream_aread(jsm->jgst, jsm->data, TB_GSTREAM_BLOCK_MAXN);
-	tb_assert_and_check_return_val(read >= 0, TB_FALSE);
-	tb_check_return_val(read > 0, TB_TRUE);
+	tb_hize_t left = tb_gstream_left(jsm->jgst);
+	tb_size_t need = (tb_size_t)tb_min(left, TB_GSTREAM_BLOCK_MAXN);
+	if (!tb_gstream_bread(jsm->jgst, jsm->data, need)) return TB_FALSE;
 
 	// fill
 	jsm->jsrc.next_input_byte       = jsm->data;
-	jsm->jsrc.bytes_in_buffer       = read;
+	jsm->jsrc.bytes_in_buffer       = need;
 
 	// ok
 	return TB_TRUE;
@@ -231,7 +231,7 @@ fail:
 }
 static tb_void_t g2_jpg_decoder_free(g2_image_decoder_t* decoder)
 {
-	tb_assert_and_check_return_val(decoder && decoder->type == G2_IMAGE_TYPE_JPG, TB_NULL);
+	tb_assert_and_check_return(decoder && decoder->type == G2_IMAGE_TYPE_JPG);
 
 	// exit jpeg decoder
 	jpeg_destroy_decompress(&((g2_jpg_decoder_t*)decoder)->jdec);
@@ -272,7 +272,7 @@ g2_image_decoder_t* g2_jpg_decoder_init(tb_size_t pixfmt, tb_gstream_t* gst)
 	jpeg_read_header(&decoder->jdec, TB_TRUE);
 	tb_assert_and_check_goto(!decoder->jerr.berr, fail);
 
-	// init witdth & height
+	// init width & height
 	decoder->base.width 	= decoder->jdec.image_width;
 	decoder->base.height 	= decoder->jdec.image_height;
 	tb_trace_impl("size: %lux%lu", decoder->base.width, decoder->base.height);

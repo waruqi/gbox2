@@ -17,57 +17,22 @@
  * Copyright (C) 2009 - 2012, ruki All rights reserved.
  *
  * @author		ruki
- * @file		decoder.c
+ * @file		gif.h
  *
  */
+#ifndef G2_CORE_IMAGE_DECODER_GIF_H
+#define G2_CORE_IMAGE_DECODER_GIF_H
 
 /* ///////////////////////////////////////////////////////////////////////
  * includes
  */
-#include "decoder.h"
-#include "bmp.h"
-#include "jpg.h"
-#include "png.h"
-#include "gif.h"
+#include "prefix.h"
 
 /* ///////////////////////////////////////////////////////////////////////
- * implementation
+ * interfaces
  */
-g2_image_decoder_t* g2_image_decoder_init(tb_size_t pixfmt, tb_gstream_t* gst)
-{
-	// init the image decoder list
-	static g2_image_decoder_t* (*init[])(tb_size_t , tb_gstream_t* ) =
-	{
-		g2_jpg_decoder_init
-	,	g2_png_decoder_init
-	,	g2_bmp_decoder_init
-	,	g2_gif_decoder_init
-	};
+g2_image_decoder_t* g2_gif_decoder_init(tb_size_t pixfmt, tb_gstream_t* gst);
 
-	// try initing it
-	tb_size_t i = 0;
-	tb_size_t n = tb_arrayn(init);
-	g2_image_decoder_t* decoder = TB_NULL;
-	for (i = 0; i < n; i++)
-	{
-		if (init[i] && (decoder = init[i](pixfmt, gst))) return decoder;
-	}
+#endif
 
-	return TB_NULL;
-}
-tb_void_t g2_image_decoder_exit(g2_image_decoder_t* decoder)
-{
-	if (decoder)
-	{
-		if (decoder->free) decoder->free(decoder);
-		tb_free(decoder);
-	}
-}
-tb_handle_t g2_image_decoder_done(g2_image_decoder_t* decoder)
-{
-	// check
-	tb_assert_and_check_return_val(decoder && decoder->done, TB_NULL);
 
-	// done
-	return decoder->done(decoder);
-}

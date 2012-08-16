@@ -90,19 +90,9 @@ static tb_void_t g2_demo_render()
 	g2_rect_t rect;
 	if (g_bm) rect = g2_rect_imake(-100, -100, 200, 200);
 	else rect = g2_rect_imake(g_x0 - g_dx, g_y0 - g_dy, g_dx << 1, g_dy << 1);
-	
-	// bounds
-	g2_style_clear(g2_style(g_painter));
-	g2_style_mode_set(g2_style(g_painter), G2_STYLE_MODE_STROKE);
-	g2_style_color_set(g2_style(g_painter), G2_COLOR_GREEN);
-	g2_draw_rect(g_painter, &rect);
 
 	// save 
 	g2_save(g_painter, G2_SAVE_MODE_MATRIX);
-//	g2_save(g_painter, G2_SAVE_MODE_MATRIX_CLIP);
-
-	// clip
-//	g2_clip_rect(g_painter, G2_CLIP_MODE_REPLACE, &rect);
 
 	// matrix
 	g2_translate(g_painter, rect.x, rect.y);
@@ -113,4 +103,10 @@ static tb_void_t g2_demo_render()
 
 	// load
 	g2_load(g_painter);
+	
+	// bounds
+	g2_style_clear(g2_style(g_painter));
+	g2_style_mode_set(g2_style(g_painter), G2_STYLE_MODE_STROKE);
+	g2_style_color_set(g2_style(g_painter), G2_COLOR_GREEN);
+	g2_draw_rect(g_painter, &rect);
 }
