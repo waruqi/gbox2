@@ -105,8 +105,9 @@ static tb_handle_t g2_png_decoder_done(g2_image_decoder_t* decoder)
 	tb_assert_and_check_return_val(G2_PIXFMT_OK(pixfmt), TB_NULL);
 
 	// the pixmap
-	g2_pixmap_t* pixmap = g2_pixmap(pixfmt, 0xff);
-	tb_assert_and_check_return_val(pixmap, TB_NULL);
+	g2_pixmap_t* dpixmap = g2_pixmap(pixfmt, 0xff);
+	g2_pixmap_t* spixmap = g2_pixmap(G2_PIXFMT_ARGB8888 | G2_PIXFMT_LENDIAN, 0xff);
+	tb_assert_and_check_return_val(dpixmap && spixmap, TB_NULL);
 
 	// the width & height
 	tb_size_t width 	= decoder->width;
@@ -141,6 +142,13 @@ static tb_handle_t g2_png_decoder_done(g2_image_decoder_t* decoder)
 	if (png_get_valid(pdecoder->png, pdecoder->info, PNG_INFO_tRNS))
 		png_set_tRNS_to_alpha(pdecoder->png);
 
+	// flip the rgb pixels to bgr (or rgba to bgra)
+	if (pdecoder->color_type & PNG_COLOR_MASK_COLOR)
+ 		png_set_bgr(pdecoder->png);
+
+	// swap the rgba or ga data to argb or ag (or bgra to abgr) 
+//	png_set_swap_alpha(pdecoder->png);
+
 	// turn on interlace handling. required if you are not using
 	// png_read_image(). to see how to handle interlacing passes,
 	// see the png_read_row() method below:
@@ -160,8 +168,7 @@ static tb_handle_t g2_png_decoder_done(g2_image_decoder_t* decoder)
 
 		// walk line
 		tb_size_t 	j;
-		g2_color_t 	c;
-		tb_size_t 	b = pixmap->btp;
+		tb_size_t 	b = dpixmap->btp;
 		tb_size_t 	n = g2_bitmap_lpitch(bitmap);
 		tb_byte_t* 	p = data;
 		for (j = 0; j < height; j++)
@@ -172,13 +179,15 @@ static tb_handle_t g2_png_decoder_done(g2_image_decoder_t* decoder)
 			// save data
 			tb_size_t 	i = 0;
 			tb_byte_t* 	d = p;
-			for (i = 0; i < lsize; i += 4, d += b)
+			if (dpixmap == spixmap)
 			{
-				c.r = ldata[i + 0];
-				c.g = ldata[i + 1];
-				c.b = ldata[i + 2];
-				c.a = ldata[i + 3];
-				pixmap->color_set(d, c);
+				for (i = 0; i < lsize; i += 4, d += b)
+					dpixmap->pixel_cpy(d, &ldata[i], 0xff);
+			}
+			else
+			{
+				for (i = 0; i < lsize; i += 4, d += b)
+					dpixmap->color_set(d, spixmap->color_get(&ldata[i]));
 			}
 
 			// next line
