@@ -271,6 +271,7 @@ g2_image_decoder_t* g2_jpg_decoder_init(tb_size_t pixfmt, tb_gstream_t* gst)
 	// read jpeg header
 	jpeg_read_header(&decoder->jdec, TB_TRUE);
 	tb_assert_and_check_goto(!decoder->jerr.berr, fail);
+	tb_assert_and_check_goto(decoder->jdec.image_width && decoder->jdec.image_height, fail);
 
 	// init width & height
 	decoder->base.width 	= decoder->jdec.image_width;
