@@ -62,9 +62,10 @@ typedef struct __g2_png_decoder_t
 /* ///////////////////////////////////////////////////////////////////////
  * implementation
  */
-static tb_void_t g2_png_decoder_error(png_structp png_ptr, png_const_charp msg)
+static tb_void_t g2_png_decoder_error(png_structp png, png_const_charp msg)
 {
 	tb_trace_impl("error: %s", msg);
+	longjmp(png_jmpbuf(png), 1);
 }
 static tb_void_t g2_png_decoder_reader(png_structp png, png_bytep data, png_size_t size)
 {
@@ -122,6 +123,11 @@ static tb_handle_t g2_png_decoder_done(g2_image_decoder_t* decoder)
 	tb_byte_t* data = g2_bitmap_make(bitmap);
 	tb_assert_and_check_goto(data, fail);
 
+	// set error handling if you are using the setjmp/longjmp method (this is
+	// the normal method of doing things with libpng).  required unless you
+	// set up your own error handlers in the png_create_read_struct() earlier.
+	if (setjmp(png_jmpbuf(pdecoder->png))) goto fail;
+	
 	// tell libpng to strip 16 bit/color files down to 8 bits/color 
 	if (pdecoder->bit_depth == 16) png_set_strip_16(pdecoder->png);
 
@@ -148,24 +154,31 @@ static tb_handle_t g2_png_decoder_done(g2_image_decoder_t* decoder)
 
 	// swap the rgba or ga data to argb or ag (or bgra to abgr) 
 //	png_set_swap_alpha(pdecoder->png);
+   
+	// add filler (or alpha) byte (before/after each rgb triplet)
+	if (pdecoder->color_type == PNG_COLOR_TYPE_RGB || pdecoder->color_type == PNG_COLOR_TYPE_GRAY)
+		png_set_filler(pdecoder->png, 0xff, PNG_FILLER_AFTER);
 
 	// turn on interlace handling. required if you are not using
 	// png_read_image(). to see how to handle interlacing passes,
 	// see the png_read_row() method below:
 	tb_long_t number_passes = pdecoder->interlace_type != PNG_INTERLACE_NONE ? png_set_interlace_handling(pdecoder->png) : 1;
+	tb_trace_impl("number_passes: %ld", number_passes);
 
-	// read lines
-	if (number_passes > 1)
-	{
-		tb_trace_noimpl();
-	}
-	else
-	{
-		// init line
-		tb_size_t 	lsize = png_get_rowbytes(pdecoder->png, pdecoder->info);
-		tb_byte_t* 	ldata = tb_malloc0(lsize);
-		tb_assert_and_check_goto(ldata && lsize, fail);
+	// optional call to gamma correct and add the background to the palette
+	// and update info structure.  required if you are expecting libpng to
+	// update the palette for you (ie you selected such a transform above).
+ 	png_read_update_info(pdecoder->png, pdecoder->info);
 
+	// init line
+	tb_size_t 	lsize = png_get_rowbytes(pdecoder->png, pdecoder->info);
+	tb_byte_t* 	ldata = tb_malloc0(lsize);
+	tb_assert_and_check_goto(ldata && lsize, fail);
+
+	// walk passes
+	tb_size_t 	k = 0;
+	for (k = 0; k < number_passes; k++)
+	{
 		// walk line
 		tb_size_t 	j;
 		tb_size_t 	b = dpixmap->btp;
@@ -176,27 +189,32 @@ static tb_handle_t g2_png_decoder_done(g2_image_decoder_t* decoder)
 			// read line
 			png_read_rows(pdecoder->png, &ldata, TB_NULL, 1);
 
-			// save data
-			tb_size_t 	i = 0;
-			tb_byte_t* 	d = p;
-			if (dpixmap == spixmap)
+			// last data
+			if (k == number_passes - 1)
 			{
-				for (i = 0; i < lsize; i += 4, d += b)
-					dpixmap->pixel_cpy(d, &ldata[i], 0xff);
-			}
-			else
-			{
-				for (i = 0; i < lsize; i += 4, d += b)
-					dpixmap->color_set(d, spixmap->color_get(&ldata[i]));
-			}
+				// save data
+				tb_size_t 	i = 0;
+				tb_byte_t* 	d = p;
+				tb_byte_t* 	e = p + n;
+				if (dpixmap == spixmap)
+				{
+					for (i = 0; i < lsize && d < e; i += 4, d += b)
+						dpixmap->pixel_cpy(d, &ldata[i], 0xff);
+				}
+				else
+				{
+					for (i = 0; i < lsize && d < e; i += 4, d += b)
+						dpixmap->color_set(d, spixmap->color_get(&ldata[i]));
+				}
 
-			// next line
-			p += n;
+				// next line
+				p += n;
+			}
 		}
-
-		// exit line
-		tb_free(ldata);
 	}
+
+	// exit line
+	tb_free(ldata);
 
 	// exit reader
 	png_read_end(pdecoder->png, pdecoder->info);
