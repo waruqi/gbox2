@@ -31,6 +31,7 @@
  */
 #include "png.h"
 #include "decoder.h"
+#include "../../../gbox2.h"
 #include "../../../third/png/png.h"
 
 /* ///////////////////////////////////////////////////////////////////////
@@ -174,6 +175,10 @@ static tb_handle_t g2_png_decoder_done(g2_image_decoder_t* decoder)
 	tb_size_t 	lsize = png_get_rowbytes(pdecoder->png, pdecoder->info);
 	tb_byte_t* 	ldata = tb_malloc0(lsize);
 	tb_assert_and_check_goto(ldata && lsize, fail);
+	
+	// init flag
+	tb_size_t 	flag = g2_bitmap_flag(bitmap) & ~G2_BITMAP_FLAG_ALPHA;
+	tb_byte_t 	balpha = 0xff - ((G2_QUALITY_TOP - g2_quality()) << 3);
 
 	// walk passes
 	tb_size_t 	k = 0;
@@ -199,12 +204,24 @@ static tb_handle_t g2_png_decoder_done(g2_image_decoder_t* decoder)
 				if (dpixmap == spixmap)
 				{
 					for (i = 0; i < lsize && d < e; i += 4, d += b)
+					{
+						// copy
 						dpixmap->pixel_cpy(d, &ldata[i], 0xff);
+
+						// alpha?
+						if (ldata[i + 3] < balpha) flag |= G2_BITMAP_FLAG_ALPHA;
+					}
 				}
 				else
 				{
 					for (i = 0; i < lsize && d < e; i += 4, d += b)
+					{
+						// copy
 						dpixmap->color_set(d, spixmap->color_get(&ldata[i]));
+
+						// alpha?
+						if (ldata[i + 3] < balpha) flag |= G2_BITMAP_FLAG_ALPHA;
+					}
 				}
 
 				// next line
@@ -212,6 +229,9 @@ static tb_handle_t g2_png_decoder_done(g2_image_decoder_t* decoder)
 			}
 		}
 	}
+
+	// has alpha?
+	g2_bitmap_flag_set(bitmap, flag);
 
 	// exit line
 	tb_free(ldata);
@@ -276,6 +296,9 @@ g2_image_decoder_t* g2_png_decoder_init(tb_size_t pixfmt, tb_gstream_t* gst)
 	png_uint_32 height = 0;
 	png_get_IHDR(decoder->png, decoder->info, &width, &height, &decoder->bit_depth, &decoder->color_type, &decoder->interlace_type, TB_NULL, TB_NULL);
 	tb_assert_and_check_goto(width && height, fail);
+
+	// FIXME: not support now.
+	tb_assert_and_check_goto(decoder->color_type != PNG_COLOR_TYPE_PALETTE, fail);
 
 	// init width & height
 	decoder->base.width 	= width;

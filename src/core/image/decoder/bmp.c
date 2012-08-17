@@ -30,6 +30,7 @@
  * includes
  */
 #include "bmp.h"
+#include "../../../gbox2.h"
 
 /* ////////////////////////////////////////////////////////////////////////
  * macros
@@ -248,8 +249,12 @@ static tb_handle_t g2_bmp_decoder_done(g2_image_decoder_t* decoder)
 	tb_assert_and_check_return_val(bitmap, TB_NULL);
 
 	// make bitmap
-	tb_byte_t* data = g2_bitmap_make(bitmap);
+	tb_byte_t* 	data = g2_bitmap_make(bitmap);
 	tb_assert_and_check_goto(data, fail);
+	
+	// init flag
+	tb_size_t 	flag = g2_bitmap_flag(bitmap) & ~G2_BITMAP_FLAG_ALPHA;
+	tb_byte_t 	balpha = 0xff - ((G2_QUALITY_TOP - g2_quality()) << 3);
 
 	// init
 	tb_size_t 	b = dp->btp;
@@ -269,7 +274,7 @@ static tb_handle_t g2_bmp_decoder_done(g2_image_decoder_t* decoder)
 			// read line
 			if (!tb_gstream_bread(gst, l, r)) goto fail;
 			
-			// save image data
+			// save image data, FIXME: for rgba32 alpha
 			tb_byte_t* 	d = p;
 			tb_size_t 	i = 0;
 			if (sp == dp)
@@ -324,6 +329,9 @@ static tb_handle_t g2_bmp_decoder_done(g2_image_decoder_t* decoder)
 			p -= n;
 		}
 	}
+
+	// has alpha?
+	g2_bitmap_flag_set(bitmap, flag);
 
 	// ok
 	return bitmap;

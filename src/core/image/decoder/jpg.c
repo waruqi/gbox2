@@ -219,6 +219,9 @@ static tb_handle_t g2_jpg_decoder_done(g2_image_decoder_t* decoder)
 		p += n;
 	}
 
+	// no alpha
+	g2_bitmap_flag_set(bitmap, g2_bitmap_flag(bitmap) & ~G2_BITMAP_FLAG_ALPHA);
+
 	// finish it
 	jpeg_finish_decompress(&jdecoder->jdec);
 

@@ -51,6 +51,23 @@ static tb_void_t g2_skia_bitmap_exit(tb_handle_t bitmap)
  
 	// free it
  	delete sbitmap;
+}	
+static tb_size_t g2_skia_bitmap_flag(tb_handle_t bitmap)
+{
+	SkBitmap* sbitmap = static_cast<SkBitmap*>(bitmap);
+	tb_assert_and_check_return_val(sbitmap, G2_BITMAP_FLAG_NONE);
+
+	tb_size_t flag = G2_BITMAP_FLAG_NONE;
+	if (!sbitmap->isOpaque()) flag |= G2_BITMAP_FLAG_ALPHA;
+	if (sbitmap->pixelRef()) flag |= G2_BITMAP_FLAG_OWNER;
+	return flag;
+}
+static tb_void_t g2_skia_bitmap_flag_set(tb_handle_t bitmap, tb_size_t flag)
+{
+	SkBitmap* sbitmap = static_cast<SkBitmap*>(bitmap);
+	tb_assert_and_check_return(sbitmap);
+
+	sbitmap->setIsOpaque((flag & G2_BITMAP_FLAG_ALPHA) ? false : true);
 }
 static tb_pointer_t g2_skia_bitmap_make(tb_handle_t bitmap)
 {
@@ -147,6 +164,14 @@ extern "C"
 	tb_void_t g2_bitmap_exit(tb_handle_t bitmap)
 	{
 		g2_skia_bitmap_exit(bitmap);
+	}
+	tb_size_t g2_bitmap_flag(tb_handle_t bitmap)
+	{
+		return g2_skia_bitmap_flag(bitmap);
+	}
+	tb_void_t g2_bitmap_flag_set(tb_handle_t bitmap, tb_size_t flag)
+	{
+		g2_skia_bitmap_flag_set(bitmap, flag);
 	}
 	tb_pointer_t g2_bitmap_make(tb_handle_t bitmap)
 	{

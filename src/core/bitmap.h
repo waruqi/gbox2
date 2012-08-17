@@ -34,6 +34,19 @@ extern "C" {
 #include "prefix.h"
 
 /* ///////////////////////////////////////////////////////////////////////
+ * types
+ */
+
+// the bitmap flag type
+typedef enum __g2_bitmap_flag_t
+{
+	G2_BITMAP_FLAG_NONE 	= 0
+,	G2_BITMAP_FLAG_OWNER 	= 1
+,	G2_BITMAP_FLAG_ALPHA 	= 2
+
+}g2_bitmap_flag_t;
+
+/* ///////////////////////////////////////////////////////////////////////
  * interfaces
  */
 
@@ -42,6 +55,10 @@ tb_handle_t 	g2_bitmap_init(tb_size_t pixfmt, tb_size_t width, tb_size_t height,
 tb_handle_t 	g2_bitmap_init_url(tb_size_t pixfmt, tb_char_t const* url);
 tb_handle_t 	g2_bitmap_init_gst(tb_size_t pixfmt, tb_gstream_t* gst);
 tb_void_t 		g2_bitmap_exit(tb_handle_t bitmap);
+
+// flag
+tb_size_t 		g2_bitmap_flag(tb_handle_t bitmap);
+tb_void_t 		g2_bitmap_flag_set(tb_handle_t bitmap, tb_size_t flag);
 
 // make
 tb_pointer_t 	g2_bitmap_make(tb_handle_t bitmap);
