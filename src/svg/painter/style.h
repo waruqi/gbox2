@@ -402,7 +402,6 @@ static __tb_inline__ tb_void_t g2_svg_painter_style_walk(g2_svg_style_t* applied
 		&& style->mode & G2_SVG_STYLE_MODE_IMAGE)
 	{
 		applied->mode |= G2_SVG_STYLE_MODE_IMAGE;
-		applied->image.url = style->image.url;
 		applied->image.bitmap = style->image.bitmap;
 		applied->image.bounds = style->image.bounds;
 	}

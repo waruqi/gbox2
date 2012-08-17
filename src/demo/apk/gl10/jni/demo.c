@@ -11,6 +11,7 @@
 
 // pixfmt
 //#define G2_DEMO_PIXFMT 			(G2_PIXFMT_XRGB8888 | G2_PIXFMT_NENDIAN)
+//#define G2_DEMO_PIXFMT 			(G2_PIXFMT_ARGB8888 | G2_PIXFMT_NENDIAN)
 #define G2_DEMO_PIXFMT 				(G2_PIXFMT_RGB565 | G2_PIXFMT_NENDIAN)
 
 /* ////////////////////////////////////////////////////////////////////////
@@ -224,6 +225,9 @@ tb_void_t g2_demo_gl_draw()
 			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_SHORT_5_6_5, g2_bitmap_data(g_surface));
 			break;
 		case G2_PIXFMT_XRGB8888:
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, g2_bitmap_data(g_surface));
+			break;
+		case G2_PIXFMT_ARGB8888:
 			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, g2_bitmap_data(g_surface));
 			break;
 		default:

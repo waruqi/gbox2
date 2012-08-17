@@ -71,25 +71,11 @@ static __tb_inline__ tb_uint32_t g2_pixmap_rgb32_blend2_inline(tb_uint32_t d, tb
  */
 static __tb_inline__ g2_pixel_t g2_pixmap_rgb32_pixel(g2_color_t color)
 {
-	union __g2_c2p_t
-	{
-		g2_color_t c;
-		g2_pixel_t p;
-
-	}c2p;
-	c2p.c = color;
-	return c2p.p;
+	return g2_color_pixel(color);
 }
 static __tb_inline__ g2_color_t g2_pixmap_rgb32_color(g2_pixel_t pixel)
 {
-	union __g2_p2c_t
-	{
-		g2_color_t c;
-		g2_pixel_t p;
-
-	}p2c;
-	p2c.p = pixel;
-	return p2c.c;
+	return g2_pixel_color(pixel);
 }
 static __tb_inline__ g2_pixel_t g2_pixmap_rgb32_pixel_get_l(tb_cpointer_t data)
 {

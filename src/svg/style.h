@@ -215,9 +215,6 @@ typedef struct __g2_svg_style_text_t
 // the svg style image type
 typedef struct __g2_svg_style_image_t
 {
-	// the url
-	tb_char_t const* 			url;
-
 	// the bitmap
 	tb_handle_t 				bitmap;
 

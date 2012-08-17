@@ -61,6 +61,22 @@ static tb_void_t g2_svg_element_image_writ(g2_svg_element_t const* element, tb_g
 	// transform 
 	g2_svg_writer_transform(gst, &image->transform); 
 }
+static tb_void_t g2_svg_element_image_load(g2_svg_element_t* element, g2_svg_painter_t* painter)
+{
+	g2_svg_element_image_t* image = (g2_svg_element_image_t*)element;
+	tb_assert_and_check_return(image && painter && painter->painter);
+
+	if (!image->bitmap && tb_pstring_size(&image->href)) 
+	{
+		// load bitmap
+		image->bitmap = g2_bitmap_init_url(g2_pixfmt(painter->painter), tb_pstring_cstr(&image->href));
+
+		// init style
+		image->style.mode |= G2_SVG_STYLE_MODE_IMAGE;
+		image->style.image.bitmap = image->bitmap;
+		image->style.image.bounds = &image->rect;
+	}
+}
 static tb_void_t g2_svg_element_image_draw(g2_svg_element_t const* element, g2_svg_painter_t* painter)
 {
 	g2_svg_element_image_t const* image = (g2_svg_element_image_t const*)element;
@@ -74,8 +90,12 @@ static tb_void_t g2_svg_element_image_exit(g2_svg_element_t* element)
 	g2_svg_element_image_t* image = (g2_svg_element_image_t*)element;
 	if (image)
 	{
-		// init href
+		// exit href
 		tb_pstring_exit(&image->href);
+
+		// exit bitmap
+		if (image->bitmap) g2_bitmap_exit(image->bitmap);
+		image->bitmap = TB_NULL;
 
 		// exit style
 		g2_svg_style_exit(&image->style);
@@ -93,6 +113,7 @@ g2_svg_element_t* g2_svg_element_init_image(tb_handle_t reader)
 	// init
 	element->base.exit 		= g2_svg_element_image_exit;
 	element->base.writ 		= g2_svg_element_image_writ;
+	element->base.load 		= g2_svg_element_image_load;
 	element->base.fill 		= g2_svg_element_image_draw;
 	element->base.style 	= &element->style;
 	element->base.transform = &element->transform;
@@ -128,15 +149,8 @@ g2_svg_element_t* g2_svg_element_init_image(tb_handle_t reader)
 		else if (!tb_pstring_cstricmp(&attr->name, "transform"))
 			g2_svg_parser_transform(p, &element->transform);
 		else if (!tb_pstring_cstricmp(&attr->name, "xlink:href"))
-		{
-			element->style.mode |= G2_SVG_STYLE_MODE_IMAGE;
-			element->style.image.url = tb_pstring_strcpy(&element->href, &attr->data);
-		}
+			tb_pstring_strcpy(&element->href, &attr->data);
 	}
-
-	// bounds
-	if (element->style.mode & G2_SVG_STYLE_MODE_IMAGE) 
-		element->style.image.bounds = &element->rect;
 
 	// ok
 	return element;

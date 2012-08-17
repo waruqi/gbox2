@@ -100,10 +100,10 @@ static tb_void_t g2_demo_render()
 	
 	// draw
 	g2_svg_element_draw(g_svg, g_painter);
-
+	
 	// load
 	g2_load(g_painter);
-	
+
 	// bounds
 	g2_style_clear(g2_style(g_painter));
 	g2_style_mode_set(g2_style(g_painter), G2_STYLE_MODE_STROKE);

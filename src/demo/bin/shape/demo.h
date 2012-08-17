@@ -28,8 +28,8 @@
 #define G2_DEMO_HEIGHT 			(480)
 
 // pixfmt
-//#define G2_DEMO_PIXFMT 			(G2_PIXFMT_XRGB8888 | G2_PIXFMT_NENDIAN)
-#define G2_DEMO_PIXFMT 			(G2_PIXFMT_RGB565 | G2_PIXFMT_NENDIAN)
+#define G2_DEMO_PIXFMT 			(G2_PIXFMT_ARGB8888 | G2_PIXFMT_NENDIAN)
+//#define G2_DEMO_PIXFMT 			(G2_PIXFMT_RGB565 | G2_PIXFMT_NENDIAN)
 
 /* ////////////////////////////////////////////////////////////////////////
  * globals
@@ -229,12 +229,15 @@ static tb_void_t g2_demo_gl_display()
 
 		glPixelZoom(1.0, -1.0);
 		glRasterPos2i(0, height - 1);
-		switch (pixfmt)
+		switch (G2_PIXFMT(pixfmt))
 		{
 		case G2_PIXFMT_RGB565:
 			glDrawPixels(width, height, GL_RGB, GL_UNSIGNED_SHORT_5_6_5, g2_bitmap_data(g_surface));
 			break;
 		case G2_PIXFMT_XRGB8888:
+			glDrawPixels(width, height, GL_BGRA, GL_UNSIGNED_BYTE, g2_bitmap_data(g_surface));
+			break;
+		case G2_PIXFMT_ARGB8888:
 			glDrawPixels(width, height, GL_BGRA, GL_UNSIGNED_BYTE, g2_bitmap_data(g_surface));
 			break;
 		default:

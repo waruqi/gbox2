@@ -83,9 +83,6 @@ tb_void_t g2_svg_style_exit(g2_svg_style_t* style)
 
 		// exit clippath
 		tb_pstring_exit(&style->clippath.url);
-
-		// exit image
-		if (style->image.bitmap) g2_bitmap_exit(style->image.bitmap);
 	}
 }
 

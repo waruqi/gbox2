@@ -88,8 +88,11 @@
 # 	define G2_PIXFMT_NENDIAN 		(G2_PIXFMT_LENDIAN)
 #endif
 
+// pixfmt
+#define G2_PIXFMT(pixfmt) 			(((pixfmt) & ~G2_PIXFMT_MENDIAN))
+
 // ok?
-#define G2_PIXFMT_OK(pixfmt) 		(((pixfmt) & ~G2_PIXFMT_MENDIAN) != G2_PIXFMT_NONE)
+#define G2_PIXFMT_OK(pixfmt) 		(G2_PIXFMT(pixfmt) != G2_PIXFMT_NONE)
 
 /* ///////////////////////////////////////////////////////////////////////
  * types

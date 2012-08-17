@@ -161,6 +161,9 @@ typedef struct __g2_svg_element_t
 	// stok it
 	tb_void_t 					(*stok)(struct __g2_svg_element_t const* element, g2_svg_painter_t* painter);
 
+	// load it
+	tb_void_t 					(*load)(struct __g2_svg_element_t* element, g2_svg_painter_t* painter);
+
 	// exit it
 	tb_void_t 					(*exit)(struct __g2_svg_element_t* element);
 
@@ -316,6 +319,9 @@ typedef struct __g2_svg_element_image_t
 
 	// the href
 	tb_pstring_t 				href;
+
+	// the bitmap
+	tb_handle_t 				bitmap;
 
 	// the style
 	g2_svg_style_t 				style;
