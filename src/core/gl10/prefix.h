@@ -28,6 +28,8 @@
  */
 #include "../prefix.h"
 #include "../style.h"
+#include "../path.h"
+#include "../bitmap.h"
 #include "../matrix.h"
 #include "../painter.h"
 #include "../../gbox2.h"

@@ -17,29 +17,26 @@
  * Copyright (C) 2009 - 2012, ruki All rights reserved.
  *
  * @author		ruki
- * @file		context.h
+ * @file		path.h
  *
  */
-#ifndef G2_CORE_GL10_CONTEXT_H
-#define G2_CORE_GL10_CONTEXT_H
+#ifndef G2_CORE_GL10_PATH_H
+#define G2_CORE_GL10_PATH_H
 
 /* ///////////////////////////////////////////////////////////////////////
  * includes
  */
 #include "prefix.h"
-#include "../context.h"
 
 /* ///////////////////////////////////////////////////////////////////////
  * types
  */
 
-// the gl10 context type
-typedef struct __g2_gl10_context_t
+// the gl10 path type
+typedef struct __g2_gl10_path_t
 {
-	// the surface
-	tb_handle_t 		surface;
 
-}g2_gl10_context_t;
+}g2_gl10_path_t;
 
 
 #endif

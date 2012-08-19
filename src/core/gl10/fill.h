@@ -17,29 +17,35 @@
  * Copyright (C) 2009 - 2012, ruki All rights reserved.
  *
  * @author		ruki
- * @file		context.h
+ * @file		fill.h
  *
  */
-#ifndef G2_CORE_GL10_CONTEXT_H
-#define G2_CORE_GL10_CONTEXT_H
+#ifndef G2_CORE_GL10_FILL_H
+#define G2_CORE_GL10_FILL_H
 
 /* ///////////////////////////////////////////////////////////////////////
  * includes
  */
-#include "prefix.h"
-#include "../context.h"
+#include "painter.h"
+#include "path.h"
 
 /* ///////////////////////////////////////////////////////////////////////
- * types
+ * interfaces
  */
 
-// the gl10 context type
-typedef struct __g2_gl10_context_t
-{
-	// the surface
-	tb_handle_t 		surface;
+// fill rect
+tb_void_t g2_gl10_fill_rect(g2_gl10_painter_t* painter, g2_rect_t const* rect);
 
-}g2_gl10_context_t;
+// fill path
+tb_void_t g2_gl10_fill_path(g2_gl10_painter_t* painter, g2_gl10_path_t const* path);
 
+// fill circle
+tb_void_t g2_gl10_fill_circle(g2_gl10_painter_t* painter, g2_circle_t const* circle);
+
+// fill ellipse
+tb_void_t g2_gl10_fill_ellipse(g2_gl10_painter_t* painter, g2_ellipse_t const* ellipse);
+
+// fill triangle
+tb_void_t g2_gl10_fill_triangle(g2_gl10_painter_t* painter, g2_triangle_t const* triangle);
 
 #endif

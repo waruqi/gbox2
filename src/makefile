@@ -45,12 +45,15 @@ gbox2_C_FILES 			+= \
 						core/image/decoder/decoder
 
 gbox2_C_FILES-$(G2_CONFIG_CORE_GL10) += \
-						core/soft/path \
 						core/soft/style \
 						core/soft/shader \
 						core/soft/bitmap \
+						core/gl10/path \
+						core/gl10/fill \
 						core/gl10/context \
-						core/gl10/painter 
+						core/gl10/painter \
+						core/gl10/fill/style
+
 
 gbox2_CPP_FILES-$(G2_CONFIG_CORE_SKIA) += \
 						core/skia/path \

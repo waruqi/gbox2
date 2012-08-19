@@ -17,29 +17,53 @@
  * Copyright (C) 2009 - 2012, ruki All rights reserved.
  *
  * @author		ruki
- * @file		context.h
+ * @file		painter.h
  *
  */
-#ifndef G2_CORE_GL10_CONTEXT_H
-#define G2_CORE_GL10_CONTEXT_H
+#ifndef G2_CORE_GL10_PAINTER_H
+#define G2_CORE_GL10_PAINTER_H
 
 /* ///////////////////////////////////////////////////////////////////////
  * includes
  */
-#include "prefix.h"
-#include "../context.h"
+#include "context.h"
 
 /* ///////////////////////////////////////////////////////////////////////
  * types
  */
 
-// the gl10 context type
-typedef struct __g2_gl10_context_t
+// the gl110 matrix and clip item type for stack
+typedef struct __g2_gl10_mcitem_t
 {
-	// the surface
-	tb_handle_t 		surface;
+	// the mode
+	tb_size_t 					mode;
 
-}g2_gl10_context_t;
+	// the matrix
+	g2_matrix_t 				matrix;
+
+	// the clipper
+	tb_handle_t 				clipper;
+
+}g2_gl10_mcitem_t;
+
+// the gl10 painter type
+typedef struct __g2_gl10_painter_t
+{
+	// the context
+	g2_gl10_context_t* 			context;
+
+	// the matrix
+	g2_matrix_t 				matrix;
+	GLfloat 					matrix_gl[16];
+
+	// the style
+	tb_handle_t 				style_def;
+	tb_handle_t 				style_usr;
+
+	// the matrix and clipper stack
+	tb_stack_t* 				mcstack;
+
+}g2_gl10_painter_t;
 
 
 #endif

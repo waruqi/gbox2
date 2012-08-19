@@ -31,6 +31,7 @@
 #include "../style.h"
 #include "../bitmap.h"
 #include "../shader.h"
+#include "../pixmap.h"
 
 
 #endif
