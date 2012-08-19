@@ -35,6 +35,11 @@ tb_handle_t g2_context_init_gl10(tb_size_t pixfmt, tb_size_t width, tb_size_t he
 	// check
 	tb_assert_and_check_return_val(G2_PIXFMT_OK(pixfmt) && width && height, TB_NULL);
 
+	// check pixfmt
+	tb_assert_and_check_return_val( 	G2_PIXFMT(pixfmt) == G2_PIXFMT_ARGB8888
+									|| 	G2_PIXFMT(pixfmt) == G2_PIXFMT_ARGB4444 
+									|| 	G2_PIXFMT(pixfmt) == G2_PIXFMT_RGB565, TB_NULL);
+
 	// alloc
 	g2_gl10_context_t* gcontext = tb_malloc0(sizeof(g2_gl10_context_t));
 	tb_assert_and_check_return_val(gcontext, TB_NULL);

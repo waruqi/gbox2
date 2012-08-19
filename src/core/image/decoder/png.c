@@ -144,6 +144,12 @@ static tb_handle_t g2_png_decoder_done(g2_image_decoder_t* decoder)
     if (pdecoder->color_type == PNG_COLOR_TYPE_GRAY || pdecoder->color_type == PNG_COLOR_TYPE_GRAY_ALPHA)
         png_set_gray_to_rgb(pdecoder->png);
 
+	// the transparent color
+	png_color_16p 	trans_c = TB_NULL;
+	tb_int_t 		trans_n = 0;
+	png_get_tRNS(pdecoder->png, pdecoder->info, TB_NULL, &trans_n, &trans_c);
+	tb_trace_impl("transparent: #%x%x%x, count: %d", trans_c? trans_c->red : 0, trans_c? trans_c->green : 0, trans_c? trans_c->blue : 0, trans_n);
+
 	// expand paletted or rgb images with transparency to full alpha channels
 	// so the data will be available as RGBA quartets.
 	if (png_get_valid(pdecoder->png, pdecoder->info, PNG_INFO_tRNS))

@@ -33,7 +33,6 @@ gbox2_C_FILES 			+= \
 						svg/textpath \
 						prefix/color \
 						core/path \
-						core/style \
 						core/pixmap \
 						core/bitmap \
 						core/shader \
@@ -46,6 +45,10 @@ gbox2_C_FILES 			+= \
 						core/image/decoder/decoder
 
 gbox2_C_FILES-$(G2_CONFIG_CORE_GL10) += \
+						core/soft/path \
+						core/soft/style \
+						core/soft/shader \
+						core/soft/bitmap \
 						core/gl10/context \
 						core/gl10/painter 
 

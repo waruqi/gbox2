@@ -15,11 +15,11 @@ NAMES 					= \
 						svg/dump
 
 ifeq ($(TB_CONFIG_PLAT),linux_x86)
-demo_LIBS 				= glut GLU z m dl pthread
+demo_LIBS 				= glut GLU GL z m dl pthread
 endif
 
 ifeq ($(TB_CONFIG_PLAT),linux_x64)
-demo_LIBS 				= glut GLU z m dl pthread
+demo_LIBS 				= glut GLU GL z m dl pthread
 endif
 
 ifeq ($(TB_CONFIG_PLAT),mingw_x86)

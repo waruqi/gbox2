@@ -163,6 +163,13 @@ tb_void_t g2_exit(tb_handle_t painter)
 		tb_free(gpainter);
 	}
 }
+tb_size_t g2_pixfmt(tb_handle_t painter)
+{
+	g2_gl10_painter_t* gpainter = (g2_gl10_painter_t*)painter;
+	tb_assert_and_check_return_val(gpainter && gpainter->context, G2_PIXFMT_NONE);
+
+	return g2_bitmap_pixfmt(g2_context_surface(gpainter->context));
+}
 tb_size_t g2_save(tb_handle_t painter, tb_size_t mode)
 {	
 	g2_gl10_painter_t* gpainter = (g2_gl10_painter_t*)painter;
@@ -386,7 +393,6 @@ tb_void_t g2_draw_rect(tb_handle_t painter, g2_rect_t const* rect)
 
 		// draw
 //		glRectf(x0, y0, x1, y1);
-
 
 		GLfloat vertices[8];
 

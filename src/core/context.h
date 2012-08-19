@@ -41,6 +41,7 @@ extern "C" {
 tb_handle_t 		g2_context_init_soft(tb_size_t pixfmt, tb_pointer_t data, tb_size_t width, tb_size_t height, tb_size_t lpitch);
 tb_handle_t 		g2_context_init_skia(tb_size_t pixfmt, tb_pointer_t data, tb_size_t width, tb_size_t height, tb_size_t lpitch);
 tb_handle_t 		g2_context_init_gl10(tb_size_t pixfmt, tb_size_t width, tb_size_t height);
+tb_handle_t 		g2_context_init_gl20(tb_size_t pixfmt, tb_size_t width, tb_size_t height);
 tb_void_t 			g2_context_exit(tb_handle_t context);
 
 // resize

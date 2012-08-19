@@ -24,14 +24,13 @@
 /* ///////////////////////////////////////////////////////////////////////
  * includes
  */
-#include "style.h"
-#include "../gbox2.h"
+#include "prefix.h"
+#include "../../gbox2.h"
 
 /* ///////////////////////////////////////////////////////////////////////
  * implementation
  */
 
-#ifndef G2_CONFIG_CORE_SKIA
 tb_handle_t g2_style_init()
 {
 	// alloc
@@ -175,4 +174,3 @@ tb_void_t g2_style_shader_set(tb_handle_t style, tb_handle_t shader)
 
 	gstyle->shader = shader;
 }
-#endif

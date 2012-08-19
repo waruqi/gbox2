@@ -190,48 +190,4 @@ tb_handle_t g2_shader_init2i_sweep(tb_long_t x0, tb_long_t y0, g2_gradient_t con
 
 	return g2_shader_init_sweep(&pt, gradient);
 }
-#ifndef G2_CONFIG_CORE_SKIA
-tb_handle_t g2_shader_init_linear(g2_point_t const* pb, g2_point_t const* pe, g2_gradient_t const* gradient, tb_size_t mode)
-{
-	tb_trace_noimpl();
-	return TB_NULL;
-}
-tb_handle_t g2_shader_init_radial(g2_circle_t const* cp, g2_gradient_t const* gradient, tb_size_t mode)
-{
-	tb_trace_noimpl();
-	return TB_NULL;
-}
-tb_handle_t g2_shader_init_radial2(g2_circle_t const* cb, g2_circle_t const* ce, g2_gradient_t const* gradient, tb_size_t mode)
-{
-	tb_trace_noimpl();
-	return TB_NULL;
-}
-tb_handle_t g2_shader_init_conical(g2_circle_t const* cb, g2_circle_t const* ce, g2_gradient_t const* gradient, tb_size_t mode)
-{
-	tb_trace_noimpl();
-	return TB_NULL;
-}
-tb_handle_t g2_shader_init_sweep(g2_point_t const* c0, g2_gradient_t const* gradient)
-{
-	tb_trace_noimpl();
-	return TB_NULL;
-}
-tb_handle_t g2_shader_init_bitmap(tb_handle_t bitmap, tb_size_t xmode, tb_size_t ymode)
-{
-	tb_trace_noimpl();
-	return TB_NULL;
-}
-tb_void_t g2_shader_exit(tb_handle_t shader)
-{
-	tb_trace_noimpl();
-}
-g2_matrix_t const* g2_shader_matrix(tb_handle_t shader)
-{
-	tb_trace_noimpl();
-	return TB_NULL;
-}
-tb_void_t g2_shader_matrix_set(tb_handle_t shader, g2_matrix_t const* matrix)
-{
-	tb_trace_noimpl();
-}
-#endif
+
