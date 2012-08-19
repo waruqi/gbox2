@@ -63,11 +63,11 @@ tb_void_t g2_path_line_to(tb_handle_t path, g2_point_t const* pt)
 {
 	tb_trace_noimpl();
 }
-tb_void_t g2_path_quad_to(tb_handle_t path, g2_point_t const* pt, g2_point_t const* cp)
+tb_void_t g2_path_quad_to(tb_handle_t path, g2_point_t const* cp, g2_point_t const* pt)
 {
 	tb_trace_noimpl();
 }
-tb_void_t g2_path_cube_to(tb_handle_t path, g2_point_t const* pt, g2_point_t const* c0, g2_point_t const* c1)
+tb_void_t g2_path_cube_to(tb_handle_t path, g2_point_t const* c0, g2_point_t const* c1, g2_point_t const* pt)
 {
 	tb_trace_noimpl();
 }
@@ -80,7 +80,7 @@ tb_bool_t g2_path_itor_init(tb_handle_t path)
 	tb_trace_noimpl();
 	return TB_FALSE;
 }
-tb_size_t g2_path_itor_next(tb_handle_t path, g2_point_t pt[4])
+tb_size_t g2_path_itor_next(tb_handle_t path, g2_point_t pt[3])
 {
 	tb_trace_noimpl();
 }
