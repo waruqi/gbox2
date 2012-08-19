@@ -32,9 +32,34 @@
  * types
  */
 
+// the gl10 path itor type
+typedef struct __g2_gl10_path_itor_t
+{
+	// the code
+	tb_size_t 				code;
+
+	// the data
+	tb_size_t 				data;
+
+}g2_gl10_path_itor_t;
+
 // the gl10 path type
 typedef struct __g2_gl10_path_t
 {
+	// the code, vector<tb_byte_t>
+	tb_vector_t* 			code;
+
+	// the data, vector<g2_point_t>
+	tb_vector_t* 			data;
+
+	// the fill, vector<...>
+	tb_vector_t* 			fill;
+
+	// the stok, vector<...>
+	tb_vector_t* 			stok;
+
+	// the itor
+	g2_gl10_path_itor_t 	itor;
 
 }g2_gl10_path_t;
 

@@ -120,13 +120,15 @@ static tb_bool_t g2_skia_path_itor_init(tb_handle_t path)
 	// ok
 	return TB_TRUE;
 }
-static tb_size_t g2_skia_path_itor_next(tb_handle_t path, g2_point_t pt[4])
+static tb_size_t g2_skia_path_itor_next(tb_handle_t path, g2_point_t pt[3])
 {
 	G2SkiaPath* spath = static_cast<G2SkiaPath*>(path);
 	tb_assert_and_check_return_val(spath, G2_PATH_CODE_NONE);
 
 	// next, @note hack: g2_point_t => SkPoint
-	SkPath::Verb verb = spath->iterator().next((SkPoint*)(pt));
+	g2_point_t points[4];
+	SkPath::Verb verb = spath->iterator().next((SkPoint*)(points));
+	tb_memcpy(pt, &points[1], 3 * sizeof(g2_point_t));
 
 	// ok?
 	return verb != SkPath::kDone_Verb? (static_cast<tb_size_t>(verb) + 1) : G2_PATH_CODE_NONE;
@@ -187,7 +189,7 @@ extern "C"
 	{
 		return g2_skia_path_itor_init(path);
 	}
-	tb_size_t g2_path_itor_next(tb_handle_t path, g2_point_t pt[4])
+	tb_size_t g2_path_itor_next(tb_handle_t path, g2_point_t pt[3])
 	{
 		return g2_skia_path_itor_next(path, pt);
 	}

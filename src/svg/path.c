@@ -52,7 +52,7 @@ static tb_void_t g2_svg_element_path_writ(g2_svg_element_t const* element, tb_gs
 		tb_gstream_printf(gst, " d=\"");
 
 		// walk
-		g2_point_t 	pt[4];
+		g2_point_t 	pt[3];
 		tb_size_t 	co = G2_PATH_CODE_NONE;
 		while (co = g2_path_itor_next(path->path, pt))
 		{
@@ -62,13 +62,13 @@ static tb_void_t g2_svg_element_path_writ(g2_svg_element_t const* element, tb_gs
 				tb_gstream_printf(gst, "M %f,%f ", g2_float_to_tb(pt[0].x), g2_float_to_tb(pt[0].y));
 				break;
 			case G2_PATH_CODE_LINE:
-				tb_gstream_printf(gst, "L %f,%f ", g2_float_to_tb(pt[1].x), g2_float_to_tb(pt[1].y));
+				tb_gstream_printf(gst, "L %f,%f ", g2_float_to_tb(pt[0].x), g2_float_to_tb(pt[0].y));
 				break;
 			case G2_PATH_CODE_QUAD:
-				tb_gstream_printf(gst, "Q %f,%f %f,%f ", g2_float_to_tb(pt[1].x), g2_float_to_tb(pt[1].y), g2_float_to_tb(pt[2].x), g2_float_to_tb(pt[2].y));
+				tb_gstream_printf(gst, "Q %f,%f %f,%f ", g2_float_to_tb(pt[0].x), g2_float_to_tb(pt[0].y), g2_float_to_tb(pt[1].x), g2_float_to_tb(pt[1].y));
 				break;
 			case G2_PATH_CODE_CUBIC:
-				tb_gstream_printf(gst, "C %f,%f %f,%f %f,%f ", g2_float_to_tb(pt[1].x), g2_float_to_tb(pt[1].y), g2_float_to_tb(pt[2].x), g2_float_to_tb(pt[2].y), g2_float_to_tb(pt[3].x), g2_float_to_tb(pt[3].y));
+				tb_gstream_printf(gst, "C %f,%f %f,%f %f,%f ", g2_float_to_tb(pt[0].x), g2_float_to_tb(pt[0].y), g2_float_to_tb(pt[1].x), g2_float_to_tb(pt[1].y), g2_float_to_tb(pt[2].x), g2_float_to_tb(pt[2].y));
 				break;
 			case G2_PATH_CODE_CLOSE:
 				tb_gstream_printf(gst, "Z");

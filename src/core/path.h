@@ -102,7 +102,7 @@ tb_void_t 		g2_path_arc2i_to(tb_handle_t path, tb_long_t x0, tb_long_t y0, tb_si
 
 // iterator
 tb_bool_t 		g2_path_itor_init(tb_handle_t path);
-tb_size_t 		g2_path_itor_next(tb_handle_t path, g2_point_t pt[4]);
+tb_size_t 		g2_path_itor_next(tb_handle_t path, g2_point_t pt[3]);
 tb_void_t 		g2_path_itor_exit(tb_handle_t path);
 
 
