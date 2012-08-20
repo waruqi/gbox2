@@ -67,10 +67,10 @@ static tb_void_t g2_svg_element_path_writ(g2_svg_element_t const* element, tb_gs
 			case G2_PATH_CODE_QUAD:
 				tb_gstream_printf(gst, "Q %f,%f %f,%f ", g2_float_to_tb(pt[0].x), g2_float_to_tb(pt[0].y), g2_float_to_tb(pt[1].x), g2_float_to_tb(pt[1].y));
 				break;
-			case G2_PATH_CODE_CUBIC:
+			case G2_PATH_CODE_CUBE:
 				tb_gstream_printf(gst, "C %f,%f %f,%f %f,%f ", g2_float_to_tb(pt[0].x), g2_float_to_tb(pt[0].y), g2_float_to_tb(pt[1].x), g2_float_to_tb(pt[1].y), g2_float_to_tb(pt[2].x), g2_float_to_tb(pt[2].y));
 				break;
-			case G2_PATH_CODE_CLOSE:
+			case G2_PATH_CODE_CLOS:
 				tb_gstream_printf(gst, "Z");
 				break;
 			default:

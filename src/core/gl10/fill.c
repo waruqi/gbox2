@@ -67,10 +67,29 @@ tb_void_t g2_gl10_fill_path(g2_gl10_painter_t* painter, g2_gl10_path_t const* pa
 	// init fill style
 	if (g2_gl10_fill_style_init(painter))
 	{
-		// draw path
+		// check
+		tb_assert(path->fill.data && tb_vector_size(path->fill.data));
+		tb_assert(path->fill.size && tb_vector_size(path->fill.size));
+
+		// init vertices
 		glEnableClientState(GL_VERTEX_ARRAY);
-//		glVertexPointer(2, GL_FLOAT, 0, vertices);
-		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+		glVertexPointer(2, GL_FLOAT, 0, tb_vector_data(path->fill.data));
+
+		// draw path
+		GLint 		head = 0;
+		GLint 		size = 0;
+		tb_size_t 	itor = tb_iterator_head(path->fill.size);
+		tb_size_t 	tail = tb_iterator_tail(path->fill.size);
+		for (; itor != tail; itor++)
+		{
+			size = tb_iterator_item(path->fill.size, itor);
+			tb_print("%d %d", head, size);
+			glDrawArrays(GL_TRIANGLE_FAN, head, size);
+			//glDrawArrays(GL_TRIANGLE_STRIP, head, size);
+			head += size;
+		}
+
+		// exit vertices
 		glDisableClientState(GL_VERTEX_ARRAY);
 
 		// exit fill style

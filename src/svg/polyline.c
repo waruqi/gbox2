@@ -52,7 +52,7 @@ static tb_void_t g2_svg_element_polyline_writ(g2_svg_element_t const* element, t
 		tb_gstream_printf(gst, " points=\"");
 
 		// walk
-		g2_point_t 	pt[4];
+		g2_point_t 	pt[3];
 		tb_size_t 	co = G2_PATH_CODE_NONE;
 		while (co = g2_path_itor_next(polyline->path, pt))
 		{
@@ -62,9 +62,9 @@ static tb_void_t g2_svg_element_polyline_writ(g2_svg_element_t const* element, t
 				tb_gstream_printf(gst, "%f,%f ", g2_float_to_tb(pt[0].x), g2_float_to_tb(pt[0].y));
 				break;
 			case G2_PATH_CODE_LINE:
-				tb_gstream_printf(gst, "%f,%f ", g2_float_to_tb(pt[1].x), g2_float_to_tb(pt[1].y));
+				tb_gstream_printf(gst, "%f,%f ", g2_float_to_tb(pt[0].x), g2_float_to_tb(pt[0].y));
 				break;
-			case G2_PATH_CODE_CLOSE:
+			case G2_PATH_CODE_CLOS:
 				break;
 			default:
 				tb_assert(0);

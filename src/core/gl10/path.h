@@ -43,11 +43,45 @@ typedef struct __g2_gl10_path_itor_t
 
 }g2_gl10_path_itor_t;
 
+// the gl10 path fill type
+typedef struct __g2_gl10_path_fill_t
+{
+	// the data, vector<g2_point_t>
+	tb_vector_t* 			data;
+
+	// the size, vector<tb_uint16_t>
+	tb_vector_t* 			size;
+
+}g2_gl10_path_fill_t;
+
+// the gl10 path stok type
+typedef struct __g2_gl10_path_stok_t
+{
+	// the data, vector<GLfloat[2]>
+	tb_vector_t* 			data;
+
+	// the size, vector<tb_uint16_t>
+	tb_vector_t* 			size;
+
+}g2_gl10_path_stok_t;
+
+// the gl10 path flag type
+typedef enum __g2_gl10_path_flag_t
+{
+	G2_GL10_PATH_FLAG_NONE 	= 0
+,	G2_GL10_PATH_FLAG_OPEN 	= 1
+,	G2_GL10_PATH_FLAG_MOVE 	= 2
+,	G2_GL10_PATH_FLAG_LINE 	= 4
+,	G2_GL10_PATH_FLAG_QUAD 	= 8
+,	G2_GL10_PATH_FLAG_CUBE 	= 16
+
+}g2_gl10_path_flag_t;
+
 // the gl10 path type
 typedef struct __g2_gl10_path_t
 {
-	// is opened?
-	tb_size_t 				open;
+	// the flag
+	tb_size_t 				flag;
 
 	// the code, vector<tb_byte_t>
 	tb_vector_t* 			code;
@@ -55,11 +89,11 @@ typedef struct __g2_gl10_path_t
 	// the data, vector<g2_point_t>
 	tb_vector_t* 			data;
 
-	// the fill, vector<...>
-	tb_vector_t* 			fill;
+	// the fill path
+	g2_gl10_path_fill_t 	fill;
 
-	// the stok, vector<...>
-	tb_vector_t* 			stok;
+	// the stok path
+	g2_gl10_path_stok_t 	stok;
 
 	// the itor
 	g2_gl10_path_itor_t 	itor;

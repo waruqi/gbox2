@@ -44,8 +44,8 @@ typedef enum __g2_path_code_t
 ,	G2_PATH_CODE_MOVE 	= 1
 ,	G2_PATH_CODE_LINE 	= 2
 ,	G2_PATH_CODE_QUAD	= 3
-,	G2_PATH_CODE_CUBIC	= 4
-,	G2_PATH_CODE_CLOSE	= 5
+,	G2_PATH_CODE_CUBE	= 4
+,	G2_PATH_CODE_CLOS	= 5
 
 }g2_path_code_t;
 
