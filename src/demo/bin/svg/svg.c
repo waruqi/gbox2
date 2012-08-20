@@ -106,7 +106,7 @@ static tb_void_t g2_demo_render()
 
 	// bounds
 	g2_style_clear(g2_style(g_painter));
-	g2_style_mode_set(g2_style(g_painter), G2_STYLE_MODE_STROKE);
+	g2_style_mode_set(g2_style(g_painter), G2_STYLE_MODE_STOK);
 	g2_style_color_set(g2_style(g_painter), G2_COLOR_GREEN);
 	g2_draw_rect(g_painter, &rect);
 }

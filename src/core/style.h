@@ -42,8 +42,8 @@ typedef enum __g2_style_mode_t
 {
 	G2_STYLE_MODE_NONE 			= 0 //!< none
 ,	G2_STYLE_MODE_FILL 			= 1 //!< fill
-,	G2_STYLE_MODE_STROKE 		= 2 //!< stroke
-,	G2_STYLE_MODE_FILL_STROKE 	= 3 //!< fill & stroke
+,	G2_STYLE_MODE_STOK 			= 2 //!< stok
+,	G2_STYLE_MODE_FILL_STOK 	= 3 //!< fill & stok
 
 }g2_style_mode_t;
 

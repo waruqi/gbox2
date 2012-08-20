@@ -223,7 +223,7 @@ static tb_bool_t g2_demo_init(tb_int_t argc, tb_char_t** argv)
 	}
 
 	// init mode
-	g_mode = G2_STYLE_MODE_FILL_STROKE;
+	g_mode = G2_STYLE_MODE_FILL_STOK;
 
 	// init matrix
 	g_bm = TB_TRUE;

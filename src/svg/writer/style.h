@@ -67,26 +67,26 @@ static __tb_inline__ tb_void_t g2_svg_writer_style_fill(tb_gstream_t* gst, g2_sv
 	// end
 	if (separator) tb_gstream_printf(gst, "; ");
 }
-static __tb_inline__ tb_void_t g2_svg_writer_style_stroke(tb_gstream_t* gst, g2_svg_style_t* style)
+static __tb_inline__ tb_void_t g2_svg_writer_style_stok(tb_gstream_t* gst, g2_svg_style_t* style)
 {
 	// init
 	tb_size_t separator = 0;
 
 	// stroke: value
-	if (style->stroke.mode == G2_SVG_STYLE_PAINT_MODE_VALUE)
+	if (style->stok.mode == G2_SVG_STYLE_PAINT_MODE_VALUE)
 	{
-		g2_pixel_t pixel = g2_color_pixel(style->stroke.color);
-		tb_gstream_printf(gst, "stroke:#%06x", style->stroke.color.a != 0xff? pixel : (pixel & 0x00ffffff));
+		g2_pixel_t pixel = g2_color_pixel(style->stok.color);
+		tb_gstream_printf(gst, "stroke:#%06x", style->stok.color.a != 0xff? pixel : (pixel & 0x00ffffff));
 		separator = 1;
 	}
 	// stroke: url
-	else if (style->stroke.mode == G2_SVG_STYLE_PAINT_MODE_URL)
+	else if (style->stok.mode == G2_SVG_STYLE_PAINT_MODE_URL)
 	{
-		tb_gstream_printf(gst, "stroke:url(%s)", tb_pstring_cstr(&style->stroke.url));
+		tb_gstream_printf(gst, "stroke:url(%s)", tb_pstring_cstr(&style->stok.url));
 		separator = 1;
 	}
 	// stroke: none
-	else if (style->stroke.mode == G2_SVG_STYLE_PAINT_MODE_NONE)
+	else if (style->stok.mode == G2_SVG_STYLE_PAINT_MODE_NONE)
 	{
 		tb_gstream_printf(gst, "stroke:none");
 		separator = 1;
@@ -129,10 +129,10 @@ static __tb_inline__ tb_void_t g2_svg_writer_style_stroke(tb_gstream_t* gst, g2_
 	}
 
 	// stroke-opacity
-	if (style->stroke.flag & G2_SVG_STYLE_PAINT_FLAG_HAS_OPACITY) 
+	if (style->stok.flag & G2_SVG_STYLE_PAINT_FLAG_HAS_OPACITY) 
 	{
 		if (separator) tb_gstream_printf(gst, "; ");
-		tb_gstream_printf(gst, "stroke-opacity:%f", g2_float_to_tb(style->stroke.opacity));
+		tb_gstream_printf(gst, "stroke-opacity:%f", g2_float_to_tb(style->stok.opacity));
 		separator = 1;
 	}
 
@@ -258,7 +258,7 @@ static __tb_inline__ tb_void_t g2_svg_writer_style(tb_gstream_t* gst, g2_svg_sty
 		if (style->mode & G2_SVG_STYLE_MODE_FILL) g2_svg_writer_style_fill(gst, style);
 	
 		// stroke?
-		if (style->mode & G2_SVG_STYLE_MODE_STROKE) g2_svg_writer_style_stroke(gst, style);
+		if (style->mode & G2_SVG_STYLE_MODE_STOK) g2_svg_writer_style_stok(gst, style);
 
 		// font?
 		if (style->mode & G2_SVG_STYLE_MODE_FONT) g2_svg_writer_style_font(gst, style);

@@ -4,7 +4,7 @@
 static tb_bool_t g2_demo_init()
 {
 	// init mode
-	g_mode = G2_STYLE_MODE_FILL_STROKE;
+	g_mode = G2_STYLE_MODE_FILL_STOK;
 
 	// ok
 	return TB_TRUE;

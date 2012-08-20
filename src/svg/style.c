@@ -45,14 +45,14 @@ tb_bool_t g2_svg_style_init(g2_svg_style_t* style)
 	tb_pstring_init(&style->fill.url);
 
 	// init stroke
-	style->stroke.mode 		= G2_SVG_STYLE_PAINT_MODE_INHERIT;
-	style->stroke.flag 		= G2_SVG_STYLE_PAINT_FLAG_NONE;
-	style->stroke.color 	= G2_COLOR_BLACK;
-	style->stroke.opacity 	= G2_ONE;
+	style->stok.mode 		= G2_SVG_STYLE_PAINT_MODE_INHERIT;
+	style->stok.flag 		= G2_SVG_STYLE_PAINT_FLAG_NONE;
+	style->stok.color 	= G2_COLOR_BLACK;
+	style->stok.opacity 	= G2_ONE;
 	style->join 			= G2_SVG_STYLE_JOIN_INHERIT;
 	style->cap 				= G2_SVG_STYLE_CAP_INHERIT;
 	style->width 			= 0;
-	tb_pstring_init(&style->stroke.url);
+	tb_pstring_init(&style->stok.url);
 
 	// init font
 	style->font.style 		= G2_SVG_STYLE_FONT_STYLE_INHERIT;
@@ -76,7 +76,7 @@ tb_void_t g2_svg_style_exit(g2_svg_style_t* style)
 		tb_pstring_exit(&style->fill.url);
 
 		// exit stroke
-		tb_pstring_exit(&style->stroke.url);
+		tb_pstring_exit(&style->stok.url);
 
 		// exit font
 		tb_pstring_exit(&style->font.family);

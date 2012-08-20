@@ -115,11 +115,11 @@ g2_svg_element_t* g2_svg_element_init_ellipse(tb_handle_t reader)
 		else if (!tb_pstring_cstricmp(&attr->name, "fill"))
 			g2_svg_parser_style_fill(p, &element->style);
 		else if (!tb_pstring_cstricmp(&attr->name, "stroke"))
-			g2_svg_parser_style_stroke(p, &element->style);
+			g2_svg_parser_style_stok(p, &element->style);
 		else if (!tb_pstring_cstricmp(&attr->name, "stroke-width"))
-			g2_svg_parser_style_stroke_width(p, &element->style);
+			g2_svg_parser_style_stok_width(p, &element->style);
 		else if (!tb_pstring_cstricmp(&attr->name, "stroke-linejoin"))
-			g2_svg_parser_style_stroke_linejoin(p, &element->style);
+			g2_svg_parser_style_stok_linejoin(p, &element->style);
 		else if (!tb_pstring_cstricmp(&attr->name, "style"))
 			g2_svg_parser_style(p, &element->style);
 		else if (!tb_pstring_cstricmp(&attr->name, "clip-path"))

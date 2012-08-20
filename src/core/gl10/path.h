@@ -63,5 +63,14 @@ typedef struct __g2_gl10_path_t
 
 }g2_gl10_path_t;
 
+/* ///////////////////////////////////////////////////////////////////////
+ * interfaces
+ */
+
+// make fill path for gl10
+tb_bool_t g2_gl10_path_make_fill(g2_gl10_path_t* path);
+
+// make stok path for gl10
+tb_bool_t g2_gl10_path_make_stok(g2_gl10_path_t* path);
 
 #endif

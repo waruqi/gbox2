@@ -37,13 +37,13 @@ typedef enum __g2_svg_style_mode_t
 {
 	G2_SVG_STYLE_MODE_NONE 					= 0 	//!< none
 ,	G2_SVG_STYLE_MODE_FILL 					= 1 	//!< fill
-,	G2_SVG_STYLE_MODE_STROKE 				= 2 	//!< stroke
+,	G2_SVG_STYLE_MODE_STOK 					= 2 	//!< stok
 ,	G2_SVG_STYLE_MODE_CLIPPATH 				= 4 	//!< clippath
 ,	G2_SVG_STYLE_MODE_FONT 					= 8 	//!< font
 ,	G2_SVG_STYLE_MODE_TEXT 					= 16 	//!< text
 ,	G2_SVG_STYLE_MODE_IMAGE 				= 32 	//!< image
 ,	G2_SVG_STYLE_MODE_OPACITY 				= 64 	//!< opacity
-,	G2_SVG_STYLE_MODE_STYLE 				= G2_SVG_STYLE_MODE_FILL | G2_SVG_STYLE_MODE_STROKE | G2_SVG_STYLE_MODE_CLIPPATH | G2_SVG_STYLE_MODE_FONT | G2_SVG_STYLE_MODE_TEXT | G2_SVG_STYLE_MODE_OPACITY
+,	G2_SVG_STYLE_MODE_STYLE 				= G2_SVG_STYLE_MODE_FILL | G2_SVG_STYLE_MODE_STOK | G2_SVG_STYLE_MODE_CLIPPATH | G2_SVG_STYLE_MODE_FONT | G2_SVG_STYLE_MODE_TEXT | G2_SVG_STYLE_MODE_OPACITY
 
 }g2_svg_style_mode_t;
 
@@ -244,8 +244,8 @@ typedef struct __g2_svg_style_t
 	// the fill paint
 	g2_svg_style_paint_t 		fill;
 
-	// the stroke paint
-	g2_svg_style_paint_t 		stroke;
+	// the stok paint
+	g2_svg_style_paint_t 		stok;
 
 	// the clip path
 	g2_svg_style_clippath_t 	clippath;

@@ -167,35 +167,35 @@ static __tb_inline__ tb_char_t const* g2_svg_parser_style_fill(tb_char_t const* 
 	// fill
 	return g2_svg_parser_style_paint(p, &style->fill);
 }
-static __tb_inline__ tb_char_t const* g2_svg_parser_style_stroke(tb_char_t const* p, g2_svg_style_t* style)
+static __tb_inline__ tb_char_t const* g2_svg_parser_style_stok(tb_char_t const* p, g2_svg_style_t* style)
 {
 	// skip space
 	while (tb_isspace(*p)) p++;
 
 	// mode
-	style->mode |= G2_SVG_STYLE_MODE_STROKE;
+	style->mode |= G2_SVG_STYLE_MODE_STOK;
 
 	// stroke
-	return g2_svg_parser_style_paint(p, &style->stroke);
+	return g2_svg_parser_style_paint(p, &style->stok);
 }
-static __tb_inline__ tb_char_t const* g2_svg_parser_style_stroke_width(tb_char_t const* p, g2_svg_style_t* style)
+static __tb_inline__ tb_char_t const* g2_svg_parser_style_stok_width(tb_char_t const* p, g2_svg_style_t* style)
 {
 	// skip space
 	while (tb_isspace(*p)) p++;
 
 	// mode
-	style->mode |= G2_SVG_STYLE_MODE_STROKE;
+	style->mode |= G2_SVG_STYLE_MODE_STOK;
 
 	// width
 	return g2_svg_parser_float(p, &style->width);
 }
-static __tb_inline__ tb_char_t const* g2_svg_parser_style_stroke_linejoin(tb_char_t const* p, g2_svg_style_t* style)
+static __tb_inline__ tb_char_t const* g2_svg_parser_style_stok_linejoin(tb_char_t const* p, g2_svg_style_t* style)
 {
 	// skip space
 	while (tb_isspace(*p)) p++;
 
 	// mode
-	style->mode |= G2_SVG_STYLE_MODE_STROKE;
+	style->mode |= G2_SVG_STYLE_MODE_STOK;
 
 	// join
 	if (!tb_strnicmp(p, "miter", 5)) style->join = G2_SVG_STYLE_JOIN_MITER;
@@ -208,13 +208,13 @@ static __tb_inline__ tb_char_t const* g2_svg_parser_style_stroke_linejoin(tb_cha
 	// ok
 	return p;
 }
-static __tb_inline__ tb_char_t const* g2_svg_parser_style_stroke_linecap(tb_char_t const* p, g2_svg_style_t* style)
+static __tb_inline__ tb_char_t const* g2_svg_parser_style_stok_linecap(tb_char_t const* p, g2_svg_style_t* style)
 {
 	// skip space
 	while (tb_isspace(*p)) p++;
 
 	// mode
-	style->mode |= G2_SVG_STYLE_MODE_STROKE;
+	style->mode |= G2_SVG_STYLE_MODE_STOK;
 
 	// join
 	if (!tb_strnicmp(p, "butt", 4)) 
@@ -236,19 +236,19 @@ static __tb_inline__ tb_char_t const* g2_svg_parser_style_stroke_linecap(tb_char
 	// ok
 	return p;
 }
-static __tb_inline__ tb_char_t const* g2_svg_parser_style_stroke_opacity(tb_char_t const* p, g2_svg_style_t* style)
+static __tb_inline__ tb_char_t const* g2_svg_parser_style_stok_opacity(tb_char_t const* p, g2_svg_style_t* style)
 {
 	// skip space
 	while (tb_isspace(*p)) p++;
 
 	// mode
-	style->mode |= G2_SVG_STYLE_MODE_STROKE;
+	style->mode |= G2_SVG_STYLE_MODE_STOK;
 
 	// flag
-	style->stroke.flag |= G2_SVG_STYLE_PAINT_FLAG_HAS_OPACITY;
+	style->stok.flag |= G2_SVG_STYLE_PAINT_FLAG_HAS_OPACITY;
 
 	// opacity
-	return g2_svg_parser_float(p, &style->stroke.opacity);
+	return g2_svg_parser_float(p, &style->stok.opacity);
 }
 static __tb_inline__ tb_char_t const* g2_svg_parser_style_opacity(tb_char_t const* p, g2_svg_style_t* style)
 {
@@ -521,15 +521,15 @@ static __tb_inline__ tb_char_t const* g2_svg_parser_style(tb_char_t const* p, g2
 			else if (!tb_strnicmp(p, "fill-opacity:", 13))
 				p = g2_svg_parser_style_fill_opacity(p + 13, style);
 			else if (!tb_strnicmp(p, "stroke:", 7))
-				p = g2_svg_parser_style_stroke(p + 7, style);
+				p = g2_svg_parser_style_stok(p + 7, style);
 			else if (!tb_strnicmp(p, "stroke-width:", 13))
-				p = g2_svg_parser_style_stroke_width(p + 13, style);
+				p = g2_svg_parser_style_stok_width(p + 13, style);
 			else if (!tb_strnicmp(p, "stroke-linecap:", 15))
-				p = g2_svg_parser_style_stroke_linecap(p + 15, style);
+				p = g2_svg_parser_style_stok_linecap(p + 15, style);
 			else if (!tb_strnicmp(p, "stroke-linejoin:", 16))
-				p = g2_svg_parser_style_stroke_linejoin(p + 16, style);
+				p = g2_svg_parser_style_stok_linejoin(p + 16, style);
 			else if (!tb_strnicmp(p, "stroke-opacity:", 15))
-				p = g2_svg_parser_style_stroke_opacity(p + 15, style);
+				p = g2_svg_parser_style_stok_opacity(p + 15, style);
 			else if (!tb_strnicmp(p, "opacity:", 8))
 				p = g2_svg_parser_style_opacity(p + 8, style);
 			else if (!tb_strnicmp(p, "clip-path:", 10))

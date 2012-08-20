@@ -224,20 +224,20 @@ static __tb_inline__ tb_bool_t g2_svg_painter_style_fill(g2_svg_painter_t* paint
 static __tb_inline__ tb_bool_t g2_svg_painter_style_stok(g2_svg_painter_t* painter, g2_svg_style_t const* style)
 {
 	// no stroke? next it
-	tb_check_return_val(style->mode & G2_SVG_STYLE_MODE_STROKE, TB_FALSE);
+	tb_check_return_val(style->mode & G2_SVG_STYLE_MODE_STOK, TB_FALSE);
 
 	// stroke
 	g2_style_clear(g2_style(painter->painter));
-	g2_style_mode_set(g2_style(painter->painter), G2_STYLE_MODE_STROKE);
+	g2_style_mode_set(g2_style(painter->painter), G2_STYLE_MODE_STOK);
 
 	// stroke it
-	switch (style->stroke.mode)
+	switch (style->stok.mode)
 	{
 	case G2_SVG_STYLE_PAINT_MODE_VALUE:
-		g2_style_color_set(g2_style(painter->painter), style->stroke.color);
+		g2_style_color_set(g2_style(painter->painter), style->stok.color);
 		break;
 	case G2_SVG_STYLE_PAINT_MODE_URL:
-		if (!g2_svg_painter_style_url(painter, tb_pstring_cstr(&style->stroke.url))) return TB_FALSE;
+		if (!g2_svg_painter_style_url(painter, tb_pstring_cstr(&style->stok.url))) return TB_FALSE;
 		break;
 	default:
 		return TB_FALSE;
@@ -253,8 +253,8 @@ static __tb_inline__ tb_bool_t g2_svg_painter_style_stok(g2_svg_painter_t* paint
 	if (style->cap) g2_style_cap_set(g2_style(painter->painter), style->cap);
 
 	// opacity
-	if (style->stroke.flag & G2_SVG_STYLE_PAINT_FLAG_HAS_OPACITY)
-		g2_style_alpha_set(g2_style(painter->painter), (tb_byte_t)g2_float_to_long(style->stroke.opacity * 0xff));
+	if (style->stok.flag & G2_SVG_STYLE_PAINT_FLAG_HAS_OPACITY)
+		g2_style_alpha_set(g2_style(painter->painter), (tb_byte_t)g2_float_to_long(style->stok.opacity * 0xff));
 	else if (style->mode & G2_SVG_STYLE_MODE_OPACITY)
 		g2_style_alpha_set(g2_style(painter->painter), (tb_byte_t)g2_float_to_long(style->opacity * 0xff));
 
@@ -351,20 +351,20 @@ static __tb_inline__ tb_void_t g2_svg_painter_style_walk(g2_svg_style_t* applied
 	}
 
 	// has stroke?
-	if (style->mode & G2_SVG_STYLE_MODE_STROKE)
+	if (style->mode & G2_SVG_STYLE_MODE_STOK)
 	{
 		// no inherit? stroke it
-		applied->mode |= G2_SVG_STYLE_MODE_STROKE;
-		if (!applied->stroke.mode)
+		applied->mode |= G2_SVG_STYLE_MODE_STOK;
+		if (!applied->stok.mode)
 		{
-			applied->stroke.mode = style->stroke.mode;
-			switch (style->stroke.mode)
+			applied->stok.mode = style->stok.mode;
+			switch (style->stok.mode)
 			{
 			case G2_SVG_STYLE_PAINT_MODE_VALUE:
-				applied->stroke.color = style->stroke.color;
+				applied->stok.color = style->stok.color;
 				break;
 			case G2_SVG_STYLE_PAINT_MODE_URL:
-				tb_pstring_strcpy(&applied->stroke.url, &style->stroke.url);
+				tb_pstring_strcpy(&applied->stok.url, &style->stok.url);
 				break;
 			default:
 				break;
@@ -381,11 +381,11 @@ static __tb_inline__ tb_void_t g2_svg_painter_style_walk(g2_svg_style_t* applied
 		if (g2_ez(applied->width)) applied->width = style->width;
 
 		// has opacity?
-		if (!(applied->stroke.flag & G2_SVG_STYLE_PAINT_FLAG_HAS_OPACITY) 
-			&& style->stroke.flag & G2_SVG_STYLE_PAINT_FLAG_HAS_OPACITY)
+		if (!(applied->stok.flag & G2_SVG_STYLE_PAINT_FLAG_HAS_OPACITY) 
+			&& style->stok.flag & G2_SVG_STYLE_PAINT_FLAG_HAS_OPACITY)
 		{
-			applied->stroke.flag |= G2_SVG_STYLE_PAINT_FLAG_HAS_OPACITY;
-			applied->stroke.opacity = style->stroke.opacity;
+			applied->stok.flag |= G2_SVG_STYLE_PAINT_FLAG_HAS_OPACITY;
+			applied->stok.opacity = style->stok.opacity;
 		}
 	}
 

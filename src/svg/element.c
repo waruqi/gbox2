@@ -208,7 +208,7 @@ static tb_void_t g2_svg_element_painter_draw(g2_svg_painter_t* spainter, g2_svg_
 			}
 
 			// stroke
-			if (element->stok && style.mode & G2_SVG_STYLE_MODE_STROKE)
+			if (element->stok && style.mode & G2_SVG_STYLE_MODE_STOK)
 			{
 				if (g2_svg_painter_style_stok(spainter, &style))
 					element->stok(element, spainter);

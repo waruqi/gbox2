@@ -192,10 +192,10 @@ tb_void_t g2_demo_gl_draw()
 		g2_demo_draw();
 	}
 
-	if (g_mode & G2_STYLE_MODE_STROKE)
+	if (g_mode & G2_STYLE_MODE_STOK)
 	{
 		g2_style_clear(g_style);
-		g2_style_mode_set(g_style, G2_STYLE_MODE_STROKE);
+		g2_style_mode_set(g_style, G2_STYLE_MODE_STOK);
 		g2_style_color_set(g_style, G2_COLOR_BLUE);
 
 		g2_style_width_set(g_style, g2_long_to_float(g_penw));
