@@ -46,6 +46,9 @@ typedef struct __g2_gl10_path_itor_t
 // the gl10 path type
 typedef struct __g2_gl10_path_t
 {
+	// is opened?
+	tb_size_t 				open;
+
 	// the code, vector<tb_byte_t>
 	tb_vector_t* 			code;
 

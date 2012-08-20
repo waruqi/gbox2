@@ -128,7 +128,26 @@ static tb_size_t g2_skia_path_itor_next(tb_handle_t path, g2_point_t pt[3])
 	// next, @note hack: g2_point_t => SkPoint
 	g2_point_t points[4];
 	SkPath::Verb verb = spath->iterator().next((SkPoint*)(points));
-	tb_memcpy(pt, &points[1], 3 * sizeof(g2_point_t));
+	switch (verb)
+	{
+	case SkPath::kMove_Verb:
+		pt[0] = points[0];
+		break;
+	case SkPath::kLine_Verb:
+		pt[0] = points[1];
+		break;
+	case SkPath::kQuad_Verb:
+		pt[0] = points[1];
+		pt[1] = points[2];
+		break;
+	case SkPath::kCubic_Verb:
+		pt[0] = points[1];
+		pt[1] = points[2];
+		pt[2] = points[3];
+		break;
+	default:
+		break;
+	}
 
 	// ok?
 	return verb != SkPath::kDone_Verb? (static_cast<tb_size_t>(verb) + 1) : G2_PATH_CODE_NONE;

@@ -73,6 +73,8 @@ static tb_void_t g2_svg_element_path_writ(g2_svg_element_t const* element, tb_gs
 			case G2_PATH_CODE_CLOSE:
 				tb_gstream_printf(gst, "Z");
 				break;
+			default:
+				break;
 			}
 		}
 		g2_path_itor_exit(path->path);

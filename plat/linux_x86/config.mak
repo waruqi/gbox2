@@ -12,6 +12,7 @@ G2_CONFIG_DEMO_TYPE 				= bin
 G2_CONFIG_CORE_SOFT 				= n
 G2_CONFIG_CORE_SKIA 				= n
 G2_CONFIG_CORE_GL10 				= y
+G2_CONFIG_CORE_GL20 				= n
 
 ###############################################################################
 # tbox

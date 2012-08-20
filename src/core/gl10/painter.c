@@ -238,7 +238,8 @@ tb_void_t g2_draw_path(tb_handle_t painter, tb_handle_t path)
 	tb_assert_and_check_return(gpainter && gpainter->style_usr && path);
 
 	// fill
-	g2_gl10_fill_path(gpainter, (g2_gl10_path_t const*)path);
+	if (g2_gl10_path_make_fill((g2_gl10_path_t*)path))
+		g2_gl10_fill_path(gpainter, (g2_gl10_path_t const*)path);
 }
 tb_void_t g2_draw_arc(tb_handle_t painter, g2_arc_t const* arc)
 {

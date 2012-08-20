@@ -60,6 +60,63 @@ static __tb_inline__ tb_size_t g2_gl10_path_code_step(tb_size_t code)
 	// ok
 	return step[code];
 }
+tb_bool_t g2_gl10_path_make_fill(g2_gl10_path_t* path)
+{
+	// check
+	tb_assert_and_check_return_val(path && path->fill, TB_FALSE);
+
+	// init itor
+	if (g2_path_itor_init(path))
+	{
+		// walk
+		g2_point_t 	data[3];
+		tb_size_t 	code = G2_PATH_CODE_NONE;
+		while (code = g2_path_itor_next(path, data))
+		{
+			// done
+			switch (code)
+			{
+			case G2_PATH_CODE_MOVE:
+				{
+
+				}
+				break;
+			case G2_PATH_CODE_LINE:
+				{
+
+				}
+				break;
+			case G2_PATH_CODE_QUAD:
+				{
+
+				}
+				break;
+			case G2_PATH_CODE_CUBIC:
+				{
+
+				}
+				break;
+			case G2_PATH_CODE_CLOSE:
+				{
+				}
+				break;
+			default:
+				break;
+			}
+		}
+
+		// exit itor
+		g2_path_itor_exit(path);
+	}
+
+	// ok
+	return TB_TRUE;
+}
+tb_bool_t g2_gl10_path_make_stok(g2_gl10_path_t* path)
+{
+	tb_trace_noimpl();
+	return TB_FALSE;
+}
 
 /* ///////////////////////////////////////////////////////////////////////
  * interfaces
@@ -120,9 +177,12 @@ tb_void_t g2_path_close(tb_handle_t path)
 	g2_gl10_path_t* gpath = (g2_gl10_path_t*)path;
 	tb_assert_and_check_return(gpath && gpath->code);
 
-	// close 
+	// close it, no double closed
 	if (!tb_vector_size(gpath->code) || (tb_byte_t)tb_vector_last(gpath->code) != G2_PATH_CODE_CLOSE) 
 		tb_vector_insert_tail(gpath->code, G2_PATH_CODE_CLOSE);
+
+	// close it
+	gpath->open = 0;
 }
 tb_bool_t g2_path_null(tb_handle_t path)
 {
@@ -149,13 +209,33 @@ tb_void_t g2_path_move_to(tb_handle_t path, g2_point_t const* pt)
 	tb_assert_and_check_return(gpath && gpath->code && gpath->data && pt);
 
 	// move to
-	tb_vector_insert_tail(gpath->code, G2_PATH_CODE_MOVE);
-	tb_vector_insert_tail(gpath->data, pt);
+	if (!tb_vector_size(gpath->code) || (tb_byte_t)tb_vector_last(gpath->code) != G2_PATH_CODE_MOVE) 
+	{
+		tb_vector_insert_tail(gpath->code, G2_PATH_CODE_MOVE);
+		tb_vector_insert_tail(gpath->data, pt);
+	}
+	// avoid a lone move-to
+	else tb_vector_replace_last(gpath->data, pt);
+
+	// open it
+	gpath->open = 1;
 }
 tb_void_t g2_path_line_to(tb_handle_t path, g2_point_t const* pt)
 {
 	g2_gl10_path_t* gpath = (g2_gl10_path_t*)path;
 	tb_assert_and_check_return(gpath && gpath->code && gpath->data && pt);
+
+	// patch move-to
+	if (!gpath->open) 
+	{
+		// the last
+		g2_point_t 			null = {0};
+		g2_point_t const* 	last = TB_NULL;
+		if (tb_vector_size(gpath->data)) last = tb_vector_last(gpath->data);
+
+		// move to the last
+		g2_path_move_to(path, last? last : &null);
+	}
 
 	// line to
 	tb_vector_insert_tail(gpath->code, G2_PATH_CODE_LINE);
@@ -166,6 +246,18 @@ tb_void_t g2_path_quad_to(tb_handle_t path, g2_point_t const* cp, g2_point_t con
 	g2_gl10_path_t* gpath = (g2_gl10_path_t*)path;
 	tb_assert_and_check_return(gpath && gpath->code && gpath->data && cp && pt);
 
+	// patch move-to
+	if (!gpath->open) 
+	{
+		// the last
+		g2_point_t 			null = {0};
+		g2_point_t const* 	last = TB_NULL;
+		if (tb_vector_size(gpath->data)) last = tb_vector_last(gpath->data);
+
+		// move to the last
+		g2_path_move_to(path, last? last : &null);
+	}
+
 	// quad to
 	tb_vector_insert_tail(gpath->code, G2_PATH_CODE_QUAD);
 	tb_vector_insert_tail(gpath->data, cp);
@@ -175,6 +267,18 @@ tb_void_t g2_path_cube_to(tb_handle_t path, g2_point_t const* c0, g2_point_t con
 {
 	g2_gl10_path_t* gpath = (g2_gl10_path_t*)path;
 	tb_assert_and_check_return(gpath && gpath->code && gpath->data && c0 && c1 && pt);
+
+	// patch move-to
+	if (!gpath->open) 
+	{
+		// the last
+		g2_point_t 			null = {0};
+		g2_point_t const* 	last = TB_NULL;
+		if (tb_vector_size(gpath->data)) last = tb_vector_last(gpath->data);
+
+		// move to the last
+		g2_path_move_to(path, last? last : &null);
+	}
 
 	// cube to
 	tb_vector_insert_tail(gpath->code, G2_PATH_CODE_CUBIC);
@@ -229,7 +333,7 @@ tb_size_t g2_path_itor_next(tb_handle_t path, g2_point_t pt[3])
 		tb_assert(data);
 
 		// copy
-		if (data) tb_memcpy(pt, data, step * sizeof(tb_pointer_t));
+		if (data) tb_memcpy(pt, data, step * sizeof(g2_point_t));
 	}
 
 	// next code
