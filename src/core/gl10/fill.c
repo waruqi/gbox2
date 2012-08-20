@@ -41,6 +41,7 @@ tb_void_t g2_gl10_fill_rect(g2_gl10_painter_t* painter, g2_rect_t const* rect)
 		tb_float_t x1 = g2_float_to_tb(rect->x + rect->w - 1);
 		tb_float_t y1 = g2_float_to_tb(rect->y + rect->h - 1);
 
+#if 0
 		// init rect
 		GLfloat vertices[8];
 		vertices[0] = x0;
@@ -57,6 +58,32 @@ tb_void_t g2_gl10_fill_rect(g2_gl10_painter_t* painter, g2_rect_t const* rect)
 		glVertexPointer(2, GL_FLOAT, 0, vertices);
 		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 		glDisableClientState(GL_VERTEX_ARRAY);
+#else
+		GLfloat vertices[] = 
+		{
+			-100.0f, -100.0f
+		, 	-50.0f, -100.0f
+		, 	0.0f, -150.0f
+		, 	50.0f, -100.0f
+		, 	100.0f, -100.0f
+		, 	100.0f, -50.0f
+		, 	20.0f, 0.0f
+		, 	100.0f, 50.0f
+		, 	100.0f, 100.0f
+		, 	50.0f, 100.0f
+		, 	0.0f, 150.0f
+		, 	-50.0f, 100.0f
+		, 	-100.0f, 100.0f
+		, 	-100.0f, 50.0f
+		, 	-200.0f, 0.0f
+		, 	-100.0f, -50.0f
+		, 	-100.0f, -100.0f
+		};
+		glEnableClientState(GL_VERTEX_ARRAY);
+		glVertexPointer(2, GL_FLOAT, 0, vertices);
+		glDrawArrays(GL_TRIANGLE_FAN, 0, 17);
+		glDisableClientState(GL_VERTEX_ARRAY);
+#endif
 
 		// exit fill style
 		g2_gl10_fill_style_exit(painter);
@@ -83,7 +110,6 @@ tb_void_t g2_gl10_fill_path(g2_gl10_painter_t* painter, g2_gl10_path_t const* pa
 		for (; itor != tail; itor++)
 		{
 			size = tb_iterator_item(path->fill.size, itor);
-			tb_print("%d %d", head, size);
 			glDrawArrays(GL_TRIANGLE_FAN, head, size);
 			//glDrawArrays(GL_TRIANGLE_STRIP, head, size);
 			head += size;

@@ -107,6 +107,7 @@ tb_bool_t g2_gl10_path_make_fill(g2_gl10_path_t* path)
 				head = data[0];
 				temp[0] = g2_float_to_tb(data[0].x);
 				temp[1] = g2_float_to_tb(data[0].y);
+				tb_print("move: %f %f", temp[0], temp[1]);
 				tb_vector_insert_tail(path->fill.data, temp);
 				tb_vector_insert_tail(path->fill.size, size);
 			}
@@ -116,6 +117,7 @@ tb_bool_t g2_gl10_path_make_fill(g2_gl10_path_t* path)
 				size++;
 				temp[0] = g2_float_to_tb(data[0].x);
 				temp[1] = g2_float_to_tb(data[0].y);
+				tb_print("line: %f %f", temp[0], temp[1]);
 				tb_vector_insert_tail(path->fill.data, temp);
 				tb_vector_replace_last(path->fill.size, size);
 			}
@@ -125,6 +127,7 @@ tb_bool_t g2_gl10_path_make_fill(g2_gl10_path_t* path)
 				size++;
 				temp[0] = g2_float_to_tb(data[1].x);
 				temp[1] = g2_float_to_tb(data[1].y);
+				tb_print("quad: %f %f", temp[0], temp[1]);
 				tb_vector_insert_tail(path->fill.data, temp);
 				tb_vector_replace_last(path->fill.size, size);
 			}
@@ -134,6 +137,7 @@ tb_bool_t g2_gl10_path_make_fill(g2_gl10_path_t* path)
 				size++;
 				temp[0] = g2_float_to_tb(data[2].x);
 				temp[1] = g2_float_to_tb(data[2].y);
+				tb_print("cube: %f %f", temp[0], temp[1]);
 				tb_vector_insert_tail(path->fill.data, temp);
 				tb_vector_replace_last(path->fill.size, size);
 			}
@@ -143,6 +147,7 @@ tb_bool_t g2_gl10_path_make_fill(g2_gl10_path_t* path)
 				size++;
 				temp[0] = g2_float_to_tb(head.x);
 				temp[1] = g2_float_to_tb(head.y);
+				tb_print("close: %f %f", temp[0], temp[1]);
 				tb_vector_insert_tail(path->fill.data, temp);
 				tb_vector_replace_last(path->fill.size, size);
 			}
