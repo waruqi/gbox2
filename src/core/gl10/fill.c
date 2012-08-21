@@ -25,7 +25,7 @@
  * includes
  */
 #include "fill.h"
-#include "fill/style.h"
+#include "fill/fill.h"
 
 /* ///////////////////////////////////////////////////////////////////////
  * implementation

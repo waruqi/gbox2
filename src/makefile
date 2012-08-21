@@ -48,6 +48,8 @@ gbox2_C_FILES-$(G2_CONFIG_CORE_GL10) += \
 						core/soft/style \
 						core/soft/shader \
 						core/soft/bitmap \
+						core/soft/split/quad \
+						core/soft/split/cube \
 						core/gl10/path \
 						core/gl10/fill \
 						core/gl10/context \
@@ -62,6 +64,14 @@ gbox2_CPP_FILES-$(G2_CONFIG_CORE_SKIA) += \
 						core/skia/bitmap \
 						core/skia/context \
 						core/skia/painter 
+
+gbox2_C_FILES-$(G2_CONFIG_CORE_SOFT) += \
+						core/soft/path \
+						core/soft/style \
+						core/soft/shader \
+						core/soft/bitmap \
+						core/soft/split/quad \
+						core/soft/split/cube
 
 # flags
 gbox2_CPPFLAGS 			+= -DTB_PRINT_TAG=\"gbox2\"

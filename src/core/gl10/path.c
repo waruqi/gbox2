@@ -30,6 +30,7 @@
  * includes
  */
 #include "path.h"
+#include "../soft/split/split.h"
 
 /* ///////////////////////////////////////////////////////////////////////
  * macros
@@ -45,7 +46,7 @@
 #endif
 
 /* ///////////////////////////////////////////////////////////////////////
- * implementation
+ * helper
  */
 static __tb_inline__ tb_size_t g2_gl10_path_code_step(tb_size_t code)
 {
@@ -80,7 +81,10 @@ static __tb_inline__ tb_void_t g2_gl10_path_rect_done(g2_gl10_rect_t* rect, tb_f
 	if (x > rect->x2) rect->x2 = x;
 	if (y > rect->y2) rect->y2 = y;
 }
-static __tb_inline__ tb_void_t g2_gl10_path_clear_fill(g2_gl10_path_t* path)
+/* ///////////////////////////////////////////////////////////////////////
+ * fill
+ */
+static __tb_inline__ tb_void_t g2_gl10_path_fill_clear(g2_gl10_path_t* path)
 {
 	// clear fill data
 	if (path->fill.data)
@@ -99,6 +103,31 @@ static __tb_inline__ tb_void_t g2_gl10_path_clear_fill(g2_gl10_path_t* path)
 	// clear fill rect
 	tb_memset(&path->fill.rect, 0, sizeof(g2_gl10_rect_t));
 }
+static tb_bool_t g2_gl10_path_fill_split_quad_func(g2_soft_split_quad_t* split, g2_point_t const* pt)
+{
+	// path
+	g2_gl10_path_t* path = (g2_gl10_path_t*)split->data;
+	tb_assert_and_check_return_val(path, TB_FALSE);
+
+	// data
+	tb_float_t data[2];
+	data[0] = g2_float_to_tb(pt->x);
+	data[1] = g2_float_to_tb(pt->y);
+	tb_trace_impl("split: %f %f", data[0], data[1]);
+
+	// add
+	tb_vector_insert_tail(path->fill.data, data);
+	tb_vector_replace_last(path->fill.size, tb_vector_last(path->fill.size) + 1);
+
+	// bounds
+	g2_gl10_path_rect_done(&path->fill.rect, data[0], data[1]);
+
+	// ok
+	return TB_TRUE;
+}
+/* ///////////////////////////////////////////////////////////////////////
+ * maker
+ */
 tb_bool_t g2_gl10_path_make_fill(g2_gl10_path_t* path)
 {
 	// check
@@ -117,6 +146,9 @@ tb_bool_t g2_gl10_path_make_fill(g2_gl10_path_t* path)
 	// only lineto?
 	if (!(path->flag & (G2_GL10_PATH_FLAG_QUAD | G2_GL10_PATH_FLAG_CUBE)))
 	{
+		// check
+		tb_check_return_val(path->rect.x1 < path->rect.x2 && path->rect.y1 < path->rect.y2, TB_FALSE);
+
 		// use the raw data directly
 		if (path->fill.data != path->data) tb_vector_exit(path->fill.data);
 		if (path->fill.size != path->size) tb_vector_exit(path->fill.size);
@@ -139,6 +171,7 @@ tb_bool_t g2_gl10_path_make_fill(g2_gl10_path_t* path)
 	tb_byte_t const* 	cail = code + tb_vector_size(path->code);
 	tb_float_t const* 	dail = data + (tb_vector_size(path->data) << 1);
 	tb_float_t const* 	head = TB_NULL;
+	tb_float_t const* 	last = TB_NULL;
 	tb_float_t const* 	init = data;
 	tb_assert_and_check_return_val(code && data, TB_NULL);
 
@@ -157,6 +190,10 @@ tb_bool_t g2_gl10_path_make_fill(g2_gl10_path_t* path)
 		tb_assert_and_check_return_val(path->fill.size, TB_FALSE);
 	}
 	else tb_vector_clear(path->fill.size);
+
+	// init splitter
+	g2_soft_split_quad_t quad;
+	g2_soft_split_quad_init(&quad, g2_gl10_path_fill_split_quad_func, path);
 
 	// walk
 	for (; code < cail && data < dail; code++)
@@ -178,6 +215,9 @@ tb_bool_t g2_gl10_path_make_fill(g2_gl10_path_t* path)
 				if (data == init) g2_gl10_path_rect_init(&path->fill.rect, data[0], data[1]);
 				else g2_gl10_path_rect_done(&path->fill.rect, data[0], data[1]);
 
+				// last
+				last = data;
+
 				// next
 				data += 2;
 			}
@@ -192,12 +232,16 @@ tb_bool_t g2_gl10_path_make_fill(g2_gl10_path_t* path)
 				// bounds
 				g2_gl10_path_rect_done(&path->fill.rect, data[0], data[1]);
 
+				// last
+				last = data;
+
 				// next
 				data += 2;
 			}
 			break;
 		case G2_PATH_CODE_QUAD:
 			{
+#if 0
 				// quad
 				tb_trace_impl("quad: %f %f", data[2], data[3]);
 				tb_vector_insert_tail(path->fill.data, &data[2]);
@@ -205,6 +249,24 @@ tb_bool_t g2_gl10_path_make_fill(g2_gl10_path_t* path)
 
 				// bounds
 				g2_gl10_path_rect_done(&path->fill.rect, data[2], data[3]);
+#else
+				// quad
+				tb_trace_impl("quad: %f %f %f %f", data[0], data[1], data[2], data[3]);
+
+				// split
+				tb_assert(last);
+				g2_point_t pb, cp, pe;
+				pb.x = last? tb_float_to_g2(last[0]) : 0;
+				pb.y = last? tb_float_to_g2(last[1]) : 0;
+				cp.x = tb_float_to_g2(data[0]);
+				cp.y = tb_float_to_g2(data[1]);
+				pe.x = tb_float_to_g2(data[2]);
+				pe.y = tb_float_to_g2(data[3]);
+				g2_soft_split_quad_done(&quad, &pb, &cp, &pe);
+#endif
+
+				// last
+				last = &data[2];
 
 				// next
 				data += 4;
@@ -220,6 +282,9 @@ tb_bool_t g2_gl10_path_make_fill(g2_gl10_path_t* path)
 				// bounds
 				g2_gl10_path_rect_done(&path->fill.rect, data[4], data[5]);
 
+				// last
+				last = &data[4];
+
 				// next
 				data += 6;
 			}
@@ -228,11 +293,16 @@ tb_bool_t g2_gl10_path_make_fill(g2_gl10_path_t* path)
 			{
 				// close
 				tb_trace_impl("close");
+
+				// close it
 				if (head)
 				{
 					tb_vector_insert_tail(path->fill.data, head);
 					tb_vector_replace_last(path->fill.size, tb_vector_last(path->fill.size) + 1);
 				}
+
+				// last
+				last = head;
 			}
 			break;
 		default:
@@ -242,6 +312,9 @@ tb_bool_t g2_gl10_path_make_fill(g2_gl10_path_t* path)
 
 	// bounds
 	tb_trace_impl("rect: %f %f %f %f", path->fill.rect.x1, path->fill.rect.y1, path->fill.rect.x2, path->fill.rect.y2);
+
+	// check
+	tb_check_return_val(path->fill.rect.x1 < path->fill.rect.x2 && path->fill.rect.y1 < path->fill.rect.y2, TB_FALSE);
 
 	// ok
 	return TB_TRUE;
@@ -332,7 +405,7 @@ tb_void_t g2_path_clear(tb_handle_t path)
 	tb_memset(&gpath->rect, 0, sizeof(g2_gl10_rect_t));
 
 	// clear fill 
-	g2_gl10_path_clear_fill(gpath);
+	g2_gl10_path_fill_clear(gpath);
 }
 tb_void_t g2_path_close(tb_handle_t path)
 {
@@ -347,7 +420,7 @@ tb_void_t g2_path_close(tb_handle_t path)
 	gpath->flag &= ~G2_GL10_PATH_FLAG_OPEN;
 
 	// clear fill
-	g2_gl10_path_clear_fill(gpath);
+	g2_gl10_path_fill_clear(gpath);
 }
 tb_bool_t g2_path_null(tb_handle_t path)
 {
@@ -400,7 +473,7 @@ tb_void_t g2_path_move_to(tb_handle_t path, g2_point_t const* pt)
 	gpath->flag |= G2_GL10_PATH_FLAG_OPEN | G2_GL10_PATH_FLAG_MOVE;
 
 	// clear fill
-	g2_gl10_path_clear_fill(gpath);
+	g2_gl10_path_fill_clear(gpath);
 }
 tb_void_t g2_path_line_to(tb_handle_t path, g2_point_t const* pt)
 {
@@ -434,7 +507,7 @@ tb_void_t g2_path_line_to(tb_handle_t path, g2_point_t const* pt)
 	tb_vector_replace_last(gpath->size, tb_vector_last(gpath->size) + 1);
 
 	// clear fill
-	g2_gl10_path_clear_fill(gpath);
+	g2_gl10_path_fill_clear(gpath);
 }
 tb_void_t g2_path_quad_to(tb_handle_t path, g2_point_t const* cp, g2_point_t const* pt)
 {
@@ -471,7 +544,7 @@ tb_void_t g2_path_quad_to(tb_handle_t path, g2_point_t const* cp, g2_point_t con
 	tb_vector_replace_last(gpath->size, tb_vector_last(gpath->size) + 1);
 
 	// clear fill
-	g2_gl10_path_clear_fill(gpath);
+	g2_gl10_path_fill_clear(gpath);
 }
 tb_void_t g2_path_cube_to(tb_handle_t path, g2_point_t const* c0, g2_point_t const* c1, g2_point_t const* pt)
 {
@@ -511,7 +584,7 @@ tb_void_t g2_path_cube_to(tb_handle_t path, g2_point_t const* c0, g2_point_t con
 	tb_vector_replace_last(gpath->size, tb_vector_last(gpath->size) + 1);
 
 	// clear fill
-	g2_gl10_path_clear_fill(gpath);
+	g2_gl10_path_fill_clear(gpath);
 }
 tb_void_t g2_path_arc_to(tb_handle_t path, g2_arc_t const* arc)
 {
