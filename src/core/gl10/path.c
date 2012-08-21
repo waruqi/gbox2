@@ -77,7 +77,7 @@ tb_bool_t g2_gl10_path_make_fill(g2_gl10_path_t* path)
 	// init fill data
 	if (!path->fill.data)
 	{
-		path->fill.data = tb_vector_init(G2_PATH_DATA_GROW, tb_item_func_ifm(sizeof(GLfloat) << 1, TB_NULL, TB_NULL));
+		path->fill.data = tb_vector_init(G2_PATH_DATA_GROW, tb_item_func_ifm(sizeof(tb_float_t) << 1, TB_NULL, TB_NULL));
 		tb_assert_and_check_return_val(path->fill.data, TB_FALSE);
 	}
 	else tb_vector_clear(path->fill.data);
@@ -90,10 +90,16 @@ tb_bool_t g2_gl10_path_make_fill(g2_gl10_path_t* path)
 	}
 	else tb_vector_clear(path->fill.size);
 
+	// init bounds
+	tb_float_t 	bx1 = 0;
+	tb_float_t 	by1 = 0;
+	tb_float_t 	bx2 = 0;
+	tb_float_t 	by2 = 0;
+
 	// walk
-	GLfloat 	temp[2];
+	tb_float_t 	temp[2];
 	g2_point_t 	data[3];
-	g2_point_t 	head;
+	g2_point_t 	head = {0};
 	tb_size_t 	code = G2_PATH_CODE_NONE;
 	tb_size_t 	size = 0;
 	while (code = g2_path_itor_next(path, data))
@@ -103,53 +109,100 @@ tb_bool_t g2_gl10_path_make_fill(g2_gl10_path_t* path)
 		{
 		case G2_PATH_CODE_MOVE:
 			{
+				// size
 				size = 0;
+
+				// head
 				head = data[0];
+
+				// move
 				temp[0] = g2_float_to_tb(data[0].x);
 				temp[1] = g2_float_to_tb(data[0].y);
-				tb_print("move: %f %f", temp[0], temp[1]);
+//				tb_print("move: %f %f", temp[0], temp[1]);
 				tb_vector_insert_tail(path->fill.data, temp);
 				tb_vector_insert_tail(path->fill.size, size);
+
+				// bounds
+				if (temp[0] <= bx1) bx1 = temp[0];
+				if (temp[0] <= bx1) by1 = temp[0];
+				if (temp[1] >= bx2) bx2 = temp[1];
+				if (temp[1] >= bx2) by2 = temp[1];
 			}
 			break;
 		case G2_PATH_CODE_LINE:
 			{
+				// size
 				size++;
+
+				// line
 				temp[0] = g2_float_to_tb(data[0].x);
 				temp[1] = g2_float_to_tb(data[0].y);
-				tb_print("line: %f %f", temp[0], temp[1]);
+//				tb_print("line: %f %f", temp[0], temp[1]);
 				tb_vector_insert_tail(path->fill.data, temp);
 				tb_vector_replace_last(path->fill.size, size);
+
+				// bounds
+				if (temp[0] <= bx1) bx1 = temp[0];
+				if (temp[0] <= bx1) by1 = temp[0];
+				if (temp[1] >= bx2) bx2 = temp[1];
+				if (temp[1] >= bx2) by2 = temp[1];
 			}
 			break;
 		case G2_PATH_CODE_QUAD:
 			{
+				// size
 				size++;
+
+				// quad
 				temp[0] = g2_float_to_tb(data[1].x);
 				temp[1] = g2_float_to_tb(data[1].y);
-				tb_print("quad: %f %f", temp[0], temp[1]);
+//				tb_print("quad: %f %f", temp[0], temp[1]);
 				tb_vector_insert_tail(path->fill.data, temp);
 				tb_vector_replace_last(path->fill.size, size);
+
+				// bounds
+				if (temp[0] <= bx1) bx1 = temp[0];
+				if (temp[0] <= bx1) by1 = temp[0];
+				if (temp[1] >= bx2) bx2 = temp[1];
+				if (temp[1] >= bx2) by2 = temp[1];
 			}
 			break;
 		case G2_PATH_CODE_CUBE:
 			{
+				// size
 				size++;
+
+				// cube
 				temp[0] = g2_float_to_tb(data[2].x);
 				temp[1] = g2_float_to_tb(data[2].y);
-				tb_print("cube: %f %f", temp[0], temp[1]);
+//				tb_print("cube: %f %f", temp[0], temp[1]);
 				tb_vector_insert_tail(path->fill.data, temp);
 				tb_vector_replace_last(path->fill.size, size);
+
+				// bounds
+				if (temp[0] <= bx1) bx1 = temp[0];
+				if (temp[0] <= bx1) by1 = temp[0];
+				if (temp[1] >= bx2) bx2 = temp[1];
+				if (temp[1] >= bx2) by2 = temp[1];	
 			}
 			break;
 		case G2_PATH_CODE_CLOS:
 			{
+				// size
 				size++;
+
+				// close
 				temp[0] = g2_float_to_tb(head.x);
 				temp[1] = g2_float_to_tb(head.y);
-				tb_print("close: %f %f", temp[0], temp[1]);
+//				tb_print("close: %f %f", temp[0], temp[1]);
 				tb_vector_insert_tail(path->fill.data, temp);
 				tb_vector_replace_last(path->fill.size, size);
+
+				// bounds
+				if (temp[0] <= bx1) bx1 = temp[0];
+				if (temp[0] <= bx1) by1 = temp[0];
+				if (temp[1] >= bx2) bx2 = temp[1];
+				if (temp[1] >= bx2) by2 = temp[1];
 			}
 			break;
 		default:
@@ -159,6 +212,12 @@ tb_bool_t g2_gl10_path_make_fill(g2_gl10_path_t* path)
 
 	// exit itor
 	g2_path_itor_exit(path);
+
+	// bounds
+	path->fill.rect.x1 = bx1;
+	path->fill.rect.y1 = by1;
+	path->fill.rect.x2 = bx2;
+	path->fill.rect.y2 = by2;
 
 	// ok
 	return TB_TRUE;

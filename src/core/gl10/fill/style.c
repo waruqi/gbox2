@@ -92,14 +92,43 @@ tb_bool_t g2_gl10_fill_style_init(g2_gl10_painter_t* painter)
 		g2_color_t color = g2_style_color(style);
 		glColor4f(color.r / 256., color.g / 256., color.b / 256., color.a / 256.);
 	}
-	else
-	{
-		tb_trace_noimpl();
-		return TB_FALSE;
-	}
 
 	// ok
 	return TB_TRUE;
+}
+tb_void_t g2_gl10_fill_style_draw(g2_gl10_painter_t* painter, g2_gl10_rect_t const* bounds)
+{
+	// style
+	tb_handle_t 	style = painter->style_usr;
+
+	// mode
+	tb_size_t 		mode = g2_style_mode(style);
+
+	// flag
+	tb_size_t 		flag = g2_style_flag(style);
+
+	// shader
+	tb_handle_t 	shader = g2_style_shader(style);
+
+	if (!shader)
+	{
+		// init rect
+		tb_float_t vertices[8];
+		vertices[0] = bounds->x1;
+		vertices[1] = bounds->y1;
+		vertices[2] = bounds->x2;
+		vertices[3] = bounds->y1;
+		vertices[4] = bounds->x1;
+		vertices[5] = bounds->y2;
+		vertices[6] = bounds->x2;
+		vertices[7] = bounds->y2;
+
+		// draw rect
+		glEnableClientState(GL_VERTEX_ARRAY);
+		glVertexPointer(2, GL_FLOAT, 0, vertices);
+		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+		glDisableClientState(GL_VERTEX_ARRAY);
+	}
 }
 tb_void_t g2_gl10_fill_style_exit(g2_gl10_painter_t* painter)
 {

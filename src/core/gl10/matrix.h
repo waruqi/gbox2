@@ -31,7 +31,7 @@
 /* ///////////////////////////////////////////////////////////////////////
  * inlines
  */
-static __tb_inline__ tb_void_t g2_gl10_matrix_init(GLfloat* gmatrix)
+static __tb_inline__ tb_void_t g2_gl10_matrix_init(tb_float_t* gmatrix)
 {
 	gmatrix[0] 	= 1.0f;
 	gmatrix[1] 	= 0.0f;
@@ -50,7 +50,7 @@ static __tb_inline__ tb_void_t g2_gl10_matrix_init(GLfloat* gmatrix)
 	gmatrix[14] = 1.0f;
 	gmatrix[15] = 1.0f;
 }
-static __tb_inline__ tb_void_t g2_gl10_matrix_set(GLfloat* gmatrix, g2_matrix_t const* matrix)
+static __tb_inline__ tb_void_t g2_gl10_matrix_set(tb_float_t* gmatrix, g2_matrix_t const* matrix)
 {
 	gmatrix[0] 	= g2_float_to_tb(matrix->sx);
 	gmatrix[1] 	= g2_float_to_tb(matrix->ky);

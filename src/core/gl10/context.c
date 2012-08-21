@@ -34,6 +34,11 @@ tb_handle_t g2_context_init_gl10(tb_size_t pixfmt, tb_size_t width, tb_size_t he
 	// check
 	tb_assert_and_check_return_val(G2_PIXFMT_OK(pixfmt) && width && height, TB_NULL);
 
+	// check type
+	tb_assert_static(sizeof(GLfloat) == sizeof(tb_float_t));
+	tb_assert_static(sizeof(GLint) == sizeof(tb_int_t));
+	tb_assert_static(sizeof(GLuint) == sizeof(tb_uint_t));
+
 	// check pixfmt
 	tb_assert_and_check_return_val( 	G2_PIXFMT(pixfmt) == G2_PIXFMT_ARGB8888
 									|| 	G2_PIXFMT(pixfmt) == G2_PIXFMT_ARGB4444 
@@ -53,7 +58,7 @@ tb_handle_t g2_context_init_gl10(tb_size_t pixfmt, tb_size_t width, tb_size_t he
 	// init matrix
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	glOrtho(0.0, (GLfloat)width, 0.0, (GLfloat)height, -1.0f, 1.0f);
+	glOrtho(0.0, (tb_float_t)width, 0.0, (tb_float_t)height, -1.0f, 1.0f);
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 
@@ -97,7 +102,7 @@ tb_handle_t g2_context_resize(tb_handle_t context, tb_size_t width, tb_size_t he
 	// update matrix
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	glOrtho(0.0, (GLfloat)width, 0.0, (GLfloat)height, -1.0f, 1.0f);
+	glOrtho(0.0, (tb_float_t)width, 0.0, (tb_float_t)height, -1.0f, 1.0f);
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 

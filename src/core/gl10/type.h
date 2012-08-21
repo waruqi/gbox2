@@ -17,26 +17,29 @@
  * Copyright (C) 2009 - 2012, ruki All rights reserved.
  *
  * @author		ruki
- * @file		style.h
+ * @file		type.h
  *
  */
-#ifndef G2_CORE_GL10_FILL_STYLE_H
-#define G2_CORE_GL10_FILL_STYLE_H
+#ifndef G2_CORE_GL10_TYPE_H
+#define G2_CORE_GL10_TYPE_H
 
 /* ///////////////////////////////////////////////////////////////////////
  * includes
  */
-#include "prefix.h"
+#include "../prefix.h"
 
 /* ///////////////////////////////////////////////////////////////////////
- * interfaces
+ * types
  */
 
-// init & exit
-tb_bool_t g2_gl10_fill_style_init(g2_gl10_painter_t* painter);
-tb_void_t g2_gl10_fill_style_exit(g2_gl10_painter_t* painter);
+// the gl10 rect type
+typedef struct __g2_gl10_rect_t
+{
+	tb_float_t 		x1;
+	tb_float_t 		y1;
+	tb_float_t 		x2;
+	tb_float_t 		y2;
 
-// draw
-tb_void_t g2_gl10_fill_style_draw(g2_gl10_painter_t* painter, g2_gl10_rect_t const* bounds);
+}g2_gl10_rect_t;
 
 #endif

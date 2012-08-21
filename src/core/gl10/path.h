@@ -46,7 +46,10 @@ typedef struct __g2_gl10_path_itor_t
 // the gl10 path fill type
 typedef struct __g2_gl10_path_fill_t
 {
-	// the data, vector<g2_point_t>
+	// the rect bounds
+	g2_gl10_rect_t 			rect;
+
+	// the data, vector<tb_float_t[2]>
 	tb_vector_t* 			data;
 
 	// the size, vector<tb_uint16_t>
@@ -57,7 +60,7 @@ typedef struct __g2_gl10_path_fill_t
 // the gl10 path stok type
 typedef struct __g2_gl10_path_stok_t
 {
-	// the data, vector<GLfloat[2]>
+	// the data, vector<tb_float_t[2]>
 	tb_vector_t* 			data;
 
 	// the size, vector<tb_uint16_t>
@@ -88,6 +91,9 @@ typedef struct __g2_gl10_path_t
 
 	// the data, vector<g2_point_t>
 	tb_vector_t* 			data;
+
+	// the rect bounds
+	g2_rect_t 				rect;
 
 	// the fill path
 	g2_gl10_path_fill_t 	fill;

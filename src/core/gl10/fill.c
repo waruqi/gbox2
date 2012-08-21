@@ -41,9 +41,8 @@ tb_void_t g2_gl10_fill_rect(g2_gl10_painter_t* painter, g2_rect_t const* rect)
 		tb_float_t x1 = g2_float_to_tb(rect->x + rect->w - 1);
 		tb_float_t y1 = g2_float_to_tb(rect->y + rect->h - 1);
 
-#if 0
 		// init rect
-		GLfloat vertices[8];
+		tb_float_t vertices[8];
 		vertices[0] = x0;
 		vertices[1] = y0;
 		vertices[2] = x1;
@@ -58,32 +57,6 @@ tb_void_t g2_gl10_fill_rect(g2_gl10_painter_t* painter, g2_rect_t const* rect)
 		glVertexPointer(2, GL_FLOAT, 0, vertices);
 		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 		glDisableClientState(GL_VERTEX_ARRAY);
-#else
-		GLfloat vertices[] = 
-		{
-			-100.0f, -100.0f
-		, 	-50.0f, -100.0f
-		, 	0.0f, -150.0f
-		, 	50.0f, -100.0f
-		, 	100.0f, -100.0f
-		, 	100.0f, -50.0f
-		, 	20.0f, 0.0f
-		, 	100.0f, 50.0f
-		, 	100.0f, 100.0f
-		, 	50.0f, 100.0f
-		, 	0.0f, 150.0f
-		, 	-50.0f, 100.0f
-		, 	-100.0f, 100.0f
-		, 	-100.0f, 50.0f
-		, 	-200.0f, 0.0f
-		, 	-100.0f, -50.0f
-		, 	-100.0f, -100.0f
-		};
-		glEnableClientState(GL_VERTEX_ARRAY);
-		glVertexPointer(2, GL_FLOAT, 0, vertices);
-		glDrawArrays(GL_TRIANGLE_FAN, 0, 17);
-		glDisableClientState(GL_VERTEX_ARRAY);
-#endif
 
 		// exit fill style
 		g2_gl10_fill_style_exit(painter);
@@ -98,28 +71,45 @@ tb_void_t g2_gl10_fill_path(g2_gl10_painter_t* painter, g2_gl10_path_t const* pa
 		tb_assert(path->fill.data && tb_vector_size(path->fill.data));
 		tb_assert(path->fill.size && tb_vector_size(path->fill.size));
 
+		// init stencil
+		glEnable(GL_STENCIL_TEST);
+		glStencilFunc(GL_ALWAYS, 0, 0);
+		glStencilOp(GL_INVERT, GL_INVERT, GL_INVERT);
+		glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
+
 		// init vertices
 		glEnableClientState(GL_VERTEX_ARRAY);
 		glVertexPointer(2, GL_FLOAT, 0, tb_vector_data(path->fill.data));
 
-		// draw path
-		GLint 		head = 0;
-		GLint 		size = 0;
+		// draw path to stencil
+		tb_int_t 	head = 0;
+		tb_int_t 	size = 0;
 		tb_size_t 	itor = tb_iterator_head(path->fill.size);
 		tb_size_t 	tail = tb_iterator_tail(path->fill.size);
 		for (; itor != tail; itor++)
 		{
 			size = tb_iterator_item(path->fill.size, itor);
 			glDrawArrays(GL_TRIANGLE_FAN, head, size);
-			//glDrawArrays(GL_TRIANGLE_STRIP, head, size);
 			head += size;
 		}
 
 		// exit vertices
 		glDisableClientState(GL_VERTEX_ARRAY);
 
+		// init stencil for odd
+		glStencilFunc(GL_EQUAL, 1, 1);
+		glStencilOp(GL_ZERO, GL_ZERO, GL_ZERO);
+		glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+
+		// draw fill style with stencil
+		g2_gl10_fill_style_draw(painter, &path->fill.rect);
+
 		// exit fill style
 		g2_gl10_fill_style_exit(painter);
+
+		// exit stencil
+		glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+		glDisable(GL_STENCIL_TEST);
 	}
 }
 tb_void_t g2_gl10_fill_circle(g2_gl10_painter_t* painter, g2_circle_t const* circle)

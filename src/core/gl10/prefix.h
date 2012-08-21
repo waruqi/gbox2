@@ -26,6 +26,7 @@
 /* ///////////////////////////////////////////////////////////////////////
  * includes
  */
+#include "type.h"
 #include "../prefix.h"
 #include "../style.h"
 #include "../path.h"

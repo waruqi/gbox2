@@ -230,7 +230,7 @@ tb_void_t g2_clear(tb_handle_t painter, g2_color_t color)
 {
 	// clear
 	glClearColor(color.r / 256., color.g / 256., color.b / 256., color.a / 256.);
-	glClear(GL_COLOR_BUFFER_BIT);
+	glClear(GL_COLOR_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 }
 tb_void_t g2_draw_path(tb_handle_t painter, tb_handle_t path)
 {
