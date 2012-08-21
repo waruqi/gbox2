@@ -110,6 +110,7 @@ tb_void_t g2_gl10_fill_style_draw(g2_gl10_painter_t* painter, g2_gl10_rect_t con
 	// shader
 	tb_handle_t 	shader = g2_style_shader(style);
 
+	// fill color
 	if (!shader)
 	{
 		// init rect
