@@ -89,11 +89,14 @@ typedef struct __g2_gl10_path_t
 	// the code, vector<tb_byte_t>
 	tb_vector_t* 			code;
 
-	// the data, vector<g2_point_t>
+	// the data, vector<tb_float_t[2]>
 	tb_vector_t* 			data;
 
+	// the size, vector<tb_uint16_t>
+	tb_vector_t* 			size;
+
 	// the rect bounds
-	g2_rect_t 				rect;
+	g2_gl10_rect_t 			rect;
 
 	// the fill path
 	g2_gl10_path_fill_t 	fill;
