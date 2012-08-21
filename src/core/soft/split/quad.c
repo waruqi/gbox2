@@ -33,46 +33,31 @@
 /* split the quad bezier curve using binary segmentation
  *
  *            cp
- *            . -----------------------------------
- *           / \                          |
+ *            . 
+ *           / \
  *          /   \
  *         /     \
  *        /       \
- *    cpb/----.----\ cpe                  e
+ *    cpb/----.----\ cpe                  
  *      /     p0    \
  *     /             \
  *    /               \
  *   /                 \
- *  /                   \                 |
- * /                     \ ------------------------
+ *  /                   \
+ * /                     \
  * pb                    pe
  *
  *
  * (pb, cp, pe) => (pb, cpb, p0) & (p0, cpe, pe)
  *
- * a = pe.y - pb.y
- * b = pb.x - pe.x
- * c = pb.y * pe.x - pb.x * pe.y
- * d = a * cp.x + b * cp.y + c
- *
- * e = |cp - pb_pe| = |d| / (a * a + b * b)^.5 < 2
- *
- * e * e = (d * d) / (a * a + b * b) < 4
- *
- * n = d * d < (a * a + b * b) * 4 = m
- *                          
+ * e = |cp - (pb + pe) / 2| <= 1
  */
 static tb_void_t g2_soft_split_quad_impl(g2_soft_split_quad_t* split, g2_point_t const* pb, g2_point_t const* cp, g2_point_t const* pe)
 {
-	g2_float_t a = pe->y - pb->y;
-	g2_float_t b = pb->x - pe->x;
-	g2_float_t c = g2_mul(pb->y, pe->x) - g2_mul(pb->x, pe->y);
-	g2_float_t m = g2_lsh(g2_mul(a, a) + g2_mul(b, b), 2);
+	g2_float_t mx = cp->x - g2_rsh(pb->x + pe->x, 1);
+	g2_float_t my = cp->y - g2_rsh(pb->y + pe->y, 1);
 
-	g2_float_t d = g2_mul(a, cp->x) + g2_mul(b, cp->y) + c;
-	g2_float_t n = g2_mul(d, d);
-
-	if (n < m || g2_ez(m))
+	if (g2_fabs(mx) + g2_fabs(my) <= G2_ONE)
 	{
 		if (split->func) split->func(split, pe);
 	}

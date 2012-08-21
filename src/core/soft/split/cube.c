@@ -65,8 +65,14 @@
  *
  * nb = db * db < (a * a + b * b) * 4 = m
  * ne = de * de < (a * a + b * b) * 4 = m
+ *
+ *
+ * eb = |cpb - (pb + pe) * 2 / 3|
+ *
+ * eb *3 = 3 * cpb - 2 * pb - 2 * pe
  *                          
  */
+#if 0
 static tb_void_t g2_soft_split_cube_impl(g2_soft_split_cube_t* split, g2_point_t const* pb, g2_point_t const* cpb, g2_point_t const* cpe, g2_point_t const* pe)
 {
 	g2_float_t a = pe->y - pb->y;
@@ -111,7 +117,68 @@ static tb_void_t g2_soft_split_cube_impl(g2_soft_split_cube_t* split, g2_point_t
 
 	}
 }
+#else
+static tb_void_t g2_soft_split_cube_impl(g2_soft_split_cube_t* split, g2_point_t const* pb, g2_point_t const* cpb, g2_point_t const* cpe, g2_point_t const* pe)
+{
+#if 1
+	g2_float_t mxb = g2_lsh(cpb->x - pb->x, 1) + cpb->x - pe->x;
+	g2_float_t myb = g2_lsh(cpb->y - pb->y, 1) + cpb->y - pe->y;
+	g2_float_t mxe = g2_lsh(cpe->x - pe->x, 1) + cpe->x - pb->x;
+	g2_float_t mye = g2_lsh(cpe->y - pe->y, 1) + cpe->y - pb->y;
+#else
+	g2_float_t mxb = cpb->x * 3 - g2_lsh(pb->x, 1) - pe->x;
+	g2_float_t myb = cpb->y * 3 - g2_lsh(pb->y, 1) - pe->y;
+	g2_float_t mxe = cpe->x * 3 - g2_lsh(pe->x, 1) - pb->x;
+	g2_float_t mye = cpe->y * 3 - g2_lsh(pe->y, 1) - pb->y;
+#endif
 
+#if 0
+	mxb = g2_mul(mxb, mxb);
+	myb = g2_mul(myb, myb);
+	mxe = g2_mul(mxe, mxe);
+	mye = g2_mul(mye, mye);
+#else
+	mxb = g2_fabs(mxb);
+	myb = g2_fabs(myb);
+	mxe = g2_fabs(mxe);
+	mye = g2_fabs(mye);
+#endif
+
+	if (mxe < mxb) mxb = mxe;
+	if (mye < myb) myb = mye;
+
+	if (mxb + myb <= G2_ONE)
+	{
+		if (split->func) split->func(split, pe);
+	}
+	else
+	{
+		g2_point_t cp0, cp1, cp2, pb0, pe0, p0;
+
+		cp0.x = g2_rsh(cpb->x + cpe->x, 1);
+		cp0.y = g2_rsh(cpb->y + cpe->y, 1);
+
+		cp1.x = g2_rsh(pb->x + cpb->x, 1);
+		cp1.y = g2_rsh(pb->y + cpb->y, 1);
+
+		cp2.x = g2_rsh(cpe->x + pe->x, 1);
+		cp2.y = g2_rsh(cpe->y + pe->y, 1);
+
+		pb0.x = g2_rsh(cp0.x + cp1.x, 1);
+		pb0.y = g2_rsh(cp0.y + cp1.y, 1);
+
+		pe0.x = g2_rsh(cp0.x + cp2.x, 1);
+		pe0.y = g2_rsh(cp0.y + cp2.y, 1);
+
+		p0.x = g2_rsh(pb0.x + pe0.x, 1);
+		p0.y = g2_rsh(pb0.y + pe0.y, 1);
+
+		g2_soft_split_cube_impl(split, pb, &cp1, &pb0, &p0);
+		g2_soft_split_cube_impl(split, &p0, &pe0, &cp2, pe);
+
+	}
+}
+#endif
 /* ///////////////////////////////////////////////////////////////////////
  * interfaces
  */
