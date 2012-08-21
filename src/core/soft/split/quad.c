@@ -30,6 +30,19 @@
  * implementation
  */
 
+tb_void_t g2_soft_split_quad_init(g2_soft_split_quad_t* split, g2_soft_split_quad_func_t func, tb_pointer_t data)
+{
+	// check
+	tb_assert_and_check_return(split);
+
+	// clear
+	tb_memset(split, 0, sizeof(g2_soft_split_quad_t));
+
+	// init
+	split->func = func;
+	split->data = data;
+}
+
 /* split the quad bezier curve using binary segmentation
  *
  *            cp
@@ -52,7 +65,7 @@
  *
  * e = |cp - (pb + pe) / 2| <= 1
  */
-static tb_void_t g2_soft_split_quad_impl(g2_soft_split_quad_t* split, g2_point_t const* pb, g2_point_t const* cp, g2_point_t const* pe)
+tb_void_t g2_soft_split_quad_done(g2_soft_split_quad_t* split, g2_point_t const* pb, g2_point_t const* cp, g2_point_t const* pe)
 {
 	g2_float_t mx = cp->x - g2_rsh(pb->x + pe->x, 1);
 	g2_float_t my = cp->y - g2_rsh(pb->y + pe->y, 1);
@@ -71,41 +84,9 @@ static tb_void_t g2_soft_split_quad_impl(g2_soft_split_quad_t* split, g2_point_t
 		p0.x = g2_rsh(cpb.x + cpe.x, 1);
 		p0.y = g2_rsh(cpb.y + cpe.y, 1);
 
-		g2_soft_split_quad_impl(split, pb, &cpb, &p0);
-		g2_soft_split_quad_impl(split, &p0, &cpe, pe);
+		g2_soft_split_quad_done(split, pb, &cpb, &p0);
+		g2_soft_split_quad_done(split, &p0, &cpe, pe);
 	}
-}
-
-/* ///////////////////////////////////////////////////////////////////////
- * interfaces
- */
-
-tb_void_t g2_soft_split_quad_init(g2_soft_split_quad_t* split, g2_soft_split_quad_func_t func, tb_pointer_t data)
-{
-	// check
-	tb_assert_and_check_return(split);
-
-	// clear
-	tb_memset(split, 0, sizeof(g2_soft_split_quad_t));
-
-	// init
-	split->func = func;
-	split->data = data;
-}
-tb_void_t g2_soft_split_quad_done(g2_soft_split_quad_t* split, g2_point_t const* pb, g2_point_t const* cp, g2_point_t const* pe)
-{
-	// check
-	tb_assert_return(split && pb && cp && pe);
-
-	// line to?
-	if (g2_mul(cp->x - pb->x, pe->y - pb->y) == g2_mul(cp->y - pb->y, pe->x - pb->x))
-	{
-		if (split->func) split->func(split, pe);
-		return ;
-	}
-
-	// done
-	return g2_soft_split_quad_impl(split, pb, cp, pe);
 }
 
 

@@ -30,6 +30,19 @@
  * implementation
  */
 
+tb_void_t g2_soft_split_cube_init(g2_soft_split_cube_t* split, g2_soft_split_cube_func_t func, tb_pointer_t data)
+{
+	// check
+	tb_assert_and_check_return(split);
+
+	// clear
+	tb_memset(split, 0, sizeof(g2_soft_split_cube_t));
+
+	// init
+	split->func = func;
+	split->data = data;
+}
+
 /* split the cube bezier curve using binary segmentation
  *
  *          cpb      cp0      cpe
@@ -48,7 +61,8 @@
  * e = min(|(cpb - pb) * 2 + cpb - pe|, |(cpe - pe) * 2 + cpe - pb|) <= 1
  *                          
  */
-static tb_void_t g2_soft_split_cube_impl(g2_soft_split_cube_t* split, g2_point_t const* pb, g2_point_t const* cpb, g2_point_t const* cpe, g2_point_t const* pe)
+
+tb_void_t g2_soft_split_cube_done(g2_soft_split_cube_t* split, g2_point_t const* pb, g2_point_t const* cpb, g2_point_t const* cpe, g2_point_t const* pe)
 {
 	g2_float_t mxb = g2_lsh(cpb->x - pb->x, 1) + cpb->x - pe->x;
 	g2_float_t myb = g2_lsh(cpb->y - pb->y, 1) + cpb->y - pe->y;
@@ -89,42 +103,10 @@ static tb_void_t g2_soft_split_cube_impl(g2_soft_split_cube_t* split, g2_point_t
 		p0.x = g2_rsh(pb0.x + pe0.x, 1);
 		p0.y = g2_rsh(pb0.y + pe0.y, 1);
 
-		g2_soft_split_cube_impl(split, pb, &cp1, &pb0, &p0);
-		g2_soft_split_cube_impl(split, &p0, &pe0, &cp2, pe);
+		g2_soft_split_cube_done(split, pb, &cp1, &pb0, &p0);
+		g2_soft_split_cube_done(split, &p0, &pe0, &cp2, pe);
 
 	}
-}
-/* ///////////////////////////////////////////////////////////////////////
- * interfaces
- */
-
-tb_void_t g2_soft_split_cube_init(g2_soft_split_cube_t* split, g2_soft_split_cube_func_t func, tb_pointer_t data)
-{
-	// check
-	tb_assert_and_check_return(split);
-
-	// clear
-	tb_memset(split, 0, sizeof(g2_soft_split_cube_t));
-
-	// init
-	split->func = func;
-	split->data = data;
-}
-tb_void_t g2_soft_split_cube_done(g2_soft_split_cube_t* split, g2_point_t const* pb, g2_point_t const* cpb, g2_point_t const* cpe, g2_point_t const* pe)
-{
-	// check
-	tb_assert_return(split && pb && cpb && cpe && pe);
-
-	// line to?
-	if (g2_mul(cpb->x - pb->x, pe->y - pb->y) == g2_mul(cpb->y - pb->y, pe->x - pb->x)
-		&& g2_mul(cpe->x - pb->x, pe->y - pb->y) == g2_mul(cpe->y - pb->y, pe->x - pb->x))
-	{
-		if (split->func) split->func(split, pe);
-		return ;
-	}
-
-	// done
-	return g2_soft_split_cube_impl(split, pb, cpb, cpe, pe);
 }
 
 
