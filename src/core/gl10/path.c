@@ -103,11 +103,11 @@ static __tb_inline__ tb_void_t g2_gl10_path_fill_clear(g2_gl10_path_t* path)
 	// clear fill rect
 	tb_memset(&path->fill.rect, 0, sizeof(g2_gl10_rect_t));
 }
-static tb_bool_t g2_gl10_path_fill_split_quad_func(g2_soft_split_quad_t* split, g2_point_t const* pt)
+static tb_void_t g2_gl10_path_fill_split_quad_func(g2_soft_split_quad_t* split, g2_point_t const* pt)
 {
 	// path
 	g2_gl10_path_t* path = (g2_gl10_path_t*)split->data;
-	tb_assert_and_check_return_val(path, TB_FALSE);
+	tb_assert_and_check_return(path);
 
 	// data
 	tb_float_t data[2];
@@ -121,9 +121,25 @@ static tb_bool_t g2_gl10_path_fill_split_quad_func(g2_soft_split_quad_t* split, 
 
 	// bounds
 	g2_gl10_path_rect_done(&path->fill.rect, data[0], data[1]);
+}
+static tb_void_t g2_gl10_path_fill_split_cube_func(g2_soft_split_cube_t* split, g2_point_t const* pt)
+{
+	// path
+	g2_gl10_path_t* path = (g2_gl10_path_t*)split->data;
+	tb_assert_and_check_return(path);
 
-	// ok
-	return TB_TRUE;
+	// data
+	tb_float_t data[2];
+	data[0] = g2_float_to_tb(pt->x);
+	data[1] = g2_float_to_tb(pt->y);
+	tb_trace_impl("split: %f %f", data[0], data[1]);
+
+	// add
+	tb_vector_insert_tail(path->fill.data, data);
+	tb_vector_replace_last(path->fill.size, tb_vector_last(path->fill.size) + 1);
+
+	// bounds
+	g2_gl10_path_rect_done(&path->fill.rect, data[0], data[1]);
 }
 /* ///////////////////////////////////////////////////////////////////////
  * maker
@@ -193,7 +209,9 @@ tb_bool_t g2_gl10_path_make_fill(g2_gl10_path_t* path)
 
 	// init splitter
 	g2_soft_split_quad_t quad;
+	g2_soft_split_cube_t cube;
 	g2_soft_split_quad_init(&quad, g2_gl10_path_fill_split_quad_func, path);
+	g2_soft_split_cube_init(&cube, g2_gl10_path_fill_split_cube_func, path);
 
 	// walk
 	for (; code < cail && data < dail; code++)
@@ -274,6 +292,7 @@ tb_bool_t g2_gl10_path_make_fill(g2_gl10_path_t* path)
 			break;
 		case G2_PATH_CODE_CUBE:
 			{
+#if 0
 				// cube
 				tb_trace_impl("cube: %f %f", data[4], data[5]);
 				tb_vector_insert_tail(path->fill.data, &data[4]);
@@ -281,7 +300,23 @@ tb_bool_t g2_gl10_path_make_fill(g2_gl10_path_t* path)
 
 				// bounds
 				g2_gl10_path_rect_done(&path->fill.rect, data[4], data[5]);
+#else
+				// cube
+				tb_trace_impl("cube: %f %f %f %f %f %f", data[0], data[1], data[2], data[3], data[4], data[5]);
 
+				// split
+				tb_assert(last);
+				g2_point_t pb, cpb, cpe, pe;
+				pb.x = last? tb_float_to_g2(last[0]) : 0;
+				pb.y = last? tb_float_to_g2(last[1]) : 0;
+				cpb.x = tb_float_to_g2(data[0]);
+				cpb.y = tb_float_to_g2(data[1]);
+				cpe.x = tb_float_to_g2(data[2]);
+				cpe.y = tb_float_to_g2(data[3]);
+				pe.x = tb_float_to_g2(data[4]);
+				pe.y = tb_float_to_g2(data[5]);
+				g2_soft_split_cube_done(&cube, &pb, &cpb, &cpe, &pe);
+#endif
 				// last
 				last = &data[4];
 

@@ -34,7 +34,7 @@
 
 // the soft split quad func type
 struct __g2_soft_split_quad_t;
-typedef tb_bool_t (*g2_soft_split_quad_func_t)(struct __g2_soft_split_quad_t* split, g2_point_t const* pt);
+typedef tb_void_t (*g2_soft_split_quad_func_t)(struct __g2_soft_split_quad_t* split, g2_point_t const* pt);
 
 // the soft split quad type
 typedef struct __g2_soft_split_quad_t

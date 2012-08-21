@@ -28,6 +28,35 @@
  */
 #include "prefix.h"
 
+/* ///////////////////////////////////////////////////////////////////////
+ * types
+ */
+
+// the soft split cube func type
+struct __g2_soft_split_cube_t;
+typedef tb_void_t (*g2_soft_split_cube_func_t)(struct __g2_soft_split_cube_t* split, g2_point_t const* pt);
+
+// the soft split cube type
+typedef struct __g2_soft_split_cube_t
+{
+	// the func
+	g2_soft_split_cube_func_t 	func;
+
+	// the data
+	tb_pointer_t 				data;
+
+}g2_soft_split_cube_t;
+
+/* ///////////////////////////////////////////////////////////////////////
+ * interfaces
+ */
+
+// init
+tb_void_t g2_soft_split_cube_init(g2_soft_split_cube_t* split, g2_soft_split_cube_func_t func, tb_pointer_t data);
+
+// done
+tb_void_t g2_soft_split_cube_done(g2_soft_split_cube_t* split, g2_point_t const* pb, g2_point_t const* cpb, g2_point_t const* cpe, g2_point_t const* pe);
+
 
 #endif
 

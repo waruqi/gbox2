@@ -30,6 +30,67 @@
  * implementation
  */
 
+/* split the quad bezier curve using binary segmentation
+ *
+ *            cp
+ *            . -----------------------------------
+ *           / \                          |
+ *          /   \
+ *         /     \
+ *        /       \
+ *    cpb/----.----\ cpe                  e
+ *      /     p0    \
+ *     /             \
+ *    /               \
+ *   /                 \
+ *  /                   \                 |
+ * /                     \ ------------------------
+ * pb                    pe
+ *
+ *
+ * (pb, cp, pe) => (pb, cpb, p0) & (p0, cpe, pe)
+ *
+ * a = pe.y - pb.y
+ * b = pb.x - pe.x
+ * c = pb.y * pe.x - pb.x * pe.y
+ * d = a * cp.x + b * cp.y + c
+ *
+ * e = |cp - pb_pe| = |d| / (a * a + b * b)^.5 < 2
+ *
+ * e * e = (d * d) / (a * a + b * b) < 4
+ *
+ * n = d * d < (a * a + b * b) * 4 = m
+ *                          
+ */
+static tb_void_t g2_soft_split_quad_impl(g2_soft_split_quad_t* split, g2_point_t const* pb, g2_point_t const* cp, g2_point_t const* pe)
+{
+	g2_float_t a = pe->y - pb->y;
+	g2_float_t b = pb->x - pe->x;
+	g2_float_t c = g2_mul(pb->y, pe->x) - g2_mul(pb->x, pe->y);
+	g2_float_t m = g2_lsh(g2_mul(a, a) + g2_mul(b, b), 2);
+
+	g2_float_t d = g2_mul(a, cp->x) + g2_mul(b, cp->y) + c;
+	g2_float_t n = g2_mul(d, d);
+
+	if (n < m || g2_ez(m))
+	{
+		if (split->func) split->func(split, pe);
+	}
+	else
+	{
+		g2_point_t p0, cpb, cpe;
+		cpb.x = g2_rsh(pb->x + cp->x, 1);
+		cpb.y = g2_rsh(pb->y + cp->y, 1);
+		cpe.x = g2_rsh(cp->x + pe->x, 1);
+		cpe.y = g2_rsh(cp->y + pe->y, 1);
+		p0.x = g2_rsh(cpb.x + cpe.x, 1);
+		p0.y = g2_rsh(cpb.y + cpe.y, 1);
+
+		g2_soft_split_quad_impl(split, pb, &cpb, &p0);
+		g2_soft_split_quad_impl(split, &p0, &cpe, pe);
+	}
+}
+
 /* ///////////////////////////////////////////////////////////////////////
  * interfaces
  */
@@ -51,6 +112,15 @@ tb_void_t g2_soft_split_quad_done(g2_soft_split_quad_t* split, g2_point_t const*
 	// check
 	tb_assert_return(split && pb && cp && pe);
 
+	// line to?
+	if (g2_mul(cp->x - pb->x, pe->y - pb->y) == g2_mul(cp->y - pb->y, pe->x - pb->x))
+	{
+		if (split->func) split->func(split, pe);
+		return ;
+	}
+
+	// done
+	return g2_soft_split_quad_impl(split, pb, cp, pe);
 }
 
 
