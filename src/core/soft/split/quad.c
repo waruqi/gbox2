@@ -43,8 +43,9 @@ tb_void_t g2_soft_split_quad_init(g2_soft_split_quad_t* split, g2_soft_split_qua
 	split->data = data;
 }
 
-/* split the quad bezier curve using binary segmentation
+/*!split the quad bezier curve using binary segmentation
  *
+ * <pre>
  *            cp
  *            . 
  *           / \
@@ -64,6 +65,8 @@ tb_void_t g2_soft_split_quad_init(g2_soft_split_quad_t* split, g2_soft_split_qua
  * (pb, cp, pe) => (pb, cpb, p0) & (p0, cpe, pe)
  *
  * e = |cp - (pb + pe) / 2| <= 1
+ *
+ * </pre>
  */
 tb_void_t g2_soft_split_quad_done(g2_soft_split_quad_t* split, g2_point_t const* pb, g2_point_t const* cp, g2_point_t const* pe)
 {

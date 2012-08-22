@@ -17,19 +17,45 @@
  * Copyright (C) 2009 - 2012, ruki All rights reserved.
  *
  * @author		ruki
- * @file		prefix.h
+ * @file		circle.h
  *
  */
-#ifndef G2_CORE_GL10_FILL_PREFIX_H
-#define G2_CORE_GL10_FILL_PREFIX_H
+#ifndef G2_CORE_SOFT_SPLIT_CIRCLE_H
+#define G2_CORE_SOFT_SPLIT_CIRCLE_H
 
 /* ///////////////////////////////////////////////////////////////////////
  * includes
  */
-#include "../prefix.h"
-#include "../matrix.h"
-#include "../painter.h"
+#include "prefix.h"
 
+/* ///////////////////////////////////////////////////////////////////////
+ * types
+ */
+
+// the soft split circle func type
+struct __g2_soft_split_circle_t;
+typedef tb_void_t (*g2_soft_split_circle_func_t)(struct __g2_soft_split_circle_t* split, g2_point_t const* pt);
+
+// the soft split circle type
+typedef struct __g2_soft_split_circle_t
+{
+	// the func
+	g2_soft_split_circle_func_t 	func;
+
+	// the data
+	tb_pointer_t 					data;
+
+}g2_soft_split_circle_t;
+
+/* ///////////////////////////////////////////////////////////////////////
+ * interfaces
+ */
+
+// init
+tb_void_t g2_soft_split_circle_init(g2_soft_split_circle_t* split, g2_soft_split_circle_func_t func, tb_pointer_t data);
+
+// done
+tb_void_t g2_soft_split_circle_done(g2_soft_split_circle_t* split, g2_circle_t const* circle);
 
 #endif
 

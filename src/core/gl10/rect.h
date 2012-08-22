@@ -17,11 +17,11 @@
  * Copyright (C) 2009 - 2012, ruki All rights reserved.
  *
  * @author		ruki
- * @file		style.h
+ * @file		rect.h
  *
  */
-#ifndef G2_CORE_GL10_FILL_STYLE_H
-#define G2_CORE_GL10_FILL_STYLE_H
+#ifndef G2_CORE_GL10_RECT_H
+#define G2_CORE_GL10_RECT_H
 
 /* ///////////////////////////////////////////////////////////////////////
  * includes
@@ -29,14 +29,21 @@
 #include "prefix.h"
 
 /* ///////////////////////////////////////////////////////////////////////
- * interfaces
+ * inlines
  */
-
-// init & exit
-tb_bool_t g2_gl10_fill_style_init(g2_gl10_painter_t* painter);
-tb_void_t g2_gl10_fill_style_exit(g2_gl10_painter_t* painter);
-
-// draw
-tb_void_t g2_gl10_fill_style_draw(g2_gl10_painter_t* painter, g2_gl10_rect_t const* bounds);
+static __tb_inline__ tb_void_t g2_gl10_rect_init(g2_gl10_rect_t* rect, tb_float_t x, tb_float_t y)
+{
+	rect->x1 = x;
+	rect->x2 = x;
+	rect->y1 = y;
+	rect->y2 = y;
+}
+static __tb_inline__ tb_void_t g2_gl10_rect_done(g2_gl10_rect_t* rect, tb_float_t x, tb_float_t y)
+{
+	if (x < rect->x1) rect->x1 = x;
+	if (y < rect->y1) rect->y1 = y;
+	if (x > rect->x2) rect->x2 = x;
+	if (y > rect->y2) rect->y2 = y;
+}
 
 #endif

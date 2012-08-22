@@ -60,6 +60,9 @@ typedef struct __g2_gl10_painter_t
 	tb_handle_t 				style_def;
 	tb_handle_t 				style_usr;
 
+	// the vertices, vector<tb_float_t[2]>
+	tb_vector_t* 				vertices;
+
 	// the matrix and clipper stack
 	tb_stack_t* 				mcstack;
 

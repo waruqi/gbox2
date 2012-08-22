@@ -50,11 +50,12 @@ gbox2_C_FILES-$(G2_CONFIG_CORE_GL10) += \
 						core/soft/bitmap \
 						core/soft/split/quad \
 						core/soft/split/cube \
+						core/soft/split/circle \
+						core/soft/split/ellipse \
 						core/gl10/path \
 						core/gl10/fill \
 						core/gl10/context \
-						core/gl10/painter \
-						core/gl10/fill/style
+						core/gl10/painter
 
 
 gbox2_CPP_FILES-$(G2_CONFIG_CORE_SKIA) += \

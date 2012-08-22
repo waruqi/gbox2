@@ -31,6 +31,13 @@
  * macros
  */
 
+// the vertices grow
+#ifdef TB_CONFIG_BINARY_SMALL
+# 	define G2_GL10_VERTICES_GROW 				(256)
+#else
+# 	define G2_GL10_VERTICES_GROW 				(512)
+#endif
+
 // the mcstack grow
 #ifdef TB_CONFIG_BINARY_SMALL
 # 	define G2_GL10_MCSTACK_GROW 				(32)
@@ -58,6 +65,10 @@ tb_handle_t g2_init(tb_handle_t context)
 	gpainter->style_usr = gpainter->style_def;
 	tb_assert_and_check_goto(gpainter->style_def, fail);
 
+	// init vertices
+	gpainter->vertices = tb_vector_init(G2_GL10_VERTICES_GROW, tb_item_func_ifm(sizeof(tb_float_t) << 1, TB_NULL, TB_NULL));
+	tb_assert_and_check_goto(gpainter->vertices, fail);
+
 	// init matrix
 	g2_matrix_clear(&gpainter->matrix);
 	g2_gl10_matrix_init(gpainter->matrix_gl);
@@ -78,6 +89,9 @@ tb_void_t g2_exit(tb_handle_t painter)
 	g2_gl10_painter_t* gpainter = (g2_gl10_painter_t*)painter;
 	if (gpainter)
 	{
+		// exit vertices
+		if (gpainter->vertices) tb_vector_exit(gpainter->vertices);
+
 		// exit mcstack
 		if (gpainter->mcstack) tb_stack_exit(gpainter->mcstack);
 

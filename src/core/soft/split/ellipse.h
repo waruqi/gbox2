@@ -17,16 +17,46 @@
  * Copyright (C) 2009 - 2012, ruki All rights reserved.
  *
  * @author		ruki
- * @file		fill.h
+ * @file		ellipse.h
  *
  */
-#ifndef G2_CORE_GL10_FILL_FILL_H
-#define G2_CORE_GL10_FILL_FILL_H
+#ifndef G2_CORE_SOFT_SPLIT_ELLIPSE_H
+#define G2_CORE_SOFT_SPLIT_ELLIPSE_H
 
 /* ///////////////////////////////////////////////////////////////////////
  * includes
  */
 #include "prefix.h"
-#include "style.h"
+
+/* ///////////////////////////////////////////////////////////////////////
+ * types
+ */
+
+// the soft split ellipse func type
+struct __g2_soft_split_ellipse_t;
+typedef tb_void_t (*g2_soft_split_ellipse_func_t)(struct __g2_soft_split_ellipse_t* split, g2_point_t const* pt);
+
+// the soft split ellipse type
+typedef struct __g2_soft_split_ellipse_t
+{
+	// the func
+	g2_soft_split_ellipse_func_t 	func;
+
+	// the data
+	tb_pointer_t 					data;
+
+}g2_soft_split_ellipse_t;
+
+/* ///////////////////////////////////////////////////////////////////////
+ * interfaces
+ */
+
+// init
+tb_void_t g2_soft_split_ellipse_init(g2_soft_split_ellipse_t* split, g2_soft_split_ellipse_func_t func, tb_pointer_t data);
+
+// done
+tb_void_t g2_soft_split_ellipse_done(g2_soft_split_ellipse_t* split, g2_ellipse_t const* ellipse);
 
 #endif
+
+

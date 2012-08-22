@@ -43,7 +43,9 @@ tb_void_t g2_soft_split_cube_init(g2_soft_split_cube_t* split, g2_soft_split_cub
 	split->data = data;
 }
 
-/* split the cube bezier curve using binary segmentation
+/*!split the cube bezier curve using binary segmentation
+ *
+ * <pre>
  *
  *          cpb      cp0      cpe
  *          --------------------
@@ -59,6 +61,8 @@ tb_void_t g2_soft_split_cube_init(g2_soft_split_cube_t* split, g2_soft_split_cub
  * pb                                   pe
  *
  * e = min(|(cpb - pb) * 2 + cpb - pe|, |(cpe - pe) * 2 + cpe - pb|) <= 1
+ *
+ * </pre>
  *                          
  */
 

@@ -29,6 +29,8 @@
 #include "prefix.h"
 #include "quad.h"
 #include "cube.h"
+#include "circle.h"
+#include "ellipse.h"
 
 
 #endif
