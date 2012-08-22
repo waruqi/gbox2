@@ -268,7 +268,6 @@ static tb_void_t g2_gl10_fill_split_circle_func(g2_soft_split_circle_t* split, g
 	tb_float_t data[2];
 	data[0] = g2_float_to_tb(pt->x);
 	data[1] = g2_float_to_tb(pt->y);
-	tb_trace_impl("split: %f %f", data[0], data[1]);
 
 	// add
 	tb_vector_insert_tail(vertices, data);
@@ -283,7 +282,6 @@ static tb_void_t g2_gl10_fill_split_ellipse_func(g2_soft_split_ellipse_t* split,
 	tb_float_t data[2];
 	data[0] = g2_float_to_tb(pt->x);
 	data[1] = g2_float_to_tb(pt->y);
-	tb_trace_impl("split: %f %f", data[0], data[1]);
 
 	// add
 	tb_vector_insert_tail(vertices, data);
@@ -357,7 +355,7 @@ tb_void_t g2_gl10_fill_circle(g2_gl10_painter_t* painter, g2_circle_t const* cir
 	tb_assert_and_check_return(painter->vertices);
 	tb_vector_clear(painter->vertices);
 
-	// split circle
+	// split circle, FIXME: cache it
 	g2_soft_split_circle_t split;
 	g2_soft_split_circle_init(&split, g2_gl10_fill_split_circle_func, painter->vertices);
 	g2_soft_split_circle_done(&split, circle);
@@ -373,7 +371,7 @@ tb_void_t g2_gl10_fill_circle(g2_gl10_painter_t* painter, g2_circle_t const* cir
 
 	// draw vertices
 	glVertexPointer(2, GL_FLOAT, 0, data);
-	glDrawArrays(GL_TRIANGLE_STRIP, 0, (tb_int_t)size);
+	glDrawArrays(GL_TRIANGLE_FAN, 0, (tb_int_t)size);
 
 	// draw fill
 	g2_gl10_fill_draw(&fill, &bounds);
@@ -395,7 +393,7 @@ tb_void_t g2_gl10_fill_ellipse(g2_gl10_painter_t* painter, g2_ellipse_t const* e
 	tb_assert_and_check_return(painter->vertices);
 	tb_vector_clear(painter->vertices);
 
-	// split ellipse
+	// split ellipse, FIXME: cache it
 	g2_soft_split_ellipse_t split;
 	g2_soft_split_ellipse_init(&split, g2_gl10_fill_split_ellipse_func, painter->vertices);
 	g2_soft_split_ellipse_done(&split, ellipse);
@@ -411,7 +409,7 @@ tb_void_t g2_gl10_fill_ellipse(g2_gl10_painter_t* painter, g2_ellipse_t const* e
 
 	// draw vertices
 	glVertexPointer(2, GL_FLOAT, 0, data);
-	glDrawArrays(GL_TRIANGLE_STRIP, 0, (tb_int_t)size);
+	glDrawArrays(GL_TRIANGLE_FAN, 0, (tb_int_t)size);
 
 	// draw fill
 	g2_gl10_fill_draw(&fill, &bounds);

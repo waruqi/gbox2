@@ -73,10 +73,12 @@ tb_void_t g2_soft_split_quad_done(g2_soft_split_quad_t* split, g2_point_t const*
 	g2_float_t mx = cp->x - g2_rsh(pb->x + pe->x, 1);
 	g2_float_t my = cp->y - g2_rsh(pb->y + pe->y, 1);
 
+	// check
+	tb_assert(split->func);
+
+	// ok?
 	if (g2_fabs(mx) + g2_fabs(my) <= G2_ONE)
-	{
-		if (split->func) split->func(split, pe);
-	}
+		split->func(split, pe);
 	else
 	{
 		g2_point_t p0, cpb, cpe;

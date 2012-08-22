@@ -101,7 +101,6 @@ static tb_void_t g2_gl10_path_fill_split_quad_func(g2_soft_split_quad_t* split, 
 	tb_float_t data[2];
 	data[0] = g2_float_to_tb(pt->x);
 	data[1] = g2_float_to_tb(pt->y);
-	tb_trace_impl("split: %f %f", data[0], data[1]);
 
 	// add
 	tb_vector_insert_tail(path->fill.data, data);
@@ -120,7 +119,6 @@ static tb_void_t g2_gl10_path_fill_split_cube_func(g2_soft_split_cube_t* split, 
 	tb_float_t data[2];
 	data[0] = g2_float_to_tb(pt->x);
 	data[1] = g2_float_to_tb(pt->y);
-	tb_trace_impl("split: %f %f", data[0], data[1]);
 
 	// add
 	tb_vector_insert_tail(path->fill.data, data);

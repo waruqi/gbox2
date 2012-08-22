@@ -81,7 +81,51 @@ tb_void_t g2_soft_split_circle_init(g2_soft_split_circle_t* split, g2_soft_split
  */
 tb_void_t g2_soft_split_circle_done(g2_soft_split_circle_t* split, g2_circle_t const* circle)
 {
+	// check
+	tb_assert(split->func);
 
+	// init
+	tb_size_t 	ri = (tb_size_t)g2_float_to_long(circle->r);
+	tb_int64_t 	rf = (tb_int64_t)g2_float_to_fixed(circle->r);
+	tb_int64_t 	pi = (tb_int64_t)TB_FIXED_PI;
+	tb_size_t 	n = ri <= 90? (ri >> 2) + 6 : (ri >> 4) + 23;
+	tb_int64_t 	a = TB_FIXED_ONE - (((pi * pi) / (n * n)) >> 15);
+	tb_int64_t 	b = (pi << 1) / n - (((pi * pi * pi) / (3 * n * n * n)) >> 30);
+
+	tb_int64_t 	x0 = (tb_int64_t)g2_float_to_fixed(circle->c.x);
+	tb_int64_t 	y0 = (tb_int64_t)g2_float_to_fixed(circle->c.y);
+	tb_int64_t 	x1 = TB_FIXED_ONE;
+	tb_int64_t 	y1 = 0;
+	tb_int64_t 	x2 = 0;
+	tb_int64_t 	y2 = 0;
+
+	// head
+	g2_point_t pb, pt;
+	pb.x = g2_fixed_to_float(x0 + rf);
+	pb.y = g2_fixed_to_float(y0);
+
+	// done
+	split->func(split, &pb);
+
+	// walk
+	while (n--)
+	{
+		x2 = (a * x1 - b * y1) >> 16;
+		y2 = (b * x1 + a * y1) >> 16;
+
+		pt.x = g2_fixed_to_float(x0 + ((x2 * rf) >> 16));
+		pt.y = g2_fixed_to_float(y0 - ((y2 * rf) >> 16));
+
+		// done
+		split->func(split, &pt);
+
+		// next
+		x1 = x2;
+		y1 = y2;
+	}
+	
+	// close 
+	split->func(split, &pb);
 }
 
 

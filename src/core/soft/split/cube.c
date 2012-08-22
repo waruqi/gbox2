@@ -81,10 +81,12 @@ tb_void_t g2_soft_split_cube_done(g2_soft_split_cube_t* split, g2_point_t const*
 	if (mxe < mxb) mxb = mxe;
 	if (mye < myb) myb = mye;
 
+	// check
+	tb_assert(split->func);
+
+	// ok?
 	if (mxb + myb <= G2_ONE)
-	{
 		if (split->func) split->func(split, pe);
-	}
 	else
 	{
 		g2_point_t cp0, cp1, cp2, pb0, pe0, p0;

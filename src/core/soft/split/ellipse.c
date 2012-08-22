@@ -68,8 +68,8 @@ tb_void_t g2_soft_split_ellipse_init(g2_soft_split_ellipse_t* split, g2_soft_spl
  * ~=>: 
  * if (r <= 90) n ~= |r / 4| + 6
  * if (r > 90) n ~= |r / 16| + 23
- *
- * r = 1:
+ * 
+ * rx = ry = 1:
  * xx = x * cos(q) - y * sin(q)
  * yy = x * sin(q) + y * cos(q)
  *
@@ -81,7 +81,55 @@ tb_void_t g2_soft_split_ellipse_init(g2_soft_split_ellipse_t* split, g2_soft_spl
  */
 tb_void_t g2_soft_split_ellipse_done(g2_soft_split_ellipse_t* split, g2_ellipse_t const* ellipse)
 {
+	// check
+	tb_assert(split->func);
 
+	// init
+	tb_size_t 	rxi = (tb_size_t)g2_float_to_long(ellipse->rx);
+	tb_size_t 	ryi = (tb_size_t)g2_float_to_long(ellipse->ry);
+	tb_int64_t 	rxf = (tb_int64_t)g2_float_to_fixed(ellipse->rx);
+	tb_int64_t 	ryf = (tb_int64_t)g2_float_to_fixed(ellipse->ry);
+	tb_int64_t 	pi = (tb_int64_t)TB_FIXED_PI;
+	tb_size_t 	xn = rxi <= 90? (rxi >> 2) + 6 : (rxi >> 4) + 23;
+	tb_size_t 	yn = ryi <= 90? (ryi >> 2) + 6 : (ryi >> 4) + 23;
+	tb_size_t 	n = (xn + yn) >> 1;
+	tb_int64_t 	a = TB_FIXED_ONE - (((pi * pi) / (n * n)) >> 15);
+	tb_int64_t 	b = (pi << 1) / n - (((pi * pi * pi) / (3 * n * n * n)) >> 30);
+
+	tb_int64_t 	x0 = (tb_int64_t)g2_float_to_fixed(ellipse->c0.x);
+	tb_int64_t 	y0 = (tb_int64_t)g2_float_to_fixed(ellipse->c0.y);
+	tb_int64_t 	x1 = TB_FIXED_ONE;
+	tb_int64_t 	y1 = 0;
+	tb_int64_t 	x2 = 0;
+	tb_int64_t 	y2 = 0;
+
+	// head
+	g2_point_t pb, pt;
+	pb.x = g2_fixed_to_float(x0 + rxf);
+	pb.y = g2_fixed_to_float(y0);
+
+	// done
+	split->func(split, &pb);
+
+	// walk
+	while (n--)
+	{
+		x2 = (a * x1 - b * y1) >> 16;
+		y2 = (b * x1 + a * y1) >> 16;
+
+		pt.x = g2_fixed_to_float(x0 + ((x2 * rxf) >> 16));
+		pt.y = g2_fixed_to_float(y0 - ((y2 * ryf) >> 16));
+
+		// done
+		split->func(split, &pt);
+
+		// next
+		x1 = x2;
+		y1 = y2;
+	}
+	
+	// close 
+	split->func(split, &pb);
 }
 
 
