@@ -164,31 +164,42 @@ tb_bool_t g2_gl10_path_make_fill(g2_gl10_path_t* path)
 				if (data[0] != data[2] || data[1] != data[3]) 
 				{
 					path->like = G2_GL10_PATH_LIKE_LINE;
+					path->line.p0.x = tb_float_to_g2(data[0]);
+					path->line.p0.y = tb_float_to_g2(data[1]);
+					path->line.p1.x = tb_float_to_g2(data[2]);
+					path->line.p1.y = tb_float_to_g2(data[3]);
 					tb_trace_impl("like: line");
 				}
 			}
 			// like triangle?
-			else if (size == 3)
+			else if (size == 3 || (size == 4 && data[0] == data[6] && data[1] == data[7]))
 			{
 				// p0 != p1 != p2, triangle or line
 				if ((data[0] != data[2] || data[1] != data[3])
 				&&	(data[0] != data[4] || data[1] != data[5])
 				&&	(data[4] != data[2] || data[5] != data[3])) 
+				{
 					path->like = G2_GL10_PATH_LIKE_TRIG;
+					path->trig.p0.x = tb_float_to_g2(data[0]);
+					path->trig.p0.y = tb_float_to_g2(data[1]);
+					path->trig.p1.x = tb_float_to_g2(data[2]);
+					path->trig.p1.y = tb_float_to_g2(data[3]);
+					path->trig.p2.x = tb_float_to_g2(data[4]);
+					path->trig.p2.y = tb_float_to_g2(data[5]);
+					tb_trace_impl("like: triangle");
+				}
 			}
 			// like rect?
-			else if (size == 4)
+			else if (size == 4 || (size == 5 && data[0] == data[8] && data[1] == data[9]))
 			{
-				tb_float_t rect[8];
-				rect[0] = path->rect.x1;
-				rect[1] = path->rect.y1;
-				rect[2] = path->rect.x2;
-				rect[3] = path->rect.y1;
-				rect[4] = path->rect.x1;
-				rect[5] = path->rect.y2;
-				rect[6] = path->rect.x2;
-				rect[7] = path->rect.y2;
-				if (!tb_memcmp(rect, data, sizeof(tb_float_t) << 3)) 
+				if (( 	data[0] == data[2] 
+					&& 	data[3] == data[5]
+					&& 	data[4] == data[6]
+					&& 	data[7] == data[1])
+				|| ( 	data[1] == data[3] 
+					&& 	data[2] == data[4] 
+					&& 	data[5] == data[7]
+					&& 	data[6] == data[0]))
 				{
 					path->like = G2_GL10_PATH_LIKE_RECT;
 					tb_trace_impl("like: rect");
@@ -197,7 +208,54 @@ tb_bool_t g2_gl10_path_make_fill(g2_gl10_path_t* path)
 			// like convex polygon?
 			else if (size > 4)
 			{
-			
+				tb_float_t 			a = 0;
+				tb_float_t 			b = 0;
+				tb_float_t const* 	p = data;
+				tb_float_t const* 	e = data + (size << 1);
+
+				tb_float_t 			x0 = 0;
+				tb_float_t 			y0 = 0;
+				tb_float_t 			x1 = 0;
+				tb_float_t 			y1 = 0;
+				tb_float_t 			x2 = 0;
+				tb_float_t 			y2 = 0;
+				for (; p < e; p += 2, a = b)
+				{
+					if (p + 4 < e)
+					{
+						x0 = p[0];
+						y0 = p[1];
+						x1 = p[2];
+						y1 = p[3];
+						x2 = p[4];
+						y2 = p[5];
+					}
+					else if (p + 2 < e)
+					{
+						x0 = p[0];
+						y0 = p[1];
+						x1 = p[2];
+						y1 = p[3];
+						x2 = data[0];
+						y2 = data[1];
+					}
+					else
+					{
+						x0 = p[0];
+						y0 = p[1];
+						x1 = data[0];
+						y1 = data[1];
+						x2 = data[2];
+						y2 = data[3];
+					}
+					b = (x0 - x2) * (y1 - y2) - (y0 - y2) * (x1 - x2);
+					if (p != data && a * b < 0) break;
+				}
+				if (p == e)
+				{
+					path->like = G2_GL10_PATH_LIKE_CONX;
+					tb_trace_impl("like: convex");
+				}
 			}
 		}
 
