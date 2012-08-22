@@ -155,6 +155,14 @@ static __tb_inline__ tb_bool_t g2_gl10_fill_context_init(g2_gl10_fill_t* fill)
 	{
 		g2_color_t color = g2_style_color(style);
 		glColor4f(color.r / 256., color.g / 256., color.b / 256., color.a / 256.);
+
+		// enable blend?
+		if (color.a != 0xff) 
+		{
+			glEnable(GL_BLEND);
+			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		}
+		else glDisable(GL_BLEND);
 	}
 
 	// ok
@@ -172,6 +180,9 @@ static __tb_inline__ tb_void_t g2_gl10_fill_context_exit(g2_gl10_fill_t* fill)
 	glDisable(GL_POLYGON_SMOOTH);
 #endif
 	glDisable(GL_MULTISAMPLE);
+
+	// disable blend
+	glDisable(GL_BLEND);
 }
 static __tb_inline__ tb_void_t g2_gl10_fill_style_draw(g2_gl10_fill_t* fill, g2_gl10_rect_t const* bounds)
 {

@@ -105,9 +105,6 @@ static tb_void_t g2_gl10_path_fill_split_quad_func(g2_soft_split_quad_t* split, 
 	// add
 	tb_vector_insert_tail(path->fill.data, data);
 	tb_vector_replace_last(path->fill.size, tb_vector_last(path->fill.size) + 1);
-
-	// bounds
-	g2_gl10_rect_done(&path->fill.rect, data[0], data[1]);
 }
 static tb_void_t g2_gl10_path_fill_split_cube_func(g2_soft_split_cube_t* split, g2_point_t const* pt)
 {
@@ -123,9 +120,6 @@ static tb_void_t g2_gl10_path_fill_split_cube_func(g2_soft_split_cube_t* split, 
 	// add
 	tb_vector_insert_tail(path->fill.data, data);
 	tb_vector_replace_last(path->fill.size, tb_vector_last(path->fill.size) + 1);
-
-	// bounds
-	g2_gl10_rect_done(&path->fill.rect, data[0], data[1]);
 }
 /* ///////////////////////////////////////////////////////////////////////
  * maker
@@ -144,6 +138,9 @@ tb_bool_t g2_gl10_path_make_fill(g2_gl10_path_t* path)
 	// only moveto?
 	tb_check_return_val(path->flag & (G2_GL10_PATH_FLAG_LINE | G2_GL10_PATH_FLAG_QUAD | G2_GL10_PATH_FLAG_CUBE), TB_FALSE);
 
+	// bounds
+	path->fill.rect = path->rect;
+
 	// only lineto?
 	if (!(path->flag & (G2_GL10_PATH_FLAG_QUAD | G2_GL10_PATH_FLAG_CUBE)))
 	{
@@ -155,7 +152,6 @@ tb_bool_t g2_gl10_path_make_fill(g2_gl10_path_t* path)
 		if (path->fill.size != path->size) tb_vector_exit(path->fill.size);
 		path->fill.data = path->data;
 		path->fill.size = path->size;
-		path->fill.rect = path->rect;
 		return TB_TRUE;
 	}
 	else 
@@ -213,10 +209,6 @@ tb_bool_t g2_gl10_path_make_fill(g2_gl10_path_t* path)
 				tb_vector_insert_tail(path->fill.data, data);
 				tb_vector_insert_tail(path->fill.size, 1);
 
-				// bounds
-				if (data == init) g2_gl10_rect_init(&path->fill.rect, data[0], data[1]);
-				else g2_gl10_rect_done(&path->fill.rect, data[0], data[1]);
-
 				// last
 				last = data;
 
@@ -230,9 +222,6 @@ tb_bool_t g2_gl10_path_make_fill(g2_gl10_path_t* path)
 				tb_trace_impl("line: %f %f", data[0], data[1]);
 				tb_vector_insert_tail(path->fill.data, data);
 				tb_vector_replace_last(path->fill.size, tb_vector_last(path->fill.size) + 1);
-
-				// bounds
-				g2_gl10_rect_done(&path->fill.rect, data[0], data[1]);
 
 				// last
 				last = data;
@@ -519,6 +508,7 @@ tb_void_t g2_path_quad_to(tb_handle_t path, g2_point_t const* cp, g2_point_t con
 	data[3] = g2_float_to_tb(pt->y);
 
 	// bounds
+	g2_gl10_rect_done(&gpath->rect, data[0], data[1]);
 	g2_gl10_rect_done(&gpath->rect, data[2], data[3]);
 
 	// patch move-to
@@ -558,6 +548,8 @@ tb_void_t g2_path_cube_to(tb_handle_t path, g2_point_t const* c0, g2_point_t con
 	data[5] = g2_float_to_tb(pt->y);
 
 	// bounds
+	g2_gl10_rect_done(&gpath->rect, data[0], data[1]);
+	g2_gl10_rect_done(&gpath->rect, data[2], data[3]);
 	g2_gl10_rect_done(&gpath->rect, data[4], data[5]);
 
 	// patch move-to
