@@ -132,6 +132,9 @@ tb_bool_t g2_gl10_path_make_fill(g2_gl10_path_t* path)
 	// already been maked?
 	tb_check_return_val(!path->fill.size || !tb_vector_size(path->fill.size), TB_TRUE);
 
+	// clear like
+	path->like = G2_GL10_PATH_LIKE_NONE;
+
 	// has data?
 	tb_check_return_val(tb_vector_size(path->code) && tb_vector_size(path->data), TB_FALSE);
 
@@ -141,11 +144,62 @@ tb_bool_t g2_gl10_path_make_fill(g2_gl10_path_t* path)
 	// bounds
 	path->fill.rect = path->rect;
 
-	// only lineto?
+	// only has lineto?
 	if (!(path->flag & (G2_GL10_PATH_FLAG_QUAD | G2_GL10_PATH_FLAG_CUBE)))
 	{
 		// check
 		tb_check_return_val(path->rect.x1 < path->rect.x2 && path->rect.y1 < path->rect.y2, TB_FALSE);
+
+		// like for only one segment
+		if (tb_vector_size(path->size) == 1)
+		{
+			// data && size
+			tb_size_t 			size = tb_vector_head(path->size);
+			tb_float_t const* 	data = tb_vector_data(path->data);
+			tb_assert_and_check_return_val(data && size, TB_FALSE);
+
+			// like line?
+			if (size == 2)
+			{
+				if (data[0] != data[2] || data[1] != data[3]) 
+				{
+					path->like = G2_GL10_PATH_LIKE_LINE;
+					tb_trace_impl("like: line");
+				}
+			}
+			// like triangle?
+			else if (size == 3)
+			{
+				// p0 != p1 != p2, triangle or line
+				if ((data[0] != data[2] || data[1] != data[3])
+				&&	(data[0] != data[4] || data[1] != data[5])
+				&&	(data[4] != data[2] || data[5] != data[3])) 
+					path->like = G2_GL10_PATH_LIKE_TRIG;
+			}
+			// like rect?
+			else if (size == 4)
+			{
+				tb_float_t rect[8];
+				rect[0] = path->rect.x1;
+				rect[1] = path->rect.y1;
+				rect[2] = path->rect.x2;
+				rect[3] = path->rect.y1;
+				rect[4] = path->rect.x1;
+				rect[5] = path->rect.y2;
+				rect[6] = path->rect.x2;
+				rect[7] = path->rect.y2;
+				if (!tb_memcmp(rect, data, sizeof(tb_float_t) << 3)) 
+				{
+					path->like = G2_GL10_PATH_LIKE_RECT;
+					tb_trace_impl("like: rect");
+				}
+			}
+			// like convex polygon?
+			else if (size > 4)
+			{
+			
+			}
+		}
 
 		// use the raw data directly
 		if (path->fill.data != path->data) tb_vector_exit(path->fill.data);
@@ -168,7 +222,6 @@ tb_bool_t g2_gl10_path_make_fill(g2_gl10_path_t* path)
 	tb_float_t const* 	dail = data + (tb_vector_size(path->data) << 1);
 	tb_float_t const* 	head = TB_NULL;
 	tb_float_t const* 	last = TB_NULL;
-	tb_float_t const* 	init = data;
 	tb_assert_and_check_return_val(code && data, TB_NULL);
 
 	// init fill data
@@ -339,6 +392,9 @@ tb_handle_t g2_path_init()
 	// init flag
 	path->flag = G2_GL10_PATH_FLAG_NONE;
 
+	// init like
+	path->like = G2_GL10_PATH_LIKE_NONE;
+
 	// ok
 	return path;
 
@@ -377,6 +433,9 @@ tb_void_t g2_path_clear(tb_handle_t path)
 
 	// clear flag
 	gpath->flag = G2_GL10_PATH_FLAG_NONE;
+
+	// clear like
+	gpath->like = G2_GL10_PATH_LIKE_NONE;
 
 	// clear code
 	if (gpath->code) tb_vector_clear(gpath->code);

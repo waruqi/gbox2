@@ -71,20 +71,43 @@ typedef struct __g2_gl10_path_stok_t
 // the gl10 path flag type
 typedef enum __g2_gl10_path_flag_t
 {
-	G2_GL10_PATH_FLAG_NONE 	= 0
-,	G2_GL10_PATH_FLAG_OPEN 	= 1
-,	G2_GL10_PATH_FLAG_MOVE 	= 2
-,	G2_GL10_PATH_FLAG_LINE 	= 4
-,	G2_GL10_PATH_FLAG_QUAD 	= 8
-,	G2_GL10_PATH_FLAG_CUBE 	= 16
+	G2_GL10_PATH_FLAG_NONE 	= 0 	//< none
+,	G2_GL10_PATH_FLAG_OPEN 	= 1 	//< is opened?
+,	G2_GL10_PATH_FLAG_MOVE 	= 2 	//< has move-to?
+,	G2_GL10_PATH_FLAG_LINE 	= 4 	//< has line-to?
+,	G2_GL10_PATH_FLAG_QUAD 	= 8 	//< has quad-to?
+,	G2_GL10_PATH_FLAG_CUBE 	= 16 	//< has cube-to?
 
 }g2_gl10_path_flag_t;
+
+// the gl10 path like type
+typedef enum __g2_gl10_path_like_t
+{
+	G2_GL10_PATH_LIKE_NONE 	= 0 	//< none
+,	G2_GL10_PATH_LIKE_LINE 	= 1 	//< like line?
+,	G2_GL10_PATH_LIKE_RECT 	= 2 	//< like rect?
+,	G2_GL10_PATH_LIKE_TRIG 	= 3 	//< like triangle?
+,	G2_GL10_PATH_LIKE_CONX 	= 4 	//< like convex polygon?
+
+}g2_gl10_path_like_t;
 
 // the gl10 path type
 typedef struct __g2_gl10_path_t
 {
 	// the flag
 	tb_size_t 				flag;
+
+	// the like
+	tb_size_t 				like;
+
+	// the liked line
+	g2_line_t 				line;
+
+	// the liked triangle
+	g2_triangle_t			trig;
+
+	// the liked rect or the bounds
+	g2_gl10_rect_t 			rect;
 
 	// the code, vector<tb_byte_t>
 	tb_vector_t* 			code;
@@ -94,9 +117,6 @@ typedef struct __g2_gl10_path_t
 
 	// the size, vector<tb_uint16_t>
 	tb_vector_t* 			size;
-
-	// the rect bounds
-	g2_gl10_rect_t 			rect;
 
 	// the fill path
 	g2_gl10_path_fill_t 	fill;

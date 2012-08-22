@@ -326,10 +326,37 @@ tb_void_t g2_gl10_fill_path(g2_gl10_painter_t* painter, g2_gl10_path_t const* pa
 	tb_assert(path->fill.data && tb_vector_size(path->fill.data));
 	tb_assert(path->fill.size && tb_vector_size(path->fill.size));
 	tb_check_return(path->fill.rect.x1 < path->fill.rect.x2 && path->fill.rect.y1 < path->fill.rect.y2);
+	
+	// fill
+	g2_gl10_fill_t fill = {0};
+
+	// like rect?
+	if (path->like == G2_GL10_PATH_LIKE_RECT)
+	{
+		// init fill
+		if (!g2_gl10_fill_init(&fill, painter, G2_GL10_FILL_FLAG_RECT | G2_GL10_FILL_FLAG_CONVEX)) return ;
+
+		// draw fill
+		g2_gl10_fill_draw(&fill, &path->rect);
+
+		// exit fill
+		g2_gl10_fill_exit(&fill);
+
+		// ok
+		return ;
+	}
+	// like triangle?
+	else if (path->like == G2_GL10_PATH_LIKE_TRIG)
+	{
+		// fill triangle
+		g2_gl10_fill_triangle(painter, &path->trig);
+
+		// ok
+		return ;
+	}
 
 	// init fill
-	g2_gl10_fill_t fill = {0};
-	if (!g2_gl10_fill_init(&fill, painter, G2_GL10_FILL_FLAG_NONE)) return ;
+	if (!g2_gl10_fill_init(&fill, painter, path->like == G2_GL10_PATH_LIKE_CONX? G2_GL10_FILL_FLAG_CONVEX : G2_GL10_FILL_FLAG_NONE)) return ;
 
 	// init vertices
 	glVertexPointer(2, GL_FLOAT, 0, tb_vector_data(path->fill.data));
