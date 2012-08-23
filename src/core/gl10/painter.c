@@ -251,6 +251,9 @@ tb_void_t g2_draw_path(tb_handle_t painter, tb_handle_t path)
 	g2_gl10_painter_t* gpainter = (g2_gl10_painter_t*)painter;
 	tb_assert_and_check_return(gpainter && gpainter->style_usr && path);
 
+	// like
+	g2_gl10_path_make_like((g2_gl10_path_t*)path);
+
 	// fill
 	if (g2_gl10_path_make_fill((g2_gl10_path_t*)path))
 		g2_gl10_fill_path(gpainter, (g2_gl10_path_t const*)path);

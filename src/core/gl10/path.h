@@ -109,13 +109,6 @@ typedef struct __g2_gl10_path_t
 	// the liked rect or the bounds
 	g2_gl10_rect_t 			rect;
 
-	// the liked convex direction
-	tb_float_t 				conx;
-
-	// the head & last for the liked convex direction
-	tb_float_t 				head[4];
-	tb_float_t 				last[4];
-
 	// the code, vector<tb_byte_t>
 	tb_vector_t* 			code;
 
@@ -145,5 +138,8 @@ tb_bool_t g2_gl10_path_make_fill(g2_gl10_path_t* path);
 
 // make stok path for gl10
 tb_bool_t g2_gl10_path_make_stok(g2_gl10_path_t* path);
+
+// make like path for gl10
+tb_void_t g2_gl10_path_make_like(g2_gl10_path_t* path);
 
 #endif
