@@ -123,7 +123,7 @@ static __tb_inline__ tb_bool_t g2_svg_painter_style_gradient_linear(g2_svg_paint
 	if (!g2_svg_painter_style_gradient_linear_build(painter, element, &gradient, &pb, &pe)) return TB_FALSE;
 
 	// init mode
-	tb_size_t mode = G2_SHADER_MODE_CLAMP;
+	tb_size_t mode = G2_SHADER_MODE_NONE;
 	if (element->spread == G2_SVG_STYLE_GRADIENT_SPREAD_REFLECT) mode = G2_SHADER_MODE_MIRROR;
 	else if (element->spread == G2_SVG_STYLE_GRADIENT_SPREAD_REPEAT) mode = G2_SHADER_MODE_REPEAT;
 
@@ -150,7 +150,7 @@ static __tb_inline__ tb_bool_t g2_svg_painter_style_gradient_radial(g2_svg_paint
 	if (!g2_svg_painter_style_gradient_radial_build(painter, element, &gradient, &cp)) return TB_FALSE;
 
 	// init mode
-	tb_size_t mode = G2_SHADER_MODE_CLAMP;
+	tb_size_t mode = G2_SHADER_MODE_NONE;
 	if (element->spread == G2_SVG_STYLE_GRADIENT_SPREAD_REFLECT) mode = G2_SHADER_MODE_MIRROR;
 	else if (element->spread == G2_SVG_STYLE_GRADIENT_SPREAD_REPEAT) mode = G2_SHADER_MODE_REPEAT;
 
@@ -275,7 +275,7 @@ static __tb_inline__ tb_bool_t g2_svg_painter_style_image(g2_svg_painter_t* pain
 		g2_style_alpha_set(g2_style(painter->painter), (tb_byte_t)g2_float_to_long(style->opacity * 0xff));
 
 	// init shader
-	tb_handle_t shader = g2_shader_init_bitmap(style->image.bitmap, G2_SHADER_MODE_CLAMP, G2_SHADER_MODE_CLAMP);
+	tb_handle_t shader = g2_shader_init_bitmap(style->image.bitmap, G2_SHADER_MODE_NONE);
 	tb_assert_and_check_return_val(shader, TB_FALSE);
 
 	// bounds

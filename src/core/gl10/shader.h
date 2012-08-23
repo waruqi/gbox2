@@ -17,47 +17,29 @@
  * Copyright (C) 2009 - 2012, ruki All rights reserved.
  *
  * @author		ruki
- * @file		shader.c
+ * @file		shader.h
  *
  */
+#ifndef G2_CORE_GL10_SHADER_H
+#define G2_CORE_GL10_SHADER_H
+
 /* ///////////////////////////////////////////////////////////////////////
  * includes
  */
 #include "prefix.h"
 
 /* ///////////////////////////////////////////////////////////////////////
- * implementation
+ * types
  */
-tb_handle_t g2_shader_init_linear(g2_point_t const* pb, g2_point_t const* pe, g2_gradient_t const* gradient, tb_size_t mode)
+
+// the gl10 shader type
+typedef struct __g2_gl10_shader_t
 {
-	tb_trace_noimpl();
-	return TB_NULL;
-}
-tb_handle_t g2_shader_init_radial(g2_circle_t const* cp, g2_gradient_t const* gradient, tb_size_t mode)
-{
-	tb_trace_noimpl();
-	return TB_NULL;
-}
-tb_handle_t g2_shader_init_radial2(g2_circle_t const* cb, g2_circle_t const* ce, g2_gradient_t const* gradient, tb_size_t mode)
-{
-	tb_trace_noimpl();
-	return TB_NULL;
-}
-tb_handle_t g2_shader_init_bitmap(tb_handle_t bitmap, tb_size_t mode)
-{
-	tb_trace_noimpl();
-	return TB_NULL;
-}
-tb_void_t g2_shader_exit(tb_handle_t shader)
-{
-	tb_trace_noimpl();
-}
-g2_matrix_t const* g2_shader_matrix(tb_handle_t shader)
-{
-	tb_trace_noimpl();
-	return TB_NULL;
-}
-tb_void_t g2_shader_matrix_set(tb_handle_t shader, g2_matrix_t const* matrix)
-{
-	tb_trace_noimpl();
-}
+
+}g2_gl10_shader_t;
+
+/* ///////////////////////////////////////////////////////////////////////
+ * interfaces
+ */
+
+#endif

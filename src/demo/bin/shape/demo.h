@@ -73,8 +73,8 @@ static tb_size_t 	g_shaderi 	= 0;
 static tb_handle_t 	g_bitmap 	= TB_NULL;
 static tb_size_t 	g_cap[] 	= {G2_STYLE_CAP_BUTT, G2_STYLE_CAP_SQUARE, G2_STYLE_CAP_ROUND};
 static tb_size_t 	g_join[] 	= {G2_STYLE_JOIN_MITER, G2_STYLE_JOIN_BEVEL, G2_STYLE_JOIN_ROUND};
-static tb_handle_t 	g_shader[7] = {TB_NULL};
-static tb_handle_t 	g_mhader[7] = {TB_NULL};
+static tb_handle_t 	g_shader[5] = {TB_NULL};
+static tb_handle_t 	g_mhader[5] = {TB_NULL};
 
 /* ////////////////////////////////////////////////////////////////////////
  * callbacks
@@ -176,7 +176,7 @@ static tb_void_t g2_demo_gl_display()
 		g2_style_mode_set(g_style, G2_STYLE_MODE_FILL);
 		g2_style_color_set(g_style, G2_COLOR_RED);
 		g2_style_shader_set(g_style, g_bm? g_mhader[g_shaderi] : g_shader[g_shaderi]);
-		if (g_shaderi == 6) 
+		if (g_shaderi == 4) 
 		{
 			g2_matrix_t mx;
 			tb_size_t bw 	= g2_bitmap_width(g_bitmap);
@@ -293,7 +293,7 @@ static tb_void_t g2_demo_gl_click(tb_int_t button, tb_int_t state, tb_int_t x, t
 	{
 		if (state == 0)
 		{
-			g_shaderi = (g_shaderi + 1) % (g_bitmap? 7 : 6);
+			g_shaderi = (g_shaderi + 1) % (g_bitmap? 5 : 4);
 			g2_demo_lclickdown(x, y);
 		}
 		else if (state == 1)
@@ -397,25 +397,19 @@ tb_bool_t g2_demo_gbox2_init(tb_int_t argc, tb_char_t** argv)
 	g2_gradient_t 	grad = {color, TB_NULL, 3};
 
 	// init shader
-	g_shader[1]	= g2_shader_init2i_linear(g_x0 - 100, 0, g_x0 + 100, 0, &grad, G2_SHADER_MODE_CLAMP);
-	g_mhader[1]	= g2_shader_init2i_linear(-50, 0, 50, 0, &grad, G2_SHADER_MODE_CLAMP);
+	g_shader[1]	= g2_shader_init2i_linear(g_x0 - 100, 0, g_x0 + 100, 0, &grad, G2_SHADER_MODE_NONE);
+	g_mhader[1]	= g2_shader_init2i_linear(-50, 0, 50, 0, &grad, G2_SHADER_MODE_NONE);
 
-	g_shader[2]	= g2_shader_init2i_radial(g_x0, g_y0, 100, &grad, G2_SHADER_MODE_CLAMP);
-	g_mhader[2]	= g2_shader_init2i_radial(0, 0, 50, &grad, G2_SHADER_MODE_CLAMP);
+	g_shader[2]	= g2_shader_init2i_radial(g_x0, g_y0, 100, &grad, G2_SHADER_MODE_NONE);
+	g_mhader[2]	= g2_shader_init2i_radial(0, 0, 50, &grad, G2_SHADER_MODE_NONE);
 
-	g_shader[3]	= g2_shader_init2i_radial2(g_x0, g_y0, 100, g_x0, g_y0, 200, &grad, G2_SHADER_MODE_CLAMP);
-	g_mhader[3]	= g2_shader_init2i_radial2(0, 0, 50, 0, 0, 100, &grad, G2_SHADER_MODE_CLAMP);
-
-	g_shader[4]	= g2_shader_init2i_conical(0, 0, 100, G2_DEMO_WIDTH, G2_DEMO_HEIGHT, 200, &grad, G2_SHADER_MODE_CLAMP);
-	g_mhader[4]	= g2_shader_init2i_conical(-50, -50, 50, 50, 50, 100, &grad, G2_SHADER_MODE_CLAMP);
-
-	g_shader[5]	= g2_shader_init2i_sweep(g_x0, g_y0, &grad);
-	g_mhader[5]	= g2_shader_init2i_sweep(0, 0, &grad);
+	g_shader[3]	= g2_shader_init2i_radial2(g_x0, g_y0, 100, g_x0, g_y0, 200, &grad, G2_SHADER_MODE_NONE);
+	g_mhader[3]	= g2_shader_init2i_radial2(0, 0, 50, 0, 0, 100, &grad, G2_SHADER_MODE_NONE);
 
 	if (g_bitmap)
 	{
-		g_shader[6]	= g2_shader_init_bitmap(g_bitmap, G2_SHADER_MODE_CLAMP, G2_SHADER_MODE_CLAMP);
-		g_mhader[6]	= g2_shader_init_bitmap(g_bitmap, G2_SHADER_MODE_CLAMP, G2_SHADER_MODE_CLAMP);
+		g_shader[4]	= g2_shader_init_bitmap(g_bitmap, G2_SHADER_MODE_NONE);
+		g_mhader[4]	= g2_shader_init_bitmap(g_bitmap, G2_SHADER_MODE_NONE);
 	}
 
 	// init context
