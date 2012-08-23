@@ -41,10 +41,10 @@ extern "C" {
 // the shader mode type
 typedef enum __g2_shader_mode_t
 {
-	G2_SHADER_MODE_NONE 	= 0
-,	G2_SHADER_MODE_PAD 		= 1
-,	G2_SHADER_MODE_REPEAT 	= 2
-,	G2_SHADER_MODE_MIRROR 	= 3
+	G2_SHADER_MODE_NONE 				= 0
+,	G2_SHADER_MODE_PAD 					= 1
+,	G2_SHADER_MODE_REPEAT 				= 2
+,	G2_SHADER_MODE_MIRROR 				= 3
 
 }g2_shader_mode_t;
 

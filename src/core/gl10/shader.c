@@ -23,10 +23,55 @@
 /* ///////////////////////////////////////////////////////////////////////
  * includes
  */
-#include "prefix.h"
+#include "shader.h"
+#include "matrix.h"
 
 /* ///////////////////////////////////////////////////////////////////////
- * implementation
+ * gl10 interfaces
+ */
+
+g2_gl10_shader_t* g2_gl10_shader_init(tb_size_t type, tb_size_t mode)
+{
+	// check
+	tb_assert_and_check_return_val(type, TB_NULL);
+
+	// make texture
+	tb_uint_t texture;
+ 	glGenTextures(1, &texture);
+	tb_assert_and_check_return_val(glIsTexture(texture), TB_NULL);
+
+	// make shader
+	g2_gl10_shader_t* shader = tb_malloc0(sizeof(g2_gl10_shader_t));
+	tb_assert_and_check_return_val(shader, TB_NULL);
+
+	// init shader
+	shader->type = type;
+	shader->mode = mode;
+	shader->refn = 1;
+	shader->texture = texture;
+
+	// init matrix
+	g2_matrix_clear(&shader->matrix);
+	g2_gl10_matrix_init(shader->matrix_gl);
+
+	// ok
+	return shader;
+}
+tb_void_t g2_gl10_shader_exit(g2_gl10_shader_t* shader)
+{
+	if (shader)
+	{
+		// exit texture
+ 		if (glIsTexture(shader->texture))
+ 			glDeleteTextures(1, &shader->texture);
+
+		// exit it
+		tb_free(shader);
+	}
+}
+
+/* ///////////////////////////////////////////////////////////////////////
+ * interfaces
  */
 tb_handle_t g2_shader_init_linear(g2_point_t const* pb, g2_point_t const* pe, g2_gradient_t const* gradient, tb_size_t mode)
 {
@@ -45,19 +90,34 @@ tb_handle_t g2_shader_init_radial2(g2_circle_t const* cb, g2_circle_t const* ce,
 }
 tb_handle_t g2_shader_init_bitmap(tb_handle_t bitmap, tb_size_t mode)
 {
-	tb_trace_noimpl();
-	return TB_NULL;
+	// init
+	g2_gl10_shader_t* shader = g2_gl10_shader_init(G2_GL10_SHADER_TYPE_BITMAP, mode);
+	tb_assert_and_check_return_val(shader, TB_NULL);
+
+	// ok
+	return shader;
 }
 tb_void_t g2_shader_exit(tb_handle_t shader)
 {
-	tb_trace_noimpl();
+	// shader
+	g2_gl10_shader_t* gshader = (g2_gl10_shader_t*)shader;
+	tb_assert_and_check_return(gshader);
+
 }
 g2_matrix_t const* g2_shader_matrix(tb_handle_t shader)
 {
-	tb_trace_noimpl();
-	return TB_NULL;
+	// shader
+	g2_gl10_shader_t* gshader = (g2_gl10_shader_t*)shader;
+	tb_assert_and_check_return_val(gshader, TB_NULL);
+
+	return &gshader->matrix;
 }
 tb_void_t g2_shader_matrix_set(tb_handle_t shader, g2_matrix_t const* matrix)
 {
-	tb_trace_noimpl();
+	// shader
+	g2_gl10_shader_t* gshader = (g2_gl10_shader_t*)shader;
+	tb_assert_and_check_return(gshader);
+
+	if (matrix) gshader->matrix = *matrix;
+	else g2_matrix_clear(&gshader->matrix);
 }

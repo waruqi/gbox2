@@ -39,6 +39,9 @@ typedef struct __g2_gl10_context_t
 	// the surface
 	tb_handle_t 		surface;
 
+	// the shaders
+	tb_vector_t* 		shaders;
+
 }g2_gl10_context_t;
 
 

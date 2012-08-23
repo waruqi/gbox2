@@ -27,6 +27,17 @@
 #include "context.h"
 
 /* ///////////////////////////////////////////////////////////////////////
+ * macros
+ */
+
+// grow
+#ifdef TB_CONFIG_MEMORY_MODE_SMALL
+# 	define G2_GL10_SHADERS_GROW 				(32)
+#else
+# 	define G2_GL10_SHADERS_GROW 				(128)
+#endif
+
+/* ///////////////////////////////////////////////////////////////////////
  * implementation
  */
 tb_handle_t g2_context_init_gl10(tb_size_t pixfmt, tb_size_t width, tb_size_t height)
@@ -51,6 +62,10 @@ tb_handle_t g2_context_init_gl10(tb_size_t pixfmt, tb_size_t width, tb_size_t he
 	// init surface
 	gcontext->surface = g2_bitmap_init(pixfmt, width, height, 0);
 	tb_assert_and_check_goto(gcontext->surface, fail);
+
+	// init shaders
+	gcontext->shaders = tb_vector_init(G2_GL10_SHADERS_GROW, tb_item_func_ptr());
+	tb_assert_and_check_goto(gcontext->shaders, fail);
 
 	// init viewport
 	glViewport(0, 0, width, height);
@@ -77,6 +92,16 @@ tb_void_t g2_context_exit(tb_handle_t context)
 	g2_gl10_context_t* gcontext = (g2_gl10_context_t*)context;
 	if (gcontext) 
 	{
+		// exit shaders
+		if (gcontext->shaders)
+		{
+			// FIXME
+			// ...
+		
+			// exit it
+			tb_vector_exit(gcontext->shaders);
+		}
+
 		// free surface
 		if (gcontext->surface) g2_bitmap_exit(gcontext->surface);
 

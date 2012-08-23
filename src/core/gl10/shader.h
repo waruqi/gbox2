@@ -32,14 +32,44 @@
  * types
  */
 
+// the gl10 shader type constants
+typedef enum __g2_gl10_shader_type_t
+{
+	G2_GL10_SHADER_TYPE_NONE 				= 0
+,	G2_GL10_SHADER_TYPE_GRADIENT_LINEAR 	= 1
+,	G2_GL10_SHADER_TYPE_GRADIENT_RADIAL 	= 2
+,	G2_GL10_SHADER_TYPE_GRADIENT_RADIAL2 	= 3
+,	G2_GL10_SHADER_TYPE_BITMAP 				= 4
+
+}g2_gl10_shader_type_t;
+
 // the gl10 shader type
 typedef struct __g2_gl10_shader_t
 {
+	// the type
+	tb_size_t 				type;
+
+	// the mode
+	tb_size_t 				mode;
+
+	// the refn
+	tb_size_t 				refn;
+
+	// the texture
+	tb_size_t 				texture;
+
+	// the matrix
+	g2_matrix_t 			matrix;
+	GLfloat 				matrix_gl[16];
 
 }g2_gl10_shader_t;
 
 /* ///////////////////////////////////////////////////////////////////////
  * interfaces
  */
+
+// init & exit
+g2_gl10_shader_t* 	g2_gl10_shader_init(tb_size_t type, tb_size_t mode);
+tb_void_t 			g2_gl10_shader_exit(g2_gl10_shader_t* shader);
 
 #endif
