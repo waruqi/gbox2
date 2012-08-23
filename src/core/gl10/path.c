@@ -132,9 +132,6 @@ tb_bool_t g2_gl10_path_make_fill(g2_gl10_path_t* path)
 	// already been maked?
 	tb_check_return_val(!path->fill.size || !tb_vector_size(path->fill.size), TB_TRUE);
 
-	// clear like
-	path->like = G2_GL10_PATH_LIKE_NONE;
-
 	// has data?
 	tb_check_return_val(tb_vector_size(path->code) && tb_vector_size(path->data), TB_FALSE);
 
@@ -143,6 +140,9 @@ tb_bool_t g2_gl10_path_make_fill(g2_gl10_path_t* path)
 
 	// bounds
 	path->fill.rect = path->rect;
+
+	if (path->like == G2_GL10_PATH_LIKE_CONX)
+		tb_trace_impl("like: convex");
 
 	// only has lineto?
 	if (!(path->flag & (G2_GL10_PATH_FLAG_QUAD | G2_GL10_PATH_FLAG_CUBE)))
@@ -205,6 +205,7 @@ tb_bool_t g2_gl10_path_make_fill(g2_gl10_path_t* path)
 					tb_trace_impl("like: rect");
 				}
 			}
+#if 0
 			// like convex polygon?
 			else if (size > 4)
 			{
@@ -257,6 +258,7 @@ tb_bool_t g2_gl10_path_make_fill(g2_gl10_path_t* path)
 					tb_trace_impl("like: convex");
 				}
 			}
+#endif
 		}
 
 		// use the raw data directly
@@ -451,7 +453,7 @@ tb_handle_t g2_path_init()
 	path->flag = G2_GL10_PATH_FLAG_NONE;
 
 	// init like
-	path->like = G2_GL10_PATH_LIKE_NONE;
+	path->like = G2_GL10_PATH_LIKE_CONX;
 
 	// ok
 	return path;
@@ -493,7 +495,7 @@ tb_void_t g2_path_clear(tb_handle_t path)
 	gpath->flag = G2_GL10_PATH_FLAG_NONE;
 
 	// clear like
-	gpath->like = G2_GL10_PATH_LIKE_NONE;
+	gpath->like = G2_GL10_PATH_LIKE_CONX;
 
 	// clear code
 	if (gpath->code) tb_vector_clear(gpath->code);
@@ -506,6 +508,15 @@ tb_void_t g2_path_clear(tb_handle_t path)
 
 	// clear rect
 	tb_memset(&gpath->rect, 0, sizeof(g2_gl10_rect_t));
+
+	// clear line
+	tb_memset(&gpath->line, 0, sizeof(g2_line_t));
+
+	// clear triangle
+	tb_memset(&gpath->trig, 0, sizeof(g2_triangle_t));
+
+	// clear last
+	tb_memset(gpath->last, 0, sizeof(tb_float_t) << 2);
 
 	// clear fill 
 	g2_gl10_path_fill_clear(gpath);
@@ -521,6 +532,53 @@ tb_void_t g2_path_close(tb_handle_t path)
 
 	// close it
 	gpath->flag &= ~G2_GL10_PATH_FLAG_OPEN;
+
+#if 0
+	// like convex polygon?
+	if (path->like == G2_GL10_PATH_LIKE_CONX)
+	{
+		tb_size_t size = tb_vector_last(gpath->size);
+		if (size > 2)
+		{
+			tb_float_t x2 = path->last[0];
+			tb_float_t y2 = path->last[1];
+			tb_float_t x1 = path->last[2];
+			tb_float_t y1 = path->last[3];
+			tb_float_t x0 = data[0];
+			tb_float_t y0 = data[1];
+			tb_float_t conx = (x0 - x2) * (y1 - y2) - (y0 - y2) * (x1 - x2);
+			if (path->conx * conx < 0) 
+			{
+				path->like = G2_GL10_PATH_LIKE_NONE;
+				path->conx = 0;
+			}
+			else path->conx = conx;
+
+			if (path->like == G2_GL10_PATH_LIKE_CONX)
+			{
+				x2 = path->last[2];
+				y2 = path->last[3];
+				x1 = data[0];
+				y1 = data[1];
+				x0 = data[2];
+				y0 = data[3];
+				conx = (x0 - x2) * (y1 - y2) - (y0 - y2) * (x1 - x2);
+				if (path->conx * conx < 0) 
+				{
+					path->like = G2_GL10_PATH_LIKE_NONE;
+					path->conx = 0;
+				}
+				else path->conx = conx;
+			}
+		}
+
+		// save
+		path->last[0] = data[0];
+		path->last[1] = data[1];
+		path->last[2] = data[2];
+		path->last[3] = data[3];
+	}
+#endif
 
 	// clear fill
 	g2_gl10_path_fill_clear(gpath);
@@ -575,6 +633,21 @@ tb_void_t g2_path_move_to(tb_handle_t path, g2_point_t const* pt)
 	// open it
 	gpath->flag |= G2_GL10_PATH_FLAG_OPEN | G2_GL10_PATH_FLAG_MOVE;
 
+	// like convex polygon?
+	if (gpath->like == G2_GL10_PATH_LIKE_CONX)
+	{
+		gpath->conx = 0;
+		gpath->last[0] = 0;
+		gpath->last[1] = 0;
+		gpath->last[2] = data[0];
+		gpath->last[3] = data[1];
+		gpath->head[0] = 0;
+		gpath->head[1] = 0;
+		gpath->head[2] = data[0];
+		gpath->head[3] = data[1];
+
+	}
+
 	// clear fill
 	g2_gl10_path_fill_clear(gpath);
 }
@@ -608,6 +681,41 @@ tb_void_t g2_path_line_to(tb_handle_t path, g2_point_t const* pt)
 	tb_vector_insert_tail(gpath->code, G2_PATH_CODE_LINE);
 	tb_vector_insert_tail(gpath->data, data);
 	tb_vector_replace_last(gpath->size, tb_vector_last(gpath->size) + 1);
+
+	// like convex polygon?
+	if (gpath->like == G2_GL10_PATH_LIKE_CONX)
+	{
+		tb_size_t size = tb_vector_last(gpath->size);
+		if (size > 2)
+		{
+			tb_float_t x2 = gpath->last[0];
+			tb_float_t y2 = gpath->last[1];
+			tb_float_t x1 = gpath->last[2];
+			tb_float_t y1 = gpath->last[3];
+			tb_float_t x0 = data[0];
+			tb_float_t y0 = data[1];
+			tb_float_t conx = (x0 - x2) * (y1 - y2) - (y0 - y2) * (x1 - x2);
+			if (gpath->conx * conx < 0) 
+			{
+				gpath->like = G2_GL10_PATH_LIKE_NONE;
+				gpath->conx = 0;
+			}
+			else gpath->conx = conx;
+		}
+		else
+		{
+			gpath->head[0] = gpath->head[2];
+			gpath->head[1] = gpath->head[3];
+			gpath->head[2] = data[0];
+			gpath->head[3] = data[1];
+		}
+
+		// save
+		gpath->last[0] = gpath->last[2];
+		gpath->last[1] = gpath->last[3];
+		gpath->last[2] = data[0];
+		gpath->last[3] = data[1];
+	}
 
 	// clear fill
 	g2_gl10_path_fill_clear(gpath);
@@ -646,6 +754,58 @@ tb_void_t g2_path_quad_to(tb_handle_t path, g2_point_t const* cp, g2_point_t con
 	tb_vector_insert_tail(gpath->data, &data[0]);
 	tb_vector_insert_tail(gpath->data, &data[2]);
 	tb_vector_replace_last(gpath->size, tb_vector_last(gpath->size) + 1);
+
+	// like convex polygon?
+	if (gpath->like == G2_GL10_PATH_LIKE_CONX)
+	{
+		tb_size_t size = tb_vector_last(gpath->size);
+		if (size > 2)
+		{
+			tb_float_t x2 = gpath->last[0];
+			tb_float_t y2 = gpath->last[1];
+			tb_float_t x1 = gpath->last[2];
+			tb_float_t y1 = gpath->last[3];
+			tb_float_t x0 = data[0];
+			tb_float_t y0 = data[1];
+			tb_float_t conx = (x0 - x2) * (y1 - y2) - (y0 - y2) * (x1 - x2);
+			if (gpath->conx * conx < 0) 
+			{
+				gpath->like = G2_GL10_PATH_LIKE_NONE;
+				gpath->conx = 0;
+			}
+			else gpath->conx = conx;
+
+			if (gpath->like == G2_GL10_PATH_LIKE_CONX)
+			{
+				x2 = gpath->last[2];
+				y2 = gpath->last[3];
+				x1 = data[0];
+				y1 = data[1];
+				x0 = data[2];
+				y0 = data[3];
+				conx = (x0 - x2) * (y1 - y2) - (y0 - y2) * (x1 - x2);
+				if (gpath->conx * conx < 0) 
+				{
+					gpath->like = G2_GL10_PATH_LIKE_NONE;
+					gpath->conx = 0;
+				}
+				else gpath->conx = conx;
+			}
+		}
+		else
+		{
+			gpath->head[0] = gpath->head[2];
+			gpath->head[1] = gpath->head[3];
+			gpath->head[2] = data[0];
+			gpath->head[3] = data[1];
+		}
+
+		// save
+		gpath->last[0] = data[0];
+		gpath->last[1] = data[1];
+		gpath->last[2] = data[2];
+		gpath->last[3] = data[3];
+	}
 
 	// clear fill
 	g2_gl10_path_fill_clear(gpath);
@@ -688,6 +848,75 @@ tb_void_t g2_path_cube_to(tb_handle_t path, g2_point_t const* c0, g2_point_t con
 	tb_vector_insert_tail(gpath->data, &data[2]);
 	tb_vector_insert_tail(gpath->data, &data[4]);
 	tb_vector_replace_last(gpath->size, tb_vector_last(gpath->size) + 1);
+
+	// like convex polygon?
+	if (gpath->like == G2_GL10_PATH_LIKE_CONX)
+	{
+		tb_size_t size = tb_vector_last(gpath->size);
+		if (size > 2)
+		{
+			tb_float_t x2 = gpath->last[0];
+			tb_float_t y2 = gpath->last[1];
+			tb_float_t x1 = gpath->last[2];
+			tb_float_t y1 = gpath->last[3];
+			tb_float_t x0 = data[0];
+			tb_float_t y0 = data[1];
+			tb_float_t conx = (x0 - x2) * (y1 - y2) - (y0 - y2) * (x1 - x2);
+			if (gpath->conx * conx < 0) 
+			{
+				gpath->like = G2_GL10_PATH_LIKE_NONE;
+				gpath->conx = 0;
+			}
+			else gpath->conx = conx;
+
+			if (gpath->like == G2_GL10_PATH_LIKE_CONX)
+			{
+				x2 = gpath->last[2];
+				y2 = gpath->last[3];
+				x1 = data[0];
+				y1 = data[1];
+				x0 = data[2];
+				y0 = data[3];
+				conx = (x0 - x2) * (y1 - y2) - (y0 - y2) * (x1 - x2);
+				if (gpath->conx * conx < 0) 
+				{
+					gpath->like = G2_GL10_PATH_LIKE_NONE;
+					gpath->conx = 0;
+				}
+				else gpath->conx = conx;
+			}
+
+			if (gpath->like == G2_GL10_PATH_LIKE_CONX)
+			{
+				x2 = data[0];
+				y2 = data[1];
+				x1 = data[2];
+				y1 = data[3];
+				x0 = data[4];
+				y0 = data[5];
+				conx = (x0 - x2) * (y1 - y2) - (y0 - y2) * (x1 - x2);
+				if (gpath->conx * conx < 0) 
+				{
+					gpath->like = G2_GL10_PATH_LIKE_NONE;
+					gpath->conx = 0;
+				}
+				else gpath->conx = conx;
+			}
+		}
+		else
+		{
+			gpath->head[0] = gpath->head[2];
+			gpath->head[1] = gpath->head[3];
+			gpath->head[2] = data[0];
+			gpath->head[3] = data[1];
+		}
+
+		// save
+		gpath->last[0] = data[2];
+		gpath->last[1] = data[3];
+		gpath->last[2] = data[4];
+		gpath->last[3] = data[5];
+	}
 
 	// clear fill
 	g2_gl10_path_fill_clear(gpath);
