@@ -91,6 +91,9 @@
 // pixfmt
 #define G2_PIXFMT(pixfmt) 			(((pixfmt) & ~G2_PIXFMT_MENDIAN))
 
+// is big endian?
+#define G2_PIXFMT_BE(pixfmt) 		(((pixfmt) & G2_PIXFMT_MENDIAN))
+
 // ok?
 #define G2_PIXFMT_OK(pixfmt) 		(G2_PIXFMT(pixfmt) != G2_PIXFMT_NONE)
 

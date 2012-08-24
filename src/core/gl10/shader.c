@@ -36,8 +36,9 @@ g2_gl10_shader_t* g2_gl10_shader_init(tb_size_t type, tb_size_t mode)
 	tb_assert_and_check_return_val(type, TB_NULL);
 
 	// make texture
-	tb_uint_t texture;
+	tb_uint_t texture = 0;
  	glGenTextures(1, &texture);
+	glBindTexture(GL_TEXTURE_2D, texture);
 	tb_assert_and_check_return_val(glIsTexture(texture), TB_NULL);
 
 	// make shader
@@ -62,8 +63,9 @@ tb_void_t g2_gl10_shader_exit(g2_gl10_shader_t* shader)
 	if (shader)
 	{
 		// exit texture
- 		if (glIsTexture(shader->texture))
- 			glDeleteTextures(1, &shader->texture);
+		tb_uint_t texture = shader->texture;
+ 		if (glIsTexture(texture))
+ 			glDeleteTextures(1, &texture);
 
 		// exit it
 		tb_free(shader);
@@ -90,9 +92,26 @@ tb_handle_t g2_shader_init_radial2(g2_circle_t const* cb, g2_circle_t const* ce,
 }
 tb_handle_t g2_shader_init_bitmap(tb_handle_t bitmap, tb_size_t mode)
 {
+	// data & size
+	tb_pointer_t 	data = g2_bitmap_data(bitmap);
+	tb_size_t 		size = g2_bitmap_size(bitmap);
+	tb_assert_and_check_return_val(data && size, TB_NULL);
+
+	// width & height 
+	tb_size_t 		width = g2_bitmap_width(bitmap);
+	tb_size_t 		height = g2_bitmap_height(bitmap);
+	tb_assert_and_check_return_val(width && height, TB_NULL);
+
+	// pixfmt
+	tb_size_t 		pixfmt = g2_bitmap_pixfmt(bitmap);
+	tb_assert_and_check_return_val(G2_PIXFMT(pixfmt) == G2_PIXFMT_ARGB8888, TB_NULL);
+
 	// init
 	g2_gl10_shader_t* shader = g2_gl10_shader_init(G2_GL10_SHADER_TYPE_BITMAP, mode);
 	tb_assert_and_check_return_val(shader, TB_NULL);
+
+	// make texture
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, G2_PIXFMT_BE(pixfmt)? GL_BGRA : GL_BGRA, GL_UNSIGNED_BYTE, data);
 
 	// ok
 	return shader;

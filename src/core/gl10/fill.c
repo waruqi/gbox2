@@ -31,6 +31,7 @@
  */
 #include "fill.h"
 #include "rect.h"
+#include "shader.h"
 #include "matrix.h"
 #include "../soft/split/split.h"
 
@@ -183,6 +184,10 @@ static __tb_inline__ tb_void_t g2_gl10_fill_context_exit(g2_gl10_fill_t* fill)
 
 	// disable blend
 	glDisable(GL_BLEND);
+
+	// disable texture 
+	glActiveTexture(GL_TEXTURE0);
+	glDisable(GL_TEXTURE_2D);
 }
 static __tb_inline__ tb_void_t g2_gl10_fill_style_draw(g2_gl10_fill_t* fill, g2_gl10_rect_t const* bounds)
 {
@@ -195,14 +200,68 @@ static __tb_inline__ tb_void_t g2_gl10_fill_style_draw(g2_gl10_fill_t* fill, g2_
 	// flag
 	tb_size_t 		flag = g2_style_flag(style);
 
-	// shader
-	tb_handle_t 	shader = g2_style_shader(style);
-
 	// rect or stencil?
 	tb_check_return(fill->flag & (G2_GL10_FILL_FLAG_RECT | G2_GL10_FILL_FLAG_STENCIL));
 
-	// fill color
-	if (!shader)
+	// fill shader
+	g2_gl10_shader_t const* shader = g2_style_shader(style);
+	if (shader)
+	{
+		if (shader->type == G2_GL10_SHADER_TYPE_BITMAP)
+		{
+			// init texture
+    		glEnable(GL_TEXTURE_2D);
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_2D, (tb_uint_t)shader->texture);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+ 			glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+    
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+			
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT); 
+			
+			// texcoords
+			tb_float_t texcoords[] = 
+			{
+				0.0f, 0.0f
+			, 	1.0f, 0.0f
+			, 	0.0f, 1.0f
+			, 	1.0f, 1.0f
+			};
+			glTexCoordPointer(2, GL_FLOAT, 0, texcoords);
+
+			static tb_byte_t* data = TB_NULL;
+			if (!data)
+			{
+				data = tb_malloc(300 * 300 * 4);
+				tb_memset(data, 0x55, 300 * 300 * 4);
+			}
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 300, 300, 0, GL_BGRA, GL_UNSIGNED_BYTE, data);
+
+			// init rect
+			tb_float_t vertices[8];
+			vertices[0] = bounds->x1;
+			vertices[1] = bounds->y1;
+			vertices[2] = bounds->x2;
+			vertices[3] = bounds->y1;
+			vertices[4] = bounds->x1;
+			vertices[5] = bounds->y2;
+			vertices[6] = bounds->x2;
+			vertices[7] = bounds->y2;
+
+			// draw rect
+			glVertexPointer(2, GL_FLOAT, 0, vertices);
+			glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
+			// exit texture
+ 			glActiveTexture(GL_TEXTURE0);
+			glDisable(GL_TEXTURE_2D);
+		}
+	}
+	else
 	{
 		// init rect
 		tb_float_t vertices[8];

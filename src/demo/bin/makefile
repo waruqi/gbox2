@@ -3,6 +3,7 @@ include $(PRO_DIR)/prefix.mak
 
 NAMES 					= \
 						shape/arc \
+						shape/test \
 						shape/line \
 						shape/rect \
 						shape/path \
