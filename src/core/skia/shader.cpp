@@ -72,8 +72,8 @@ static tb_handle_t g2_skia_shader_init_radial2(g2_circle_t const* cb, g2_circle_
 	// check
 	tb_assert_and_check_return_val(cb && ce && gradient && gradient->color && gradient->count, TB_NULL);
 
-	// the fill mode is not supported for skia
-	if (mode == G2_SHADER_MODE_FILL) mode = G2_SHADER_MODE_PAD;
+	// the default mode is not supported for skia
+	if (!mode) mode = G2_SHADER_MODE_PAD;
 	tb_assert_and_check_return_val(mode, TB_NULL);
 
 	// init shader

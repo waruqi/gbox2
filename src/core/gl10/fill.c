@@ -186,7 +186,7 @@ static __tb_inline__ tb_void_t g2_gl10_fill_context_exit(g2_gl10_fill_t* fill)
 	glDisable(GL_BLEND);
 
 	// disable texture 
-	glActiveTexture(GL_TEXTURE0);
+//	glActiveTexture(GL_TEXTURE0);
 	glDisable(GL_TEXTURE_2D);
 }
 static __tb_inline__ tb_void_t g2_gl10_fill_style_draw(g2_gl10_fill_t* fill, g2_gl10_rect_t const* bounds)
@@ -211,7 +211,7 @@ static __tb_inline__ tb_void_t g2_gl10_fill_style_draw(g2_gl10_fill_t* fill, g2_
 		{
 			// init texture
     		glEnable(GL_TEXTURE_2D);
-			glActiveTexture(GL_TEXTURE0);
+//			glActiveTexture(GL_TEXTURE0);
 			glBindTexture(GL_TEXTURE_2D, (tb_uint_t)shader->texture);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
@@ -222,7 +222,9 @@ static __tb_inline__ tb_void_t g2_gl10_fill_style_draw(g2_gl10_fill_t* fill, g2_
 			
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT); 
-			
+		
+			glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+
 			// texcoords
 			tb_float_t texcoords[] = 
 			{
@@ -257,7 +259,7 @@ static __tb_inline__ tb_void_t g2_gl10_fill_style_draw(g2_gl10_fill_t* fill, g2_
 			glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
 			// exit texture
- 			glActiveTexture(GL_TEXTURE0);
+ //			glActiveTexture(GL_TEXTURE0);
 			glDisable(GL_TEXTURE_2D);
 		}
 	}

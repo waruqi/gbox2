@@ -102,6 +102,7 @@ static tb_handle_t g2_png_decoder_done(g2_image_decoder_t* decoder)
 	// decoder
 	g2_png_decoder_t* pdecoder = (g2_png_decoder_t*)decoder;
 
+
 	// the pixfmt
 	tb_size_t pixfmt 	= decoder->pixfmt;
 	tb_assert_and_check_return_val(G2_PIXFMT_OK(pixfmt), TB_NULL);
@@ -114,7 +115,7 @@ static tb_handle_t g2_png_decoder_done(g2_image_decoder_t* decoder)
 	// the width & height
 	tb_size_t width 	= decoder->width;
 	tb_size_t height 	= decoder->height;
-	tb_assert_and_check_return_val(width & height, TB_NULL);
+	tb_assert_and_check_return_val(width && height, TB_NULL);
 
 	// init bitmap
 	tb_handle_t bitmap = g2_bitmap_init(pixfmt, width, height, 0);
@@ -310,6 +311,8 @@ g2_image_decoder_t* g2_png_decoder_init(tb_size_t pixfmt, tb_gstream_t* gst)
 	decoder->base.width 	= width;
 	decoder->base.height 	= height;
 	tb_trace_impl("size: %lux%lu", decoder->base.width, decoder->base.height);
+
+tb_trace_impl("%p", decoder);
 
 	// ok
 	return (g2_image_decoder_t*)decoder;

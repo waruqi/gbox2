@@ -2,7 +2,7 @@
 IS_CONFIG = yes
 
 # architecture
-PLAT = linux_x86
+PLAT = mingw_x86
 
 # root
 PRO_DIR = /home/ruki/projects/personal/gbox2
@@ -10,7 +10,7 @@ PRO_NAME = gbox2
 DEBUG = y
 SDK =
 NDK = /home/ruki/programs/android-ndk-r8
-BIN =
+BIN = /home/ruki/programs/windows/cross/bin
 HOST = mac
 CCACHE = ccache
 DISTCC =
