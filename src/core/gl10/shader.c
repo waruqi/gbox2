@@ -46,14 +46,14 @@ g2_gl10_shader_t* g2_gl10_shader_init(tb_size_t type, tb_size_t mode)
 	tb_assert_and_check_return_val(shader, TB_NULL);
 
 	// init shader
-	shader->type = type;
-	shader->mode = mode;
-	shader->refn = 1;
-	shader->texture = texture;
+	shader->type 		= type;
+	shader->mode 		= mode;
+	shader->refn 		= 1;
+	shader->texture 	= texture;
+	shader->flag 		= G2_GL10_SHADER_FLAG_NONE;
 
 	// init matrix
 	g2_matrix_clear(&shader->matrix);
-	g2_gl10_matrix_init(shader->matrix_gl);
 
 	// ok
 	return shader;
@@ -109,6 +109,10 @@ tb_handle_t g2_shader_init_bitmap(tb_handle_t bitmap, tb_size_t mode)
 	// init
 	g2_gl10_shader_t* shader = g2_gl10_shader_init(G2_GL10_SHADER_TYPE_BITMAP, mode);
 	tb_assert_and_check_return_val(shader, TB_NULL);
+
+	// alpha?
+	if (g2_bitmap_flag(bitmap) & G2_BITMAP_FLAG_ALPHA)
+		shader->flag |= G2_GL10_SHADER_FLAG_ALPHA;
 
 	// make texture
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, G2_PIXFMT_BE(pixfmt)? GL_BGRA : GL_BGRA, GL_UNSIGNED_BYTE, data);

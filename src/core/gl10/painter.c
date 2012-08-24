@@ -71,7 +71,6 @@ tb_handle_t g2_init(tb_handle_t context)
 
 	// init matrix
 	g2_matrix_clear(&gpainter->matrix);
-	g2_gl10_matrix_init(gpainter->matrix_gl);
 
 	// init stack
 	gpainter->mcstack = tb_stack_init(G2_GL10_MCSTACK_GROW, tb_item_func_ifm(sizeof(g2_gl10_mcitem_t), TB_NULL, TB_NULL));

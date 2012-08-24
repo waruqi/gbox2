@@ -54,7 +54,6 @@ typedef struct __g2_gl10_painter_t
 
 	// the matrix
 	g2_matrix_t 				matrix;
-	GLfloat 					matrix_gl[16];
 
 	// the style
 	tb_handle_t 				style_def;

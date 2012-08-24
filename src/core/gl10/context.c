@@ -79,6 +79,25 @@ tb_handle_t g2_context_init_gl10(tb_size_t pixfmt, tb_size_t width, tb_size_t he
 	glTranslatef(0.0f, (tb_float_t)height, 0.0f);
 	glScalef(1.0f, -1.0f, 1.0f);
 
+	// disable antialiasing
+	glDisable(GL_POINT_SMOOTH);
+	glDisable(GL_LINE_SMOOTH);
+#ifndef TB_CONFIG_OS_ANDROID
+	glDisable(GL_POLYGON_SMOOTH);
+#endif
+	glDisable(GL_MULTISAMPLE);
+
+	// disable blend
+	glDisable(GL_BLEND);
+
+	// disable texture
+	glDisable(GL_TEXTURE_2D);
+
+	// disable vertices
+	glDisableClientState(GL_VERTEX_ARRAY);
+
+	// disable texcoords
+	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 	
 	// ok
 	return gcontext;

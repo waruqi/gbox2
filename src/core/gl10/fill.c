@@ -61,6 +61,12 @@ typedef struct __g2_gl10_fill_t
 	// the flag
 	tb_size_t 			flag;
 
+	// the texcoords
+	tb_float_t 			texcoords[8];
+
+	// the matrix
+	GLfloat 			matrix[16];
+
 }g2_gl10_fill_t;
 
 /* ///////////////////////////////////////////////////////////////////////
@@ -68,10 +74,10 @@ typedef struct __g2_gl10_fill_t
  */
 static __tb_inline__ tb_void_t g2_gl10_fill_matrix_enter(g2_gl10_fill_t* fill)
 {
-	g2_gl10_matrix_set(fill->painter->matrix_gl, &fill->painter->matrix);
+	g2_gl10_matrix_set(fill->matrix, &fill->painter->matrix);
 	glMatrixMode(GL_MODELVIEW);
 	glPushMatrix();
-	glMultMatrixf(fill->painter->matrix_gl);
+	glMultMatrixf(fill->matrix);
 }
 static __tb_inline__ tb_void_t g2_gl10_fill_matrix_leave(g2_gl10_fill_t* fill)
 {
@@ -79,6 +85,8 @@ static __tb_inline__ tb_void_t g2_gl10_fill_matrix_leave(g2_gl10_fill_t* fill)
 }
 static __tb_inline__ tb_void_t g2_gl10_fill_stencil_init(g2_gl10_fill_t* fill)
 {
+    glDisable(GL_BLEND);
+    glDisable(GL_TEXTURE_2D);
 	glEnable(GL_STENCIL_TEST);
 }
 static __tb_inline__ tb_void_t g2_gl10_fill_stencil_exit(g2_gl10_fill_t* fill)
@@ -115,41 +123,12 @@ static __tb_inline__ tb_bool_t g2_gl10_fill_context_init(g2_gl10_fill_t* fill)
 	// has fill?
 	tb_check_return_val(mode & G2_STYLE_MODE_FILL, TB_FALSE);
 
-	// enable antialiasing?
-	if (flag & G2_STYLE_FLAG_ANTI_ALIAS)
-	{
-		// init smooth
-		tb_size_t smooth = g2_quality() == G2_QUALITY_TOP? GL_NICEST : GL_FASTEST;
-
-		// smooth point
-		glDisable(GL_POINT_SMOOTH);
-		glHint(GL_POINT_SMOOTH, smooth);
-
-		// smooth line
-		glDisable(GL_LINE_SMOOTH);
-		glHint(GL_LINE_SMOOTH, smooth);
-
-		// smooth polygon
-#ifndef TB_CONFIG_OS_ANDROID
-		glDisable(GL_POLYGON_SMOOTH);
-		glHint(GL_POLYGON_SMOOTH, smooth);
-#endif
-
-		// multisample
-		glEnable(GL_MULTISAMPLE);
-	}
-	else
-	{
-		glDisable(GL_POINT_SMOOTH);
-		glDisable(GL_LINE_SMOOTH);
-#ifndef TB_CONFIG_OS_ANDROID
-		glDisable(GL_POLYGON_SMOOTH);
-#endif
-		glDisable(GL_MULTISAMPLE);
-	}
-
 	// enable vertices
 	glEnableClientState(GL_VERTEX_ARRAY);
+
+	// enable antialiasing?
+	if (flag & G2_STYLE_FLAG_ANTI_ALIAS) glEnable(GL_MULTISAMPLE);
+	else glDisable(GL_MULTISAMPLE);
 
 	// init color
 	if (!shader)
@@ -171,23 +150,110 @@ static __tb_inline__ tb_bool_t g2_gl10_fill_context_init(g2_gl10_fill_t* fill)
 }
 static __tb_inline__ tb_void_t g2_gl10_fill_context_exit(g2_gl10_fill_t* fill)
 {
-	// disable vertices
-	glDisableClientState(GL_VERTEX_ARRAY);
-	
 	// disable antialiasing
-	glDisable(GL_POINT_SMOOTH);
-	glDisable(GL_LINE_SMOOTH);
-#ifndef TB_CONFIG_OS_ANDROID
-	glDisable(GL_POLYGON_SMOOTH);
-#endif
 	glDisable(GL_MULTISAMPLE);
 
 	// disable blend
 	glDisable(GL_BLEND);
 
-	// disable texture 
-//	glActiveTexture(GL_TEXTURE0);
+	// disable texture
 	glDisable(GL_TEXTURE_2D);
+
+	// disable vertices
+	glDisableClientState(GL_VERTEX_ARRAY);
+
+	// disable texcoords
+	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+}
+static __tb_inline__ tb_void_t g2_gl10_fill_style_draw_color(g2_gl10_fill_t* fill, g2_color_t color)
+{
+	// init color
+	glColor4f(color.r / 256., color.g / 256., color.b / 256., color.a / 256.);
+
+	// enable blend?
+	if (color.a != 0xff) 
+	{
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	}
+	else glDisable(GL_BLEND);
+
+	// draw
+	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+}
+static __tb_inline__ tb_void_t g2_gl10_fill_style_draw_shader(g2_gl10_fill_t* fill, g2_gl10_shader_t const* shader)
+{
+	if (shader->type == G2_GL10_SHADER_TYPE_BITMAP)
+	{
+		// init texture
+		glEnable(GL_TEXTURE_2D);
+		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+		glBindTexture(GL_TEXTURE_2D, (tb_uint_t)shader->texture);
+
+		// enter matrix
+		g2_gl10_matrix_set(fill->matrix, &shader->matrix);
+		glMatrixMode(GL_TEXTURE);
+		glPushMatrix();
+//		glMultMatrixf(fill->matrix);
+
+		// blend?
+		if (shader->flag & G2_GL10_SHADER_FLAG_ALPHA)
+		{
+			// FIXME
+			glEnable(GL_BLEND);
+			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+			glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_BLEND);
+		}
+		else
+		{
+			glDisable(GL_BLEND);
+			glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
+		}
+
+		// mode
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+		
+//		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+//		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	
+//		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+//		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+	
+//		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+//		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	
+//		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
+//		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
+
+		// filter?
+		if (g2_style_flag(fill->style) & G2_STYLE_FLAG_BITMAP_FILTER)
+		{
+			// init filter
+			tb_size_t filter = g2_quality() > G2_QUALITY_LOW? GL_LINEAR : GL_NEAREST;
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filter);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filter);
+		}
+		else
+		{
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		}
+
+		// texcoords
+		glTexCoordPointer(2, GL_FLOAT, 0, fill->texcoords);
+
+		// draw
+		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
+		// leave matrix
+		glPopMatrix();
+		glMatrixMode(GL_MODELVIEW);
+
+		// exit texture
+		glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+		glDisable(GL_TEXTURE_2D);
+	}
 }
 static __tb_inline__ tb_void_t g2_gl10_fill_style_draw(g2_gl10_fill_t* fill, g2_gl10_rect_t const* bounds)
 {
@@ -203,83 +269,21 @@ static __tb_inline__ tb_void_t g2_gl10_fill_style_draw(g2_gl10_fill_t* fill, g2_
 	// rect or stencil?
 	tb_check_return(fill->flag & (G2_GL10_FILL_FLAG_RECT | G2_GL10_FILL_FLAG_STENCIL));
 
-	// fill shader
-	g2_gl10_shader_t const* shader = g2_style_shader(style);
-	if (shader)
-	{
-		if (shader->type == G2_GL10_SHADER_TYPE_BITMAP)
-		{
-			// init texture
-    		glEnable(GL_TEXTURE_2D);
-//			glActiveTexture(GL_TEXTURE0);
-			glBindTexture(GL_TEXTURE_2D, (tb_uint_t)shader->texture);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
- 			glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-    
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-			
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT); 
-		
-			glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+	// init vertices
+	tb_float_t vertices[8];
+	vertices[0] = bounds->x1;
+	vertices[1] = bounds->y1;
+	vertices[2] = bounds->x2;
+	vertices[3] = bounds->y1;
+	vertices[4] = bounds->x1;
+	vertices[5] = bounds->y2;
+	vertices[6] = bounds->x2;
+	vertices[7] = bounds->y2;
+	glVertexPointer(2, GL_FLOAT, 0, vertices);
 
-			// texcoords
-			tb_float_t texcoords[] = 
-			{
-				0.0f, 0.0f
-			, 	1.0f, 0.0f
-			, 	0.0f, 1.0f
-			, 	1.0f, 1.0f
-			};
-			glTexCoordPointer(2, GL_FLOAT, 0, texcoords);
-
-			static tb_byte_t* data = TB_NULL;
-			if (!data)
-			{
-				data = tb_malloc(300 * 300 * 4);
-				tb_memset(data, 0x55, 300 * 300 * 4);
-			}
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 300, 300, 0, GL_BGRA, GL_UNSIGNED_BYTE, data);
-
-			// init rect
-			tb_float_t vertices[8];
-			vertices[0] = bounds->x1;
-			vertices[1] = bounds->y1;
-			vertices[2] = bounds->x2;
-			vertices[3] = bounds->y1;
-			vertices[4] = bounds->x1;
-			vertices[5] = bounds->y2;
-			vertices[6] = bounds->x2;
-			vertices[7] = bounds->y2;
-
-			// draw rect
-			glVertexPointer(2, GL_FLOAT, 0, vertices);
-			glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-
-			// exit texture
- //			glActiveTexture(GL_TEXTURE0);
-			glDisable(GL_TEXTURE_2D);
-		}
-	}
-	else
-	{
-		// init rect
-		tb_float_t vertices[8];
-		vertices[0] = bounds->x1;
-		vertices[1] = bounds->y1;
-		vertices[2] = bounds->x2;
-		vertices[3] = bounds->y1;
-		vertices[4] = bounds->x1;
-		vertices[5] = bounds->y2;
-		vertices[6] = bounds->x2;
-		vertices[7] = bounds->y2;
-
-		// draw rect
-		glVertexPointer(2, GL_FLOAT, 0, vertices);
-		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-	}
+	// draw
+	if (g2_style_shader(style)) g2_gl10_fill_style_draw_shader(fill, g2_style_shader(style));
+	else g2_gl10_fill_style_draw_color(fill, g2_style_color(style));
 }
 static __tb_inline__ tb_bool_t g2_gl10_fill_init(g2_gl10_fill_t* fill, g2_gl10_painter_t* painter, tb_size_t flag)
 {
@@ -287,8 +291,21 @@ static __tb_inline__ tb_bool_t g2_gl10_fill_init(g2_gl10_fill_t* fill, g2_gl10_p
 	fill->painter 	= painter;
 	fill->style 	= painter->style_usr;
 	fill->flag 		= flag;
-	fill->flag 		= !(flag & G2_GL10_FILL_FLAG_CONVEX) || g2_style_shader(fill->style)? (flag | G2_GL10_FILL_FLAG_STENCIL) : flag;
+	fill->flag 		= (!(flag & G2_GL10_FILL_FLAG_CONVEX) || (g2_style_shader(fill->style) && !(flag & G2_GL10_FILL_FLAG_RECT)))? (flag | G2_GL10_FILL_FLAG_STENCIL) : flag;
 	tb_assert_and_check_return_val(painter && painter->style_usr, TB_FALSE);
+
+	// init texcoords
+	fill->texcoords[0] = 0.0f;
+	fill->texcoords[1] = 0.0f;
+	fill->texcoords[2] = 1.0f;
+	fill->texcoords[3] = 0.0f;
+	fill->texcoords[4] = 0.0f;
+	fill->texcoords[5] = 1.0f;
+	fill->texcoords[6] = 1.0f;
+	fill->texcoords[7] = 1.0f;
+
+	// init matrix
+	g2_gl10_matrix_init(fill->matrix);
 
 	// init context
 	if (!g2_gl10_fill_context_init(fill)) return TB_FALSE;

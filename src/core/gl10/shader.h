@@ -43,11 +43,22 @@ typedef enum __g2_gl10_shader_type_t
 
 }g2_gl10_shader_type_t;
 
+// the gl10 shader flag constants
+typedef enum __g2_gl10_shader_flag_t
+{
+	G2_GL10_SHADER_FLAG_NONE 				= 0
+,	G2_GL10_SHADER_FLAG_ALPHA 				= 1
+
+}g2_gl10_shader_flag_t;
+
 // the gl10 shader type
 typedef struct __g2_gl10_shader_t
 {
 	// the type
 	tb_size_t 				type;
+
+	// the flag
+	tb_size_t 				flag;
 
 	// the mode
 	tb_size_t 				mode;
@@ -60,7 +71,6 @@ typedef struct __g2_gl10_shader_t
 
 	// the matrix
 	g2_matrix_t 			matrix;
-	GLfloat 				matrix_gl[16];
 
 }g2_gl10_shader_t;
 
