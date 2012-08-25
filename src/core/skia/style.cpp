@@ -48,32 +48,20 @@ static tb_void_t g2_skia_style_exit(tb_handle_t style)
 {
 	SkPaint* sstyle = static_cast<SkPaint*>(style);
 	tb_assert_and_check_return(sstyle);
- 
-	// shader
-	SkShader* shader = sstyle->getShader();
 
 	// free it
  	delete sstyle;
-
-	// ref--
-	if (shader) SkSafeUnref(shader);
 }
 static tb_void_t g2_skia_style_clear(tb_handle_t style)
 {
 	SkPaint* sstyle = static_cast<SkPaint*>(style);
 	tb_assert_and_check_return(sstyle);
 
-	// shader
-	SkShader* shader = sstyle->getShader();
-
 	// reset
 	sstyle->reset();
 	tb_size_t flag = SkPaint::kAntiAlias_Flag | SkPaint::kFilterBitmap_Flag;
 	if (g2_quality() > G2_QUALITY_LOW) sstyle->setFlags(sstyle->getFlags() | flag);
 	else sstyle->setFlags(sstyle->getFlags() & ~flag);
-
-	// ref--
-	if (shader) SkSafeUnref(shader);
 }
 static tb_size_t g2_skia_style_mode(tb_handle_t style)
 {
@@ -186,17 +174,8 @@ static tb_void_t g2_skia_style_shader_set(tb_handle_t style, tb_handle_t shader)
 	SkPaint* sstyle = static_cast<SkPaint*>(style);
 	tb_assert_and_check_return(sstyle);
 
-	// get oshader
-	SkShader* oshader = sstyle->getShader();
-
 	// set shader
 	sstyle->setShader(static_cast<SkShader*>(shader));
-
-	// ref++
-	SkSafeRef(static_cast<SkShader*>(shader));
-
-	// oref--
-	if (oshader) SkSafeUnref(oshader);
 }
 
 /* ///////////////////////////////////////////////////////////////////////

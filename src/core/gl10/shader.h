@@ -66,20 +66,15 @@ typedef struct __g2_gl10_shader_t
 	// the refn
 	tb_size_t 				refn;
 
+	// the context
+	tb_handle_t 			context;
+
 	// the texture
-	tb_size_t 				texture;
+	tb_uint_t* 				texture;
 
 	// the matrix
 	g2_matrix_t 			matrix;
 
 }g2_gl10_shader_t;
-
-/* ///////////////////////////////////////////////////////////////////////
- * interfaces
- */
-
-// init & exit
-g2_gl10_shader_t* 	g2_gl10_shader_init(tb_size_t type, tb_size_t mode);
-tb_void_t 			g2_gl10_shader_exit(g2_gl10_shader_t* shader);
 
 #endif

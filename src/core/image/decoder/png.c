@@ -312,8 +312,6 @@ g2_image_decoder_t* g2_png_decoder_init(tb_size_t pixfmt, tb_gstream_t* gst)
 	decoder->base.height 	= height;
 	tb_trace_impl("size: %lux%lu", decoder->base.width, decoder->base.height);
 
-tb_trace_impl("%p", decoder);
-
 	// ok
 	return (g2_image_decoder_t*)decoder;
 

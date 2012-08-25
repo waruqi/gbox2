@@ -28,22 +28,22 @@
 /* ///////////////////////////////////////////////////////////////////////
  * implementation
  */
-tb_handle_t g2_shader_init_linear(g2_point_t const* pb, g2_point_t const* pe, g2_gradient_t const* gradient, tb_size_t mode)
+tb_handle_t g2_shader_init_linear(tb_handle_t context, g2_point_t const* pb, g2_point_t const* pe, g2_gradient_t const* gradient, tb_size_t mode)
 {
 	tb_trace_noimpl();
 	return TB_NULL;
 }
-tb_handle_t g2_shader_init_radial(g2_circle_t const* cp, g2_gradient_t const* gradient, tb_size_t mode)
+tb_handle_t g2_shader_init_radial(tb_handle_t context, g2_circle_t const* cp, g2_gradient_t const* gradient, tb_size_t mode)
 {
 	tb_trace_noimpl();
 	return TB_NULL;
 }
-tb_handle_t g2_shader_init_radial2(g2_circle_t const* cb, g2_circle_t const* ce, g2_gradient_t const* gradient, tb_size_t mode)
+tb_handle_t g2_shader_init_radial2(tb_handle_t context, g2_circle_t const* cb, g2_circle_t const* ce, g2_gradient_t const* gradient, tb_size_t mode)
 {
 	tb_trace_noimpl();
 	return TB_NULL;
 }
-tb_handle_t g2_shader_init_bitmap(tb_handle_t bitmap, tb_size_t mode)
+tb_handle_t g2_shader_init_bitmap(tb_handle_t context, tb_handle_t bitmap, tb_size_t mode)
 {
 	tb_trace_noimpl();
 	return TB_NULL;
@@ -58,6 +58,19 @@ g2_matrix_t const* g2_shader_matrix(tb_handle_t shader)
 	return TB_NULL;
 }
 tb_void_t g2_shader_matrix_set(tb_handle_t shader, g2_matrix_t const* matrix)
+{
+	tb_trace_noimpl();
+}
+tb_size_t g2_shader_ref(tb_handle_t shader)
+{
+	tb_trace_noimpl();
+	return 1;
+}
+tb_void_t g2_shader_inc(tb_handle_t shader)
+{
+	tb_trace_noimpl();
+}
+tb_void_t g2_shader_dec(tb_handle_t shader)
 {
 	tb_trace_noimpl();
 }

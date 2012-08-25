@@ -27,7 +27,23 @@
  * includes
  */
 #include "prefix.h"
+#include "shader.h"
 #include "../context.h"
+
+/* ///////////////////////////////////////////////////////////////////////
+ * macros
+ */
+
+// the texture maxn
+#ifdef TB_CONFIG_MEMORY_MODE_SMALL
+# 	define G2_GL10_TEXTURE_MAXN 		(256)
+#else
+# 	define G2_GL10_TEXTURE_MAXN 		(1024)
+#endif
+
+// the used
+#define G2_GL10_TEXTURE_USED 			(1)
+#define G2_GL10_SHADERS_USED 			(2)
 
 /* ///////////////////////////////////////////////////////////////////////
  * types
@@ -39,10 +55,30 @@ typedef struct __g2_gl10_context_t
 	// the surface
 	tb_handle_t 		surface;
 
+	// the used
+	tb_byte_t 			used[G2_GL10_TEXTURE_MAXN];
+
+	// the texture
+	tb_uint_t 			texture[G2_GL10_TEXTURE_MAXN];
+	tb_size_t 			texture_pred;
+
 	// the shaders
-	tb_vector_t* 		shaders;
+	g2_gl10_shader_t	shaders[G2_GL10_TEXTURE_MAXN];
+	tb_size_t 			shaders_pred;
 
 }g2_gl10_context_t;
+
+/* ///////////////////////////////////////////////////////////////////////
+ * interfaces
+ */
+
+// the context texture
+tb_uint_t* 			g2_gl10_context_texture_alc(g2_gl10_context_t* context);
+tb_void_t 			g2_gl10_context_texture_del(g2_gl10_context_t* context, tb_uint_t const* texture);
+
+// the context shader
+g2_gl10_shader_t* 	g2_gl10_context_shader_alc(g2_gl10_context_t* context);
+tb_void_t 			g2_gl10_context_shader_del(g2_gl10_context_t* context, g2_gl10_shader_t const* shader);
 
 
 #endif

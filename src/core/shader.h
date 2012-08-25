@@ -53,32 +53,37 @@ typedef enum __g2_shader_mode_t
  */
 	
 // init linear gradient shader
-tb_handle_t 		g2_shader_init_linear(g2_point_t const* pb, g2_point_t const* pe, g2_gradient_t const* gradient, tb_size_t mode);
-tb_handle_t 		g2_shader_init2_linear(g2_float_t xb, g2_float_t yb, g2_float_t xe, g2_float_t ye, g2_gradient_t const* gradient, tb_size_t mode);
+tb_handle_t 		g2_shader_init_linear(tb_handle_t context, g2_point_t const* pb, g2_point_t const* pe, g2_gradient_t const* gradient, tb_size_t mode);
+tb_handle_t 		g2_shader_init2_linear(tb_handle_t context, g2_float_t xb, g2_float_t yb, g2_float_t xe, g2_float_t ye, g2_gradient_t const* gradient, tb_size_t mode);
 
-tb_handle_t 		g2_shader_initi_linear(g2_ipoint_t const* pb, g2_ipoint_t const* pe, g2_gradient_t const* gradient, tb_size_t mode);
-tb_handle_t 		g2_shader_init2i_linear(tb_long_t xb, tb_long_t yb, tb_long_t xe, tb_long_t ye, g2_gradient_t const* gradient, tb_size_t mode);
+tb_handle_t 		g2_shader_initi_linear(tb_handle_t context, g2_ipoint_t const* pb, g2_ipoint_t const* pe, g2_gradient_t const* gradient, tb_size_t mode);
+tb_handle_t 		g2_shader_init2i_linear(tb_handle_t context, tb_long_t xb, tb_long_t yb, tb_long_t xe, tb_long_t ye, g2_gradient_t const* gradient, tb_size_t mode);
 
 // init radial gradient shader
-tb_handle_t 		g2_shader_init_radial(g2_circle_t const* cp, g2_gradient_t const* gradient, tb_size_t mode);
-tb_handle_t 		g2_shader_init2_radial(g2_float_t x0, g2_float_t y0, g2_float_t r, g2_gradient_t const* gradient, tb_size_t mode);
+tb_handle_t 		g2_shader_init_radial(tb_handle_t context, g2_circle_t const* cp, g2_gradient_t const* gradient, tb_size_t mode);
+tb_handle_t 		g2_shader_init2_radial(tb_handle_t context, g2_float_t x0, g2_float_t y0, g2_float_t r, g2_gradient_t const* gradient, tb_size_t mode);
 
-tb_handle_t 		g2_shader_initi_radial(g2_icircle_t const* cp, g2_gradient_t const* gradient, tb_size_t mode);
-tb_handle_t 		g2_shader_init2i_radial(tb_long_t x0, tb_long_t y0, tb_size_t r, g2_gradient_t const* gradient, tb_size_t mode);
+tb_handle_t 		g2_shader_initi_radial(tb_handle_t context, g2_icircle_t const* cp, g2_gradient_t const* gradient, tb_size_t mode);
+tb_handle_t 		g2_shader_init2i_radial(tb_handle_t context, tb_long_t x0, tb_long_t y0, tb_size_t r, g2_gradient_t const* gradient, tb_size_t mode);
 
 // init radial2 gradient shader
-tb_handle_t 		g2_shader_init_radial2(g2_circle_t const* cb, g2_circle_t const* ce, g2_gradient_t const* gradient, tb_size_t mode);
-tb_handle_t 		g2_shader_init2_radial2(g2_float_t xb, g2_float_t yb, g2_float_t rb, g2_float_t xe, g2_float_t ye, g2_float_t re, g2_gradient_t const* gradient, tb_size_t mode);
+tb_handle_t 		g2_shader_init_radial2(tb_handle_t context, g2_circle_t const* cb, g2_circle_t const* ce, g2_gradient_t const* gradient, tb_size_t mode);
+tb_handle_t 		g2_shader_init2_radial2(tb_handle_t context, g2_float_t xb, g2_float_t yb, g2_float_t rb, g2_float_t xe, g2_float_t ye, g2_float_t re, g2_gradient_t const* gradient, tb_size_t mode);
 
-tb_handle_t 		g2_shader_initi_radial2(g2_icircle_t const* cb, g2_icircle_t const* ce, g2_gradient_t const* gradient, tb_size_t mode);
-tb_handle_t 		g2_shader_init2i_radial2(tb_long_t xb, tb_long_t yb, tb_size_t rb, tb_long_t xe, tb_long_t ye, tb_size_t re, g2_gradient_t const* gradient, tb_size_t mode);
+tb_handle_t 		g2_shader_initi_radial2(tb_handle_t context, g2_icircle_t const* cb, g2_icircle_t const* ce, g2_gradient_t const* gradient, tb_size_t mode);
+tb_handle_t 		g2_shader_init2i_radial2(tb_handle_t context, tb_long_t xb, tb_long_t yb, tb_size_t rb, tb_long_t xe, tb_long_t ye, tb_size_t re, g2_gradient_t const* gradient, tb_size_t mode);
 
 // init bitmap shader
-tb_handle_t 		g2_shader_init_bitmap(tb_handle_t bitmap, tb_size_t mode);
+tb_handle_t 		g2_shader_init_bitmap(tb_handle_t context, tb_handle_t bitmap, tb_size_t mode);
 
 // matrix
 g2_matrix_t const* 	g2_shader_matrix(tb_handle_t shader);
 tb_void_t 			g2_shader_matrix_set(tb_handle_t shader, g2_matrix_t const* matrix);
+
+// reference
+tb_size_t 			g2_shader_ref(tb_handle_t shader);
+tb_void_t 			g2_shader_inc(tb_handle_t shader);
+tb_void_t 			g2_shader_dec(tb_handle_t shader);
 
 // exit
 tb_void_t 			g2_shader_exit(tb_handle_t shader);

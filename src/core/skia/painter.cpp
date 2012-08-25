@@ -68,7 +68,7 @@ static tb_void_t g2_skia_exit(tb_handle_t painter)
 	tb_assert_and_check_return(spainter);
 
 	// free style
-	if (spainter->style_def) delete spainter->style_def;
+	if (spainter->style_def) g2_style_exit(spainter->style_def);
 
 	// free canvas
 	if (spainter->canvas) delete spainter->canvas;
@@ -98,7 +98,7 @@ static tb_handle_t g2_skia_init(tb_handle_t context)
 	spainter->canvas->resetMatrix();
 
 	// init style
-	spainter->style_def = new SkPaint();
+	spainter->style_def = static_cast<SkPaint*>(g2_style_init());
 	spainter->style_usr = spainter->style_def;
 	tb_assert_and_check_goto(spainter->style_def, fail);
 

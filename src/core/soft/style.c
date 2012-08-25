@@ -172,5 +172,12 @@ tb_void_t g2_style_shader_set(tb_handle_t style, tb_handle_t shader)
 	g2_style_t* gstyle = (g2_style_t*)style;
 	tb_assert_and_check_return(gstyle);
 
+	// ref--
+	if (gstyle->shader) g2_shader_dec(gstyle->shader);
+
+	// assign
 	gstyle->shader = shader;
+
+	// ref++
+	if (shader) g2_shader_inc(shader);
 }

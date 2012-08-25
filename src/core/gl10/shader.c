@@ -25,24 +25,24 @@
  */
 #include "shader.h"
 #include "matrix.h"
+#include "context.h"
 
 /* ///////////////////////////////////////////////////////////////////////
  * gl10 interfaces
  */
 
-g2_gl10_shader_t* g2_gl10_shader_init(tb_size_t type, tb_size_t mode)
+static g2_gl10_shader_t* g2_gl10_shader_init(tb_handle_t context, tb_size_t type, tb_size_t mode)
 {
 	// check
-	tb_assert_and_check_return_val(type, TB_NULL);
+	g2_gl10_context_t* gcontext = (g2_gl10_context_t*)context;
+	tb_assert_and_check_return_val(gcontext && type, TB_NULL);
 
 	// make texture
-	tb_uint_t texture = 0;
- 	glGenTextures(1, &texture);
-	glBindTexture(GL_TEXTURE_2D, texture);
-	tb_assert_and_check_return_val(glIsTexture(texture), TB_NULL);
+	tb_uint_t* texture = g2_gl10_context_texture_alc(context);
+	tb_assert_and_check_return_val(texture, TB_NULL);
 
 	// make shader
-	g2_gl10_shader_t* shader = tb_malloc0(sizeof(g2_gl10_shader_t));
+	g2_gl10_shader_t* shader = g2_gl10_context_shader_alc(context);
 	tb_assert_and_check_return_val(shader, TB_NULL);
 
 	// init shader
@@ -50,6 +50,7 @@ g2_gl10_shader_t* g2_gl10_shader_init(tb_size_t type, tb_size_t mode)
 	shader->mode 		= mode;
 	shader->refn 		= 1;
 	shader->texture 	= texture;
+	shader->context 	= context;
 	shader->flag 		= G2_GL10_SHADER_FLAG_NONE;
 
 	// init matrix
@@ -58,39 +59,38 @@ g2_gl10_shader_t* g2_gl10_shader_init(tb_size_t type, tb_size_t mode)
 	// ok
 	return shader;
 }
-tb_void_t g2_gl10_shader_exit(g2_gl10_shader_t* shader)
+static tb_void_t g2_gl10_shader_exit(g2_gl10_shader_t* shader)
 {
-	if (shader)
+	if (shader && shader->context)
 	{
 		// exit texture
-		tb_uint_t texture = shader->texture;
- 		if (glIsTexture(texture))
- 			glDeleteTextures(1, &texture);
+		if (shader->texture) 
+			g2_gl10_context_texture_del(shader->context, shader->texture);
 
-		// exit it
-		tb_free(shader);
+		// exit shader
+		g2_gl10_context_shader_del(shader->context, shader);
 	}
 }
 
 /* ///////////////////////////////////////////////////////////////////////
  * interfaces
  */
-tb_handle_t g2_shader_init_linear(g2_point_t const* pb, g2_point_t const* pe, g2_gradient_t const* gradient, tb_size_t mode)
+tb_handle_t g2_shader_init_linear(tb_handle_t context, g2_point_t const* pb, g2_point_t const* pe, g2_gradient_t const* gradient, tb_size_t mode)
 {
 	tb_trace_noimpl();
 	return TB_NULL;
 }
-tb_handle_t g2_shader_init_radial(g2_circle_t const* cp, g2_gradient_t const* gradient, tb_size_t mode)
+tb_handle_t g2_shader_init_radial(tb_handle_t context, g2_circle_t const* cp, g2_gradient_t const* gradient, tb_size_t mode)
 {
 	tb_trace_noimpl();
 	return TB_NULL;
 }
-tb_handle_t g2_shader_init_radial2(g2_circle_t const* cb, g2_circle_t const* ce, g2_gradient_t const* gradient, tb_size_t mode)
+tb_handle_t g2_shader_init_radial2(tb_handle_t context, g2_circle_t const* cb, g2_circle_t const* ce, g2_gradient_t const* gradient, tb_size_t mode)
 {
 	tb_trace_noimpl();
 	return TB_NULL;
 }
-tb_handle_t g2_shader_init_bitmap(tb_handle_t bitmap, tb_size_t mode)
+tb_handle_t g2_shader_init_bitmap(tb_handle_t context, tb_handle_t bitmap, tb_size_t mode)
 {
 	// data & size
 	tb_pointer_t 	data = g2_bitmap_data(bitmap);
@@ -107,14 +107,15 @@ tb_handle_t g2_shader_init_bitmap(tb_handle_t bitmap, tb_size_t mode)
 	tb_assert_and_check_return_val(G2_PIXFMT(pixfmt) == G2_PIXFMT_ARGB8888, TB_NULL);
 
 	// init
-	g2_gl10_shader_t* shader = g2_gl10_shader_init(G2_GL10_SHADER_TYPE_BITMAP, mode);
-	tb_assert_and_check_return_val(shader, TB_NULL);
+	g2_gl10_shader_t* shader = g2_gl10_shader_init(context, G2_GL10_SHADER_TYPE_BITMAP, mode);
+	tb_assert_and_check_return_val(shader && shader->texture, TB_NULL);
 
 	// alpha?
 	if (g2_bitmap_flag(bitmap) & G2_BITMAP_FLAG_ALPHA)
 		shader->flag |= G2_GL10_SHADER_FLAG_ALPHA;
 
 	// make texture
+	glBindTexture(GL_TEXTURE_2D, *shader->texture);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, G2_PIXFMT_BE(pixfmt)? GL_BGRA : GL_BGRA, GL_UNSIGNED_BYTE, data);
 
 	// ok
@@ -126,6 +127,8 @@ tb_void_t g2_shader_exit(tb_handle_t shader)
 	g2_gl10_shader_t* gshader = (g2_gl10_shader_t*)shader;
 	tb_assert_and_check_return(gshader);
 
+	// refn--
+	g2_shader_dec(shader);
 }
 g2_matrix_t const* g2_shader_matrix(tb_handle_t shader)
 {
@@ -143,4 +146,32 @@ tb_void_t g2_shader_matrix_set(tb_handle_t shader, g2_matrix_t const* matrix)
 
 	if (matrix) gshader->matrix = *matrix;
 	else g2_matrix_clear(&gshader->matrix);
+}
+tb_size_t g2_shader_ref(tb_handle_t shader)
+{
+	// shader
+	g2_gl10_shader_t* gshader = (g2_gl10_shader_t*)shader;
+	tb_assert_and_check_return_val(gshader, 0);
+
+	// refn
+	return gshader->refn;
+}
+tb_void_t g2_shader_inc(tb_handle_t shader)
+{
+	// shader
+	g2_gl10_shader_t* gshader = (g2_gl10_shader_t*)shader;
+	tb_assert_and_check_return(gshader && gshader->refn);
+
+	// refn++
+	gshader->refn++;
+}
+tb_void_t g2_shader_dec(tb_handle_t shader)
+{
+	// shader
+	g2_gl10_shader_t* gshader = (g2_gl10_shader_t*)shader;
+	tb_assert_and_check_return(gshader && gshader->refn);
+
+	// refn--
+	if (gshader->refn > 1) gshader->refn--;
+	else g2_gl10_shader_exit(gshader);
 }

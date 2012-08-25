@@ -39,7 +39,7 @@
 /* ///////////////////////////////////////////////////////////////////////
  * implementation
  */
-static tb_handle_t g2_skia_shader_init_linear(g2_point_t const* pb, g2_point_t const* pe, g2_gradient_t const* gradient, tb_size_t mode)
+static tb_handle_t g2_skia_shader_init_linear(tb_handle_t context, g2_point_t const* pb, g2_point_t const* pe, g2_gradient_t const* gradient, tb_size_t mode)
 {
 	// check
 	tb_assert_and_check_return_val(pb && pe && gradient && gradient->color && gradient->count, TB_NULL);
@@ -54,7 +54,7 @@ static tb_handle_t g2_skia_shader_init_linear(g2_point_t const* pb, g2_point_t c
 	pts[1] = SkPoint::Make(pe->x, pe->y);
 	return SkGradientShader::CreateLinear(pts, reinterpret_cast<SkColor*>(gradient->color), gradient->radio, gradient->count, static_cast<SkShader::TileMode>(mode - 1));
 }
-static tb_handle_t g2_skia_shader_init_radial(g2_circle_t const* cp, g2_gradient_t const* gradient, tb_size_t mode)
+static tb_handle_t g2_skia_shader_init_radial(tb_handle_t context, g2_circle_t const* cp, g2_gradient_t const* gradient, tb_size_t mode)
 {
 	// check
 	tb_assert_and_check_return_val(cp && gradient && gradient->color && gradient->count, TB_NULL);
@@ -67,7 +67,7 @@ static tb_handle_t g2_skia_shader_init_radial(g2_circle_t const* cp, g2_gradient
 	SkPoint pt = SkPoint::Make(cp->c.x, cp->c.y);
 	return SkGradientShader::CreateRadial(pt, cp->r, reinterpret_cast<SkColor*>(gradient->color), gradient->radio, gradient->count, static_cast<SkShader::TileMode>(mode - 1));
 }
-static tb_handle_t g2_skia_shader_init_radial2(g2_circle_t const* cb, g2_circle_t const* ce, g2_gradient_t const* gradient, tb_size_t mode)
+static tb_handle_t g2_skia_shader_init_radial2(tb_handle_t context, g2_circle_t const* cb, g2_circle_t const* ce, g2_gradient_t const* gradient, tb_size_t mode)
 {
 	// check
 	tb_assert_and_check_return_val(cb && ce && gradient && gradient->color && gradient->count, TB_NULL);
@@ -81,7 +81,7 @@ static tb_handle_t g2_skia_shader_init_radial2(g2_circle_t const* cb, g2_circle_
 	SkPoint p2 = SkPoint::Make(ce->c.x, ce->c.y);
 	return SkGradientShader::CreateTwoPointRadial(p1, cb->r, p2, ce->r, reinterpret_cast<SkColor*>(gradient->color), gradient->radio, gradient->count, static_cast<SkShader::TileMode>(mode - 1));
 }
-static tb_handle_t g2_skia_shader_init_bitmap(tb_handle_t bitmap, tb_size_t mode)
+static tb_handle_t g2_skia_shader_init_bitmap(tb_handle_t context, tb_handle_t bitmap, tb_size_t mode)
 {
 	// check
 	tb_assert_and_check_return_val(bitmap, TB_NULL);
@@ -98,7 +98,7 @@ static tb_void_t g2_skia_shader_exit(tb_handle_t shader)
 	SkShader* sshader = static_cast<SkShader*>(shader);
 	tb_assert_and_check_return(sshader);
 
-	SkSafeUnref(sshader);
+	sshader->unref();
 }
 static g2_matrix_t const* g2_skia_shader_matrix(tb_handle_t shader)
 {
@@ -126,27 +126,48 @@ static tb_void_t g2_skia_shader_matrix_set(tb_handle_t shader, g2_matrix_t const
 	}
 	else sshader->resetLocalMatrix();
 }
+static tb_size_t g2_skia_shader_ref(tb_handle_t shader)
+{
+	SkShader* sshader = static_cast<SkShader*>(shader);
+	tb_assert_and_check_return_val(sshader, 0);
+
+	return sshader->getRefCnt();
+}
+static tb_void_t g2_skia_shader_inc(tb_handle_t shader)
+{
+	SkShader* sshader = static_cast<SkShader*>(shader);
+	tb_assert_and_check_return_val(sshader, 0);
+
+	sshader->ref();
+}
+static tb_void_t g2_skia_shader_dec(tb_handle_t shader)
+{
+	SkShader* sshader = static_cast<SkShader*>(shader);
+	tb_assert_and_check_return_val(sshader, 0);
+
+	sshader->unref();
+}
 
 /* ///////////////////////////////////////////////////////////////////////
  * interfaces
  */
 extern "C"
 {
-	tb_handle_t g2_shader_init_linear(g2_point_t const* pb, g2_point_t const* pe, g2_gradient_t const* gradient, tb_size_t mode)
+	tb_handle_t g2_shader_init_linear(tb_handle_t context, g2_point_t const* pb, g2_point_t const* pe, g2_gradient_t const* gradient, tb_size_t mode)
 	{
-		return g2_skia_shader_init_linear(pb, pe, gradient, mode);
+		return g2_skia_shader_init_linear(context, pb, pe, gradient, mode);
 	}
-	tb_handle_t g2_shader_init_radial(g2_circle_t const* cp, g2_gradient_t const* gradient, tb_size_t mode)
+	tb_handle_t g2_shader_init_radial(tb_handle_t context, g2_circle_t const* cp, g2_gradient_t const* gradient, tb_size_t mode)
 	{
-		return g2_skia_shader_init_radial(cp, gradient, mode);
+		return g2_skia_shader_init_radial(context, cp, gradient, mode);
 	}
-	tb_handle_t g2_shader_init_radial2(g2_circle_t const* cb, g2_circle_t const* ce, g2_gradient_t const* gradient, tb_size_t mode)
+	tb_handle_t g2_shader_init_radial2(tb_handle_t context, g2_circle_t const* cb, g2_circle_t const* ce, g2_gradient_t const* gradient, tb_size_t mode)
 	{
-		return g2_skia_shader_init_radial2(cb, ce, gradient, mode);
+		return g2_skia_shader_init_radial2(context, cb, ce, gradient, mode);
 	}
-	tb_handle_t g2_shader_init_bitmap(tb_handle_t bitmap, tb_size_t mode)
+	tb_handle_t g2_shader_init_bitmap(tb_handle_t context, tb_handle_t bitmap, tb_size_t mode)
 	{
-		return g2_skia_shader_init_bitmap(bitmap, mode);
+		return g2_skia_shader_init_bitmap(context, bitmap, mode);
 	}
 	tb_void_t g2_shader_exit(tb_handle_t shader)
 	{
@@ -159,5 +180,17 @@ extern "C"
 	tb_void_t g2_shader_matrix_set(tb_handle_t shader, g2_matrix_t const* matrix)
 	{
 		g2_skia_shader_matrix_set(shader, matrix);
+	}
+	tb_size_t g2_shader_ref(tb_handle_t shader)
+	{
+		return g2_skia_shader_ref(shader);
+	}
+	tb_void_t g2_shader_inc(tb_handle_t shader)
+	{
+		g2_skia_shader_inc(shader);
+	}
+	tb_void_t g2_shader_dec(tb_handle_t shader)
+	{
+		g2_skia_shader_dec(shader);
 	}
 }

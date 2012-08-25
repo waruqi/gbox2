@@ -389,29 +389,6 @@ tb_bool_t g2_demo_gl_init(tb_int_t argc, tb_char_t** argv)
  */
 tb_bool_t g2_demo_gbox2_init(tb_int_t argc, tb_char_t** argv)
 {
-	// init bitmap
-	if (argv[1]) g_bitmap = g2_bitmap_init_url(G2_DEMO_PIXFMT, argv[1]);
-
-	// init gradient
-	g2_color_t 		color[3] = {G2_COLOR_RED, G2_COLOR_GREEN, G2_COLOR_BLUE};
-	g2_gradient_t 	grad = {color, TB_NULL, 3};
-
-	// init shader
-	g_shader[1]	= g2_shader_init2i_linear(g_x0 - 100, 0, g_x0 + 100, 0, &grad, G2_SHADER_MODE_NONE);
-	g_mhader[1]	= g2_shader_init2i_linear(-50, 0, 50, 0, &grad, G2_SHADER_MODE_NONE);
-
-	g_shader[2]	= g2_shader_init2i_radial(g_x0, g_y0, 100, &grad, G2_SHADER_MODE_NONE);
-	g_mhader[2]	= g2_shader_init2i_radial(0, 0, 50, &grad, G2_SHADER_MODE_NONE);
-
-	g_shader[3]	= g2_shader_init2i_radial2(g_x0, g_y0, 100, g_x0, g_y0, 200, &grad, G2_SHADER_MODE_NONE);
-	g_mhader[3]	= g2_shader_init2i_radial2(0, 0, 50, 0, 0, 100, &grad, G2_SHADER_MODE_NONE);
-
-	if (g_bitmap)
-	{
-		g_shader[4]	= g2_shader_init_bitmap(g_bitmap, G2_SHADER_MODE_NONE);
-		g_mhader[4]	= g2_shader_init_bitmap(g_bitmap, G2_SHADER_MODE_NONE);
-	}
-
 	// init context
 #ifdef G2_CONFIG_CORE_GL10
 	g_context = g2_context_init_gl10(G2_DEMO_PIXFMT, G2_DEMO_WIDTH, G2_DEMO_HEIGHT);
@@ -443,17 +420,62 @@ tb_bool_t g2_demo_gbox2_init(tb_int_t argc, tb_char_t** argv)
 
 	// init matrix
 	g2_matrix_init_translate(&g_mx, g2_long_to_float(g_x0), g2_long_to_float(g_y0));	
+	
+	// init bitmap
+	if (argv[1]) g_bitmap = g2_bitmap_init_url(G2_DEMO_PIXFMT, argv[1]);
+
+	// init gradient
+	g2_color_t 		color[3] = {G2_COLOR_RED, G2_COLOR_GREEN, G2_COLOR_BLUE};
+	g2_gradient_t 	grad = {color, TB_NULL, 3};
+
+	// init shader
+	g_shader[1]	= g2_shader_init2i_linear(g_context, g_x0 - 100, 0, g_x0 + 100, 0, &grad, G2_SHADER_MODE_NONE);
+	g_mhader[1]	= g2_shader_init2i_linear(g_context, -50, 0, 50, 0, &grad, G2_SHADER_MODE_NONE);
+
+	g_shader[2]	= g2_shader_init2i_radial(g_context, g_x0, g_y0, 100, &grad, G2_SHADER_MODE_NONE);
+	g_mhader[2]	= g2_shader_init2i_radial(g_context, 0, 0, 50, &grad, G2_SHADER_MODE_NONE);
+
+	g_shader[3]	= g2_shader_init2i_radial2(g_context, g_x0, g_y0, 100, g_x0, g_y0, 200, &grad, G2_SHADER_MODE_NONE);
+	g_mhader[3]	= g2_shader_init2i_radial2(g_context, 0, 0, 50, 0, 0, 100, &grad, G2_SHADER_MODE_NONE);
+
+	if (g_bitmap)
+	{
+		g_shader[4]	= g2_shader_init_bitmap(g_context, g_bitmap, G2_SHADER_MODE_NONE);
+		g_mhader[4]	= g2_shader_init_bitmap(g_context, g_bitmap, G2_SHADER_MODE_NONE);
+	}
 
 	// ok
 	return TB_TRUE;
 }
 tb_void_t g2_demo_gbox2_exit()
-{
+{	
+	// exit shader
+	tb_size_t i = 0;
+	for (i = 0; i < 5; i++)
+	{
+		if (g_shader[i]) g2_shader_exit(g_shader[i]);
+		if (g_mhader[i]) g2_shader_exit(g_mhader[i]);
+	}
+
+	// exit bitmap
+	if (g_bitmap) g2_bitmap_exit(g_bitmap);
+
 	// exit painter
 	if (g_painter) g2_exit(g_painter);
 
 	// exit context
 	if (g_context) g2_context_exit(g_context);
+}
+static tb_void_t g2_demo_abort()
+{
+	// exit demo
+	g2_demo_exit();
+
+	// exit gbox2
+	g2_demo_gbox2_exit();
+
+	// exit tbox
+	tb_exit();
 }
 /* ////////////////////////////////////////////////////////////////////////
  * main
@@ -464,7 +486,7 @@ tb_int_t main(tb_int_t argc, tb_char_t** argv)
 	if (!tb_init(malloc(50 * 1024 * 1024), 50 * 1024 * 1024)) return 0;
 
 	// init exit
-	atexit(g2_demo_exit);
+	atexit(g2_demo_abort);
 
 	// init gl
 	if (!g2_demo_gl_init(argc, argv)) return 0;
@@ -478,14 +500,7 @@ tb_int_t main(tb_int_t argc, tb_char_t** argv)
 	// loop 
 	glutMainLoop();
 
-	// exit demo
-	g2_demo_exit();
-
-	// exit gbox2
-	g2_demo_gbox2_exit();
-
-	// exit tbox
-	tb_exit();
+	// ok
 	return 0;
 }
 
