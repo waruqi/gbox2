@@ -282,19 +282,19 @@ tb_void_t g2_demo_gl_size(tb_size_t width, tb_size_t height)
 		g_bitmap = g2_bitmap_init_url(G2_DEMO_PIXFMT, "/mnt/sdcard/logo.bmp");
 
 		// init shader
-		g_shader[1]	= g2_shader_init2i_linear(g_x0 - 100, 0, g_x0 + 100, 0, &grad, G2_SHADER_MODE_NONE);
-		g_mhader[1]	= g2_shader_init2i_linear(-50, 0, 50, 0, &grad, G2_SHADER_MODE_NONE);
+		g_shader[1]	= g2_shader_init2i_linear(g_x0 - 100, 0, g_x0 + 100, 0, &grad, G2_SHADER_WRAP_BORDER);
+		g_mhader[1]	= g2_shader_init2i_linear(-50, 0, 50, 0, &grad, G2_SHADER_WRAP_BORDER);
 
-		g_shader[2]	= g2_shader_init2i_radial(g_x0, g_y0, 100, &grad, G2_SHADER_MODE_NONE);
-		g_mhader[2]	= g2_shader_init2i_radial(0, 0, 50, &grad, G2_SHADER_MODE_NONE);
+		g_shader[2]	= g2_shader_init2i_radial(g_x0, g_y0, 100, &grad, G2_SHADER_WRAP_BORDER);
+		g_mhader[2]	= g2_shader_init2i_radial(0, 0, 50, &grad, G2_SHADER_WRAP_BORDER);
 
-		g_shader[3]	= g2_shader_init2i_radial2(g_x0, g_y0, 100, g_x0, g_y0, 200, &grad, G2_SHADER_MODE_NONE);
-		g_mhader[3]	= g2_shader_init2i_radial2(0, 0, 50, 0, 0, 100, &grad, G2_SHADER_MODE_NONE);
+		g_shader[3]	= g2_shader_init2i_radial2(g_x0, g_y0, 100, g_x0, g_y0, 200, &grad, G2_SHADER_WRAP_BORDER);
+		g_mhader[3]	= g2_shader_init2i_radial2(0, 0, 50, 0, 0, 100, &grad, G2_SHADER_WRAP_BORDER);
 
 		if (g_bitmap)
 		{
-			g_shader[4]	= g2_shader_init_bitmap(g_bitmap, G2_SHADER_MODE_NONE);
-			g_mhader[4]	= g2_shader_init_bitmap(g_bitmap, G2_SHADER_MODE_NONE);
+			g_shader[4]	= g2_shader_init_bitmap(g_bitmap, G2_SHADER_WRAP_BORDER);
+			g_mhader[4]	= g2_shader_init_bitmap(g_bitmap, G2_SHADER_WRAP_BORDER);
 		}
 
 		// init context

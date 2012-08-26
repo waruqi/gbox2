@@ -31,7 +31,7 @@
  * gl10 interfaces
  */
 
-static g2_gl10_shader_t* g2_gl10_shader_init(tb_handle_t context, tb_size_t type, tb_size_t mode)
+static g2_gl10_shader_t* g2_gl10_shader_init(tb_handle_t context, tb_size_t type, tb_size_t wrap)
 {
 	// check
 	g2_gl10_context_t* gcontext = (g2_gl10_context_t*)context;
@@ -47,7 +47,7 @@ static g2_gl10_shader_t* g2_gl10_shader_init(tb_handle_t context, tb_size_t type
 
 	// init shader
 	shader->type 		= type;
-	shader->mode 		= mode;
+	shader->wrap 		= wrap;
 	shader->refn 		= 1;
 	shader->texture 	= texture;
 	shader->context 	= context;
@@ -75,23 +75,26 @@ static tb_void_t g2_gl10_shader_exit(g2_gl10_shader_t* shader)
 /* ///////////////////////////////////////////////////////////////////////
  * interfaces
  */
-tb_handle_t g2_shader_init_linear(tb_handle_t context, g2_point_t const* pb, g2_point_t const* pe, g2_gradient_t const* gradient, tb_size_t mode)
+tb_handle_t g2_shader_init_linear(tb_handle_t context, g2_point_t const* pb, g2_point_t const* pe, g2_gradient_t const* gradient, tb_size_t wrap)
 {
 	tb_trace_noimpl();
 	return TB_NULL;
 }
-tb_handle_t g2_shader_init_radial(tb_handle_t context, g2_circle_t const* cp, g2_gradient_t const* gradient, tb_size_t mode)
+tb_handle_t g2_shader_init_radial(tb_handle_t context, g2_circle_t const* cp, g2_gradient_t const* gradient, tb_size_t wrap)
 {
 	tb_trace_noimpl();
 	return TB_NULL;
 }
-tb_handle_t g2_shader_init_radial2(tb_handle_t context, g2_circle_t const* cb, g2_circle_t const* ce, g2_gradient_t const* gradient, tb_size_t mode)
+tb_handle_t g2_shader_init_radial2(tb_handle_t context, g2_circle_t const* cb, g2_circle_t const* ce, g2_gradient_t const* gradient, tb_size_t wrap)
 {
 	tb_trace_noimpl();
 	return TB_NULL;
 }
-tb_handle_t g2_shader_init_bitmap(tb_handle_t context, tb_handle_t bitmap, tb_size_t mode)
+tb_handle_t g2_shader_init_bitmap(tb_handle_t context, tb_handle_t bitmap, tb_size_t wrap)
 {
+	// check
+	tb_assert_and_check_return_val(context && bitmap && wrap, TB_NULL);
+
 	// data & size
 	tb_pointer_t 	data = g2_bitmap_data(bitmap);
 	tb_size_t 		size = g2_bitmap_size(bitmap);
@@ -107,7 +110,7 @@ tb_handle_t g2_shader_init_bitmap(tb_handle_t context, tb_handle_t bitmap, tb_si
 	tb_assert_and_check_return_val(G2_PIXFMT(pixfmt) == G2_PIXFMT_ARGB8888, TB_NULL);
 
 	// init
-	g2_gl10_shader_t* shader = g2_gl10_shader_init(context, G2_GL10_SHADER_TYPE_BITMAP, mode);
+	g2_gl10_shader_t* shader = g2_gl10_shader_init(context, G2_GL10_SHADER_TYPE_BITMAP, wrap);
 	tb_assert_and_check_return_val(shader && shader->texture, TB_NULL);
 
 	// alpha?

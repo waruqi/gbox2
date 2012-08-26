@@ -60,8 +60,8 @@ typedef struct __g2_gl10_shader_t
 	// the flag
 	tb_size_t 				flag;
 
-	// the mode
-	tb_size_t 				mode;
+	// the wrap
+	tb_size_t 				wrap;
 
 	// the refn
 	tb_size_t 				refn;

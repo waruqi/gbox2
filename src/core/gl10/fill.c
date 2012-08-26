@@ -198,6 +198,7 @@ static __tb_inline__ tb_void_t g2_gl10_fill_style_draw_shader(g2_gl10_fill_t* fi
 		g2_gl10_matrix_set(fill->matrix, &shader->matrix);
 		glMatrixMode(GL_TEXTURE);
 		glPushMatrix();
+		glTranslatef(0.1f, 0.1f, 0.0f);
 //		glMultMatrixf(fill->matrix);
 
 		// blend?
@@ -213,20 +214,17 @@ static __tb_inline__ tb_void_t g2_gl10_fill_style_draw_shader(g2_gl10_fill_t* fi
 		glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 
 		// wrap
-//		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-//		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-		
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-	
-//		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
-//		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
-	
-//		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-//		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	
-//		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
-//		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
+		static tb_uint_t wrap[] = 
+		{
+			GL_CLAMP_TO_BORDER
+		,	GL_CLAMP_TO_BORDER
+		,	GL_CLAMP_TO_EDGE
+		,	GL_REPEAT
+		,	GL_MIRRORED_REPEAT
+		};
+		tb_assert(shader->wrap < tb_arrayn(wrap));
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrap[shader->wrap]);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrap[shader->wrap]);
 
 		// filter?
 		if (g2_style_flag(fill->style) & G2_STYLE_FLAG_BITMAP_FILTER)
