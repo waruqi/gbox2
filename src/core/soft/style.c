@@ -45,9 +45,15 @@ tb_handle_t g2_style_init()
 }
 tb_void_t g2_style_exit(tb_handle_t style)
 {
-	if (style) 
+	g2_style_t* gstyle = (g2_style_t*)style;
+	if (gstyle) 
 	{
-		tb_free(style);
+		// exit shader
+		if (gstyle->shader) g2_shader_dec(gstyle->shader);
+		gstyle->shader = TB_NULL;
+
+		// exit style
+		tb_free(gstyle);
 	}
 }
 tb_void_t g2_style_clear(tb_handle_t style)
@@ -55,12 +61,17 @@ tb_void_t g2_style_clear(tb_handle_t style)
 	g2_style_t* gstyle = (g2_style_t*)style;
 	tb_assert_and_check_return(gstyle);
 
+	// clear
 	gstyle->mode 	= G2_STYLE_MODE_NONE;
 	gstyle->flag 	= g2_quality() > G2_QUALITY_LOW? (G2_STYLE_FLAG_ANTI_ALIAS | G2_STYLE_FLAG_BITMAP_FILTER) : G2_STYLE_FLAG_NONE;
 	gstyle->join 	= G2_STYLE_JOIN_MITER;
 	gstyle->cap 	= G2_STYLE_CAP_BUTT;
 	gstyle->width 	= G2_ONE;
 	gstyle->color 	= G2_COLOR_DEFAULT;
+
+	// clear shader
+	if (gstyle->shader) g2_shader_dec(gstyle->shader);
+	gstyle->shader = TB_NULL;
 }
 tb_size_t g2_style_mode(tb_handle_t style)
 {

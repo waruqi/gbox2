@@ -43,9 +43,9 @@ typedef enum __g2_shader_wrap_t
 {
 	G2_SHADER_WRAP_NONE 				= 0
 ,	G2_SHADER_WRAP_BORDER 				= 1
-,	G2_SHADER_WRAP_CLAMP 				= 1
-,	G2_SHADER_WRAP_REPEAT 				= 2
-,	G2_SHADER_WRAP_MIRROR 				= 3
+,	G2_SHADER_WRAP_CLAMP 				= 2
+,	G2_SHADER_WRAP_REPEAT 				= 3
+,	G2_SHADER_WRAP_MIRROR 				= 4
 
 }g2_shader_wrap_t;
 

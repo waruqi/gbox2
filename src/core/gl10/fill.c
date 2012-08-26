@@ -198,7 +198,6 @@ static __tb_inline__ tb_void_t g2_gl10_fill_style_draw_shader(g2_gl10_fill_t* fi
 		g2_gl10_matrix_set(fill->matrix, &shader->matrix);
 		glMatrixMode(GL_TEXTURE);
 		glPushMatrix();
-		glTranslatef(0.1f, 0.1f, 0.0f);
 //		glMultMatrixf(fill->matrix);
 
 		// blend?
@@ -461,10 +460,10 @@ tb_void_t g2_gl10_fill_circle(g2_gl10_painter_t* painter, g2_circle_t const* cir
 {
 	// init bounds
 	g2_gl10_rect_t bounds;
-	bounds.x1 = circle->c.x - circle->r;
-	bounds.y1 = circle->c.y - circle->r;
-	bounds.x2 = circle->c.x + circle->r - 1;
-	bounds.y2 = circle->c.y + circle->r - 1;
+	bounds.x1 = g2_float_to_tb(circle->c.x - circle->r);
+	bounds.y1 = g2_float_to_tb(circle->c.y - circle->r);
+	bounds.x2 = g2_float_to_tb(circle->c.x + circle->r - G2_ONE);
+	bounds.y2 = g2_float_to_tb(circle->c.y + circle->r - G2_ONE);
 	tb_check_return(bounds.x1 < bounds.x2 && bounds.y1 < bounds.y2);
 	
 	// init vertices
@@ -499,10 +498,10 @@ tb_void_t g2_gl10_fill_ellipse(g2_gl10_painter_t* painter, g2_ellipse_t const* e
 {
 	// init bounds
 	g2_gl10_rect_t bounds;
-	bounds.x1 = ellipse->c0.x - ellipse->rx;
-	bounds.y1 = ellipse->c0.y - ellipse->ry;
-	bounds.x2 = ellipse->c0.x + ellipse->rx - 1;
-	bounds.y2 = ellipse->c0.y + ellipse->ry - 1;
+	bounds.x1 = g2_float_to_tb(ellipse->c0.x - ellipse->rx);
+	bounds.y1 = g2_float_to_tb(ellipse->c0.y - ellipse->ry);
+	bounds.x2 = g2_float_to_tb(ellipse->c0.x + ellipse->rx - G2_ONE);
+	bounds.y2 = g2_float_to_tb(ellipse->c0.y + ellipse->ry - G2_ONE);
 	tb_check_return(bounds.x1 < bounds.x2 && bounds.y1 < bounds.y2);
 	
 	// init vertices
