@@ -122,6 +122,9 @@ typedef struct __g2_svg_painter_t
 	// the hash
 	tb_hash_t* 					hash;
 
+	// the shaders
+	tb_hash_t* 					shaders;
+
 	// is loaded?
 	tb_bool_t 					load;
 

@@ -29,8 +29,26 @@
 #include "prefix.h"
 
 /* ///////////////////////////////////////////////////////////////////////
+ * macros
+ */
+#ifdef TB_CONFIG_MEMORY_MODE_SMALL
+# 	define G2_SVG_ELEMENT_SHADERS_MAXN 			(32)
+#else
+# 	define G2_SVG_ELEMENT_SHADERS_MAXN 			(64)
+#endif
+
+/* ///////////////////////////////////////////////////////////////////////
  * inlines
  */
+static tb_void_t g2_svg_painter_style_shader_free(tb_item_func_t* func, tb_pointer_t item)
+{
+	// check
+	tb_assert_and_check_return(item);
+
+	// shader
+	tb_handle_t shader = (tb_handle_t)*((tb_pointer_t*)item);
+	if (shader) g2_shader_dec(shader);
+}
 static __tb_inline__ tb_bool_t g2_svg_painter_style_gradient_linear_build(g2_svg_painter_t* painter, g2_svg_element_linear_gradient_t const* element, g2_gradient_t* gradient, g2_point_t* pb, g2_point_t* pe)
 {
 	if (element->base.head)
@@ -127,15 +145,28 @@ static __tb_inline__ tb_bool_t g2_svg_painter_style_gradient_linear(g2_svg_paint
 	if (element->spread == G2_SVG_STYLE_GRADIENT_SPREAD_REFLECT) mode = G2_SHADER_MODE_MIRROR;
 	else if (element->spread == G2_SVG_STYLE_GRADIENT_SPREAD_REPEAT) mode = G2_SHADER_MODE_REPEAT;
 
-	// init shader
-	tb_handle_t shader = g2_shader_init_linear(g2_context(painter->painter), &pb, &pe, &gradient, mode);
-	tb_assert_and_check_return_val(shader, TB_FALSE);
+	// shader?
+	tb_handle_t shader = painter->shaders? tb_hash_get(painter->shaders, element) : TB_NULL;
+	if (!shader)
+	{
+		// init shader
+		shader = g2_shader_init_linear(g2_context(painter->painter), &pb, &pe, &gradient, mode);
+		tb_assert_and_check_return_val(shader, TB_FALSE);
+
+		// init shaders
+		if (!painter->shaders) 
+		{
+			tb_item_func_t func = tb_item_func_ptr();
+			func.free = g2_svg_painter_style_shader_free;
+			painter->shaders = tb_hash_init(G2_SVG_ELEMENT_SHADERS_MAXN, tb_item_func_ptr(), func);
+		}
+
+		// set element => shader
+		if (painter->shaders) tb_hash_set(painter->shaders, element, shader);
+	}
 
 	// set shader
 	g2_style_shader_set(g2_style(painter->painter), shader);
-
-	// exit shader 
-	g2_shader_exit(shader);
 
 	// ok
 	return TB_TRUE;
@@ -154,15 +185,28 @@ static __tb_inline__ tb_bool_t g2_svg_painter_style_gradient_radial(g2_svg_paint
 	if (element->spread == G2_SVG_STYLE_GRADIENT_SPREAD_REFLECT) mode = G2_SHADER_MODE_MIRROR;
 	else if (element->spread == G2_SVG_STYLE_GRADIENT_SPREAD_REPEAT) mode = G2_SHADER_MODE_REPEAT;
 
-	// init shader
-	tb_handle_t shader = g2_shader_init_radial(g2_context(painter->painter), &cp, &gradient, mode);
-	tb_assert_and_check_return_val(shader, TB_FALSE);
+	// shader?
+	tb_handle_t shader = painter->shaders? tb_hash_get(painter->shaders, element) : TB_NULL;
+	if (!shader)
+	{
+		// init shader
+		shader = g2_shader_init_radial(g2_context(painter->painter), &cp, &gradient, mode);
+		tb_assert_and_check_return_val(shader, TB_FALSE);
+
+		// init shaders
+		if (!painter->shaders) 
+		{
+			tb_item_func_t func = tb_item_func_ptr();
+			func.free = g2_svg_painter_style_shader_free;
+			painter->shaders = tb_hash_init(G2_SVG_ELEMENT_SHADERS_MAXN, tb_item_func_ptr(), func);
+		}
+
+		// set element => shader
+		if (painter->shaders) tb_hash_set(painter->shaders, element, shader);
+	}
 
 	// set shader
 	g2_style_shader_set(g2_style(painter->painter), shader);
-
-	// exit shader 
-	g2_shader_exit(shader);
 
 	// ok
 	return TB_TRUE;
@@ -274,9 +318,25 @@ static __tb_inline__ tb_bool_t g2_svg_painter_style_image(g2_svg_painter_t* pain
 	if (style->mode & G2_SVG_STYLE_MODE_OPACITY)
 		g2_style_alpha_set(g2_style(painter->painter), (tb_byte_t)g2_float_to_long(style->opacity * 0xff));
 
-	// init shader
-	tb_handle_t shader = g2_shader_init_bitmap(g2_context(painter->painter), style->image.bitmap, G2_SHADER_MODE_NONE);
-	tb_assert_and_check_return_val(shader, TB_FALSE);
+	// shader?
+	tb_handle_t shader = painter->shaders? tb_hash_get(painter->shaders, style->image.bitmap) : TB_NULL;
+	if (!shader)
+	{
+		// init shader
+		shader = g2_shader_init_bitmap(g2_context(painter->painter), style->image.bitmap, G2_SHADER_MODE_NONE);
+		tb_assert_and_check_return_val(shader, TB_FALSE);
+
+		// init shaders
+		if (!painter->shaders) 
+		{
+			tb_item_func_t func = tb_item_func_ptr();
+			func.free = g2_svg_painter_style_shader_free;
+			painter->shaders = tb_hash_init(G2_SVG_ELEMENT_SHADERS_MAXN, tb_item_func_ptr(), func);
+		}
+
+		// set bitmap => shader
+		if (painter->shaders) tb_hash_set(painter->shaders, style->image.bitmap, shader);
+	}
 
 	// bounds
 	g2_rect_t const* bounds = style->image.bounds;
@@ -308,9 +368,6 @@ static __tb_inline__ tb_bool_t g2_svg_painter_style_image(g2_svg_painter_t* pain
 
 	// set shader
 	g2_style_shader_set(g2_style(painter->painter), shader);
-
-	// exit shader 
-	g2_shader_exit(shader);
 
 	// ok
 	return TB_TRUE;

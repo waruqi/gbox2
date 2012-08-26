@@ -136,14 +136,14 @@ static tb_size_t g2_skia_shader_ref(tb_handle_t shader)
 static tb_void_t g2_skia_shader_inc(tb_handle_t shader)
 {
 	SkShader* sshader = static_cast<SkShader*>(shader);
-	tb_assert_and_check_return_val(sshader, 0);
+	tb_assert_and_check_return(sshader);
 
 	sshader->ref();
 }
 static tb_void_t g2_skia_shader_dec(tb_handle_t shader)
 {
 	SkShader* sshader = static_cast<SkShader*>(shader);
-	tb_assert_and_check_return_val(sshader, 0);
+	tb_assert_and_check_return(sshader);
 
 	sshader->unref();
 }

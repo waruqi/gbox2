@@ -57,6 +57,14 @@ static tb_void_t g2_svg_element_svg_exit(g2_svg_element_t* element)
 	g2_svg_element_svg_t* svg = (g2_svg_element_svg_t*)element;
 	if (svg)
 	{
+		// exit shaders
+		if (svg->painter.shaders)
+		{
+		
+			// exit it
+			tb_hash_exit(svg->painter.shaders);
+		}
+
 		// exit hash
 		if (svg->painter.hash) tb_hash_exit(svg->painter.hash);
 		svg->painter.hash = TB_NULL;
