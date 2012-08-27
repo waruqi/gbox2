@@ -31,7 +31,7 @@
  * gl10 interfaces
  */
 
-static g2_gl10_shader_t* g2_gl10_shader_init(tb_handle_t context, tb_size_t type, tb_size_t wrap)
+static g2_gl10_shader_t* g2_gl10_shader_init(tb_handle_t context, tb_size_t type, tb_size_t width, tb_size_t height, tb_size_t wrap)
 {
 	// check
 	g2_gl10_context_t* gcontext = (g2_gl10_context_t*)context;
@@ -49,6 +49,8 @@ static g2_gl10_shader_t* g2_gl10_shader_init(tb_handle_t context, tb_size_t type
 	shader->type 		= type;
 	shader->wrap 		= wrap;
 	shader->refn 		= 1;
+	shader->width 		= width;
+	shader->height 		= height;
 	shader->texture 	= texture;
 	shader->context 	= context;
 	shader->flag 		= G2_GL10_SHADER_FLAG_NONE;
@@ -110,7 +112,7 @@ tb_handle_t g2_shader_init_bitmap(tb_handle_t context, tb_handle_t bitmap, tb_si
 	tb_assert_and_check_return_val(G2_PIXFMT(pixfmt) == G2_PIXFMT_ARGB8888, TB_NULL);
 
 	// init
-	g2_gl10_shader_t* shader = g2_gl10_shader_init(context, G2_GL10_SHADER_TYPE_BITMAP, wrap);
+	g2_gl10_shader_t* shader = g2_gl10_shader_init(context, G2_GL10_SHADER_TYPE_BITMAP, width, height, wrap);
 	tb_assert_and_check_return_val(shader && shader->texture, TB_NULL);
 
 	// alpha?

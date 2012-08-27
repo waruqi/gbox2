@@ -66,6 +66,12 @@ typedef struct __g2_gl10_shader_t
 	// the refn
 	tb_size_t 				refn;
 
+	// the width
+	tb_size_t 				width;
+
+	// the height
+	tb_size_t 				height;
+
 	// the context
 	tb_handle_t 			context;
 

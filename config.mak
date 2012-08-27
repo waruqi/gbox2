@@ -2,7 +2,7 @@
 IS_CONFIG = yes
 
 # architecture
-PLAT = linux_x64
+PLAT = mingw_x86
 
 # root
 PRO_DIR = /home/ruki/projects/personal/gbox2

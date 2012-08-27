@@ -181,7 +181,7 @@ static __tb_inline__ tb_void_t g2_gl10_fill_style_draw_color(g2_gl10_fill_t* fil
 	// draw
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 }
-static __tb_inline__ tb_void_t g2_gl10_fill_style_draw_shader(g2_gl10_fill_t* fill, g2_gl10_shader_t const* shader)
+static __tb_inline__ tb_void_t g2_gl10_fill_style_draw_shader(g2_gl10_fill_t* fill, g2_gl10_shader_t const* shader, g2_gl10_rect_t const* bounds)
 {
 	// check
 	tb_assert_and_check_return(fill && shader && shader->texture);
@@ -195,11 +195,33 @@ static __tb_inline__ tb_void_t g2_gl10_fill_style_draw_shader(g2_gl10_fill_t* fi
 		glBindTexture(GL_TEXTURE_2D, *shader->texture);
 
 		// enter matrix
+#if 1
+		tb_float_t bx = bounds->x1;
+		tb_float_t by = bounds->y1;
+		tb_float_t bw = bounds->x2 - bounds->x1 + 1;
+		tb_float_t bh = bounds->y2 - bounds->y1 + 1;
+		tb_float_t sw = shader->width;
+		tb_float_t sh = shader->height;
+		tb_float_t cw = g2_bitmap_width(g2_context_surface(g2_context(fill->painter)));
+		tb_float_t ch = g2_bitmap_height(g2_context_surface(g2_context(fill->painter)));
+
+		g2_gl10_matrix_set(fill->matrix, &shader->matrix); 
+		fill->matrix[0] 	= 1.0f / fill->matrix[0];
+//		fill->matrix[1] 	= g2_float_to_tb(matrix->ky);
+//		fill->matrix[4] 	= g2_float_to_tb(matrix->kx);
+		fill->matrix[5] 	= 1.0f / fill->matrix[5];
+		fill->matrix[12] 	= -fill->matrix[12] / bw;
+		fill->matrix[13] 	= -fill->matrix[13] / bh;
+		glMatrixMode(GL_TEXTURE);
+		glPushMatrix();
+		glMultMatrixf(fill->matrix);
+		glScalef(bw / sw, bh / sh, 1.0f);
+		glTranslatef(bx / bw, by / bh, 0.0f);
+#else
 		g2_gl10_matrix_set(fill->matrix, &shader->matrix);
 		glMatrixMode(GL_TEXTURE);
 		glPushMatrix();
-//		glMultMatrixf(fill->matrix);
-
+#endif
 		// blend?
 		if (shader->flag & G2_GL10_SHADER_FLAG_ALPHA)
 		{
@@ -281,7 +303,7 @@ static __tb_inline__ tb_void_t g2_gl10_fill_style_draw(g2_gl10_fill_t* fill, g2_
 	glVertexPointer(2, GL_FLOAT, 0, vertices);
 
 	// draw
-	if (g2_style_shader(style)) g2_gl10_fill_style_draw_shader(fill, g2_style_shader(style));
+	if (g2_style_shader(style)) g2_gl10_fill_style_draw_shader(fill, g2_style_shader(style), bounds);
 	else g2_gl10_fill_style_draw_color(fill, g2_style_color(style));
 }
 static __tb_inline__ tb_bool_t g2_gl10_fill_init(g2_gl10_fill_t* fill, g2_gl10_painter_t* painter, tb_size_t flag)

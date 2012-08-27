@@ -54,6 +54,10 @@
 # 	define glOrtho 				glOrthof
 #endif
 
+#ifndef GL_MIRRORED_REPEAT
+# 	define GL_MIRRORED_REPEAT 	GL_MIRRORED_REPEAT_ARB
+#endif
+
 
 #endif
 

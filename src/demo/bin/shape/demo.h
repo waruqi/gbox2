@@ -440,8 +440,8 @@ tb_bool_t g2_demo_gbox2_init(tb_int_t argc, tb_char_t** argv)
 
 	if (g_bitmap)
 	{
-		g_shader[4]	= g2_shader_init_bitmap(g_context, g_bitmap, G2_SHADER_WRAP_BORDER);
-		g_mhader[4]	= g2_shader_init_bitmap(g_context, g_bitmap, G2_SHADER_WRAP_BORDER);
+		g_shader[4]	= g2_shader_init_bitmap(g_context, g_bitmap, G2_SHADER_WRAP_CLAMP);
+		g_mhader[4]	= g2_shader_init_bitmap(g_context, g_bitmap, G2_SHADER_WRAP_CLAMP);
 	}
 
 	// ok
