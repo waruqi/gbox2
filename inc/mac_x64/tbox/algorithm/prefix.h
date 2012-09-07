@@ -18,22 +18,16 @@
  *
  * @author		ruki
  * @file		prefix.h
+ * @ingroup 	algorithm
  *
  */
-#ifndef TB_XML_PREFIX_H
-#define TB_XML_PREFIX_H
+#ifndef TB_ALGORITHM_PREFIX_H
+#define TB_ALGORITHM_PREFIX_H
 
 /* ///////////////////////////////////////////////////////////////////////
  * includes
  */
 #include "../prefix.h"
-#include "../libc/libc.h"
-#include "../utils/utils.h"
-#include "../stream/stream.h"
-#include "../string/string.h"
-#include "../memory/memory.h"
-#include "../platform/platform.h"
 #include "../container/container.h"
-
 
 #endif

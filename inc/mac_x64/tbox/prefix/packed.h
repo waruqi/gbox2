@@ -17,46 +17,41 @@
  * Copyright (C) 2009 - 2012, ruki All rights reserved.
  *
  * @author		ruki
- * @file		nlist.h
- * @ingroup 	xml
+ * @file		packed_e.h
  *
  */
-#ifndef TB_XML_NLIST_H
-#define TB_XML_NLIST_H
 
 /* ///////////////////////////////////////////////////////////////////////
  * includes
  */
-#include "prefix.h"
-#include "node.h"
+#include "config.h"
+#include "compiler.h"
 
 /* ///////////////////////////////////////////////////////////////////////
- * types
+ * macros
  */
 
-// the xml nlist type
-typedef struct __tb_xml_nlist_t
-{
-	tb_xml_node_t 	base;
-	tb_size_t 		size;
-
-}tb_xml_nlist_t;
-
-
-/* ///////////////////////////////////////////////////////////////////////
- * interfaces
+/* packed
+ *
+ * #include "tbox/prefix/packed.h"
+ * typedef struct __tb_xxxxx_t
+ * {
+ * 		tb_byte_t 	a;
+ * 		tb_uint32_t b;
+ *
+ * } __tb_packed__ tb_xxxxx_t;
+ *
+ * #include "tbox/prefix/packed.h"
+ *
+ * sizeof(tb_xxxxx_t) == 5
+ *
  */
-
-// init & exit
-tb_xml_nlist_t* tb_xml_nlist_init();
-tb_void_t 			tb_xml_nlist_exit(tb_xml_nlist_t* nlist);
-
-// accessors
-tb_xml_node_t* 	tb_xml_nlist_at(tb_xml_nlist_t* nlist, tb_int_t index);
-tb_xml_node_t* 	tb_xml_nlist_get(tb_xml_nlist_t* nlist, tb_char_t const* name);
-
-// modifiors
-tb_void_t 			tb_xml_nlist_add(tb_xml_nlist_t* nlist, tb_xml_node_t* node);
-tb_void_t 			tb_xml_nlist_det(tb_xml_nlist_t* nlist, tb_xml_node_t* node);
-
+#ifdef TB_COMPILER_IS_MSVC
+# 	ifndef TB_PACKED_ENTER
+# 		pragma pack(push, 1)
+# 		define TB_PACKED_ENTER
+# 	else
+# 		pragma pack(pop)
+# 		undef TB_PACKED_ENTER
+# 	endif
 #endif

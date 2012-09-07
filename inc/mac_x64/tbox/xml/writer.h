@@ -31,69 +31,55 @@
 #include "node.h"
 
 /* ///////////////////////////////////////////////////////////////////////
- * macros
- */
-
-#ifdef TB_CONFIG_MEMORY_MODE_SMALL
-# 	define TB_XML_WRITER_ATTRIBUTES_MAX 		(256)
-#else
-# 	define TB_XML_WRITER_ATTRIBUTES_MAX 		(512)
-#endif
-
-/* ///////////////////////////////////////////////////////////////////////
- * types
- */
-
-
-// the xml writer - StAX
-typedef struct __tb_xml_writer_t
-{
-	// the stream
-	tb_gstream_t* 			gst;
-
-	// the attributes
-	tb_xml_attribute_t 		attributes[TB_XML_WRITER_ATTRIBUTES_MAX];
-	tb_size_t 				attributes_n;
-
-}tb_xml_writer_t;
-
-
-/* ///////////////////////////////////////////////////////////////////////
  * interfaces
  */
 
-// open & close
-tb_xml_writer_t* 			tb_xml_writer_open(tb_gstream_t* gst);
-tb_void_t 					tb_xml_writer_close(tb_xml_writer_t* writer);
+/*!init writer
+ *
+ * @param gst 		the stream
+ * @param bformat 	is format xml?
+ * @return 			the writer handle
+ */
+tb_handle_t 			tb_xml_writer_init(tb_gstream_t* gst, tb_bool_t bformat);
 
-// document
-tb_void_t 					tb_xml_writer_document_beg(tb_xml_writer_t* writer, tb_char_t const* version, tb_char_t const* encoding);
-tb_void_t 					tb_xml_writer_document_end(tb_xml_writer_t* writer);
+/// exit
+tb_void_t 				tb_xml_writer_exit(tb_handle_t writer);
 
-// element
-tb_void_t 					tb_xml_writer_element_beg(tb_xml_writer_t* writer, tb_char_t const* name);
-tb_void_t 					tb_xml_writer_element_end(tb_xml_writer_t* writer, tb_char_t const* name);
-tb_void_t 					tb_xml_writer_element_empty(tb_xml_writer_t* writer, tb_char_t const* name);
+/// save document or node
+tb_void_t 				tb_xml_writer_save(tb_handle_t writer, tb_xml_node_t const* node);
 
-// attributes
-tb_void_t 					tb_xml_writer_attributes_clear(tb_xml_writer_t* writer);
-tb_void_t 					tb_xml_writer_attributes_add_string(tb_xml_writer_t* writer, tb_char_t const* name, tb_pstring_t const* value);
-tb_void_t 					tb_xml_writer_attributes_add_c_string(tb_xml_writer_t* writer, tb_char_t const* name, tb_char_t const* value);
-tb_void_t 					tb_xml_writer_attributes_add_int(tb_xml_writer_t* writer, tb_char_t const* name, tb_int_t value);
-tb_void_t 					tb_xml_writer_attributes_add_bool(tb_xml_writer_t* writer, tb_char_t const* name, tb_bool_t value);
-tb_void_t 					tb_xml_writer_attributes_add_format(tb_xml_writer_t* writer, tb_char_t const* name, tb_char_t const* fmt, ...);
+/// document: <?xml version = \"...\" encoding = \"...\" ?>
+tb_void_t 				tb_xml_writer_document(tb_handle_t writer, tb_char_t const* version, tb_char_t const* encoding);
 
+/// cdata: <![CDATA[...]]>
+tb_void_t 				tb_xml_writer_cdata(tb_handle_t writer, tb_char_t const* data);
+
+/// text
+tb_void_t 				tb_xml_writer_text(tb_handle_t writer, tb_char_t const* text);
+
+/// comment: <!-- ... -->
+tb_void_t 				tb_xml_writer_comment(tb_handle_t writer, tb_char_t const* comment);
+
+/// element: <name/>
+tb_void_t 				tb_xml_writer_element_empty(tb_handle_t writer, tb_char_t const* name);
+/// element: <name> ...
+tb_void_t 				tb_xml_writer_element_enter(tb_handle_t writer, tb_char_t const* name);
+/// element: ... </name>
+tb_void_t 				tb_xml_writer_element_leave(tb_handle_t writer);
+
+/// attributes: long
+tb_void_t 				tb_xml_writer_attributes_long(tb_handle_t writer, tb_char_t const* name, tb_long_t value);
+/// attributes: boolean
+tb_void_t 				tb_xml_writer_attributes_bool(tb_handle_t writer, tb_char_t const* name, tb_bool_t value);
+/// attributes: c-string
+tb_void_t 				tb_xml_writer_attributes_cstr(tb_handle_t writer, tb_char_t const* name, tb_char_t const* value);
+/// attributes: format
+tb_void_t 				tb_xml_writer_attributes_format(tb_handle_t writer, tb_char_t const* name, tb_char_t const* format, ...);
 #ifdef TB_CONFIG_TYPE_FLOAT
-tb_void_t 					tb_xml_writer_attributes_add_double(tb_xml_writer_t* writer, tb_char_t const* name, tb_double_t value);
+/// attributes: float
+tb_void_t 				tb_xml_writer_attributes_float(tb_handle_t writer, tb_char_t const* name, tb_float_t value);
+/// attributes: double
+tb_void_t 				tb_xml_writer_attributes_double(tb_handle_t writer, tb_char_t const* name, tb_double_t value);
 #endif
-
-// cdata
-tb_void_t 					tb_xml_writer_cdata(tb_xml_writer_t* writer, tb_char_t const* data);
-
-// text
-tb_void_t 					tb_xml_writer_text(tb_xml_writer_t* writer, tb_char_t const* text);
-
-// comment
-tb_void_t 					tb_xml_writer_comment(tb_xml_writer_t* writer, tb_char_t const* comment);
 
 #endif

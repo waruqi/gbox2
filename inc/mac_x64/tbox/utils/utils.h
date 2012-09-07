@@ -34,6 +34,7 @@
 #include "sha.h"
 #include "md5.h"
 #include "crc.h"
+#include "url.h"
 #include "base32.h"
 #include "base64.h"
 

@@ -17,23 +17,18 @@
  * Copyright (C) 2009 - 2012, ruki All rights reserved.
  *
  * @author		ruki
- * @file		prefix.h
+ * @file		algorithm.h
+ * @defgroup 	algorithm
  *
  */
-#ifndef TB_XML_PREFIX_H
-#define TB_XML_PREFIX_H
+#ifndef TB_ALGORITHM_H
+#define TB_ALGORITHM_H
 
 /* ///////////////////////////////////////////////////////////////////////
  * includes
  */
-#include "../prefix.h"
-#include "../libc/libc.h"
-#include "../utils/utils.h"
-#include "../stream/stream.h"
-#include "../string/string.h"
-#include "../memory/memory.h"
-#include "../platform/platform.h"
-#include "../container/container.h"
-
+#include "prefix.h"
+#include "find.h"
+#include "sort.h"
 
 #endif

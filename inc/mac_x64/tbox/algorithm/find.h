@@ -17,23 +17,33 @@
  * Copyright (C) 2009 - 2012, ruki All rights reserved.
  *
  * @author		ruki
- * @file		prefix.h
+ * @file		find.h
+ * @ingroup 	algorithm
  *
  */
-#ifndef TB_XML_PREFIX_H
-#define TB_XML_PREFIX_H
+#ifndef TB_ALGORITHM_FIND_H
+#define TB_ALGORITHM_FIND_H
 
 /* ///////////////////////////////////////////////////////////////////////
  * includes
  */
-#include "../prefix.h"
-#include "../libc/libc.h"
-#include "../utils/utils.h"
-#include "../stream/stream.h"
-#include "../string/string.h"
-#include "../memory/memory.h"
-#include "../platform/platform.h"
-#include "../container/container.h"
+#include "prefix.h"
+
+/* ///////////////////////////////////////////////////////////////////////
+ * interfaces
+ */
+
+/// the finder
+tb_size_t tb_find(tb_iterator_t* iterator, tb_size_t head, tb_size_t tail, tb_cpointer_t data);
+
+// the finder for all
+tb_size_t tb_find_all(tb_iterator_t* iterator, tb_cpointer_t data);
+
+/// the binary finder for ascending
+tb_size_t tb_binary_find(tb_iterator_t* iterator, tb_size_t head, tb_size_t tail, tb_cpointer_t data);
+
+/// the binary finder for all
+tb_size_t tb_binary_find_all(tb_iterator_t* iterator, tb_cpointer_t data);
 
 
 #endif
