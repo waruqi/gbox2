@@ -194,34 +194,55 @@ static __tb_inline__ tb_void_t g2_gl10_fill_style_draw_shader(g2_gl10_fill_t* fi
 		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 		glBindTexture(GL_TEXTURE_2D, *shader->texture);
 
-		// enter matrix
-#if 1
+		/* the global image matrix => the camera viewport matrix
+		 *
+		 * glScalef(bw / sw, bh / sh, 1.0f); 			//< disable auto scale in the bounds
+		 * glTranslatef(bx / bw, by / bh, 0.0f); 		//< move viewport to global
+		 *
+		 */
+		g2_gl10_matrix_set(fill->matrix, &shader->matrix);
 		tb_float_t bx = bounds->x1;
 		tb_float_t by = bounds->y1;
 		tb_float_t bw = bounds->x2 - bounds->x1 + 1;
 		tb_float_t bh = bounds->y2 - bounds->y1 + 1;
 		tb_float_t sw = shader->width;
 		tb_float_t sh = shader->height;
-		tb_float_t cw = g2_bitmap_width(g2_context_surface(g2_context(fill->painter)));
-		tb_float_t ch = g2_bitmap_height(g2_context_surface(g2_context(fill->painter)));
+		tb_float_t sx = fill->matrix[0];
+		tb_float_t sy = fill->matrix[5];
 
-		g2_gl10_matrix_set(fill->matrix, &shader->matrix); 
-		fill->matrix[0] 	= 1.0f / fill->matrix[0];
-//		fill->matrix[1] 	= g2_float_to_tb(matrix->ky);
-//		fill->matrix[4] 	= g2_float_to_tb(matrix->kx);
-		fill->matrix[5] 	= 1.0f / fill->matrix[5];
-		fill->matrix[12] 	= -fill->matrix[12] / bw;
-		fill->matrix[13] 	= -fill->matrix[13] / bh;
+		/* adjust scale 
+		 *
+		 * global => camera: (1 / sx)
+		 * disable auto scale in the bounds: (bw / sw)
+		 *
+		 * => sx = (bw / sw) * (1 / sx) => bw / (sx * sw)
+		 *
+		 */
+		fill->matrix[0] 	= bw / (sx * sw);
+		fill->matrix[5] 	= bh / (sy * sh);
+
+		// adjust skew
+		fill->matrix[1] 	*= fill->matrix[5] / sy;
+		fill->matrix[4] 	*= fill->matrix[0] / sx;
+
+		/* adjust translate
+		 *
+		 * scale: sx
+		 * global => camera: -tx / bw
+		 * move viewport to global: bx / bw
+		 *
+		 * => tx = sx * ((bx / bw) + (-tx / bw)) => sx * (bx - tx) / bw
+		 * => tx = (bx - tx) / (sx * sw)
+		 *
+		 */
+		fill->matrix[12] 	= (bx - fill->matrix[12]) / (sx * sw);
+		fill->matrix[13] 	= (by - fill->matrix[13]) / (sy * sh);
+
+		// enter matrix
 		glMatrixMode(GL_TEXTURE);
 		glPushMatrix();
 		glMultMatrixf(fill->matrix);
-		glScalef(bw / sw, bh / sh, 1.0f);
-		glTranslatef(bx / bw, by / bh, 0.0f);
-#else
-		g2_gl10_matrix_set(fill->matrix, &shader->matrix);
-		glMatrixMode(GL_TEXTURE);
-		glPushMatrix();
-#endif
+
 		// blend?
 		if (shader->flag & G2_GL10_SHADER_FLAG_ALPHA)
 		{
@@ -229,7 +250,7 @@ static __tb_inline__ tb_void_t g2_gl10_fill_style_draw_shader(g2_gl10_fill_t* fi
 			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		}
 		else glDisable(GL_BLEND);
-	
+
 		// mode
 		glColor4f(1.0f, 1.0f, 1.0f, 1.0f);	
 		glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);

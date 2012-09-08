@@ -347,6 +347,8 @@ static __tb_inline__ tb_bool_t g2_svg_painter_style_image(g2_svg_painter_t* pain
 		// init size
 		tb_size_t 	rw = g2_bitmap_width(style->image.bitmap);
 		tb_size_t 	rh = g2_bitmap_height(style->image.bitmap);
+		g2_float_t 	bx = bounds->x;
+		g2_float_t 	by = bounds->y;
 		g2_float_t 	bw = bounds->w;
 		g2_float_t 	bh = bounds->h;
 		g2_float_t 	cw = bw;
@@ -359,7 +361,7 @@ static __tb_inline__ tb_bool_t g2_svg_painter_style_image(g2_svg_painter_t* pain
 		// init matrix
 		g2_matrix_t matrix;
 		g2_matrix_clear(&matrix);
-		g2_matrix_init_translate(&matrix, g2_rsh((bw - cw), 1), g2_rsh((bh - ch), 1));
+		g2_matrix_init_translate(&matrix, bx + g2_rsh((bw - cw), 1), by + g2_rsh((bh - ch), 1));
 		g2_matrix_scale(&matrix, cw / rw, ch / rh);
 
 		// set matrix
