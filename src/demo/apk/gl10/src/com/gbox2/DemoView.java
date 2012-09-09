@@ -56,7 +56,7 @@ import java.io.FileOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.nio.FloatBuffer;
 import javax.microedition.khronos.egl.EGLConfig;
-import javax.microedition.khronos.opengles.GL10;
+import javax.microedition.khronos.opengles.GL1x;
 import java.io.IOException;
 import java.io.File;
 
@@ -138,20 +138,20 @@ class DemoView extends GLSurfaceView
 		}
 
 		// init surface
-		public void onSurfaceCreated(GL10 gl, EGLConfig config)
+		public void onSurfaceCreated(GL1x gl, EGLConfig config)
 		{
 			// init demo
 			demo_init();
 		}
 
 		// draw frame
-		public void onDrawFrame(GL10 gl)
+		public void onDrawFrame(GL1x gl)
 		{
 			demo_draw();
 		}
 
 		// resize surface
-		public void onSurfaceChanged(GL10 gl, int width, int height)
+		public void onSurfaceChanged(GL1x gl, int width, int height)
 		{
 			demo_size(width, height);
 		}

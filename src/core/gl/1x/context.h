@@ -20,15 +20,14 @@
  * @file		context.h
  *
  */
-#ifndef G2_CORE_GL10_CONTEXT_H
-#define G2_CORE_GL10_CONTEXT_H
+#ifndef G2_CORE_GL1x_CONTEXT_H
+#define G2_CORE_GL1x_CONTEXT_H
 
 /* ///////////////////////////////////////////////////////////////////////
  * includes
  */
 #include "prefix.h"
 #include "shader.h"
-#include "../context.h"
 
 /* ///////////////////////////////////////////////////////////////////////
  * macros
@@ -36,49 +35,55 @@
 
 // the texture maxn
 #ifdef TB_CONFIG_MEMORY_MODE_SMALL
-# 	define G2_GL10_TEXTURE_MAXN 		(256)
+# 	define G2_GL1x_TEXTURE_MAXN 		(256)
 #else
-# 	define G2_GL10_TEXTURE_MAXN 		(1024)
+# 	define G2_GL1x_TEXTURE_MAXN 		(1024)
 #endif
 
 // the used
-#define G2_GL10_TEXTURE_USED 			(1)
-#define G2_GL10_SHADERS_USED 			(2)
+#define G2_GL1x_TEXTURE_USED 			(1)
+#define G2_GL1x_SHADERS_USED 			(2)
 
 /* ///////////////////////////////////////////////////////////////////////
  * types
  */
 
-// the gl10 context type
-typedef struct __g2_gl10_context_t
+// the gl1x context type
+typedef struct __g2_gl1x_context_t
 {
 	// the surface
 	tb_handle_t 		surface;
 
+	// the version
+	tb_byte_t 			version;
+
+	// the extensions
+	tb_byte_t 			extensions[G2_GL_EXT_MAXN];
+
 	// the used
-	tb_byte_t 			used[G2_GL10_TEXTURE_MAXN];
+	tb_byte_t 			used[G2_GL1x_TEXTURE_MAXN];
 
 	// the texture
-	tb_uint_t 			texture[G2_GL10_TEXTURE_MAXN];
+	tb_uint_t 			texture[G2_GL1x_TEXTURE_MAXN];
 	tb_size_t 			texture_pred;
 
 	// the shaders
-	g2_gl10_shader_t	shaders[G2_GL10_TEXTURE_MAXN];
+	g2_gl1x_shader_t	shaders[G2_GL1x_TEXTURE_MAXN];
 	tb_size_t 			shaders_pred;
 
-}g2_gl10_context_t;
+}g2_gl1x_context_t;
 
 /* ///////////////////////////////////////////////////////////////////////
  * interfaces
  */
 
 // the context texture
-tb_uint_t* 			g2_gl10_context_texture_alc(g2_gl10_context_t* context);
-tb_void_t 			g2_gl10_context_texture_del(g2_gl10_context_t* context, tb_uint_t const* texture);
+tb_uint_t* 			g2_gl1x_context_texture_alc(g2_gl1x_context_t* context);
+tb_void_t 			g2_gl1x_context_texture_del(g2_gl1x_context_t* context, tb_uint_t const* texture);
 
 // the context shader
-g2_gl10_shader_t* 	g2_gl10_context_shader_alc(g2_gl10_context_t* context);
-tb_void_t 			g2_gl10_context_shader_del(g2_gl10_context_t* context, g2_gl10_shader_t const* shader);
+g2_gl1x_shader_t* 	g2_gl1x_context_shader_alc(g2_gl1x_context_t* context);
+tb_void_t 			g2_gl1x_context_shader_del(g2_gl1x_context_t* context, g2_gl1x_shader_t const* shader);
 
 
 #endif

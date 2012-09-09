@@ -22,6 +22,11 @@
  */
 
 /* ///////////////////////////////////////////////////////////////////////
+ * trace
+ */
+#define TB_TRACE_IMPL_TAG 		"gl1x"
+
+/* ///////////////////////////////////////////////////////////////////////
  * includes
  */
 #include "context.h"
@@ -32,16 +37,60 @@
 
 // grow
 #ifdef TB_CONFIG_MEMORY_MODE_SMALL
-# 	define G2_GL10_SHADERS_GROW 				(32)
+# 	define G2_GL1x_SHADERS_GROW 				(32)
 #else
-# 	define G2_GL10_SHADERS_GROW 				(128)
+# 	define G2_GL1x_SHADERS_GROW 				(128)
 #endif
 
+// extensions
+#define G2_Gl1x_CONTEXT_EXT_INIT(ext) 			if (!tb_strncmp(p, "GL_" #ext, l)) context->extensions[G2_GL_EXT_##ext] = 1;
+
 /* ///////////////////////////////////////////////////////////////////////
- * gl10 implementation
+ * version & compatibility
  */
 
-tb_uint_t* g2_gl10_context_texture_alc(g2_gl10_context_t* context)
+static __tb_inline__ tb_byte_t g2_gl1x_context_version()
+{
+	// version 
+	tb_char_t const* version = glGetString(GL_VERSION);
+	tb_assert_and_check_return_val(version && tb_isdigit(version[0]) && version[1] == '.' && tb_isdigit(version[2]), 0);
+
+	// major & minor
+	tb_byte_t major = version[0] - '0';
+	tb_byte_t minor = version[2] - '0';
+
+	// trace
+	tb_trace_impl("version: %s: %x", version, ((major << 4) + minor));
+
+	// [0x10, 0x19] 
+	return ((major << 4) + minor);
+}
+static __tb_inline__ tb_void_t g2_gl1x_context_extensions(g2_gl1x_context_t* context)
+{
+	tb_char_t const* 	p = glGetString(GL_EXTENSIONS);
+	tb_size_t 			n = tb_strlen(p);
+	tb_char_t const* 	e = p + n;
+	tb_assert_and_check_return(p && n);
+
+	while (p < e)
+	{
+		// find
+		tb_char_t const* 	q = tb_strchr(p, ' ');
+		tb_size_t 			l = q? q - p : tb_strlen(p);
+
+		// init
+		G2_Gl1x_CONTEXT_EXT_INIT(ARB_texture_non_power_of_two);
+	
+		// next
+		p += l + 1;
+	}
+}
+
+/* ///////////////////////////////////////////////////////////////////////
+ * texture & shader
+ */
+
+tb_uint_t* g2_gl1x_context_texture_alc(g2_gl1x_context_t* context)
 {
 	// init
 	tb_uint_t* 	itor = TB_NULL;
@@ -50,34 +99,34 @@ tb_uint_t* g2_gl10_context_texture_alc(g2_gl10_context_t* context)
 	tb_size_t 	pred = context->texture_pred;
 
 	// check
-	tb_assert_and_check_return_val(pred < G2_GL10_TEXTURE_MAXN, 0);
+	tb_assert_and_check_return_val(pred < G2_GL1x_TEXTURE_MAXN, 0);
 
 	// pred?
-	if (!(used[pred] & G2_GL10_TEXTURE_USED))
+	if (!(used[pred] & G2_GL1x_TEXTURE_USED))
 	{
 		// use it
 		itor = &data[pred];
-		used[pred] |= G2_GL10_TEXTURE_USED;
+		used[pred] |= G2_GL1x_TEXTURE_USED;
 
 		// pred next
-		if (pred + 1 < G2_GL10_TEXTURE_MAXN) pred++;
+		if (pred + 1 < G2_GL1x_TEXTURE_MAXN) pred++;
 		else pred = 0;
 	}
 	else
 	{
 		// find
 		tb_size_t i = 0;
-		for (i = 0; i < G2_GL10_TEXTURE_MAXN; i++)
+		for (i = 0; i < G2_GL1x_TEXTURE_MAXN; i++)
 		{
 			// free?
-			if (!(used[i] & G2_GL10_TEXTURE_USED))
+			if (!(used[i] & G2_GL1x_TEXTURE_USED))
 			{
 				// use it
 				itor = &data[i];
-				used[i] |= G2_GL10_TEXTURE_USED;
+				used[i] |= G2_GL1x_TEXTURE_USED;
 
 				// pred next
-				if (i + 1 < G2_GL10_TEXTURE_MAXN) pred = i + 1;
+				if (i + 1 < G2_GL1x_TEXTURE_MAXN) pred = i + 1;
 				else pred = 0;
 
 				// ok
@@ -92,7 +141,7 @@ tb_uint_t* g2_gl10_context_texture_alc(g2_gl10_context_t* context)
 	// ok?
 	return itor;
 }
-tb_void_t g2_gl10_context_texture_del(g2_gl10_context_t* context, tb_uint_t const* texture)
+tb_void_t g2_gl1x_context_texture_del(g2_gl1x_context_t* context, tb_uint_t const* texture)
 {
 	// check
 	tb_assert_and_check_return(texture);
@@ -103,52 +152,52 @@ tb_void_t g2_gl10_context_texture_del(g2_gl10_context_t* context, tb_uint_t cons
 	tb_size_t 	itor = texture - context->texture;
 
 	// free it
-	if (used[itor] & G2_GL10_TEXTURE_USED)
+	if (used[itor] & G2_GL1x_TEXTURE_USED)
 	{
 		pred = itor;
-		used[itor] &= ~G2_GL10_TEXTURE_USED;
+		used[itor] &= ~G2_GL1x_TEXTURE_USED;
 	}
 	
 	// pred
 	context->texture_pred = pred;
 }
-g2_gl10_shader_t* g2_gl10_context_shader_alc(g2_gl10_context_t* context)
+g2_gl1x_shader_t* g2_gl1x_context_shader_alc(g2_gl1x_context_t* context)
 {
 	// init
-	g2_gl10_shader_t* 	itor = TB_NULL;
-	g2_gl10_shader_t* 	data = context->shaders;
+	g2_gl1x_shader_t* 	itor = TB_NULL;
+	g2_gl1x_shader_t* 	data = context->shaders;
 	tb_byte_t* 			used = context->used;
 	tb_size_t 			pred = context->shaders_pred;
 
 	// check
-	tb_assert_and_check_return_val(pred < G2_GL10_TEXTURE_MAXN, 0);
+	tb_assert_and_check_return_val(pred < G2_GL1x_TEXTURE_MAXN, 0);
 
 	// pred?
-	if (!(used[pred] & G2_GL10_SHADERS_USED))
+	if (!(used[pred] & G2_GL1x_SHADERS_USED))
 	{
 		// use it
 		itor = &data[pred];
-		used[pred] |= G2_GL10_SHADERS_USED;
+		used[pred] |= G2_GL1x_SHADERS_USED;
 
 		// pred next
-		if (pred + 1 < G2_GL10_TEXTURE_MAXN) pred++;
+		if (pred + 1 < G2_GL1x_TEXTURE_MAXN) pred++;
 		else pred = 0;
 	}
 	else
 	{
 		// find
 		tb_size_t i = 0;
-		for (i = 0; i < G2_GL10_TEXTURE_MAXN; i++)
+		for (i = 0; i < G2_GL1x_TEXTURE_MAXN; i++)
 		{
 			// free?
-			if (!(used[i] & G2_GL10_SHADERS_USED))
+			if (!(used[i] & G2_GL1x_SHADERS_USED))
 			{
 				// use it
 				itor = &data[i];
-				used[i] |= G2_GL10_SHADERS_USED;
+				used[i] |= G2_GL1x_SHADERS_USED;
 
 				// pred next
-				if (i + 1 < G2_GL10_TEXTURE_MAXN) pred = i + 1;
+				if (i + 1 < G2_GL1x_TEXTURE_MAXN) pred = i + 1;
 				else pred = 0;
 
 				// ok
@@ -161,12 +210,12 @@ g2_gl10_shader_t* g2_gl10_context_shader_alc(g2_gl10_context_t* context)
 	context->shaders_pred = pred;
 
 	// clear
-	if (itor) tb_memset(itor, 0, sizeof(g2_gl10_shader_t));
+	if (itor) tb_memset(itor, 0, sizeof(g2_gl1x_shader_t));
 
 	// ok?
 	return itor;
 }
-tb_void_t g2_gl10_context_shader_del(g2_gl10_context_t* context, g2_gl10_shader_t const* shader)
+tb_void_t g2_gl1x_context_shader_del(g2_gl1x_context_t* context, g2_gl1x_shader_t const* shader)
 {
 	// check
 	tb_assert_and_check_return(context && shader);
@@ -177,10 +226,10 @@ tb_void_t g2_gl10_context_shader_del(g2_gl10_context_t* context, g2_gl10_shader_
 	tb_size_t 	itor = shader - context->shaders;
 
 	// free it
-	if (used[itor] & G2_GL10_SHADERS_USED)
+	if (used[itor] & G2_GL1x_SHADERS_USED)
 	{
 		pred = itor;
-		used[itor] &= ~G2_GL10_SHADERS_USED;
+		used[itor] &= ~G2_GL1x_SHADERS_USED;
 	}
 	
 	// pred
@@ -190,7 +239,7 @@ tb_void_t g2_gl10_context_shader_del(g2_gl10_context_t* context, g2_gl10_shader_
 /* ///////////////////////////////////////////////////////////////////////
  * implementation
  */
-tb_handle_t g2_context_init_gl10(tb_size_t pixfmt, tb_size_t width, tb_size_t height)
+tb_handle_t g2_context_init_gl1x(tb_size_t pixfmt, tb_size_t width, tb_size_t height)
 {
 	// check
 	tb_assert_and_check_return_val(G2_PIXFMT_OK(pixfmt) && width && height, TB_NULL);
@@ -206,22 +255,30 @@ tb_handle_t g2_context_init_gl10(tb_size_t pixfmt, tb_size_t width, tb_size_t he
 									|| 	G2_PIXFMT(pixfmt) == G2_PIXFMT_RGB565, TB_NULL);
 
 	// alloc
-	g2_gl10_context_t* gcontext = tb_malloc0(sizeof(g2_gl10_context_t));
+	g2_gl1x_context_t* gcontext = tb_malloc0(sizeof(g2_gl1x_context_t));
 	tb_assert_and_check_return_val(gcontext, TB_NULL);
+
+	// init version 
+	gcontext->version = g2_gl1x_context_version();
+	tb_assert_and_check_goto(gcontext->version >= 0x10, fail);
+
+	// init extensions
+	g2_gl1x_context_extensions(gcontext);
+	tb_assert_and_check_goto(gcontext->extensions[G2_GL_EXT_ARB_texture_non_power_of_two], fail);
 
 	// init surface
 	gcontext->surface = g2_bitmap_init(pixfmt, width, height, 0);
 	tb_assert_and_check_goto(gcontext->surface, fail);
 
 	// init used
-	tb_memset(gcontext->used, 0, G2_GL10_TEXTURE_MAXN);
+	tb_memset(gcontext->used, 0, G2_GL1x_TEXTURE_MAXN);
 
 	// init texture
- 	glGenTextures(G2_GL10_TEXTURE_MAXN, gcontext->texture);
+ 	glGenTextures(G2_GL1x_TEXTURE_MAXN, gcontext->texture);
 	gcontext->texture_pred = 0;
 
 	// init shaders
-	tb_memset(gcontext->shaders, 0, G2_GL10_TEXTURE_MAXN * sizeof(g2_gl10_shader_t));
+	tb_memset(gcontext->shaders, 0, G2_GL1x_TEXTURE_MAXN * sizeof(g2_gl1x_shader_t));
 	gcontext->shaders_pred = 0;
 
 	// init viewport
@@ -265,7 +322,7 @@ fail:
 }
 tb_void_t g2_context_exit(tb_handle_t context)
 {
-	g2_gl10_context_t* gcontext = (g2_gl10_context_t*)context;
+	g2_gl1x_context_t* gcontext = (g2_gl1x_context_t*)context;
 	if (gcontext) 
 	{
 		// exit shaders
@@ -273,10 +330,10 @@ tb_void_t g2_context_exit(tb_handle_t context)
 		{
 			tb_size_t 			i = 0;
 			tb_byte_t const* 	used = gcontext->used;
-			g2_gl10_shader_t* 	data = gcontext->shaders;
-			for (i = 0; i < G2_GL10_TEXTURE_MAXN; i++)
+			g2_gl1x_shader_t* 	data = gcontext->shaders;
+			for (i = 0; i < G2_GL1x_TEXTURE_MAXN; i++)
 			{
-				if (used[i] & G2_GL10_SHADERS_USED)
+				if (used[i] & G2_GL1x_SHADERS_USED)
 				{
 					tb_assert(data[i].refn == 1);
 					g2_shader_dec(&data[i]);
@@ -285,7 +342,7 @@ tb_void_t g2_context_exit(tb_handle_t context)
 		}
 		
 		// exit texture
-		glDeleteTextures(G2_GL10_TEXTURE_MAXN, gcontext->texture);
+		glDeleteTextures(G2_GL1x_TEXTURE_MAXN, gcontext->texture);
 
 		// free surface
 		if (gcontext->surface) g2_bitmap_exit(gcontext->surface);
@@ -296,14 +353,14 @@ tb_void_t g2_context_exit(tb_handle_t context)
 }
 tb_handle_t g2_context_surface(tb_handle_t context)
 {
-	g2_gl10_context_t* gcontext = (g2_gl10_context_t*)context;
+	g2_gl1x_context_t* gcontext = (g2_gl1x_context_t*)context;
 	tb_assert_and_check_return_val(gcontext, TB_NULL);
 
 	return gcontext->surface;
 }
 tb_handle_t g2_context_resize(tb_handle_t context, tb_size_t width, tb_size_t height)
 {
-	g2_gl10_context_t* gcontext = (g2_gl10_context_t*)context;
+	g2_gl1x_context_t* gcontext = (g2_gl1x_context_t*)context;
 	tb_assert_and_check_return_val(gcontext && width && height, TB_NULL);
 
 	// update surface

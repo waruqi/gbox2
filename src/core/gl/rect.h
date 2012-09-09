@@ -17,29 +17,33 @@
  * Copyright (C) 2009 - 2012, ruki All rights reserved.
  *
  * @author		ruki
- * @file		type.h
+ * @file		rect.h
  *
  */
-#ifndef G2_CORE_GL10_TYPE_H
-#define G2_CORE_GL10_TYPE_H
+#ifndef G2_CORE_GL_RECT_H
+#define G2_CORE_GL_RECT_H
 
 /* ///////////////////////////////////////////////////////////////////////
  * includes
  */
-#include "../prefix.h"
+#include "prefix.h"
 
 /* ///////////////////////////////////////////////////////////////////////
- * types
+ * inlines
  */
-
-// the gl10 rect type
-typedef struct __g2_gl10_rect_t
+static __tb_inline__ tb_void_t g2_gl_rect_init(g2_gl_rect_t* rect, tb_float_t x, tb_float_t y)
 {
-	tb_float_t 		x1;
-	tb_float_t 		y1;
-	tb_float_t 		x2;
-	tb_float_t 		y2;
-
-}g2_gl10_rect_t;
+	rect->x1 = x;
+	rect->x2 = x;
+	rect->y1 = y;
+	rect->y2 = y;
+}
+static __tb_inline__ tb_void_t g2_gl_rect_done(g2_gl_rect_t* rect, tb_float_t x, tb_float_t y)
+{
+	if (x < rect->x1) rect->x1 = x;
+	if (y < rect->y1) rect->y1 = y;
+	if (x > rect->x2) rect->x2 = x;
+	if (y > rect->y2) rect->y2 = y;
+}
 
 #endif

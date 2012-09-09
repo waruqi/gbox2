@@ -220,7 +220,7 @@ static tb_void_t g2_demo_gl_display()
 	if (g_bm) g2_load(g_painter);
 
 	// draw
-#ifndef G2_CONFIG_CORE_GL10
+#ifndef G2_CONFIG_CORE_GL1x
 	if (g_surface)
 	{
 		tb_size_t width 	= g2_bitmap_width(g_surface);
@@ -261,7 +261,7 @@ static tb_void_t g2_demo_gl_display()
 }
 static tb_void_t g2_demo_gl_reshape(tb_int_t w, tb_int_t h)
 {
-#ifndef G2_CONFIG_CORE_GL10
+#ifndef G2_CONFIG_CORE_GL1x
 	// init viewport
 	glViewport(0, 0, w, h);
 	glMatrixMode(GL_PROJECTION);
@@ -390,8 +390,8 @@ tb_bool_t g2_demo_gl_init(tb_int_t argc, tb_char_t** argv)
 tb_bool_t g2_demo_gbox2_init(tb_int_t argc, tb_char_t** argv)
 {
 	// init context
-#ifdef G2_CONFIG_CORE_GL10
-	g_context = g2_context_init_gl10(G2_DEMO_PIXFMT, G2_DEMO_WIDTH, G2_DEMO_HEIGHT);
+#ifdef G2_CONFIG_CORE_GL1x
+	g_context = g2_context_init_gl1x(G2_DEMO_PIXFMT, G2_DEMO_WIDTH, G2_DEMO_HEIGHT);
 	tb_assert_and_check_return_val(g_context, TB_FALSE);
 #else
 	g_context = g2_context_init_skia(G2_DEMO_PIXFMT, TB_NULL, G2_DEMO_WIDTH, G2_DEMO_HEIGHT, 0);

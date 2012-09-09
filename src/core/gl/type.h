@@ -17,48 +17,29 @@
  * Copyright (C) 2009 - 2012, ruki All rights reserved.
  *
  * @author		ruki
- * @file		prefix.h
+ * @file		type.h
  *
  */
-#ifndef G2_CORE_GL10_PREFIX_H
-#define G2_CORE_GL10_PREFIX_H
+#ifndef G2_CORE_GL_TYPE_H
+#define G2_CORE_GL_TYPE_H
 
 /* ///////////////////////////////////////////////////////////////////////
  * includes
  */
-#include "type.h"
-#include "../prefix.h"
-#include "../style.h"
-#include "../path.h"
-#include "../bitmap.h"
-#include "../shader.h"
-#include "../matrix.h"
-#include "../painter.h"
-#include "../../gbox2.h"
-#if defined(TB_CONFIG_OS_MAC)
-# 	include <OpenGL/gl.h>
-# 	include <OpenGL/glu.h>
-# 	include <GLUT/glut.h>
-#elif defined(TB_CONFIG_OS_ANDROID)
-# 	include <GLES/gl.h>
-# 	include <GLES/glext.h>
-#else
-# 	include <GL/glut.h>
-# 	include <GL/glext.h>
-#endif
+#include "prefix.h"
 
 /* ///////////////////////////////////////////////////////////////////////
- * macros
+ * types
  */
-#ifdef TB_CONFIG_OS_ANDROID
-# 	define glOrtho 				glOrthof
+
+// the gl1x rect type
+typedef struct __g2_gl_rect_t
+{
+	tb_float_t 		x1;
+	tb_float_t 		y1;
+	tb_float_t 		x2;
+	tb_float_t 		y2;
+
+}g2_gl_rect_t;
+
 #endif
-
-#ifndef GL_MIRRORED_REPEAT
-# 	define GL_MIRRORED_REPEAT 	GL_MIRRORED_REPEAT_ARB
-#endif
-
-
-#endif
-
-

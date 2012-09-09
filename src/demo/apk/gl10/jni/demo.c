@@ -59,7 +59,7 @@ static tb_size_t 	g_join[] 		= {G2_STYLE_JOIN_MITER, G2_STYLE_JOIN_BEVEL, G2_STY
 static tb_handle_t 	g_shader[5] 	= {TB_NULL};
 static tb_handle_t 	g_mhader[5] 	= {TB_NULL};
 
-// gl10
+// gl1x
 static GLuint 		g_gsurface 		= 0;
 static GLfloat 		g_gvertices[8] 	= {-1, -1, 1, -1, -1, 1, 1, 1};
 static GLfloat 		g_gtexcoords[8] = {0, 0, 1, 0, 0, 1, 1, 1};
@@ -83,7 +83,7 @@ static GLfloat 		g_gtexcoords[8] = {0, 0, 1, 0, 0, 1, 1, 1};
 
 tb_bool_t g2_demo_gl_init()
 {
-#ifndef G2_CONFIG_CORE_GL10
+#ifndef G2_CONFIG_CORE_GL1x
 	
 	// disable
 	glDisable(GL_DEPTH_TEST);
@@ -137,7 +137,7 @@ tb_void_t g2_demo_gl_exit()
 	g_context = TB_NULL;
 
 	// exit surface
-#ifndef G2_CONFIG_CORE_GL10
+#ifndef G2_CONFIG_CORE_GL1x
 	if (g_gsurface) glDeleteTextures(1, &g_gsurface);
 	g_gsurface = 0;
 #endif
@@ -212,7 +212,7 @@ tb_void_t g2_demo_gl_draw()
 	if (g_bm) g2_load(g_painter);
 
 	// draw
-#ifndef G2_CONFIG_CORE_GL10
+#ifndef G2_CONFIG_CORE_GL1x
 	if (g_surface)
 	{
 		tb_size_t width 	= g2_bitmap_width(g_surface);
@@ -251,7 +251,7 @@ tb_void_t g2_demo_gl_draw()
 }
 tb_void_t g2_demo_gl_size(tb_size_t width, tb_size_t height)
 {
-#ifndef G2_CONFIG_CORE_GL10
+#ifndef G2_CONFIG_CORE_GL1x
 	// init viewport
 	glViewport(0, 0, width, height);
 	glMatrixMode(GL_PROJECTION);
@@ -298,8 +298,8 @@ tb_void_t g2_demo_gl_size(tb_size_t width, tb_size_t height)
 		}
 
 		// init context
-#ifdef G2_CONFIG_CORE_GL10
-		g_context = g2_context_init_gl10(G2_DEMO_PIXFMT, width, height);
+#ifdef G2_CONFIG_CORE_GL1x
+		g_context = g2_context_init_gl1x(G2_DEMO_PIXFMT, width, height);
 		tb_assert_and_check_return(g_context);
 #else
 		g_context = g2_context_init_skia(G2_DEMO_PIXFMT, TB_NULL, width, height, 0);

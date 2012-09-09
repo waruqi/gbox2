@@ -17,33 +17,34 @@
  * Copyright (C) 2009 - 2012, ruki All rights reserved.
  *
  * @author		ruki
- * @file		rect.h
+ * @file		fill.h
  *
  */
-#ifndef G2_CORE_GL10_RECT_H
-#define G2_CORE_GL10_RECT_H
+#ifndef G2_CORE_GL1x_FILL_H
+#define G2_CORE_GL1x_FILL_H
 
 /* ///////////////////////////////////////////////////////////////////////
  * includes
  */
-#include "prefix.h"
+#include "painter.h"
 
 /* ///////////////////////////////////////////////////////////////////////
- * inlines
+ * interfaces
  */
-static __tb_inline__ tb_void_t g2_gl10_rect_init(g2_gl10_rect_t* rect, tb_float_t x, tb_float_t y)
-{
-	rect->x1 = x;
-	rect->x2 = x;
-	rect->y1 = y;
-	rect->y2 = y;
-}
-static __tb_inline__ tb_void_t g2_gl10_rect_done(g2_gl10_rect_t* rect, tb_float_t x, tb_float_t y)
-{
-	if (x < rect->x1) rect->x1 = x;
-	if (y < rect->y1) rect->y1 = y;
-	if (x > rect->x2) rect->x2 = x;
-	if (y > rect->y2) rect->y2 = y;
-}
+
+// fill rect
+tb_void_t g2_gl1x_fill_rect(g2_gl1x_painter_t* painter, g2_rect_t const* rect);
+
+// fill path
+tb_void_t g2_gl1x_fill_path(g2_gl1x_painter_t* painter, g2_gl_path_t const* path);
+
+// fill circle
+tb_void_t g2_gl1x_fill_circle(g2_gl1x_painter_t* painter, g2_circle_t const* circle);
+
+// fill ellipse
+tb_void_t g2_gl1x_fill_ellipse(g2_gl1x_painter_t* painter, g2_ellipse_t const* ellipse);
+
+// fill triangle
+tb_void_t g2_gl1x_fill_triangle(g2_gl1x_painter_t* painter, g2_triangle_t const* triangle);
 
 #endif

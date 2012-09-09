@@ -17,42 +17,40 @@
  * Copyright (C) 2009 - 2012, ruki All rights reserved.
  *
  * @author		ruki
- * @file		context.h
+ * @file		prefix.h
  *
  */
-#ifndef G2_CORE_CONTEXT_H
-#define G2_CORE_CONTEXT_H
-
-// c plus plus
-#ifdef __cplusplus
-extern "C" {
-#endif
+#ifndef G2_CORE_GL1x_PREFIX_H
+#define G2_CORE_GL1x_PREFIX_H
 
 /* ///////////////////////////////////////////////////////////////////////
  * includes
  */
-#include "prefix.h"
+#include "../prefix.h"
+#if defined(TB_CONFIG_OS_MAC)
+# 	include <OpenGL/gl.h>
+# 	include <OpenGL/glu.h>
+# 	include <GLUT/glut.h>
+#elif defined(TB_CONFIG_OS_ANDROID)
+# 	include <GLES/gl.h>
+# 	include <GLES/glext.h>
+#else
+# 	include <GL/glut.h>
+# 	include <GL/glext.h>
+#endif
 
 /* ///////////////////////////////////////////////////////////////////////
- * interfaces
+ * macros
  */
-
-// init & exit
-tb_handle_t 		g2_context_init_soft(tb_size_t pixfmt, tb_pointer_t data, tb_size_t width, tb_size_t height, tb_size_t lpitch);
-tb_handle_t 		g2_context_init_skia(tb_size_t pixfmt, tb_pointer_t data, tb_size_t width, tb_size_t height, tb_size_t lpitch);
-tb_handle_t 		g2_context_init_gl1x(tb_size_t pixfmt, tb_size_t width, tb_size_t height); // for gl 1.x
-tb_handle_t 		g2_context_init_gl2x(tb_size_t pixfmt, tb_size_t width, tb_size_t height); // for gl > 2.x
-tb_void_t 			g2_context_exit(tb_handle_t context);
-
-// resize
-tb_handle_t 		g2_context_resize(tb_handle_t context, tb_size_t width, tb_size_t height);
-
-// surface
-tb_handle_t 		g2_context_surface(tb_handle_t context);
-
-// c plus plus
-#ifdef __cplusplus
-}
+#ifdef TB_CONFIG_OS_ANDROID
+# 	define glOrtho 				glOrthof
 #endif
 
+#ifndef GL_MIRRORED_REPEAT
+# 	define GL_MIRRORED_REPEAT 	GL_MIRRORED_REPEAT_ARB
 #endif
+
+
+#endif
+
+

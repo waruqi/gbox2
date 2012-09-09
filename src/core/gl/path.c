@@ -49,7 +49,7 @@
 /* ///////////////////////////////////////////////////////////////////////
  * helper
  */
-static __tb_inline__ tb_size_t g2_gl10_path_code_step(tb_size_t code)
+static __tb_inline__ tb_size_t g2_gl_path_code_step(tb_size_t code)
 {
 	// step
 	static tb_size_t step[] = 
@@ -72,7 +72,7 @@ static __tb_inline__ tb_size_t g2_gl10_path_code_step(tb_size_t code)
 /* ///////////////////////////////////////////////////////////////////////
  * fill
  */
-static __tb_inline__ tb_void_t g2_gl10_path_fill_clear(g2_gl10_path_t* path)
+static __tb_inline__ tb_void_t g2_gl_path_fill_clear(g2_gl_path_t* path)
 {
 	// clear fill data
 	if (path->fill.data)
@@ -89,12 +89,12 @@ static __tb_inline__ tb_void_t g2_gl10_path_fill_clear(g2_gl10_path_t* path)
 	}
 
 	// clear fill rect
-	tb_memset(&path->fill.rect, 0, sizeof(g2_gl10_rect_t));
+	tb_memset(&path->fill.rect, 0, sizeof(g2_gl_rect_t));
 }
-static tb_void_t g2_gl10_path_fill_split_quad_func(g2_soft_split_quad_t* split, g2_point_t const* pt)
+static tb_void_t g2_gl_path_fill_split_quad_func(g2_soft_split_quad_t* split, g2_point_t const* pt)
 {
 	// path
-	g2_gl10_path_t* path = (g2_gl10_path_t*)split->data;
+	g2_gl_path_t* path = (g2_gl_path_t*)split->data;
 	tb_assert_return(path);
 
 	// data
@@ -106,10 +106,10 @@ static tb_void_t g2_gl10_path_fill_split_quad_func(g2_soft_split_quad_t* split, 
 	tb_vector_insert_tail(path->fill.data, data);
 	tb_vector_replace_last(path->fill.size, tb_vector_last(path->fill.size) + 1);
 }
-static tb_void_t g2_gl10_path_fill_split_cube_func(g2_soft_split_cube_t* split, g2_point_t const* pt)
+static tb_void_t g2_gl_path_fill_split_cube_func(g2_soft_split_cube_t* split, g2_point_t const* pt)
 {
 	// path
-	g2_gl10_path_t* path = (g2_gl10_path_t*)split->data;
+	g2_gl_path_t* path = (g2_gl_path_t*)split->data;
 	tb_assert_return(path);
 
 	// data
@@ -124,19 +124,19 @@ static tb_void_t g2_gl10_path_fill_split_cube_func(g2_soft_split_cube_t* split, 
 /* ///////////////////////////////////////////////////////////////////////
  * maker
  */
-tb_void_t g2_gl10_path_make_like(g2_gl10_path_t* path)
+tb_void_t g2_gl_path_make_like(g2_gl_path_t* path)
 {
 	// check
 	tb_assert_and_check_return(path);
 
 	// has like?
-	tb_check_return(path->like == G2_GL10_PATH_LIKE_NONE);
+	tb_check_return(path->like == G2_GL_PATH_LIKE_NONE);
 
 	// has data?
 	tb_check_return(tb_vector_size(path->code) && tb_vector_size(path->data));
 
 	// only moveto?
-	tb_check_return(path->flag & (G2_GL10_PATH_FLAG_LINE | G2_GL10_PATH_FLAG_QUAD | G2_GL10_PATH_FLAG_CUBE));
+	tb_check_return(path->flag & (G2_GL_PATH_FLAG_LINE | G2_GL_PATH_FLAG_QUAD | G2_GL_PATH_FLAG_CUBE));
 
 	// data && size
 	tb_size_t 			size = tb_vector_size(path->data);
@@ -144,7 +144,7 @@ tb_void_t g2_gl10_path_make_like(g2_gl10_path_t* path)
 	tb_assert_and_check_return(data && size);
 
 	// only has lineto?
-	if (!(path->flag & (G2_GL10_PATH_FLAG_QUAD | G2_GL10_PATH_FLAG_CUBE)))
+	if (!(path->flag & (G2_GL_PATH_FLAG_QUAD | G2_GL_PATH_FLAG_CUBE)))
 	{
 		// check
 		tb_check_return(path->rect.x1 < path->rect.x2 && path->rect.y1 < path->rect.y2);
@@ -157,7 +157,7 @@ tb_void_t g2_gl10_path_make_like(g2_gl10_path_t* path)
 			{
 				if (data[0] != data[2] || data[1] != data[3]) 
 				{
-					path->like = G2_GL10_PATH_LIKE_LINE;
+					path->like = G2_GL_PATH_LIKE_LINE;
 					path->line.p0.x = tb_float_to_g2(data[0]);
 					path->line.p0.y = tb_float_to_g2(data[1]);
 					path->line.p1.x = tb_float_to_g2(data[2]);
@@ -173,7 +173,7 @@ tb_void_t g2_gl10_path_make_like(g2_gl10_path_t* path)
 				&&	(data[0] != data[4] || data[1] != data[5])
 				&&	(data[4] != data[2] || data[5] != data[3])) 
 				{
-					path->like = G2_GL10_PATH_LIKE_TRIG;
+					path->like = G2_GL_PATH_LIKE_TRIG;
 					path->trig.p0.x = tb_float_to_g2(data[0]);
 					path->trig.p0.y = tb_float_to_g2(data[1]);
 					path->trig.p1.x = tb_float_to_g2(data[2]);
@@ -195,7 +195,7 @@ tb_void_t g2_gl10_path_make_like(g2_gl10_path_t* path)
 					&& 	data[5] == data[7]
 					&& 	data[6] == data[0]))
 				{
-					path->like = G2_GL10_PATH_LIKE_RECT;
+					path->like = G2_GL_PATH_LIKE_RECT;
 					tb_trace_impl("like: rect");
 				}
 			}
@@ -203,7 +203,7 @@ tb_void_t g2_gl10_path_make_like(g2_gl10_path_t* path)
 	}
 
 	// has like?
-	tb_check_return(path->like == G2_GL10_PATH_LIKE_NONE);
+	tb_check_return(path->like == G2_GL_PATH_LIKE_NONE);
 
 	// like convex polygon?
 	if (tb_vector_size(path->size) == 1 && size > 3)
@@ -252,12 +252,12 @@ tb_void_t g2_gl10_path_make_like(g2_gl10_path_t* path)
 		}
 		if (p == e)
 		{
-			path->like = G2_GL10_PATH_LIKE_CONX;
+			path->like = G2_GL_PATH_LIKE_CONX;
 			tb_trace_impl("like: convex");
 		}
 	}
 }
-tb_bool_t g2_gl10_path_make_fill(g2_gl10_path_t* path)
+tb_bool_t g2_gl_path_make_fill(g2_gl_path_t* path)
 {
 	// check
 	tb_assert_and_check_return_val(path, TB_FALSE);
@@ -269,13 +269,13 @@ tb_bool_t g2_gl10_path_make_fill(g2_gl10_path_t* path)
 	tb_check_return_val(tb_vector_size(path->code) && tb_vector_size(path->data), TB_FALSE);
 
 	// only moveto?
-	tb_check_return_val(path->flag & (G2_GL10_PATH_FLAG_LINE | G2_GL10_PATH_FLAG_QUAD | G2_GL10_PATH_FLAG_CUBE), TB_FALSE);
+	tb_check_return_val(path->flag & (G2_GL_PATH_FLAG_LINE | G2_GL_PATH_FLAG_QUAD | G2_GL_PATH_FLAG_CUBE), TB_FALSE);
 
 	// bounds
 	path->fill.rect = path->rect;
 
 	// only has lineto?
-	if (!(path->flag & (G2_GL10_PATH_FLAG_QUAD | G2_GL10_PATH_FLAG_CUBE)))
+	if (!(path->flag & (G2_GL_PATH_FLAG_QUAD | G2_GL_PATH_FLAG_CUBE)))
 	{
 		// check
 		tb_check_return_val(path->rect.x1 < path->rect.x2 && path->rect.y1 < path->rect.y2, TB_FALSE);
@@ -322,8 +322,8 @@ tb_bool_t g2_gl10_path_make_fill(g2_gl10_path_t* path)
 	// init splitter
 	g2_soft_split_quad_t quad;
 	g2_soft_split_cube_t cube;
-	g2_soft_split_quad_init(&quad, g2_gl10_path_fill_split_quad_func, path);
-	g2_soft_split_cube_init(&cube, g2_gl10_path_fill_split_cube_func, path);
+	g2_soft_split_quad_init(&quad, g2_gl_path_fill_split_quad_func, path);
+	g2_soft_split_cube_init(&cube, g2_gl_path_fill_split_cube_func, path);
 
 	// walk
 	for (; code < cail && data < dail; code++)
@@ -437,7 +437,7 @@ tb_bool_t g2_gl10_path_make_fill(g2_gl10_path_t* path)
 	// ok
 	return TB_TRUE;
 }
-tb_bool_t g2_gl10_path_make_stok(g2_gl10_path_t* path)
+tb_bool_t g2_gl_path_make_stok(g2_gl_path_t* path)
 {
 	tb_trace_noimpl();
 	return TB_FALSE;
@@ -449,7 +449,7 @@ tb_bool_t g2_gl10_path_make_stok(g2_gl10_path_t* path)
 tb_handle_t g2_path_init()
 {
 	// make
-	g2_gl10_path_t* path = tb_malloc0(sizeof(g2_gl10_path_t));
+	g2_gl_path_t* path = tb_malloc0(sizeof(g2_gl_path_t));
 	tb_assert_and_check_return_val(path, TB_NULL);
 
 	// init code
@@ -469,10 +469,10 @@ tb_handle_t g2_path_init()
 	path->itor.data = tb_iterator_tail(path->data);
 
 	// init flag
-	path->flag = G2_GL10_PATH_FLAG_NONE;
+	path->flag = G2_GL_PATH_FLAG_NONE;
 
 	// init like
-	path->like = G2_GL10_PATH_LIKE_NONE;
+	path->like = G2_GL_PATH_LIKE_NONE;
 
 	// ok
 	return path;
@@ -483,7 +483,7 @@ fail:
 }
 tb_void_t g2_path_exit(tb_handle_t path)
 {
-	g2_gl10_path_t* gpath = (g2_gl10_path_t*)path;
+	g2_gl_path_t* gpath = (g2_gl_path_t*)path;
 	if (gpath)
 	{
 		// exit code
@@ -507,14 +507,14 @@ tb_void_t g2_path_exit(tb_handle_t path)
 }
 tb_void_t g2_path_clear(tb_handle_t path)
 {
-	g2_gl10_path_t* gpath = (g2_gl10_path_t*)path;
+	g2_gl_path_t* gpath = (g2_gl_path_t*)path;
 	tb_assert_and_check_return(gpath);
 
 	// clear flag
-	gpath->flag = G2_GL10_PATH_FLAG_NONE;
+	gpath->flag = G2_GL_PATH_FLAG_NONE;
 
 	// clear like
-	gpath->like = G2_GL10_PATH_LIKE_NONE;
+	gpath->like = G2_GL_PATH_LIKE_NONE;
 
 	// clear code
 	if (gpath->code) tb_vector_clear(gpath->code);
@@ -526,14 +526,14 @@ tb_void_t g2_path_clear(tb_handle_t path)
 	if (gpath->size) tb_vector_clear(gpath->size);
 
 	// clear rect
-	tb_memset(&gpath->rect, 0, sizeof(g2_gl10_rect_t));
+	tb_memset(&gpath->rect, 0, sizeof(g2_gl_rect_t));
 
 	// clear fill 
-	g2_gl10_path_fill_clear(gpath);
+	g2_gl_path_fill_clear(gpath);
 }
 tb_void_t g2_path_close(tb_handle_t path)
 {
-	g2_gl10_path_t* gpath = (g2_gl10_path_t*)path;
+	g2_gl_path_t* gpath = (g2_gl_path_t*)path;
 	tb_assert_and_check_return(gpath && gpath->code);
 
 	// close it, no double closed
@@ -541,24 +541,24 @@ tb_void_t g2_path_close(tb_handle_t path)
 		tb_vector_insert_tail(gpath->code, G2_PATH_CODE_CLOS);
 
 	// close it
-	gpath->flag &= ~G2_GL10_PATH_FLAG_OPEN;
+	gpath->flag &= ~G2_GL_PATH_FLAG_OPEN;
 
 	// clear like
-	gpath->like = G2_GL10_PATH_LIKE_NONE;
+	gpath->like = G2_GL_PATH_LIKE_NONE;
 
 	// clear fill
-	g2_gl10_path_fill_clear(gpath);
+	g2_gl_path_fill_clear(gpath);
 }
 tb_bool_t g2_path_null(tb_handle_t path)
 {
-	g2_gl10_path_t* gpath = (g2_gl10_path_t*)path;
+	g2_gl_path_t* gpath = (g2_gl_path_t*)path;
 	tb_assert_and_check_return_val(gpath && gpath->data, TB_TRUE);
 
 	return tb_vector_size(gpath->data)? TB_FALSE : TB_TRUE;
 }
 tb_bool_t g2_path_last_pt(tb_handle_t path, g2_point_t* pt)
 {
-	g2_gl10_path_t* gpath = (g2_gl10_path_t*)path;
+	g2_gl_path_t* gpath = (g2_gl_path_t*)path;
 	tb_assert_and_check_return_val(gpath && gpath->data && pt, TB_FALSE);
 
 	// last
@@ -574,7 +574,7 @@ tb_bool_t g2_path_last_pt(tb_handle_t path, g2_point_t* pt)
 }
 tb_void_t g2_path_move_to(tb_handle_t path, g2_point_t const* pt)
 {
-	g2_gl10_path_t* gpath = (g2_gl10_path_t*)path;
+	g2_gl_path_t* gpath = (g2_gl_path_t*)path;
 	tb_assert_and_check_return(gpath && gpath->code && gpath->data && gpath->size && pt);
 
 	// data
@@ -583,8 +583,8 @@ tb_void_t g2_path_move_to(tb_handle_t path, g2_point_t const* pt)
 	data[1] = g2_float_to_tb(pt->y);
 
 	// bounds
-	if (!tb_vector_size(gpath->code)) g2_gl10_rect_init(&gpath->rect, data[0], data[1]);
-	else g2_gl10_rect_done(&gpath->rect, data[0], data[1]);
+	if (!tb_vector_size(gpath->code)) g2_gl_rect_init(&gpath->rect, data[0], data[1]);
+	else g2_gl_rect_done(&gpath->rect, data[0], data[1]);
 
 	// move to
 	if (!tb_vector_size(gpath->code) || (tb_byte_t)tb_vector_last(gpath->code) != G2_PATH_CODE_MOVE) 
@@ -597,17 +597,17 @@ tb_void_t g2_path_move_to(tb_handle_t path, g2_point_t const* pt)
 	else tb_vector_replace_last(gpath->data, data);
 
 	// open it
-	gpath->flag |= G2_GL10_PATH_FLAG_OPEN | G2_GL10_PATH_FLAG_MOVE;
+	gpath->flag |= G2_GL_PATH_FLAG_OPEN | G2_GL_PATH_FLAG_MOVE;
 
 	// clear like
-	gpath->like = G2_GL10_PATH_LIKE_NONE;
+	gpath->like = G2_GL_PATH_LIKE_NONE;
 
 	// clear fill
-	g2_gl10_path_fill_clear(gpath);
+	g2_gl_path_fill_clear(gpath);
 }
 tb_void_t g2_path_line_to(tb_handle_t path, g2_point_t const* pt)
 {
-	g2_gl10_path_t* gpath = (g2_gl10_path_t*)path;
+	g2_gl_path_t* gpath = (g2_gl_path_t*)path;
 	tb_assert_and_check_return(gpath && gpath->code && gpath->data && gpath->size && pt);
 
 	// data
@@ -616,10 +616,10 @@ tb_void_t g2_path_line_to(tb_handle_t path, g2_point_t const* pt)
 	data[1] = g2_float_to_tb(pt->y);
 
 	// bounds
-	g2_gl10_rect_done(&gpath->rect, data[0], data[1]);
+	g2_gl_rect_done(&gpath->rect, data[0], data[1]);
 
 	// patch move-to
-	if (!(gpath->flag & G2_GL10_PATH_FLAG_OPEN)) 
+	if (!(gpath->flag & G2_GL_PATH_FLAG_OPEN)) 
 	{
 		// the last
 		tb_float_t 			null[2] = {0};
@@ -631,20 +631,20 @@ tb_void_t g2_path_line_to(tb_handle_t path, g2_point_t const* pt)
 	}
 
 	// line to
-	gpath->flag |= G2_GL10_PATH_FLAG_LINE;
+	gpath->flag |= G2_GL_PATH_FLAG_LINE;
 	tb_vector_insert_tail(gpath->code, G2_PATH_CODE_LINE);
 	tb_vector_insert_tail(gpath->data, data);
 	tb_vector_replace_last(gpath->size, tb_vector_last(gpath->size) + 1);
 
 	// clear like
-	gpath->like = G2_GL10_PATH_LIKE_NONE;
+	gpath->like = G2_GL_PATH_LIKE_NONE;
 
 	// clear fill
-	g2_gl10_path_fill_clear(gpath);
+	g2_gl_path_fill_clear(gpath);
 }
 tb_void_t g2_path_quad_to(tb_handle_t path, g2_point_t const* cp, g2_point_t const* pt)
 {
-	g2_gl10_path_t* gpath = (g2_gl10_path_t*)path;
+	g2_gl_path_t* gpath = (g2_gl_path_t*)path;
 	tb_assert_and_check_return(gpath && gpath->code && gpath->data && gpath->size && cp && pt);
 
 	// data
@@ -655,11 +655,11 @@ tb_void_t g2_path_quad_to(tb_handle_t path, g2_point_t const* cp, g2_point_t con
 	data[3] = g2_float_to_tb(pt->y);
 
 	// bounds
-	g2_gl10_rect_done(&gpath->rect, data[0], data[1]);
-	g2_gl10_rect_done(&gpath->rect, data[2], data[3]);
+	g2_gl_rect_done(&gpath->rect, data[0], data[1]);
+	g2_gl_rect_done(&gpath->rect, data[2], data[3]);
 
 	// patch move-to
-	if (!(gpath->flag & G2_GL10_PATH_FLAG_OPEN)) 
+	if (!(gpath->flag & G2_GL_PATH_FLAG_OPEN)) 
 	{
 		// the last
 		tb_float_t 			null[2] = {0};
@@ -671,21 +671,21 @@ tb_void_t g2_path_quad_to(tb_handle_t path, g2_point_t const* cp, g2_point_t con
 	}
 
 	// quad to
-	gpath->flag |= G2_GL10_PATH_FLAG_QUAD;
+	gpath->flag |= G2_GL_PATH_FLAG_QUAD;
 	tb_vector_insert_tail(gpath->code, G2_PATH_CODE_QUAD);
 	tb_vector_insert_tail(gpath->data, &data[0]);
 	tb_vector_insert_tail(gpath->data, &data[2]);
 	tb_vector_replace_last(gpath->size, tb_vector_last(gpath->size) + 1);
 
 	// clear like
-	gpath->like = G2_GL10_PATH_LIKE_NONE;
+	gpath->like = G2_GL_PATH_LIKE_NONE;
 
 	// clear fill
-	g2_gl10_path_fill_clear(gpath);
+	g2_gl_path_fill_clear(gpath);
 }
 tb_void_t g2_path_cube_to(tb_handle_t path, g2_point_t const* c0, g2_point_t const* c1, g2_point_t const* pt)
 {
-	g2_gl10_path_t* gpath = (g2_gl10_path_t*)path;
+	g2_gl_path_t* gpath = (g2_gl_path_t*)path;
 	tb_assert_and_check_return(gpath && gpath->code && gpath->data && gpath->size && c0 && c1 && pt);
 
 	// data
@@ -698,12 +698,12 @@ tb_void_t g2_path_cube_to(tb_handle_t path, g2_point_t const* c0, g2_point_t con
 	data[5] = g2_float_to_tb(pt->y);
 
 	// bounds
-	g2_gl10_rect_done(&gpath->rect, data[0], data[1]);
-	g2_gl10_rect_done(&gpath->rect, data[2], data[3]);
-	g2_gl10_rect_done(&gpath->rect, data[4], data[5]);
+	g2_gl_rect_done(&gpath->rect, data[0], data[1]);
+	g2_gl_rect_done(&gpath->rect, data[2], data[3]);
+	g2_gl_rect_done(&gpath->rect, data[4], data[5]);
 
 	// patch move-to
-	if (!(gpath->flag & G2_GL10_PATH_FLAG_OPEN)) 
+	if (!(gpath->flag & G2_GL_PATH_FLAG_OPEN)) 
 	{
 		// the last
 		tb_float_t 			null[2] = {0};
@@ -715,7 +715,7 @@ tb_void_t g2_path_cube_to(tb_handle_t path, g2_point_t const* c0, g2_point_t con
 	}
 
 	// cube to
-	gpath->flag |= G2_GL10_PATH_FLAG_CUBE;
+	gpath->flag |= G2_GL_PATH_FLAG_CUBE;
 	tb_vector_insert_tail(gpath->code, G2_PATH_CODE_CUBE);
 	tb_vector_insert_tail(gpath->data, &data[0]);
 	tb_vector_insert_tail(gpath->data, &data[2]);
@@ -723,10 +723,10 @@ tb_void_t g2_path_cube_to(tb_handle_t path, g2_point_t const* c0, g2_point_t con
 	tb_vector_replace_last(gpath->size, tb_vector_last(gpath->size) + 1);
 
 	// clear like
-	gpath->like = G2_GL10_PATH_LIKE_NONE;
+	gpath->like = G2_GL_PATH_LIKE_NONE;
 
 	// clear fill
-	g2_gl10_path_fill_clear(gpath);
+	g2_gl_path_fill_clear(gpath);
 }
 tb_void_t g2_path_arc_to(tb_handle_t path, g2_arc_t const* arc)
 {
@@ -734,7 +734,7 @@ tb_void_t g2_path_arc_to(tb_handle_t path, g2_arc_t const* arc)
 }
 tb_bool_t g2_path_itor_init(tb_handle_t path)
 {
-	g2_gl10_path_t* gpath = (g2_gl10_path_t*)path;
+	g2_gl_path_t* gpath = (g2_gl_path_t*)path;
 	tb_assert_and_check_return_val(gpath && gpath->code && gpath->data, TB_FALSE);
 
 	// check
@@ -750,7 +750,7 @@ tb_bool_t g2_path_itor_init(tb_handle_t path)
 }
 tb_size_t g2_path_itor_next(tb_handle_t path, g2_point_t pt[3])
 {
-	g2_gl10_path_t* gpath = (g2_gl10_path_t*)path;
+	g2_gl_path_t* gpath = (g2_gl_path_t*)path;
 	tb_assert_and_check_return_val(gpath && gpath->code && gpath->data && pt, G2_PATH_CODE_NONE);
 
 	// tail?
@@ -760,7 +760,7 @@ tb_size_t g2_path_itor_next(tb_handle_t path, g2_point_t pt[3])
 	tb_size_t code = (tb_size_t)tb_iterator_item(gpath->code, gpath->itor.code);
 
 	// step
-	tb_size_t step = g2_gl10_path_code_step(code);
+	tb_size_t step = g2_gl_path_code_step(code);
 
 	// data
 	if (step)
@@ -818,7 +818,7 @@ tb_size_t g2_path_itor_next(tb_handle_t path, g2_point_t pt[3])
 }
 tb_void_t g2_path_itor_exit(tb_handle_t path)
 {
-	g2_gl10_path_t* gpath = (g2_gl10_path_t*)path;
+	g2_gl_path_t* gpath = (g2_gl_path_t*)path;
 	tb_assert_and_check_return(gpath);
 
 	gpath->itor.code = tb_iterator_tail(gpath->code);

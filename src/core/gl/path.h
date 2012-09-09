@@ -20,8 +20,8 @@
  * @file		path.h
  *
  */
-#ifndef G2_CORE_GL10_PATH_H
-#define G2_CORE_GL10_PATH_H
+#ifndef G2_CORE_GL_PATH_H
+#define G2_CORE_GL_PATH_H
 
 /* ///////////////////////////////////////////////////////////////////////
  * includes
@@ -32,8 +32,8 @@
  * types
  */
 
-// the gl10 path itor type
-typedef struct __g2_gl10_path_itor_t
+// the gl path itor type
+typedef struct __g2_gl_path_itor_t
 {
 	// the code
 	tb_size_t 				code;
@@ -41,13 +41,13 @@ typedef struct __g2_gl10_path_itor_t
 	// the data
 	tb_size_t 				data;
 
-}g2_gl10_path_itor_t;
+}g2_gl_path_itor_t;
 
-// the gl10 path fill type
-typedef struct __g2_gl10_path_fill_t
+// the gl path fill type
+typedef struct __g2_gl_path_fill_t
 {
 	// the rect bounds
-	g2_gl10_rect_t 			rect;
+	g2_gl_rect_t 			rect;
 
 	// the data, vector<tb_float_t[2]>
 	tb_vector_t* 			data;
@@ -55,10 +55,10 @@ typedef struct __g2_gl10_path_fill_t
 	// the size, vector<tb_uint16_t>
 	tb_vector_t* 			size;
 
-}g2_gl10_path_fill_t;
+}g2_gl_path_fill_t;
 
-// the gl10 path stok type
-typedef struct __g2_gl10_path_stok_t
+// the gl path stok type
+typedef struct __g2_gl_path_stok_t
 {
 	// the data, vector<tb_float_t[2]>
 	tb_vector_t* 			data;
@@ -66,33 +66,33 @@ typedef struct __g2_gl10_path_stok_t
 	// the size, vector<tb_uint16_t>
 	tb_vector_t* 			size;
 
-}g2_gl10_path_stok_t;
+}g2_gl_path_stok_t;
 
-// the gl10 path flag type
-typedef enum __g2_gl10_path_flag_t
+// the gl path flag type
+typedef enum __g2_gl_path_flag_t
 {
-	G2_GL10_PATH_FLAG_NONE 	= 0 	//< none
-,	G2_GL10_PATH_FLAG_OPEN 	= 1 	//< is opened?
-,	G2_GL10_PATH_FLAG_MOVE 	= 2 	//< has move-to?
-,	G2_GL10_PATH_FLAG_LINE 	= 4 	//< has line-to?
-,	G2_GL10_PATH_FLAG_QUAD 	= 8 	//< has quad-to?
-,	G2_GL10_PATH_FLAG_CUBE 	= 16 	//< has cube-to?
+	G2_GL_PATH_FLAG_NONE 	= 0 	//< none
+,	G2_GL_PATH_FLAG_OPEN 	= 1 	//< is opened?
+,	G2_GL_PATH_FLAG_MOVE 	= 2 	//< has move-to?
+,	G2_GL_PATH_FLAG_LINE 	= 4 	//< has line-to?
+,	G2_GL_PATH_FLAG_QUAD 	= 8 	//< has quad-to?
+,	G2_GL_PATH_FLAG_CUBE 	= 16 	//< has cube-to?
 
-}g2_gl10_path_flag_t;
+}g2_gl_path_flag_t;
 
-// the gl10 path like type
-typedef enum __g2_gl10_path_like_t
+// the gl path like type
+typedef enum __g2_gl_path_like_t
 {
-	G2_GL10_PATH_LIKE_NONE 	= 0 	//< none
-,	G2_GL10_PATH_LIKE_LINE 	= 1 	//< like line?
-,	G2_GL10_PATH_LIKE_RECT 	= 2 	//< like rect?
-,	G2_GL10_PATH_LIKE_TRIG 	= 3 	//< like triangle?
-,	G2_GL10_PATH_LIKE_CONX 	= 4 	//< like convex polygon?
+	G2_GL_PATH_LIKE_NONE 	= 0 	//< none
+,	G2_GL_PATH_LIKE_LINE 	= 1 	//< like line?
+,	G2_GL_PATH_LIKE_RECT 	= 2 	//< like rect?
+,	G2_GL_PATH_LIKE_TRIG 	= 3 	//< like triangle?
+,	G2_GL_PATH_LIKE_CONX 	= 4 	//< like convex polygon?
 
-}g2_gl10_path_like_t;
+}g2_gl_path_like_t;
 
-// the gl10 path type
-typedef struct __g2_gl10_path_t
+// the gl path type
+typedef struct __g2_gl_path_t
 {
 	// the flag
 	tb_size_t 				flag;
@@ -107,7 +107,7 @@ typedef struct __g2_gl10_path_t
 	g2_triangle_t			trig;
 
 	// the liked rect or the bounds
-	g2_gl10_rect_t 			rect;
+	g2_gl_rect_t 			rect;
 
 	// the code, vector<tb_byte_t>
 	tb_vector_t* 			code;
@@ -119,27 +119,27 @@ typedef struct __g2_gl10_path_t
 	tb_vector_t* 			size;
 
 	// the fill path
-	g2_gl10_path_fill_t 	fill;
+	g2_gl_path_fill_t 		fill;
 
 	// the stok path
-	g2_gl10_path_stok_t 	stok;
+	g2_gl_path_stok_t 		stok;
 
 	// the itor
-	g2_gl10_path_itor_t 	itor;
+	g2_gl_path_itor_t 		itor;
 
-}g2_gl10_path_t;
+}g2_gl_path_t;
 
 /* ///////////////////////////////////////////////////////////////////////
  * interfaces
  */
 
-// make fill path for gl10
-tb_bool_t g2_gl10_path_make_fill(g2_gl10_path_t* path);
+// make fill path for gl
+tb_bool_t g2_gl_path_make_fill(g2_gl_path_t* path);
 
-// make stok path for gl10
-tb_bool_t g2_gl10_path_make_stok(g2_gl10_path_t* path);
+// make stok path for gl
+tb_bool_t g2_gl_path_make_stok(g2_gl_path_t* path);
 
-// make like path for gl10
-tb_void_t g2_gl10_path_make_like(g2_gl10_path_t* path);
+// make like path for gl
+tb_void_t g2_gl_path_make_like(g2_gl_path_t* path);
 
 #endif

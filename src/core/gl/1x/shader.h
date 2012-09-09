@@ -20,8 +20,8 @@
  * @file		shader.h
  *
  */
-#ifndef G2_CORE_GL10_SHADER_H
-#define G2_CORE_GL10_SHADER_H
+#ifndef G2_CORE_GL1x_SHADER_H
+#define G2_CORE_GL1x_SHADER_H
 
 /* ///////////////////////////////////////////////////////////////////////
  * includes
@@ -32,27 +32,27 @@
  * types
  */
 
-// the gl10 shader type constants
-typedef enum __g2_gl10_shader_type_t
+// the gl1x shader type constants
+typedef enum __g2_gl1x_shader_type_t
 {
-	G2_GL10_SHADER_TYPE_NONE 				= 0
-,	G2_GL10_SHADER_TYPE_GRADIENT_LINEAR 	= 1
-,	G2_GL10_SHADER_TYPE_GRADIENT_RADIAL 	= 2
-,	G2_GL10_SHADER_TYPE_GRADIENT_RADIAL2 	= 3
-,	G2_GL10_SHADER_TYPE_BITMAP 				= 4
+	G2_GL1x_SHADER_TYPE_NONE 				= 0
+,	G2_GL1x_SHADER_TYPE_GRADIENT_LINEAR 	= 1
+,	G2_GL1x_SHADER_TYPE_GRADIENT_RADIAL 	= 2
+,	G2_GL1x_SHADER_TYPE_GRADIENT_RADIAL2 	= 3
+,	G2_GL1x_SHADER_TYPE_BITMAP 				= 4
 
-}g2_gl10_shader_type_t;
+}g2_gl1x_shader_type_t;
 
-// the gl10 shader flag constants
-typedef enum __g2_gl10_shader_flag_t
+// the gl1x shader flag constants
+typedef enum __g2_gl1x_shader_flag_t
 {
-	G2_GL10_SHADER_FLAG_NONE 				= 0
-,	G2_GL10_SHADER_FLAG_ALPHA 				= 1
+	G2_GL1x_SHADER_FLAG_NONE 				= 0
+,	G2_GL1x_SHADER_FLAG_ALPHA 				= 1
 
-}g2_gl10_shader_flag_t;
+}g2_gl1x_shader_flag_t;
 
-// the gl10 shader type
-typedef struct __g2_gl10_shader_t
+// the gl1x shader type
+typedef struct __g2_gl1x_shader_t
 {
 	// the type
 	tb_size_t 				type;
@@ -81,6 +81,6 @@ typedef struct __g2_gl10_shader_t
 	// the matrix
 	g2_matrix_t 			matrix;
 
-}g2_gl10_shader_t;
+}g2_gl1x_shader_t;
 
 #endif

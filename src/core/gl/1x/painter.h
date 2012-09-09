@@ -17,18 +17,55 @@
  * Copyright (C) 2009 - 2012, ruki All rights reserved.
  *
  * @author		ruki
- * @file		prefix.h
+ * @file		painter.h
  *
  */
-#ifndef G2_CORE_GL20_PREFIX_H
-#define G2_CORE_GL20_PREFIX_H
+#ifndef G2_CORE_GL1x_PAINTER_H
+#define G2_CORE_GL1x_PAINTER_H
 
 /* ///////////////////////////////////////////////////////////////////////
  * includes
  */
-#include "../prefix.h"
+#include "context.h"
+
+/* ///////////////////////////////////////////////////////////////////////
+ * types
+ */
+
+// the gl110 matrix and clip item type for stack
+typedef struct __g2_gl1x_mcitem_t
+{
+	// the mode
+	tb_size_t 					mode;
+
+	// the matrix
+	g2_matrix_t 				matrix;
+
+	// the clipper
+	tb_handle_t 				clipper;
+
+}g2_gl1x_mcitem_t;
+
+// the gl1x painter type
+typedef struct __g2_gl1x_painter_t
+{
+	// the context
+	g2_gl1x_context_t* 			context;
+
+	// the matrix
+	g2_matrix_t 				matrix;
+
+	// the style
+	tb_handle_t 				style_def;
+	tb_handle_t 				style_usr;
+
+	// the vertices, vector<tb_float_t[2]>
+	tb_vector_t* 				vertices;
+
+	// the matrix and clipper stack
+	tb_stack_t* 				mcstack;
+
+}g2_gl1x_painter_t;
 
 
 #endif
-
-

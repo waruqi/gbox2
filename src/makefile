@@ -44,18 +44,18 @@ gbox2_C_FILES 			+= \
 						core/image/decoder/gif \
 						core/image/decoder/decoder
 
-gbox2_C_FILES-$(G2_CONFIG_CORE_GL10) += \
+gbox2_C_FILES-$(G2_CONFIG_CORE_GL1x) += \
 						core/soft/style \
 						core/soft/bitmap \
 						core/soft/split/quad \
 						core/soft/split/cube \
 						core/soft/split/circle \
 						core/soft/split/ellipse \
-						core/gl10/path \
-						core/gl10/fill \
-						core/gl10/shader \
-						core/gl10/context \
-						core/gl10/painter
+						core/gl/path \
+						core/gl/1x/fill \
+						core/gl/1x/shader \
+						core/gl/1x/context \
+						core/gl/1x/painter
 
 
 gbox2_CPP_FILES-$(G2_CONFIG_CORE_SKIA) += \

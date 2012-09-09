@@ -1,5 +1,5 @@
-#ifndef G2_APK_GL10_JNI_H
-#define G2_APK_GL10_JNI_H
+#ifndef G2_APK_GL1x_JNI_H
+#define G2_APK_GL1x_JNI_H
 
 // c plus plus
 #ifdef __cplusplus

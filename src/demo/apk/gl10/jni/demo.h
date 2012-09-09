@@ -1,5 +1,5 @@
-#ifndef G2_APK_GL10_DEMO_H
-#define G2_APK_GL10_DEMO_H
+#ifndef G2_APK_GL1x_DEMO_H
+#define G2_APK_GL1x_DEMO_H
 
 // c plus plus
 #ifdef __cplusplus
