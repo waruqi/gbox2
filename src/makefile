@@ -57,6 +57,19 @@ gbox2_C_FILES-$(G2_CONFIG_CORE_GL1x) += \
 						core/gl/1x/context \
 						core/gl/1x/painter
 
+gbox2_C_FILES-$(G2_CONFIG_CORE_GL2x) += \
+						core/soft/style \
+						core/soft/bitmap \
+						core/soft/split/quad \
+						core/soft/split/cube \
+						core/soft/split/circle \
+						core/soft/split/ellipse \
+						core/soft/shader \
+						core/gl/path \
+						core/gl/2x/fill \
+						core/gl/2x/context \
+						core/gl/2x/painter
+
 
 gbox2_CPP_FILES-$(G2_CONFIG_CORE_SKIA) += \
 						core/skia/path \

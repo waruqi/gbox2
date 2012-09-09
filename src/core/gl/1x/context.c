@@ -43,7 +43,7 @@
 #endif
 
 // extensions
-#define G2_Gl1x_CONTEXT_EXT_INIT(ext) 			if (!tb_strncmp(p, "GL_" #ext, l)) context->extensions[G2_GL_EXT_##ext] = 1;
+#define G2_GL2x_CONTEXT_EXT_INIT(ext) 			if (!tb_strncmp(p, "GL_" #ext, l)) context->extensions[G2_GL_EXT_##ext] = 1;
 
 /* ///////////////////////////////////////////////////////////////////////
  * version & compatibility
@@ -79,7 +79,7 @@ static __tb_inline__ tb_void_t g2_gl1x_context_extensions(g2_gl1x_context_t* con
 		tb_size_t 			l = q? q - p : tb_strlen(p);
 
 		// init
-		G2_Gl1x_CONTEXT_EXT_INIT(ARB_texture_non_power_of_two);
+		G2_GL2x_CONTEXT_EXT_INIT(ARB_texture_non_power_of_two);
 	
 		// next
 		p += l + 1;

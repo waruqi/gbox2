@@ -17,29 +17,34 @@
  * Copyright (C) 2009 - 2012, ruki All rights reserved.
  *
  * @author		ruki
- * @file		prefix.h
+ * @file		context.h
  *
  */
-#ifndef G2_CORE_GL2x_PREFIX_H
-#define G2_CORE_GL2x_PREFIX_H
+#ifndef G2_CORE_GL2x_CONTEXT_H
+#define G2_CORE_GL2x_CONTEXT_H
 
 /* ///////////////////////////////////////////////////////////////////////
  * includes
  */
-#include "../prefix.h"
-#if defined(TB_CONFIG_OS_MAC)
-# 	include <OpenGL/gl.h>
-# 	include <OpenGL/glu.h>
-# 	include <GLUT/glut.h>
-#elif defined(TB_CONFIG_OS_ANDROID)
-# 	include <GLES/gl.h>
-# 	include <GLES/glext.h>
-#else
-# 	include <GL/glut.h>
-# 	include <GL/glext.h>
-#endif
+#include "prefix.h"
+
+/* ///////////////////////////////////////////////////////////////////////
+ * types
+ */
+
+// the gl2x context type
+typedef struct __g2_gl2x_context_t
+{
+	// the surface
+	tb_handle_t 		surface;
+
+	// the version
+	tb_byte_t 			version;
+
+	// the extensions
+	tb_byte_t 			extensions[G2_GL_EXT_MAXN];
+
+}g2_gl2x_context_t;
 
 
 #endif
-
-
