@@ -133,16 +133,19 @@ static __tb_inline__ tb_bool_t g2_gl10_fill_context_init(g2_gl10_fill_t* fill)
 	// init color
 	if (!shader)
 	{
-		g2_color_t color = g2_style_color(style);
-		glColor4f(color.r / 256., color.g / 256., color.b / 256., color.a / 256.);
+		tb_byte_t 	alpha = g2_style_alpha(style);
+		g2_color_t 	color = g2_style_color(style);
 
 		// enable blend?
-		if (color.a != 0xff) 
+		if (alpha != 0xff) 
 		{
 			glEnable(GL_BLEND);
 			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		}
 		else glDisable(GL_BLEND);
+	
+		// init color
+		glColor4f((tb_float_t)color.r / 0xff, (tb_float_t)color.g / 0xff, (tb_float_t)color.b / 0xff, (tb_float_t)color.a / 0xff);
 	}
 
 	// ok
@@ -167,16 +170,17 @@ static __tb_inline__ tb_void_t g2_gl10_fill_context_exit(g2_gl10_fill_t* fill)
 }
 static __tb_inline__ tb_void_t g2_gl10_fill_style_draw_color(g2_gl10_fill_t* fill, g2_color_t color)
 {
-	// init color
-	glColor4f(color.r / 256., color.g / 256., color.b / 256., color.a / 256.);
-
 	// enable blend?
-	if (color.a != 0xff) 
+	tb_byte_t alpha = g2_style_alpha(fill->style);
+	if (alpha != 0xff) 
 	{
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	}
 	else glDisable(GL_BLEND);
+
+	// init color
+	glColor4f((tb_float_t)color.r / 0xff, (tb_float_t)color.g / 0xff, (tb_float_t)color.b / 0xff, (tb_float_t)color.a / 0xff);
 
 	// draw
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
@@ -244,15 +248,23 @@ static __tb_inline__ tb_void_t g2_gl10_fill_style_draw_shader(g2_gl10_fill_t* fi
 		glMultMatrixf(fill->matrix);
 
 		// blend?
-		if (shader->flag & G2_GL10_SHADER_FLAG_ALPHA)
+		tb_byte_t alpha = g2_style_alpha(fill->style);
+		if (shader->flag & G2_GL10_SHADER_FLAG_ALPHA
+			|| shader->wrap == G2_SHADER_WRAP_BORDER
+			|| alpha != 0xff
+			)
 		{
 			glEnable(GL_BLEND);
 			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+			glColor4f(1.0f, 1.0f, 1.0f, (tb_float_t)alpha / 0xff);	
 		}
-		else glDisable(GL_BLEND);
+		else 
+		{
+			glDisable(GL_BLEND);
+			glColor4f(1.0f, 1.0f, 1.0f, 1.0f);	
+		}
 
 		// mode
-		glColor4f(1.0f, 1.0f, 1.0f, 1.0f);	
 		glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 
 		// wrap
