@@ -36,14 +36,6 @@
 //#define TB_CONFIG_ASSEMBLER_NASM
 //#define TB_CONFIG_ASSEMBLER_YASM
 
-// keyword
-#define TB_CONFIG_KEYWORD_INLINE		inline
-#define TB_CONFIG_KEYWORD_REGISTER		register
-#define TB_CONFIG_KEYWORD_ASM 			__asm__
-#define TB_CONFIG_KEYWORD_FUNC			__FUNCTION__
-#define TB_CONFIG_KEYWORD_LINE			__LINE__
-#define TB_CONFIG_KEYWORD_FILE			__FILE__
-
 // type
 #define TB_CONFIG_TYPE_FLOAT
 
