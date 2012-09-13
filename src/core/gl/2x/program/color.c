@@ -35,19 +35,50 @@
  * implementation
  */
 
-g2_gl2x_program_t* g2_gl2x_program_init_color()
+tb_handle_t g2_gl2x_program_init_color()
 {
-	// make
-	g2_gl2x_program_t* program = tb_malloc0(sizeof(g2_gl2x_program_t));
+	// init
+	tb_handle_t program = g2_gl2x_program_init();
 	tb_assert_and_check_return_val(program, TB_NULL);
 
-	// init
-	program->program = glCreateProgram();
-	tb_assert_and_check_goto(program->program, fail);
+	// the vertex shader
+	tb_char_t const* vshader = 
+		"precision mediump float; 												\n"
+		" 																		\n"
+		"attribute vec4 aColor; 												\n"
+		"attribute vec4 aVertices; 												\n"
+		" 																		\n"
+		"varying vec4 vColor; 													\n"
+		"uniform mat4 uMatrix; 													\n"
+		" 																		\n"
+		"void main() 															\n"
+		"{ 																		\n"
+		" 	vColor = aColor; 													\n"
+		" 	gl_Position = uMatrix * aVertices; 									\n"                                                                  
+		"} 																		\n";
+	
+	// the fragment shader
+	tb_char_t const* fshader = 
+		"precision mediump float; 												\n"
+		" 																		\n"
+		"varying vec4 vColor; 													\n"
+		" 																		\n"
+		"void main() 															\n"
+		"{ 																		\n"
+		"   gl_FragColor = vColor; 												\n"
+		"} 																		\n";
+
+	// load shader: vertex
+	if (!g2_gl2x_program_load(program, vshader, GL_VERTEX_SHADER)) goto fail;
+	
+	// load shader: fragment
+	if (!g2_gl2x_program_load(program, fshader, GL_FRAGMENT_SHADER)) goto fail;
+
+	// make program
+	if (!g2_gl2x_program_make(program)) goto fail;
 
 	// ok
 	return program;
-
 fail:
 	if (program) g2_gl2x_program_exit(program);
 	return TB_NULL;

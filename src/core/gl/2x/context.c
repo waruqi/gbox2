@@ -111,6 +111,10 @@ tb_handle_t g2_context_init_gl2x(tb_size_t pixfmt, tb_size_t width, tb_size_t he
 	gcontext->surface = g2_bitmap_init(pixfmt, width, height, 0);
 	tb_assert_and_check_goto(gcontext->surface, fail);
 
+	// init programs
+	gcontext->programs[G2_GL2X_PROGRAM_TYPE_COLOR] = g2_gl2x_program_init_color();
+	tb_assert_and_check_goto(gcontext->programs[G2_GL2X_PROGRAM_TYPE_COLOR], fail);
+
 	// init viewport
 	glViewport(0, 0, width, height);
 
@@ -140,6 +144,11 @@ tb_void_t g2_context_exit(tb_handle_t context)
 	g2_gl2x_context_t* gcontext = (g2_gl2x_context_t*)context;
 	if (gcontext) 
 	{
+		// exit programs 
+		tb_size_t i = 0;
+		for (i = 0; i < G2_GL2X_PROGRAM_TYPE_MAXN; i++)
+			if (gcontext->programs[i]) g2_gl2x_program_exit(gcontext->programs[i]);
+
 		// free surface
 		if (gcontext->surface) g2_bitmap_exit(gcontext->surface);
 

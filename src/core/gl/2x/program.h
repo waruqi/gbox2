@@ -29,54 +29,44 @@
 #include "prefix.h"
 
 /* ///////////////////////////////////////////////////////////////////////
- * macros
- */
-#define G2_GL2X_PROGRAM_SHADER_MAXN 		(8)
-
-/* ///////////////////////////////////////////////////////////////////////
  * types
  */
 
 // the gl2x program type
-typedef struct __g2_gl2x_program_t
+typedef enum __g2_gl2x_program_type_t
 {
-	// the shaders
-	GLuint 			shaders[G2_GL2X_PROGRAM_SHADER_MAXN];
-	tb_size_t 		shadern;
+	G2_GL2X_PROGRAM_TYPE_NONE 	= 0
+,	G2_GL2X_PROGRAM_TYPE_COLOR 	= 1
+,	G2_GL2X_PROGRAM_TYPE_MAXN 	= 2
 
-	// the program
-	GLuint 			program;
+}g2_gl2x_program_type_t;
 
-	// exit
-	tb_void_t 		(*exit)(struct __g2_gl2x_program_t* program);
-
-}g2_gl2x_program_t;
 
 /* ///////////////////////////////////////////////////////////////////////
  * interfaces
  */
 
 // init & exit
-tb_bool_t 			g2_gl2x_program_init(g2_gl2x_program_t* program);
-tb_void_t 			g2_gl2x_program_exit(g2_gl2x_program_t* program);
+tb_handle_t 		g2_gl2x_program_init();
+tb_void_t 			g2_gl2x_program_exit(tb_handle_t program);
 
 // init program: color
-g2_gl2x_program_t* 	g2_gl2x_program_init_color();
+tb_handle_t 		g2_gl2x_program_init_color();
 
 // load shader
-tb_bool_t 			g2_gl2x_program_load(g2_gl2x_program_t* program, tb_char_t const* shader, tb_size_t type);
+tb_bool_t 			g2_gl2x_program_load(tb_handle_t program, tb_char_t const* shader, tb_size_t type);
 
 // make program
-tb_bool_t 			g2_gl2x_program_make(g2_gl2x_program_t* program);
+tb_bool_t 			g2_gl2x_program_make(tb_handle_t program);
 
 // uses program
-tb_void_t 			g2_gl2x_program_uses(g2_gl2x_program_t* program);
+tb_void_t 			g2_gl2x_program_uses(tb_handle_t program);
 
 // the attribute location
-tb_pointer_t 		g2_gl2x_program_attr(g2_gl2x_program_t* program, tb_char_t const* name);
+tb_pointer_t 		g2_gl2x_program_attr(tb_handle_t program, tb_char_t const* name);
 
 // the uniform location
-tb_pointer_t 		g2_gl2x_program_unif(g2_gl2x_program_t* program, tb_char_t const* name);
+tb_pointer_t 		g2_gl2x_program_unif(tb_handle_t program, tb_char_t const* name);
 
 
 #endif

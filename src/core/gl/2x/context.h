@@ -27,6 +27,7 @@
  * includes
  */
 #include "prefix.h"
+#include "program.h"
 
 /* ///////////////////////////////////////////////////////////////////////
  * types
@@ -43,6 +44,9 @@ typedef struct __g2_gl2x_context_t
 
 	// the extensions
 	tb_byte_t 			extensions[G2_GL_EXT_MAXN];
+
+	// the programs
+	tb_handle_t 		programs[G2_GL2X_PROGRAM_TYPE_MAXN];
 
 }g2_gl2x_context_t;
 
