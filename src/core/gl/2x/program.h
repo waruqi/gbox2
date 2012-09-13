@@ -17,73 +17,66 @@
  * Copyright (C) 2009 - 2012, ruki All rights reserved.
  *
  * @author		ruki
- * @file		context.h
+ * @file		program.h
  *
  */
-#ifndef G2_CORE_GL1x_CONTEXT_H
-#define G2_CORE_GL1x_CONTEXT_H
+#ifndef G2_CORE_GL2x_PROGRAM_H
+#define G2_CORE_GL2x_PROGRAM_H
 
 /* ///////////////////////////////////////////////////////////////////////
  * includes
  */
 #include "prefix.h"
-#include "shader.h"
 
 /* ///////////////////////////////////////////////////////////////////////
  * macros
  */
-
-// the texture maxn
-#ifdef TB_CONFIG_MEMORY_MODE_SMALL
-# 	define G2_GL1x_TEXTURE_MAXN 		(256)
-#else
-# 	define G2_GL1x_TEXTURE_MAXN 		(1024)
-#endif
-
-// the used
-#define G2_GL1x_TEXTURE_USED 			(1)
-#define G2_GL1x_SHADERS_USED 			(2)
+#define G2_GL2X_PROGRAM_SHADER_MAXN 		(8)
 
 /* ///////////////////////////////////////////////////////////////////////
  * types
  */
 
-// the gl1x context type
-typedef struct __g2_gl1x_context_t
+// the gl2x program type
+typedef struct __g2_gl2x_program_t
 {
-	// the surface
-	tb_handle_t 		surface;
-
-	// the version
-	tb_byte_t 			version;
-
-	// the extensions
-	tb_byte_t 			extensions[G2_GL_EXT_MAXN];
-
-	// the used
-	tb_byte_t 			used[G2_GL1x_TEXTURE_MAXN];
-
-	// the texture
-	GLuint 				texture[G2_GL1x_TEXTURE_MAXN];
-	tb_size_t 			texture_pred;
-
 	// the shaders
-	g2_gl1x_shader_t	shaders[G2_GL1x_TEXTURE_MAXN];
-	tb_size_t 			shaders_pred;
+	GLuint 			shaders[G2_GL2X_PROGRAM_SHADER_MAXN];
+	tb_size_t 		shadern;
 
-}g2_gl1x_context_t;
+	// the program
+	GLuint 			program;
+
+	// exit
+	tb_void_t 		(*exit)(struct __g2_gl2x_program_t* program);
+
+}g2_gl2x_program_t;
 
 /* ///////////////////////////////////////////////////////////////////////
  * interfaces
  */
 
-// the context texture
-GLuint* 			g2_gl1x_context_texture_alc(g2_gl1x_context_t* context);
-tb_void_t 			g2_gl1x_context_texture_del(g2_gl1x_context_t* context, GLuint const* texture);
+// init & exit
+tb_bool_t 			g2_gl2x_program_init(g2_gl2x_program_t* program);
+tb_void_t 			g2_gl2x_program_exit(g2_gl2x_program_t* program);
 
-// the context shader
-g2_gl1x_shader_t* 	g2_gl1x_context_shader_alc(g2_gl1x_context_t* context);
-tb_void_t 			g2_gl1x_context_shader_del(g2_gl1x_context_t* context, g2_gl1x_shader_t const* shader);
+// init program: color
+g2_gl2x_program_t* 	g2_gl2x_program_init_color();
+
+// load shader
+tb_bool_t 			g2_gl2x_program_load(g2_gl2x_program_t* program, tb_char_t const* shader, tb_size_t type);
+
+// make program
+tb_bool_t 			g2_gl2x_program_make(g2_gl2x_program_t* program);
+
+// uses program
+tb_void_t 			g2_gl2x_program_uses(g2_gl2x_program_t* program);
+
+// the attribute location
+tb_pointer_t 		g2_gl2x_program_attr(g2_gl2x_program_t* program, tb_char_t const* name);
+
+// the uniform location
+tb_pointer_t 		g2_gl2x_program_unif(g2_gl2x_program_t* program, tb_char_t const* name);
 
 
 #endif

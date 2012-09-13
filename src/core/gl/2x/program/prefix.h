@@ -20,25 +20,14 @@
  * @file		prefix.h
  *
  */
-#ifndef G2_CORE_GL2x_PREFIX_H
-#define G2_CORE_GL2x_PREFIX_H
+#ifndef G2_CORE_GL2x_PROGRAM_PREFIX_H
+#define G2_CORE_GL2x_PROGRAM_PREFIX_H
 
 /* ///////////////////////////////////////////////////////////////////////
  * includes
  */
 #include "../prefix.h"
-#if defined(TB_CONFIG_OS_MAC)
-# 	include <OpenGL/gl.h>
-# 	include <OpenGL/glu.h>
-# 	include <GLUT/glut.h>
-#elif defined(TB_CONFIG_OS_ANDROID)
-# 	include <GLES/gl.h>
-# 	include <GLES/glext.h>
-#else
-# 	define GL_GLEXT_PROTOTYPES
-# 	include <GL/glut.h>
-# 	include <GL/glext.h>
-#endif
+#include "../program.h"
 
 
 #endif

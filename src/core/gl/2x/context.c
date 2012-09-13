@@ -89,8 +89,6 @@ tb_handle_t g2_context_init_gl2x(tb_size_t pixfmt, tb_size_t width, tb_size_t he
 
 	// check type
 	tb_assert_static(sizeof(GLfloat) == sizeof(tb_float_t));
-	tb_assert_static(sizeof(GLint) == sizeof(tb_int_t));
-	tb_assert_static(sizeof(GLuint) == sizeof(tb_uint_t));
 
 	// check pixfmt
 	tb_assert_and_check_return_val( 	G2_PIXFMT(pixfmt) == G2_PIXFMT_ARGB8888
@@ -112,6 +110,23 @@ tb_handle_t g2_context_init_gl2x(tb_size_t pixfmt, tb_size_t width, tb_size_t he
 	// init surface
 	gcontext->surface = g2_bitmap_init(pixfmt, width, height, 0);
 	tb_assert_and_check_goto(gcontext->surface, fail);
+
+	// init viewport
+	glViewport(0, 0, width, height);
+
+	// disable antialiasing
+	glDisable(GL_POINT_SMOOTH);
+	glDisable(GL_LINE_SMOOTH);
+#ifndef TB_CONFIG_OS_ANDROID
+	glDisable(GL_POLYGON_SMOOTH);
+#endif
+	glDisable(GL_MULTISAMPLE);
+
+	// disable blend
+	glDisable(GL_BLEND);
+
+	// disable texture
+	glDisable(GL_TEXTURE_2D);
 
 	// ok
 	return gcontext;
@@ -146,6 +161,9 @@ tb_handle_t g2_context_resize(tb_handle_t context, tb_size_t width, tb_size_t he
 
 	// update surface
 	if (!g2_bitmap_resize(gcontext->surface, width, height)) return TB_NULL;
+
+	// update viewport
+	glViewport(0, 0, width, height);
 
 	// ok
 	return context;

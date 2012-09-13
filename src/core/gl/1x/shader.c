@@ -37,7 +37,7 @@ static g2_gl1x_shader_t* g2_gl1x_shader_init(tb_handle_t context, tb_size_t type
 	tb_assert_and_check_return_val(gcontext && type, TB_NULL);
 
 	// make texture
-	tb_uint_t* texture = g2_gl1x_context_texture_alc(context);
+	GLuint* texture = g2_gl1x_context_texture_alc(context);
 	tb_assert_and_check_return_val(texture, TB_NULL);
 
 	// make shader

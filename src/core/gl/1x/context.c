@@ -90,11 +90,11 @@ static __tb_inline__ tb_void_t g2_gl1x_context_extensions(g2_gl1x_context_t* con
  * texture & shader
  */
 
-tb_uint_t* g2_gl1x_context_texture_alc(g2_gl1x_context_t* context)
+GLuint* g2_gl1x_context_texture_alc(g2_gl1x_context_t* context)
 {
 	// init
-	tb_uint_t* 	itor = TB_NULL;
-	tb_uint_t* 	data = context->texture;
+	GLuint* 	itor = TB_NULL;
+	GLuint* 	data = context->texture;
 	tb_byte_t* 	used = context->used;
 	tb_size_t 	pred = context->texture_pred;
 
@@ -141,7 +141,7 @@ tb_uint_t* g2_gl1x_context_texture_alc(g2_gl1x_context_t* context)
 	// ok?
 	return itor;
 }
-tb_void_t g2_gl1x_context_texture_del(g2_gl1x_context_t* context, tb_uint_t const* texture)
+tb_void_t g2_gl1x_context_texture_del(g2_gl1x_context_t* context, GLuint const* texture)
 {
 	// check
 	tb_assert_and_check_return(texture);
@@ -246,8 +246,6 @@ tb_handle_t g2_context_init_gl1x(tb_size_t pixfmt, tb_size_t width, tb_size_t he
 
 	// check type
 	tb_assert_static(sizeof(GLfloat) == sizeof(tb_float_t));
-	tb_assert_static(sizeof(GLint) == sizeof(tb_int_t));
-	tb_assert_static(sizeof(GLuint) == sizeof(tb_uint_t));
 
 	// check pixfmt
 	tb_assert_and_check_return_val( 	G2_PIXFMT(pixfmt) == G2_PIXFMT_ARGB8888

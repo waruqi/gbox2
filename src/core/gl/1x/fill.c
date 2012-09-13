@@ -266,7 +266,7 @@ static __tb_inline__ tb_void_t g2_gl1x_fill_style_draw_shader(g2_gl1x_fill_t* fi
 		glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 
 		// wrap
-		static tb_uint_t wrap[] = 
+		static GLuint wrap[] = 
 		{
 			GL_CLAMP_TO_BORDER
 		,	GL_CLAMP_TO_BORDER
@@ -499,7 +499,7 @@ tb_void_t g2_gl1x_fill_path(g2_gl1x_painter_t* painter, g2_gl_path_t const* path
 	for (; itor != tail; itor++)
 	{
 		size = tb_iterator_item(path->fill.size, itor);
-		glDrawArrays(GL_TRIANGLE_FAN, (tb_int_t)head, (tb_int_t)size);
+		glDrawArrays(GL_TRIANGLE_FAN, (GLint)head, (GLint)size);
 		head += size;
 	}
 
@@ -539,7 +539,7 @@ tb_void_t g2_gl1x_fill_circle(g2_gl1x_painter_t* painter, g2_circle_t const* cir
 
 	// draw vertices
 	glVertexPointer(2, GL_FLOAT, 0, data);
-	glDrawArrays(GL_TRIANGLE_FAN, 0, (tb_int_t)size);
+	glDrawArrays(GL_TRIANGLE_FAN, 0, (GLint)size);
 
 	// draw fill
 	g2_gl1x_fill_draw(&fill, &bounds);
@@ -577,7 +577,7 @@ tb_void_t g2_gl1x_fill_ellipse(g2_gl1x_painter_t* painter, g2_ellipse_t const* e
 
 	// draw vertices
 	glVertexPointer(2, GL_FLOAT, 0, data);
-	glDrawArrays(GL_TRIANGLE_FAN, 0, (tb_int_t)size);
+	glDrawArrays(GL_TRIANGLE_FAN, 0, (GLint)size);
 
 	// draw fill
 	g2_gl1x_fill_draw(&fill, &bounds);

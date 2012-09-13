@@ -17,11 +17,14 @@
  * Copyright (C) 2009 - 2012, ruki All rights reserved.
  *
  * @author		ruki
- * @file		shader.h
+ * @file		color.c
  *
  */
-#ifndef G2_CORE_GL1x_SHADER_H
-#define G2_CORE_GL1x_SHADER_H
+
+/* ///////////////////////////////////////////////////////////////////////
+ * trace
+ */
+#define TB_TRACE_IMPL_TAG 		"gl2x"
 
 /* ///////////////////////////////////////////////////////////////////////
  * includes
@@ -29,58 +32,24 @@
 #include "prefix.h"
 
 /* ///////////////////////////////////////////////////////////////////////
- * types
+ * implementation
  */
 
-// the gl1x shader type constants
-typedef enum __g2_gl1x_shader_type_t
+g2_gl2x_program_t* g2_gl2x_program_init_color()
 {
-	G2_GL1x_SHADER_TYPE_NONE 				= 0
-,	G2_GL1x_SHADER_TYPE_GRADIENT_LINEAR 	= 1
-,	G2_GL1x_SHADER_TYPE_GRADIENT_RADIAL 	= 2
-,	G2_GL1x_SHADER_TYPE_GRADIENT_RADIAL2 	= 3
-,	G2_GL1x_SHADER_TYPE_BITMAP 				= 4
+	// make
+	g2_gl2x_program_t* program = tb_malloc0(sizeof(g2_gl2x_program_t));
+	tb_assert_and_check_return_val(program, TB_NULL);
 
-}g2_gl1x_shader_type_t;
+	// init
+	program->program = glCreateProgram();
+	tb_assert_and_check_goto(program->program, fail);
 
-// the gl1x shader flag constants
-typedef enum __g2_gl1x_shader_flag_t
-{
-	G2_GL1x_SHADER_FLAG_NONE 				= 0
-,	G2_GL1x_SHADER_FLAG_ALPHA 				= 1
+	// ok
+	return program;
 
-}g2_gl1x_shader_flag_t;
+fail:
+	if (program) g2_gl2x_program_exit(program);
+	return TB_NULL;
+}
 
-// the gl1x shader type
-typedef struct __g2_gl1x_shader_t
-{
-	// the type
-	tb_size_t 				type;
-
-	// the flag
-	tb_size_t 				flag;
-
-	// the wrap
-	tb_size_t 				wrap;
-
-	// the refn
-	tb_size_t 				refn;
-
-	// the width
-	tb_size_t 				width;
-
-	// the height
-	tb_size_t 				height;
-
-	// the context
-	tb_handle_t 			context;
-
-	// the texture
-	GLuint* 				texture;
-
-	// the matrix
-	g2_matrix_t 			matrix;
-
-}g2_gl1x_shader_t;
-
-#endif

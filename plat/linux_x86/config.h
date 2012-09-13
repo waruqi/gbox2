@@ -4,8 +4,8 @@
 // core
 //#define G2_CONFIG_CORE_SOFT
 //#define G2_CONFIG_CORE_SKIA
-#define G2_CONFIG_CORE_GL1x
-//#define G2_CONFIG_CORE_GL20
+//#define G2_CONFIG_CORE_GL1x
+#define G2_CONFIG_CORE_GL2x
 
 // float
 #define G2_CONFIG_FLOAT_FIXED
