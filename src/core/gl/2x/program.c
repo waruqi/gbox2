@@ -74,11 +74,10 @@ static GLuint g2_gl2x_program_shader(tb_char_t const* data, tb_size_t type)
 {
 	// init shader
 	GLuint shader = glCreateShader((GLenum)type);
-	tb_assert_and_check_return_val(shader, TB_NULL);
+	tb_assert_and_check_return_val(shader, 0);
 
 	// init source
-	GLint size = tb_strlen(data);
-	glShaderSource(shader, 1, &data, &size);
+	glShaderSource(shader, 1, (GLchar const**)&data, TB_NULL);
 
 	// compile shader
 	glCompileShader(shader);
@@ -88,9 +87,13 @@ static GLuint g2_gl2x_program_shader(tb_char_t const* data, tb_size_t type)
 	glGetShaderiv(shader, GL_COMPILE_STATUS, &ok);
 	if (ok == GL_FALSE)
 	{
+		// trace
 		GLchar s[1024] = {0};
-		glGetShaderInfoLog(shader, sizeof(s), 0, &s[0]);
+		glGetShaderInfoLog(shader, 1024, 0, s);
 		tb_trace_impl("shader: compile failed: %s", s);
+
+		// remove it
+		glDeleteShader(shader);
 		return 0;
 	}
 
@@ -104,20 +107,7 @@ static GLuint g2_gl2x_program_shader(tb_char_t const* data, tb_size_t type)
 
 tb_handle_t g2_gl2x_program_init()
 {
-	// make
-	g2_gl2x_program_t* program = tb_malloc0(sizeof(g2_gl2x_program_t));
-	tb_assert_and_check_return_val(program, TB_NULL);
-
-	// init
-	program->program = glCreateProgram();
-	tb_assert_and_check_goto(program->program, fail);
-
-	// ok
-	return program;
-
-fail:
-	if (program) g2_gl2x_program_exit(program);
-	return TB_NULL;
+	return tb_malloc0(sizeof(g2_gl2x_program_t));
 }
 tb_void_t g2_gl2x_program_exit(tb_handle_t program)
 {
@@ -152,9 +142,6 @@ tb_bool_t g2_gl2x_program_load(tb_handle_t program, tb_char_t const* shader, tb_
 	tb_assert_and_check_return_val(gprogram->shaders[gprogram->shadern], TB_FALSE);
 	gprogram->shadern++;
 
-	// attach shader
-	glAttachShader(gprogram->program, gprogram->shaders[gprogram->shadern - 1]);
-
 	// ok
 	return TB_TRUE;
 }
@@ -162,24 +149,37 @@ tb_bool_t g2_gl2x_program_make(tb_handle_t program)
 {
 	// check
 	g2_gl2x_program_t* gprogram = (g2_gl2x_program_t*)program;
-	tb_assert_and_check_return_val(gprogram && gprogram->shadern, TB_FALSE);
+	tb_assert_and_check_return_val(gprogram && !gprogram->program && gprogram->shadern, TB_FALSE);
+
+	// init program
+	gprogram->program = glCreateProgram();
+	tb_assert_and_check_return_val(gprogram->program, TB_FALSE);
+
+	// attach shaders
+	tb_size_t i = 0;
+	for (i = 0; i < gprogram->shadern; i++)
+		if (gprogram->shaders[i]) glAttachShader(gprogram->program, gprogram->shaders[i]);
 
 	// link
 	glLinkProgram(gprogram->program);
 
 	// ok?
-	GLint ok = GL_FALSE;
-	glGetProgramiv(gprogram, GL_LINK_STATUS, &ok);
-	if (ok == GL_FALSE) 
+	GLint ok = 0;
+	glGetProgramiv(gprogram->program, GL_LINK_STATUS, &ok);
+	if (!ok) 
 	{
+		// trace
 		GLchar s[1024] = {0};
-		glGetProgramInfoLog(gprogram, sizeof(s), 0, &s[0]);
+		glGetProgramInfoLog(gprogram, 1024, 0, s);
 		tb_trace_impl("shader: link failed: %s", s);
+
+		// remove it
+		glDeleteProgram(gprogram->program);
+		gprogram->program = 0;
 		return TB_FALSE;
 	}
 
 	// exit shaders
-	tb_size_t i = 0;
 	for (i = 0; i < gprogram->shadern; i++)
 	{
 		if (gprogram->shaders[i]) glDeleteShader(gprogram->shaders[i]);

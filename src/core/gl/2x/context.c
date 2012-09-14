@@ -54,7 +54,7 @@ static __tb_inline__ tb_byte_t g2_gl2x_context_version()
 	tb_byte_t minor = version[2] - '0';
 
 	// trace
-	tb_trace_impl("version: %s: %x", version, ((major << 4) + minor));
+	tb_trace_impl("version: %s: %x, gpu: %s", version, ((major << 4) + minor), glGetString(GL_RENDERER));
 
 	// [0x10, 0x19] 
 	return ((major << 4) + minor);

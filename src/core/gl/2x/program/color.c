@@ -46,7 +46,7 @@ tb_handle_t g2_gl2x_program_init_color()
 
 	// the vertex shader
 	tb_char_t const* vshader = 
-		"precision mediump float; 												\n"
+//		"precision mediump float; 												\n"
 		" 																		\n"
 		"attribute vec4 aColor; 												\n"
 		"attribute vec4 aVertices; 												\n"
@@ -62,7 +62,7 @@ tb_handle_t g2_gl2x_program_init_color()
 	
 	// the fragment shader
 	tb_char_t const* fshader = 
-		"precision mediump float; 												\n"
+//		"precision mediump float; 												\n"
 		" 																		\n"
 		"varying vec4 vColor; 													\n"
 		" 																		\n"
@@ -70,6 +70,7 @@ tb_handle_t g2_gl2x_program_init_color()
 		"{ 																		\n"
 		"   gl_FragColor = vColor; 												\n"
 		"} 																		\n";
+
 
 	// load shader: vertex
 	if (!g2_gl2x_program_load(program, vshader, GL_VERTEX_SHADER)) goto fail;

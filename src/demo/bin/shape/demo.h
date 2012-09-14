@@ -380,6 +380,7 @@ tb_bool_t g2_demo_gl_init(tb_int_t argc, tb_char_t** argv)
 	glutKeyboardFunc(g2_demo_gl_keyboard);
 	glutSpecialFunc(g2_demo_gl_special);
 
+
 	// ok
 	return TB_TRUE;
 }
