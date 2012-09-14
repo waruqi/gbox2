@@ -30,6 +30,7 @@
  * includes
  */
 #include "context.h"
+#include "program/program.h"
 
 /* ///////////////////////////////////////////////////////////////////////
  * macros

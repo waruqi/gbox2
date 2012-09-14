@@ -29,7 +29,7 @@
 /* ///////////////////////////////////////////////////////////////////////
  * includes
  */
-#include "prefix.h"
+#include "color.h"
 
 /* ///////////////////////////////////////////////////////////////////////
  * implementation
@@ -40,6 +40,9 @@ tb_handle_t g2_gl2x_program_init_color()
 	// init
 	tb_handle_t program = g2_gl2x_program_init();
 	tb_assert_and_check_return_val(program, TB_NULL);
+
+	// init type
+	g2_gl2x_program_type_set(program, G2_GL2X_PROGRAM_TYPE_COLOR);
 
 	// the vertex shader
 	tb_char_t const* vshader = 
@@ -76,6 +79,16 @@ tb_handle_t g2_gl2x_program_init_color()
 
 	// make program
 	if (!g2_gl2x_program_make(program)) goto fail;
+
+	// init location
+	g2_gl2x_program_location_set(program, G2_GL2X_PROGRAM_LOCATION_COLOR, g2_gl2x_program_attr(program, "aColor"));
+	g2_gl2x_program_location_set(program, G2_GL2X_PROGRAM_LOCATION_MATRIX, g2_gl2x_program_unif(program, "uMatrix"));
+	g2_gl2x_program_location_set(program, G2_GL2X_PROGRAM_LOCATION_VERTICES, g2_gl2x_program_attr(program, "aVertices"));
+
+	// check
+	tb_assert_and_check_goto(g2_gl2x_program_location(program, G2_GL2X_PROGRAM_LOCATION_COLOR), fail);
+	tb_assert_and_check_goto(g2_gl2x_program_location(program, G2_GL2X_PROGRAM_LOCATION_MATRIX), fail);
+	tb_assert_and_check_goto(g2_gl2x_program_location(program, G2_GL2X_PROGRAM_LOCATION_VERTICES), fail);
 
 	// ok
 	return program;

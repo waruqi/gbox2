@@ -34,7 +34,15 @@
 /* ///////////////////////////////////////////////////////////////////////
  * macros
  */
-#define G2_GL2X_PROGRAM_SHADER_MAXN 		(8)
+
+// maxn
+#ifdef TB_CONFIG_MEMORY_MODE_SMALL
+# 	define G2_GL2X_PROGRAM_SHADER_MAXN 			(8)
+# 	define G2_GL2X_PROGRAM_LOCATION_MAXN 		(32)
+#else
+# 	define G2_GL2X_PROGRAM_SHADER_MAXN 			(16)
+# 	define G2_GL2X_PROGRAM_LOCATION_MAXN 		(64)
+#endif
 
 /* ///////////////////////////////////////////////////////////////////////
  * types
@@ -46,12 +54,15 @@ typedef struct __g2_gl2x_program_t
 	// the type
 	tb_size_t 		type;
 
+	// the program
+	GLuint 			program;
+
 	// the shaders
 	GLuint 			shaders[G2_GL2X_PROGRAM_SHADER_MAXN];
 	tb_size_t 		shadern;
 
-	// the program
-	GLuint 			program;
+	// the locations
+	GLuint 			location[G2_GL2X_PROGRAM_LOCATION_MAXN];
 
 }g2_gl2x_program_t;
 
@@ -188,19 +199,52 @@ tb_void_t g2_gl2x_program_uses(tb_handle_t program)
 	// use it
 	glUseProgram(gprogram->program);
 }
-tb_pointer_t g2_gl2x_program_attr(tb_handle_t program, tb_char_t const* name)
+GLuint g2_gl2x_program_attr(tb_handle_t program, tb_char_t const* name)
 {
 	// check
 	g2_gl2x_program_t* gprogram = (g2_gl2x_program_t*)program;
-	tb_assert_and_check_return_val(gprogram && gprogram->program && name, TB_NULL);
+	tb_assert_and_check_return_val(gprogram && gprogram->program && name, 0);
 
 	return glGetAttribLocation(gprogram->program, name);
 }
-tb_pointer_t g2_gl2x_program_unif(tb_handle_t program, tb_char_t const* name)
+GLuint g2_gl2x_program_unif(tb_handle_t program, tb_char_t const* name)
 {
 	// check
 	g2_gl2x_program_t* gprogram = (g2_gl2x_program_t*)program;
-	tb_assert_and_check_return_val(gprogram && gprogram->program && name, TB_NULL);
+	tb_assert_and_check_return_val(gprogram && gprogram->program && name, 0);
 
 	return glGetUniformLocation(gprogram->program, name);
 }
+tb_size_t g2_gl2x_program_type(tb_handle_t program)
+{
+	// check
+	g2_gl2x_program_t* gprogram = (g2_gl2x_program_t*)program;
+	tb_assert_and_check_return_val(gprogram, 0);
+
+	return gprogram->type;
+}
+tb_void_t g2_gl2x_program_type_set(tb_handle_t program, tb_size_t type)
+{
+	// check
+	g2_gl2x_program_t* gprogram = (g2_gl2x_program_t*)program;
+	tb_assert_and_check_return(gprogram);
+
+	gprogram->type = type;
+}
+GLuint g2_gl2x_program_location(tb_handle_t program, tb_size_t index)
+{
+	// check
+	g2_gl2x_program_t* gprogram = (g2_gl2x_program_t*)program;
+	tb_assert_and_check_return_val(gprogram && index < G2_GL2X_PROGRAM_LOCATION_MAXN, 0);
+
+	return gprogram->location[index];
+}
+tb_void_t g2_gl2x_program_location_set(tb_handle_t program, tb_size_t index, GLuint location)
+{
+	// check
+	g2_gl2x_program_t* gprogram = (g2_gl2x_program_t*)program;
+	tb_assert_and_check_return(gprogram && index < G2_GL2X_PROGRAM_LOCATION_MAXN);
+
+	gprogram->location[index] = location;
+}
+
