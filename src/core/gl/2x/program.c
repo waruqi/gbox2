@@ -62,7 +62,7 @@ typedef struct __g2_gl2x_program_t
 	tb_size_t 		shadern;
 
 	// the locations
-	GLuint 			location[G2_GL2X_PROGRAM_LOCATION_MAXN];
+	GLint 			location[G2_GL2X_PROGRAM_LOCATION_MAXN];
 
 }g2_gl2x_program_t;
 
@@ -199,19 +199,19 @@ tb_void_t g2_gl2x_program_uses(tb_handle_t program)
 	// use it
 	glUseProgram(gprogram->program);
 }
-GLuint g2_gl2x_program_attr(tb_handle_t program, tb_char_t const* name)
+GLint g2_gl2x_program_attr(tb_handle_t program, tb_char_t const* name)
 {
 	// check
 	g2_gl2x_program_t* gprogram = (g2_gl2x_program_t*)program;
-	tb_assert_and_check_return_val(gprogram && gprogram->program && name, 0);
+	tb_assert_and_check_return_val(gprogram && gprogram->program && name, -1);
 
 	return glGetAttribLocation(gprogram->program, name);
 }
-GLuint g2_gl2x_program_unif(tb_handle_t program, tb_char_t const* name)
+GLint g2_gl2x_program_unif(tb_handle_t program, tb_char_t const* name)
 {
 	// check
 	g2_gl2x_program_t* gprogram = (g2_gl2x_program_t*)program;
-	tb_assert_and_check_return_val(gprogram && gprogram->program && name, 0);
+	tb_assert_and_check_return_val(gprogram && gprogram->program && name, -1);
 
 	return glGetUniformLocation(gprogram->program, name);
 }
@@ -231,11 +231,11 @@ tb_void_t g2_gl2x_program_type_set(tb_handle_t program, tb_size_t type)
 
 	gprogram->type = type;
 }
-GLuint g2_gl2x_program_location(tb_handle_t program, tb_size_t index)
+GLint g2_gl2x_program_location(tb_handle_t program, tb_size_t index)
 {
 	// check
 	g2_gl2x_program_t* gprogram = (g2_gl2x_program_t*)program;
-	tb_assert_and_check_return_val(gprogram && index < G2_GL2X_PROGRAM_LOCATION_MAXN, 0);
+	tb_assert_and_check_return_val(gprogram && index < G2_GL2X_PROGRAM_LOCATION_MAXN, -1);
 
 	return gprogram->location[index];
 }

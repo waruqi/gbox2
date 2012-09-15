@@ -105,31 +105,6 @@ static tb_void_t g2_demo_gl_special(tb_int_t key, tb_int_t x, tb_int_t y)
 {
 	g2_demo_gl_keyboard(key, x, y);
 }
-static tb_void_t g2_demo_gl_printf(tb_char_t const* fmt, ...)
-{
-	// format text
-	tb_char_t text[4096] = {0};
-	tb_size_t size = 0;
-	tb_va_format(text, 4096, fmt, &size);
-
-	// the text color
-	GLfloat c[4] = {1., 1., 0., 1.};
-	glColor4fv(c);
-
-	// init position
-	glMatrixMode(GL_MODELVIEW);
-	glPushMatrix();
-	glLoadIdentity();
-	glTranslatef(20., g2_bitmap_height(g_surface) - 20., 0);
-	glScalef(0.12, 0.12, 0.12);
-
-	// render it
-	tb_int_t i = 0;
-	for (i = 0; i < size; ++i) 
-		glutStrokeCharacter(GLUT_STROKE_ROMAN, text[i]);
-
-	glPopMatrix();
-}
 static tb_void_t g2_demo_gl_display()
 {
 	// check
@@ -185,14 +160,18 @@ static tb_void_t g2_demo_gl_display()
 #endif
 
 	// render fps & rpt
+	g_fp++;
 	if (!g_bt) g_bt = tb_uclock();
-	if (!(++g_fp & 0x15))
+	if ((tb_uclock() - g_bt) > 1000000)
 	{
 		g_fps = (1000000 * g_fp) / ((tb_uclock() - g_bt) + 1);
 		g_fp = 0;
 		g_bt = 0;
+	
+		tb_char_t title[256] = {0};
+		tb_snprintf(title, 256, "gbox2: fps: %lld, rpt: %lld us", g_fps, g_rt);
+		glutSetWindowTitle (title);
 	}
-	g2_demo_gl_printf("fps: %lld, rpt: %lld us", g_fps, g_rt);
 
 	// flush
 	glutSwapBuffers();

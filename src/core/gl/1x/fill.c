@@ -63,7 +63,7 @@ typedef struct __g2_gl1x_fill_t
 	tb_float_t 			texcoords[8];
 
 	// the matrix
-	GLfloat 			matrix[16];
+	tb_float_t 			matrix[16];
 
 }g2_gl1x_fill_t;
 

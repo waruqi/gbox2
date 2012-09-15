@@ -52,12 +52,14 @@ tb_handle_t g2_gl2x_program_init_color()
 		"attribute vec4 aVertices; 												\n"
 		" 																		\n"
 		"varying vec4 vColor; 													\n"
-		"uniform mat4 uMatrix; 													\n"
+		"uniform mat4 uMatrixModel; 											\n"
+		"uniform mat4 uMatrixProject; 											\n"
 		" 																		\n"
 		"void main() 															\n"
 		"{ 																		\n"
-		" 	vColor = aColor; 													\n"
-		" 	gl_Position = uMatrix * aVertices; 									\n"                                                                  
+		" 	vColor = aColor; 													\n"  
+//		" 	gl_Position = uMatrixModel * aVertices;								\n"     
+		" 	gl_Position = uMatrixProject * uMatrixModel * aVertices;			\n"
 		"} 																		\n";
 	
 	// the fragment shader
@@ -83,13 +85,9 @@ tb_handle_t g2_gl2x_program_init_color()
 
 	// init location
 	g2_gl2x_program_location_set(program, G2_GL2X_PROGRAM_LOCATION_COLOR, g2_gl2x_program_attr(program, "aColor"));
-	g2_gl2x_program_location_set(program, G2_GL2X_PROGRAM_LOCATION_MATRIX, g2_gl2x_program_unif(program, "uMatrix"));
 	g2_gl2x_program_location_set(program, G2_GL2X_PROGRAM_LOCATION_VERTICES, g2_gl2x_program_attr(program, "aVertices"));
-
-	// check
-	tb_assert_and_check_goto(g2_gl2x_program_location(program, G2_GL2X_PROGRAM_LOCATION_COLOR), fail);
-	tb_assert_and_check_goto(g2_gl2x_program_location(program, G2_GL2X_PROGRAM_LOCATION_MATRIX), fail);
-	tb_assert_and_check_goto(g2_gl2x_program_location(program, G2_GL2X_PROGRAM_LOCATION_VERTICES), fail);
+	g2_gl2x_program_location_set(program, G2_GL2X_PROGRAM_LOCATION_MATRIX_MODEL, g2_gl2x_program_unif(program, "uMatrixModel"));
+	g2_gl2x_program_location_set(program, G2_GL2X_PROGRAM_LOCATION_MATRIX_PROJECT, g2_gl2x_program_unif(program, "uMatrixProject"));
 
 	// ok
 	return program;

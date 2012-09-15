@@ -48,6 +48,9 @@ typedef struct __g2_gl2x_context_t
 	// the programs
 	tb_handle_t 		programs[G2_GL2X_PROGRAM_TYPE_MAXN];
 
+	// the project matrix
+	tb_float_t 			matrix[16];
+
 }g2_gl2x_context_t;
 
 

@@ -119,6 +119,15 @@ tb_handle_t g2_context_init_gl2x(tb_size_t pixfmt, tb_size_t width, tb_size_t he
 	// init viewport
 	glViewport(0, 0, width, height);
 
+	// init project matrix
+	g2_gl_matrix_init(gcontext->matrix);
+#if 1
+	gcontext->matrix[0] = 2.0f / (tb_float_t)width;
+	gcontext->matrix[5] = -2.0f / (tb_float_t)height;
+	gcontext->matrix[12] = -1.0f;
+	gcontext->matrix[13] = 1.0f;
+#endif
+
 	// disable antialiasing
 	glDisable(GL_POINT_SMOOTH);
 	glDisable(GL_LINE_SMOOTH);
@@ -174,6 +183,10 @@ tb_handle_t g2_context_resize(tb_handle_t context, tb_size_t width, tb_size_t he
 
 	// update viewport
 	glViewport(0, 0, width, height);
+
+	// update project matrix
+//	gcontext->matrix[0] = 2.0f / (tb_float_t)width;
+//	gcontext->matrix[5] = -2.0f / (tb_float_t)height;
 
 	// ok
 	return context;

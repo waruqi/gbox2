@@ -44,9 +44,10 @@ typedef enum __g2_gl2x_program_type_t
 // the gl2x program location type
 typedef enum __g2_gl2x_program_location_t
 {
-	G2_GL2X_PROGRAM_LOCATION_COLOR 		= 0
-,	G2_GL2X_PROGRAM_LOCATION_MATRIX 	= 1
-,	G2_GL2X_PROGRAM_LOCATION_VERTICES 	= 2
+	G2_GL2X_PROGRAM_LOCATION_COLOR 				= 0
+,	G2_GL2X_PROGRAM_LOCATION_VERTICES 			= 1
+,	G2_GL2X_PROGRAM_LOCATION_MATRIX_MODEL 		= 2
+,	G2_GL2X_PROGRAM_LOCATION_MATRIX_PROJECT 	= 3
 
 }g2_gl2x_program_location_t;
 
@@ -68,18 +69,18 @@ tb_bool_t 			g2_gl2x_program_make(tb_handle_t program);
 tb_void_t 			g2_gl2x_program_uses(tb_handle_t program);
 
 // the attribute location
-GLuint 				g2_gl2x_program_attr(tb_handle_t program, tb_char_t const* name);
+GLint 				g2_gl2x_program_attr(tb_handle_t program, tb_char_t const* name);
 
 // the uniform location
-GLuint 				g2_gl2x_program_unif(tb_handle_t program, tb_char_t const* name);
+GLint 				g2_gl2x_program_unif(tb_handle_t program, tb_char_t const* name);
 
 // the type
 tb_size_t 			g2_gl2x_program_type(tb_handle_t program);
 tb_void_t 			g2_gl2x_program_type_set(tb_handle_t program, tb_size_t type);
 
 // the location
-GLuint 				g2_gl2x_program_location(tb_handle_t program, tb_size_t index);
-tb_void_t 			g2_gl2x_program_location_set(tb_handle_t program, tb_size_t index, GLuint location);
+GLint 				g2_gl2x_program_location(tb_handle_t program, tb_size_t index);
+tb_void_t 			g2_gl2x_program_location_set(tb_handle_t program, tb_size_t index, GLuint GLint);
 
 
 #endif
