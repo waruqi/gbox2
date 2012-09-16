@@ -43,7 +43,7 @@ static __tb_inline__ tb_void_t g2_gl_matrix_init(tb_float_t* gmatrix)
 	gmatrix[7] 	= 0.0f;       
 	gmatrix[8] 	= 0.0f;
 	gmatrix[9] 	= 0.0f; 
-	gmatrix[10] = 1.0f; 
+	gmatrix[10] = -1.0f; 
 	gmatrix[11] = 0.0f; 
 	gmatrix[12] = 0.0f; 
 	gmatrix[13] = 0.0f; 
@@ -62,7 +62,7 @@ static __tb_inline__ tb_void_t g2_gl_matrix_set(tb_float_t* gmatrix, g2_matrix_t
 	gmatrix[7] 	= 0.0f;       
 	gmatrix[8] 	= 0.0f;
 	gmatrix[9] 	= 0.0f; 
-	gmatrix[10] = 1.0f; 
+	gmatrix[10] = -1.0f; 
 	gmatrix[11] = 0.0f; 
 	gmatrix[12] = g2_float_to_tb(matrix->tx); 
 	gmatrix[13] = g2_float_to_tb(matrix->ty); 
