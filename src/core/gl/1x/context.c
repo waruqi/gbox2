@@ -285,11 +285,9 @@ tb_handle_t g2_context_init_gl1x(tb_size_t pixfmt, tb_size_t width, tb_size_t he
 	// init matrix
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	glOrtho(0.0f, (tb_float_t)width, 0.0f, (tb_float_t)height, -1.0f, 1.0f);
+	glOrtho(0.0f, (tb_float_t)width, (tb_float_t)height, 0.0f, -1.0f, 1.0f);
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
-	glTranslatef(0.0f, (tb_float_t)height, 0.0f);
-	glScalef(1.0f, -1.0f, 1.0f);
 
 	// disable antialiasing
 	glDisable(GL_POINT_SMOOTH);

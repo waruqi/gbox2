@@ -224,9 +224,9 @@ static tb_void_t g2_demo_gl_display()
 	// render fps & rpt
 	g_fp++;
 	if (!g_bt) g_bt = tb_uclock();
-	if ((tb_uclock() - g_bt) > 1000000)
+	if ((tb_uclock() - g_bt) > 2000000)
 	{
-		g_fps = (1000000 * g_fp) / ((tb_uclock() - g_bt) + 1);
+		g_fps = (1000000 * g_fp) / (tb_uclock() - g_bt);
 		g_fp = 0;
 		g_bt = 0;
 	

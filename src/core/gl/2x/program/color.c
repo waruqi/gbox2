@@ -58,11 +58,7 @@ tb_handle_t g2_gl2x_program_init_color()
 		"void main() 															\n"
 		"{ 																		\n"
 		" 	vColor = aColor; 													\n"  
-//		" 	gl_Position = uMatrixModel * aVertices;								\n"     
 		" 	gl_Position = uMatrixProject * uMatrixModel * aVertices;			\n"
-//		" 	gl_Position = mat4(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 1, 1) * uMatrixModel * aVertices;			\n"
-//		" 	gl_Position = mat4(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, -1, 0, 0, 0, 1, 1) * uMatrixModel * aVertices;			\n"
-//		" 	gl_Position = mat4(0.003125, 0, 0, 0, 0, -0.004167, 0, 0, 0, 0, -1, 0, -1.0f, 1.0, 1.0, 1.0) * uMatrixModel * aVertices;			\n"
 		"} 																		\n";
 	
 	// the fragment shader

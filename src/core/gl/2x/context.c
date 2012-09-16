@@ -120,13 +120,7 @@ tb_handle_t g2_context_init_gl2x(tb_size_t pixfmt, tb_size_t width, tb_size_t he
 	glViewport(0, 0, width, height);
 
 	// init project matrix
-	g2_gl_matrix_init(gcontext->matrix);
-#if 1
-	gcontext->matrix[0] = 2.0f / (tb_float_t)width;
-	gcontext->matrix[5] = -2.0f / (tb_float_t)height;
-	gcontext->matrix[12] = -1.0f;
-	gcontext->matrix[13] = 1.0f;
-#endif
+	g2_gl_matrix_ortho(gcontext->matrix, 0.0f, (tb_float_t)width, (tb_float_t)height, 0.0f, -1.0f, 1.0f);
 
 	// disable antialiasing
 	glDisable(GL_POINT_SMOOTH);

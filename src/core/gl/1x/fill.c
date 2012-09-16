@@ -72,7 +72,7 @@ typedef struct __g2_gl1x_fill_t
  */
 static __tb_inline__ tb_void_t g2_gl1x_fill_matrix_enter(g2_gl1x_fill_t* fill)
 {
-	g2_gl_matrix_set(fill->matrix, &fill->painter->matrix);
+	g2_gl_matrix_from(fill->matrix, &fill->painter->matrix);
 	glMatrixMode(GL_MODELVIEW);
 	glPushMatrix();
 	glMultMatrixf(fill->matrix);
@@ -202,7 +202,7 @@ static __tb_inline__ tb_void_t g2_gl1x_fill_style_draw_shader(g2_gl1x_fill_t* fi
 		 * glTranslatef(bx / bw, by / bh, 0.0f); 		//< move viewport to global
 		 *
 		 */
-		g2_gl_matrix_set(fill->matrix, &shader->matrix);
+		g2_gl_matrix_from(fill->matrix, &shader->matrix);
 		tb_float_t bx = bounds->x1;
 		tb_float_t by = bounds->y1;
 		tb_float_t bw = bounds->x2 - bounds->x1 + 1;

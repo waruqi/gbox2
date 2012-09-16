@@ -77,16 +77,7 @@ typedef struct __g2_gl2x_fill_t
  */
 static __tb_inline__ tb_void_t g2_gl2x_fill_matrix_enter(g2_gl2x_fill_t* fill)
 {
-	g2_gl_matrix_set(fill->matrix, &fill->painter->matrix);
-
-#if 0
-	fill->matrix[0] *= fill->context->matrix[0];
-	fill->matrix[5] *= fill->context->matrix[5];
-	fill->matrix[4] *= fill->context->matrix[0];
-	fill->matrix[1] *= fill->context->matrix[5];
-	fill->matrix[12] = fill->matrix[12] * fill->context->matrix[0] + fill->context->matrix[12];
-	fill->matrix[13] = fill->matrix[13] * fill->context->matrix[5] + fill->context->matrix[13];
-#endif
+	g2_gl_matrix_from(fill->matrix, &fill->painter->matrix);
 	glUniformMatrix4fv(g2_gl2x_program_location(fill->program, G2_GL2X_PROGRAM_LOCATION_MATRIX_MODEL), 1, GL_FALSE, fill->matrix);
 }
 static __tb_inline__ tb_void_t g2_gl2x_fill_matrix_leave(g2_gl2x_fill_t* fill)
@@ -215,7 +206,6 @@ static __tb_inline__ tb_void_t g2_gl2x_fill_style_draw(g2_gl2x_fill_t* fill, g2_
 
 	// init vertices
 	tb_float_t vertices[8];
-#if 1
 	vertices[0] = bounds->x1;
 	vertices[1] = bounds->y1;
 	vertices[2] = bounds->x2;
@@ -224,20 +214,6 @@ static __tb_inline__ tb_void_t g2_gl2x_fill_style_draw(g2_gl2x_fill_t* fill, g2_
 	vertices[5] = bounds->y2;
 	vertices[6] = bounds->x2;
 	vertices[7] = bounds->y2;
-#else
-	tb_float_t x1 = 0.0f;
-	tb_float_t y1 = 0.0f;
-	tb_float_t x2 = 1.0f;
-	tb_float_t y2 = 1.0f;
-	vertices[0] = x1;
-	vertices[1] = y1;
-	vertices[2] = x2;
-	vertices[3] = y1;
-	vertices[4] = x1;
-	vertices[5] = y2;
-	vertices[6] = x2;
-	vertices[7] = y2;
-#endif
 	glVertexAttribPointer(g2_gl2x_program_location(fill->program, G2_GL2X_PROGRAM_LOCATION_VERTICES), 2, GL_FLOAT, GL_FALSE, 0, vertices);
 
 	// draw

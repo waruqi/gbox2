@@ -43,30 +43,31 @@ static __tb_inline__ tb_void_t g2_gl_matrix_init(tb_float_t* gmatrix)
 	gmatrix[7] 	= 0.0f;       
 	gmatrix[8] 	= 0.0f;
 	gmatrix[9] 	= 0.0f; 
-	gmatrix[10] = -1.0f; 
+	gmatrix[10] = 1.0f; 
 	gmatrix[11] = 0.0f; 
 	gmatrix[12] = 0.0f; 
 	gmatrix[13] = 0.0f; 
-	gmatrix[14] = 1.0f;
+	gmatrix[14] = 0.0f;
 	gmatrix[15] = 1.0f;
 }
-static __tb_inline__ tb_void_t g2_gl_matrix_set(tb_float_t* gmatrix, g2_matrix_t const* matrix)
+static __tb_inline__ tb_void_t g2_gl_matrix_from(tb_float_t* gmatrix, g2_matrix_t const* matrix)
 {
+	g2_gl_matrix_init(gmatrix);
 	gmatrix[0] 	= g2_float_to_tb(matrix->sx);
 	gmatrix[1] 	= g2_float_to_tb(matrix->ky);
-	gmatrix[2] 	= 0.0f;
-	gmatrix[3] 	= 0.0f;
 	gmatrix[4] 	= g2_float_to_tb(matrix->kx);
 	gmatrix[5] 	= g2_float_to_tb(matrix->sy);
-	gmatrix[6] 	= 0.0f; 
-	gmatrix[7] 	= 0.0f;       
-	gmatrix[8] 	= 0.0f;
-	gmatrix[9] 	= 0.0f; 
-	gmatrix[10] = -1.0f; 
-	gmatrix[11] = 0.0f; 
 	gmatrix[12] = g2_float_to_tb(matrix->tx); 
-	gmatrix[13] = g2_float_to_tb(matrix->ty); 
-	gmatrix[14] = 1.0f;
-	gmatrix[15] = 1.0f;
+	gmatrix[13] = g2_float_to_tb(matrix->ty);
+}
+static __tb_inline__ tb_void_t g2_gl_matrix_ortho(tb_float_t* gmatrix, tb_float_t left, tb_float_t right, tb_float_t bottom, tb_float_t top, tb_float_t nearp, tb_float_t farp)
+{
+	g2_gl_matrix_init(gmatrix);
+	gmatrix[0] 	= 2.0f / (right - left);
+	gmatrix[5] 	= 2.0f / (top - bottom);
+    gmatrix[10] = -2.0f / (farp - nearp);  
+    gmatrix[12] = -(right + left) / (right - left);  
+    gmatrix[13] = -(top + bottom) / (top - bottom);  
+    gmatrix[14] = -(farp + nearp) / (farp - nearp); 
 }
 #endif
