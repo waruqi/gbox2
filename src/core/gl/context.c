@@ -258,7 +258,8 @@ tb_handle_t g2_context_init_gl(tb_size_t pixfmt, tb_size_t width, tb_size_t heig
 	tb_assert_and_check_return_val(gcontext, TB_NULL);
 
 	// init version 
-	gcontext->version = g2_gl_context_version();
+//	gcontext->version = g2_gl_context_version();
+	gcontext->version = 0x10;
 	tb_assert_and_check_goto(gcontext->version >= 0x10, fail);
 
 	// init extensions
@@ -283,9 +284,32 @@ tb_handle_t g2_context_init_gl(tb_size_t pixfmt, tb_size_t width, tb_size_t heig
 	// init viewport
 	glViewport(0, 0, width, height);
 
+	// init programs
+	if (gcontext->version >= 0x20)
+	{
+		tb_bool_t ok = TB_FALSE;
+		do
+		{
+			// init color program
+			gcontext->programs[G2_GL_PROGRAM_TYPE_COLOR] = g2_gl_program_init_color();
+			tb_assert_and_check_break(gcontext->programs[G2_GL_PROGRAM_TYPE_COLOR]);
+
+			// init image program
+			gcontext->programs[G2_GL_PROGRAM_TYPE_IMAGE] = g2_gl_program_init_image();
+			tb_assert_and_check_break(gcontext->programs[G2_GL_PROGRAM_TYPE_IMAGE]);
+
+			// ok
+			ok = TB_TRUE;
+
+		} while (0);
+
+		// failed? use gl v1.x api
+		if (!ok) gcontext->version = 0x19;
+	}
+
+	// init matrix
 	if (gcontext->version < 0x20)
 	{
-		// init matrix
 		glMatrixMode(GL_PROJECTION);
 		glLoadIdentity();
 		glOrtho(0.0f, (tb_float_t)width, (tb_float_t)height, 0.0f, -1.0f, 1.0f);
@@ -293,24 +317,8 @@ tb_handle_t g2_context_init_gl(tb_size_t pixfmt, tb_size_t width, tb_size_t heig
 		glLoadIdentity();
 		glTranslatef(0.0f, (tb_float_t)height, 0.0f);
 		glScalef(1.0f, -1.0f, 1.0f);
-
-		// disable vertices
-		glDisableClientState(GL_VERTEX_ARRAY);
-
-		// disable texcoords
-		glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 	}
-	else 
-	{
-		// init matrix
-		g2_gl_matrix_ortho(gcontext->matrix, 0.0f, (tb_float_t)width, (tb_float_t)height, 0.0f, -1.0f, 1.0f);
-
-		// init programs
-		gcontext->programs[G2_GL_PROGRAM_TYPE_COLOR] = g2_gl_program_init_color();
-		gcontext->programs[G2_GL_PROGRAM_TYPE_IMAGE] = g2_gl_program_init_image();
-		tb_assert_and_check_goto(gcontext->programs[G2_GL_PROGRAM_TYPE_COLOR], fail);
-		tb_assert_and_check_goto(gcontext->programs[G2_GL_PROGRAM_TYPE_IMAGE], fail);
-	}
+	else g2_gl_matrix_ortho(gcontext->matrix, 0.0f, (tb_float_t)width, (tb_float_t)height, 0.0f, -1.0f, 1.0f);
 
 	// disable antialiasing
 	glDisable(GL_POINT_SMOOTH);
@@ -325,7 +333,16 @@ tb_handle_t g2_context_init_gl(tb_size_t pixfmt, tb_size_t width, tb_size_t heig
 
 	// disable texture
 	glDisable(GL_TEXTURE_2D);
-	
+
+	if (gcontext->version < 0x20)
+	{
+		// disable vertices
+		glDisableClientState(GL_VERTEX_ARRAY);
+
+		// disable texcoords
+		glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+	}
+
 	// ok
 	return gcontext;
 
@@ -338,6 +355,14 @@ tb_void_t g2_context_exit(tb_handle_t context)
 	g2_gl_context_t* gcontext = (g2_gl_context_t*)context;
 	if (gcontext) 
 	{
+		// exit programs 
+		tb_size_t i = 0;
+		for (i = 0; i < G2_GL_PROGRAM_TYPE_MAXN; i++)
+		{
+			if (gcontext->programs[i]) g2_gl_program_exit(gcontext->programs[i]);
+			gcontext->programs[i] = 0;
+		}
+
 		// exit shaders
 		if (gcontext->shaders)
 		{
