@@ -28,6 +28,7 @@
  */
 #include "prefix.h"
 #include "color.h"
+#include "image.h"
 
 
 #endif

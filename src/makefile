@@ -70,7 +70,8 @@ gbox2_C_FILES-$(G2_CONFIG_CORE_GL2x) += \
 						core/gl/2x/context \
 						core/gl/2x/painter \
 						core/gl/2x/program \
-						core/gl/2x/program/color
+						core/gl/2x/program/color \
+						core/gl/2x/program/image
 
 
 gbox2_CPP_FILES-$(G2_CONFIG_CORE_SKIA) += \
