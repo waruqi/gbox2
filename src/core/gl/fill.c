@@ -170,6 +170,14 @@ static __tb_inline__ tb_bool_t g2_gl_fill_context_init(g2_gl_fill_t* fill)
 
 		}
 	}
+	else if (fill->context->version >= 0x20)
+	{
+		// init program
+		fill->program = fill->context->programs[G2_GL_PROGRAM_TYPE_IMAGE];
+		tb_assert_and_check_return_val(fill->program, TB_FALSE);
+		g2_gl_program_uses(fill->program);
+		
+	}
 	
 	if (fill->context->version >= 0x20)
 	{
@@ -198,6 +206,8 @@ static __tb_inline__ tb_void_t g2_gl_fill_context_exit(g2_gl_fill_t* fill)
 		// disable vertices
 		glDisableVertexAttribArray(g2_gl_program_location(fill->program, G2_GL_PROGRAM_LOCATION_VERTICES));
 
+		// disable texcoords
+		glDisableVertexAttribArray(g2_gl_program_location(fill->program, G2_GL_PROGRAM_LOCATION_TEXCOORDS));
 	}
 
 	// disable antialiasing
@@ -238,7 +248,6 @@ static __tb_inline__ tb_void_t g2_gl_fill_style_draw_shader(g2_gl_fill_t* fill, 
 	{
 		// init texture
 		glEnable(GL_TEXTURE_2D);
-		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 		glBindTexture(GL_TEXTURE_2D, *shader->texture);
 
 		/* the global image matrix => the camera viewport matrix
@@ -286,9 +295,13 @@ static __tb_inline__ tb_void_t g2_gl_fill_style_draw_shader(g2_gl_fill_t* fill, 
 		fill->matrix[13] 	= (by - fill->matrix[13]) / (sy * sh);
 
 		// enter matrix
-		glMatrixMode(GL_TEXTURE);
-		glPushMatrix();
-		glMultMatrixf(fill->matrix);
+		if (fill->context->version < 0x20)
+		{
+			glMatrixMode(GL_TEXTURE);
+			glPushMatrix();
+			glMultMatrixf(fill->matrix);
+		}
+		else glUniformMatrix4fv(g2_gl_program_location(fill->program, G2_GL_PROGRAM_LOCATION_MATRIX_TEXCOORD), 1, GL_FALSE, fill->matrix);
 
 		// blend?
 		tb_byte_t alpha = g2_style_alpha(fill->style);
@@ -299,12 +312,17 @@ static __tb_inline__ tb_void_t g2_gl_fill_style_draw_shader(g2_gl_fill_t* fill, 
 		{
 			glEnable(GL_BLEND);
 			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-			glColor4f(1.0f, 1.0f, 1.0f, (tb_float_t)alpha / 0xff);	
+
+			if (fill->context->version < 0x20)
+				glColor4f(1.0f, 1.0f, 1.0f, (tb_float_t)alpha / 0xff);
+			else glVertexAttrib4f(g2_gl_program_location(fill->program, G2_GL_PROGRAM_LOCATION_COLOR), 1.0f, 1.0f, 1.0f, (tb_float_t)alpha / 0xff);
 		}
 		else 
 		{
 			glDisable(GL_BLEND);
-			glColor4f(1.0f, 1.0f, 1.0f, 1.0f);	
+			if (fill->context->version < 0x20)
+				glColor4f(1.0f, 1.0f, 1.0f, 1.0f);	
+			else glVertexAttrib4f(g2_gl_program_location(fill->program, G2_GL_PROGRAM_LOCATION_COLOR), 1.0f, 1.0f, 1.0f, 1.0f);
 		}
 
 		// mode
@@ -338,17 +356,34 @@ static __tb_inline__ tb_void_t g2_gl_fill_style_draw_shader(g2_gl_fill_t* fill, 
 		}
 
 		// texcoords
-		glTexCoordPointer(2, GL_FLOAT, 0, fill->texcoords);
+		if (fill->context->version < 0x20)
+		{
+			glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+			glTexCoordPointer(2, GL_FLOAT, 0, fill->texcoords);
+		}
+		else 
+		{
+			glEnableVertexAttribArray(g2_gl_program_location(fill->program, G2_GL_PROGRAM_LOCATION_TEXCOORDS));
+			glVertexAttribPointer(g2_gl_program_location(fill->program, G2_GL_PROGRAM_LOCATION_TEXCOORDS), 2, GL_FLOAT, GL_FALSE, 0, fill->texcoords);
+		}
 
 		// draw
 		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
 		// leave matrix
-		glPopMatrix();
-		glMatrixMode(GL_MODELVIEW);
+		if (fill->context->version < 0x20)
+		{
+			glPopMatrix();
+			glMatrixMode(GL_MODELVIEW);
+			glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+		}
+		else
+		{
+			// disable texcoords
+			glDisableVertexAttribArray(g2_gl_program_location(fill->program, G2_GL_PROGRAM_LOCATION_TEXCOORDS));
+		}
 
 		// exit texture
-		glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 		glDisable(GL_TEXTURE_2D);
 	}
 }
