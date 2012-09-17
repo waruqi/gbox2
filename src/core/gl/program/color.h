@@ -17,18 +17,23 @@
  * Copyright (C) 2009 - 2012, ruki All rights reserved.
  *
  * @author		ruki
- * @file		program.h
+ * @file		color.h
  *
  */
-#ifndef G2_CORE_GL2x_PROGRAM_PROGRAM_H
-#define G2_CORE_GL2x_PROGRAM_PROGRAM_H
+#ifndef G2_CORE_GL_PROGRAM_COLOR_H
+#define G2_CORE_GL_PROGRAM_COLOR_H
 
 /* ///////////////////////////////////////////////////////////////////////
  * includes
  */
 #include "prefix.h"
-#include "color.h"
-#include "image.h"
+
+/* ///////////////////////////////////////////////////////////////////////
+ * interfaces
+ */
+
+// init program: color
+tb_handle_t 			g2_gl_program_init_color();
 
 
 #endif

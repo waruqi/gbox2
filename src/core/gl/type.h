@@ -32,7 +32,7 @@
  * types
  */
 
-// the gl1x rect type
+// the gl rect type
 typedef struct __g2_gl_rect_t
 {
 	tb_float_t 		x1;

@@ -370,11 +370,8 @@ tb_bool_t g2_demo_gl_init(tb_int_t argc, tb_char_t** argv)
 tb_bool_t g2_demo_gbox2_init(tb_int_t argc, tb_char_t** argv)
 {
 	// init context
-#if defined(G2_CONFIG_CORE_GL1x)
-	g_context = g2_context_init_gl1x(G2_DEMO_PIXFMT, G2_DEMO_WIDTH, G2_DEMO_HEIGHT);
-	tb_assert_and_check_return_val(g_context, TB_FALSE);
-#elif defined(G2_CONFIG_CORE_GL2x)
-	g_context = g2_context_init_gl2x(G2_DEMO_PIXFMT, G2_DEMO_WIDTH, G2_DEMO_HEIGHT);
+#if defined(G2_CONFIG_CORE_GL)
+	g_context = g2_context_init_gl(G2_DEMO_PIXFMT, G2_DEMO_WIDTH, G2_DEMO_HEIGHT);
 	tb_assert_and_check_return_val(g_context, TB_FALSE);
 #elif defined(G2_CONFIG_CORE_SKIA)
 	g_context = g2_context_init_skia(G2_DEMO_PIXFMT, TB_NULL, G2_DEMO_WIDTH, G2_DEMO_HEIGHT, 0);

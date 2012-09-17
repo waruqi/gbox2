@@ -17,55 +17,70 @@
  * Copyright (C) 2009 - 2012, ruki All rights reserved.
  *
  * @author		ruki
- * @file		painter.h
+ * @file		shader.h
  *
  */
-#ifndef G2_CORE_GL1x_PAINTER_H
-#define G2_CORE_GL1x_PAINTER_H
+#ifndef G2_CORE_GL_SHADER_H
+#define G2_CORE_GL_SHADER_H
 
 /* ///////////////////////////////////////////////////////////////////////
  * includes
  */
-#include "context.h"
+#include "prefix.h"
 
 /* ///////////////////////////////////////////////////////////////////////
  * types
  */
 
-// the gl110 matrix and clip item type for stack
-typedef struct __g2_gl1x_mcitem_t
+// the gl shader type constants
+typedef enum __g2_gl_shader_type_t
 {
-	// the mode
-	tb_size_t 					mode;
+	G2_GL_SHADER_TYPE_NONE 				= 0
+,	G2_GL_SHADER_TYPE_GRADIENT_LINEAR 	= 1
+,	G2_GL_SHADER_TYPE_GRADIENT_RADIAL 	= 2
+,	G2_GL_SHADER_TYPE_GRADIENT_RADIAL2 	= 3
+,	G2_GL_SHADER_TYPE_BITMAP 				= 4
 
-	// the matrix
-	g2_matrix_t 				matrix;
+}g2_gl_shader_type_t;
 
-	// the clipper
-	tb_handle_t 				clipper;
-
-}g2_gl1x_mcitem_t;
-
-// the gl1x painter type
-typedef struct __g2_gl1x_painter_t
+// the gl shader flag constants
+typedef enum __g2_gl_shader_flag_t
 {
+	G2_GL_SHADER_FLAG_NONE 				= 0
+,	G2_GL_SHADER_FLAG_ALPHA 				= 1
+
+}g2_gl_shader_flag_t;
+
+// the gl shader type
+typedef struct __g2_gl_shader_t
+{
+	// the type
+	tb_size_t 				type;
+
+	// the flag
+	tb_size_t 				flag;
+
+	// the wrap
+	tb_size_t 				wrap;
+
+	// the refn
+	tb_size_t 				refn;
+
+	// the width
+	tb_size_t 				width;
+
+	// the height
+	tb_size_t 				height;
+
 	// the context
-	g2_gl1x_context_t* 			context;
+	tb_handle_t 			context;
+
+	// the texture
+	GLuint* 				texture;
 
 	// the matrix
-	g2_matrix_t 				matrix;
+	g2_matrix_t 			matrix;
 
-	// the style
-	tb_handle_t 				style_def;
-	tb_handle_t 				style_usr;
-
-	// the vertices, vector<tb_float_t[2]>
-	tb_vector_t* 				vertices;
-
-	// the matrix and clipper stack
-	tb_stack_t* 				mcstack;
-
-}g2_gl1x_painter_t;
-
+}g2_gl_shader_t;
 
 #endif

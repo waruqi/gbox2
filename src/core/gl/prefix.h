@@ -40,7 +40,29 @@
 #include "path.h"
 #include "matrix.h"
 #include "extensions.h"
+#if defined(TB_CONFIG_OS_MAC)
+# 	include <OpenGL/gl.h>
+# 	include <OpenGL/glu.h>
+# 	include <GLUT/glut.h>
+#elif defined(TB_CONFIG_OS_ANDROID)
+# 	include <GLES/gl.h>
+# 	include <GLES/glext.h>
+#else
+# 	define GL_GLEXT_PROTOTYPES
+# 	include <GL/glut.h>
+# 	include <GL/glext.h>
+#endif
 
+/* ///////////////////////////////////////////////////////////////////////
+ * macros
+ */
+#ifdef TB_CONFIG_OS_ANDROID
+# 	define glOrtho 				glOrthof
+#endif
+
+#ifndef GL_MIRRORED_REPEAT
+# 	define GL_MIRRORED_REPEAT 	GL_MIRRORED_REPEAT_ARB
+#endif
 
 #endif
 

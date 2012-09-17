@@ -17,34 +17,19 @@
  * Copyright (C) 2009 - 2012, ruki All rights reserved.
  *
  * @author		ruki
- * @file		fill.h
+ * @file		prefix.h
  *
  */
-#ifndef G2_CORE_GL1x_FILL_H
-#define G2_CORE_GL1x_FILL_H
+#ifndef G2_CORE_GL_PROGRAM_PREFIX_H
+#define G2_CORE_GL_PROGRAM_PREFIX_H
 
 /* ///////////////////////////////////////////////////////////////////////
  * includes
  */
-#include "painter.h"
+#include "../prefix.h"
+#include "../program.h"
 
-/* ///////////////////////////////////////////////////////////////////////
- * interfaces
- */
-
-// fill rect
-tb_void_t g2_gl1x_fill_rect(g2_gl1x_painter_t* painter, g2_rect_t const* rect);
-
-// fill path
-tb_void_t g2_gl1x_fill_path(g2_gl1x_painter_t* painter, g2_gl_path_t const* path);
-
-// fill circle
-tb_void_t g2_gl1x_fill_circle(g2_gl1x_painter_t* painter, g2_circle_t const* circle);
-
-// fill ellipse
-tb_void_t g2_gl1x_fill_ellipse(g2_gl1x_painter_t* painter, g2_ellipse_t const* ellipse);
-
-// fill triangle
-tb_void_t g2_gl1x_fill_triangle(g2_gl1x_painter_t* painter, g2_triangle_t const* triangle);
 
 #endif
+
+

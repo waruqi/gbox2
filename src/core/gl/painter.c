@@ -32,16 +32,16 @@
 
 // the vertices grow
 #ifdef TB_CONFIG_BINARY_SMALL
-# 	define G2_GL1x_VERTICES_GROW 				(256)
+# 	define G2_GL_VERTICES_GROW 				(256)
 #else
-# 	define G2_GL1x_VERTICES_GROW 				(512)
+# 	define G2_GL_VERTICES_GROW 				(512)
 #endif
 
 // the mcstack grow
 #ifdef TB_CONFIG_BINARY_SMALL
-# 	define G2_GL1x_MCSTACK_GROW 				(32)
+# 	define G2_GL_MCSTACK_GROW 				(32)
 #else
-# 	define G2_GL1x_MCSTACK_GROW 				(64)
+# 	define G2_GL_MCSTACK_GROW 				(64)
 #endif
 
 /* ///////////////////////////////////////////////////////////////////////
@@ -53,11 +53,11 @@ tb_handle_t g2_init(tb_handle_t context)
 	tb_assert_and_check_return_val(context, TB_NULL);
 
 	// alloc
-	g2_gl1x_painter_t* gpainter = tb_malloc0(sizeof(g2_gl1x_painter_t));
+	g2_gl_painter_t* gpainter = tb_malloc0(sizeof(g2_gl_painter_t));
 	tb_assert_and_check_return_val(gpainter, TB_NULL);
 
 	// init context
-	gpainter->context = (g2_gl1x_context_t*)context;
+	gpainter->context = (g2_gl_context_t*)context;
 
 	// init style
 	gpainter->style_def = g2_style_init();
@@ -65,14 +65,14 @@ tb_handle_t g2_init(tb_handle_t context)
 	tb_assert_and_check_goto(gpainter->style_def, fail);
 
 	// init vertices
-	gpainter->vertices = tb_vector_init(G2_GL1x_VERTICES_GROW, tb_item_func_ifm(sizeof(tb_float_t) << 1, TB_NULL, TB_NULL));
+	gpainter->vertices = tb_vector_init(G2_GL_VERTICES_GROW, tb_item_func_ifm(sizeof(tb_float_t) << 1, TB_NULL, TB_NULL));
 	tb_assert_and_check_goto(gpainter->vertices, fail);
 
 	// init matrix
 	g2_matrix_clear(&gpainter->matrix);
 
 	// init stack
-	gpainter->mcstack = tb_stack_init(G2_GL1x_MCSTACK_GROW, tb_item_func_ifm(sizeof(g2_gl1x_mcitem_t), TB_NULL, TB_NULL));
+	gpainter->mcstack = tb_stack_init(G2_GL_MCSTACK_GROW, tb_item_func_ifm(sizeof(g2_gl_mcitem_t), TB_NULL, TB_NULL));
 	tb_assert_and_check_goto(gpainter->mcstack, fail);
 
 	// ok
@@ -84,7 +84,7 @@ fail:
 }
 tb_void_t g2_exit(tb_handle_t painter)
 {
-	g2_gl1x_painter_t* gpainter = (g2_gl1x_painter_t*)painter;
+	g2_gl_painter_t* gpainter = (g2_gl_painter_t*)painter;
 	if (gpainter)
 	{
 		// exit vertices
@@ -99,21 +99,21 @@ tb_void_t g2_exit(tb_handle_t painter)
 }
 tb_size_t g2_pixfmt(tb_handle_t painter)
 {
-	g2_gl1x_painter_t* gpainter = (g2_gl1x_painter_t*)painter;
+	g2_gl_painter_t* gpainter = (g2_gl_painter_t*)painter;
 	tb_assert_and_check_return_val(gpainter && gpainter->context, G2_PIXFMT_NONE);
 
 	return g2_bitmap_pixfmt(g2_context_surface(gpainter->context));
 }
 tb_size_t g2_save(tb_handle_t painter, tb_size_t mode)
 {	
-	g2_gl1x_painter_t* gpainter = (g2_gl1x_painter_t*)painter;
+	g2_gl_painter_t* gpainter = (g2_gl_painter_t*)painter;
 	tb_assert_and_check_return_val(gpainter && gpainter->mcstack, 0);
 
 	// no mode?
 	tb_assert_and_check_return_val(mode, tb_stack_size(gpainter->mcstack));
 
 	// init item
-	g2_gl1x_mcitem_t item = {0}; 
+	g2_gl_mcitem_t item = {0}; 
 	item.mode = mode;
 
 	// save matrix
@@ -132,11 +132,11 @@ tb_size_t g2_save(tb_handle_t painter, tb_size_t mode)
 }
 tb_void_t g2_load(tb_handle_t painter)
 {
-	g2_gl1x_painter_t* gpainter = (g2_gl1x_painter_t*)painter;
+	g2_gl_painter_t* gpainter = (g2_gl_painter_t*)painter;
 	tb_assert_and_check_return(gpainter && gpainter->mcstack);
 
 	// init item
-	g2_gl1x_mcitem_t* item = tb_stack_top(gpainter->mcstack);
+	g2_gl_mcitem_t* item = tb_stack_top(gpainter->mcstack);
 	tb_assert_and_check_return(item);
 
 	// load matrix
@@ -152,77 +152,77 @@ tb_void_t g2_load(tb_handle_t painter)
 }
 tb_handle_t g2_context(tb_handle_t painter)
 {
-	g2_gl1x_painter_t* gpainter = (g2_gl1x_painter_t*)painter;
+	g2_gl_painter_t* gpainter = (g2_gl_painter_t*)painter;
 	tb_assert_and_check_return_val(gpainter, TB_NULL);
 
 	return (tb_handle_t)gpainter->context;
 }
 tb_void_t g2_context_set(tb_handle_t painter, tb_handle_t context)
 {
-	g2_gl1x_painter_t* gpainter = (g2_gl1x_painter_t*)painter;
+	g2_gl_painter_t* gpainter = (g2_gl_painter_t*)painter;
 	tb_assert_and_check_return(gpainter && context);
 
-	gpainter->context = (g2_gl1x_context_t*)context;
+	gpainter->context = (g2_gl_context_t*)context;
 }
 tb_handle_t g2_style(tb_handle_t painter)
 {
-	g2_gl1x_painter_t* gpainter = (g2_gl1x_painter_t*)painter;
+	g2_gl_painter_t* gpainter = (g2_gl_painter_t*)painter;
 	tb_assert_and_check_return_val(gpainter, TB_NULL);
 
 	return gpainter->style_usr;
 }
 tb_void_t g2_style_set(tb_handle_t painter, tb_handle_t style)
 {
-	g2_gl1x_painter_t* gpainter = (g2_gl1x_painter_t*)painter;
+	g2_gl_painter_t* gpainter = (g2_gl_painter_t*)painter;
 	tb_assert_and_check_return(gpainter);
 
 	gpainter->style_usr = style? style : gpainter->style_def;
 }
 g2_matrix_t const* g2_matrix(tb_handle_t painter)
 {
-	g2_gl1x_painter_t* gpainter = (g2_gl1x_painter_t*)painter;
+	g2_gl_painter_t* gpainter = (g2_gl_painter_t*)painter;
 	tb_assert_and_check_return_val(gpainter, TB_NULL);
 
 	return &gpainter->matrix;
 }
 tb_bool_t g2_rotate(tb_handle_t painter, g2_float_t degrees)
 {
-	g2_gl1x_painter_t* gpainter = (g2_gl1x_painter_t*)painter;
+	g2_gl_painter_t* gpainter = (g2_gl_painter_t*)painter;
 	tb_assert_and_check_return_val(gpainter, TB_FALSE);
 
 	return g2_matrix_rotate(&gpainter->matrix, degrees);
 }
 tb_bool_t g2_skew(tb_handle_t painter, g2_float_t kx, g2_float_t ky)
 {
-	g2_gl1x_painter_t* gpainter = (g2_gl1x_painter_t*)painter;
+	g2_gl_painter_t* gpainter = (g2_gl_painter_t*)painter;
 	tb_assert_and_check_return_val(gpainter, TB_FALSE);
 
 	return g2_matrix_skew(&gpainter->matrix, kx, ky);
 }
 tb_bool_t g2_scale(tb_handle_t painter, g2_float_t sx, g2_float_t sy)
 {
-	g2_gl1x_painter_t* gpainter = (g2_gl1x_painter_t*)painter;
+	g2_gl_painter_t* gpainter = (g2_gl_painter_t*)painter;
 	tb_assert_and_check_return_val(gpainter, TB_FALSE);
 
 	return g2_matrix_scale(&gpainter->matrix, sx, sy);
 }
 tb_bool_t g2_translate(tb_handle_t painter, g2_float_t dx, g2_float_t dy)
 {
-	g2_gl1x_painter_t* gpainter = (g2_gl1x_painter_t*)painter;
+	g2_gl_painter_t* gpainter = (g2_gl_painter_t*)painter;
 	tb_assert_and_check_return_val(gpainter, TB_FALSE);
 
 	return g2_matrix_translate(&gpainter->matrix, dx, dy);
 }
 tb_bool_t g2_multiply(tb_handle_t painter, g2_matrix_t const* matrix)
 {
-	g2_gl1x_painter_t* gpainter = (g2_gl1x_painter_t*)painter;
+	g2_gl_painter_t* gpainter = (g2_gl_painter_t*)painter;
 	tb_assert_and_check_return_val(gpainter && matrix, TB_FALSE);
 
 	return g2_matrix_multiply(&gpainter->matrix, matrix);
 }
 tb_void_t g2_matrix_set(tb_handle_t painter, g2_matrix_t const* matrix)
 {
-	g2_gl1x_painter_t* gpainter = (g2_gl1x_painter_t*)painter;
+	g2_gl_painter_t* gpainter = (g2_gl_painter_t*)painter;
 	tb_assert_and_check_return(gpainter);
 
 	if (matrix) gpainter->matrix = *matrix;
@@ -246,7 +246,7 @@ tb_void_t g2_clear(tb_handle_t painter, g2_color_t color)
 }
 tb_void_t g2_draw_path(tb_handle_t painter, tb_handle_t path)
 {
-	g2_gl1x_painter_t* gpainter = (g2_gl1x_painter_t*)painter;
+	g2_gl_painter_t* gpainter = (g2_gl_painter_t*)painter;
 	tb_assert_and_check_return(gpainter && gpainter->style_usr && path);
 
 	// like
@@ -254,7 +254,7 @@ tb_void_t g2_draw_path(tb_handle_t painter, tb_handle_t path)
 
 	// fill
 	if (g2_gl_path_make_fill((g2_gl_path_t*)path))
-		g2_gl1x_fill_path(gpainter, (g2_gl_path_t const*)path);
+		g2_gl_fill_path(gpainter, (g2_gl_path_t const*)path);
 }
 tb_void_t g2_draw_arc(tb_handle_t painter, g2_arc_t const* arc)
 {
@@ -262,11 +262,11 @@ tb_void_t g2_draw_arc(tb_handle_t painter, g2_arc_t const* arc)
 }
 tb_void_t g2_draw_rect(tb_handle_t painter, g2_rect_t const* rect)
 {
-	g2_gl1x_painter_t* gpainter = (g2_gl1x_painter_t*)painter;
+	g2_gl_painter_t* gpainter = (g2_gl_painter_t*)painter;
 	tb_assert_and_check_return(gpainter && gpainter->style_usr && rect);
 
 	// fill
-	g2_gl1x_fill_rect(gpainter, rect);
+	g2_gl_fill_rect(gpainter, rect);
 }
 tb_void_t g2_draw_line(tb_handle_t painter, g2_line_t const* line)
 {
@@ -278,25 +278,25 @@ tb_void_t g2_draw_point(tb_handle_t painter, g2_point_t const* point)
 }
 tb_void_t g2_draw_circle(tb_handle_t painter, g2_circle_t const* circle)
 {
-	g2_gl1x_painter_t* gpainter = (g2_gl1x_painter_t*)painter;
+	g2_gl_painter_t* gpainter = (g2_gl_painter_t*)painter;
 	tb_assert_and_check_return(gpainter && gpainter->style_usr && circle);
 
 	// fill
-	g2_gl1x_fill_circle(gpainter, circle);
+	g2_gl_fill_circle(gpainter, circle);
 }
 tb_void_t g2_draw_ellipse(tb_handle_t painter, g2_ellipse_t const* ellipse)
 {
-	g2_gl1x_painter_t* gpainter = (g2_gl1x_painter_t*)painter;
+	g2_gl_painter_t* gpainter = (g2_gl_painter_t*)painter;
 	tb_assert_and_check_return(gpainter && gpainter->style_usr && ellipse);
 
 	// fill
-	g2_gl1x_fill_ellipse(gpainter, ellipse);
+	g2_gl_fill_ellipse(gpainter, ellipse);
 }
 tb_void_t g2_draw_triangle(tb_handle_t painter, g2_triangle_t const* triangle)
 {
-	g2_gl1x_painter_t* gpainter = (g2_gl1x_painter_t*)painter;
+	g2_gl_painter_t* gpainter = (g2_gl_painter_t*)painter;
 	tb_assert_and_check_return(gpainter && gpainter->style_usr && triangle);
 
 	// fill
-	g2_gl1x_fill_triangle(gpainter, triangle);
+	g2_gl_fill_triangle(gpainter, triangle);
 }

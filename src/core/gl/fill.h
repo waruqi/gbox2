@@ -20,8 +20,8 @@
  * @file		fill.h
  *
  */
-#ifndef G2_CORE_GL2x_FILL_H
-#define G2_CORE_GL2x_FILL_H
+#ifndef G2_CORE_GL_FILL_H
+#define G2_CORE_GL_FILL_H
 
 /* ///////////////////////////////////////////////////////////////////////
  * includes
@@ -33,18 +33,18 @@
  */
 
 // fill rect
-tb_void_t g2_gl2x_fill_rect(g2_gl2x_painter_t* painter, g2_rect_t const* rect);
+tb_void_t g2_gl_fill_rect(g2_gl_painter_t* painter, g2_rect_t const* rect);
 
 // fill path
-tb_void_t g2_gl2x_fill_path(g2_gl2x_painter_t* painter, g2_gl_path_t const* path);
+tb_void_t g2_gl_fill_path(g2_gl_painter_t* painter, g2_gl_path_t const* path);
 
 // fill circle
-tb_void_t g2_gl2x_fill_circle(g2_gl2x_painter_t* painter, g2_circle_t const* circle);
+tb_void_t g2_gl_fill_circle(g2_gl_painter_t* painter, g2_circle_t const* circle);
 
 // fill ellipse
-tb_void_t g2_gl2x_fill_ellipse(g2_gl2x_painter_t* painter, g2_ellipse_t const* ellipse);
+tb_void_t g2_gl_fill_ellipse(g2_gl_painter_t* painter, g2_ellipse_t const* ellipse);
 
 // fill triangle
-tb_void_t g2_gl2x_fill_triangle(g2_gl2x_painter_t* painter, g2_triangle_t const* triangle);
+tb_void_t g2_gl_fill_triangle(g2_gl_painter_t* painter, g2_triangle_t const* triangle);
 
 #endif

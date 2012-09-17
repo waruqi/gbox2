@@ -17,41 +17,18 @@
  * Copyright (C) 2009 - 2012, ruki All rights reserved.
  *
  * @author		ruki
- * @file		context.h
+ * @file		program.h
  *
  */
-#ifndef G2_CORE_GL2x_CONTEXT_H
-#define G2_CORE_GL2x_CONTEXT_H
+#ifndef G2_CORE_GL_PROGRAM_PROGRAM_H
+#define G2_CORE_GL_PROGRAM_PROGRAM_H
 
 /* ///////////////////////////////////////////////////////////////////////
  * includes
  */
 #include "prefix.h"
-#include "program.h"
-
-/* ///////////////////////////////////////////////////////////////////////
- * types
- */
-
-// the gl2x context type
-typedef struct __g2_gl2x_context_t
-{
-	// the surface
-	tb_handle_t 		surface;
-
-	// the version
-	tb_byte_t 			version;
-
-	// the extensions
-	tb_byte_t 			extensions[G2_GL_EXT_MAXN];
-
-	// the programs
-	tb_handle_t 		programs[G2_GL2X_PROGRAM_TYPE_MAXN];
-
-	// the project matrix
-	tb_float_t 			matrix[16];
-
-}g2_gl2x_context_t;
+#include "color.h"
+#include "image.h"
 
 
 #endif
