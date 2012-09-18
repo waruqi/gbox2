@@ -42,4 +42,12 @@ typedef struct __g2_gl_rect_t
 
 }g2_gl_rect_t;
 
+// the gl stop type
+typedef struct __g2_gl_stop_t
+{
+	g2_color_t 		color;
+	g2_float_t 		radio;
+
+}g2_gl_stop_t;
+
 #endif

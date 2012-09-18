@@ -314,9 +314,6 @@ tb_handle_t g2_context_init_gl(tb_size_t pixfmt, tb_size_t width, tb_size_t heig
 		glLoadIdentity();
 		glOrtho(0.0f, (tb_float_t)width, (tb_float_t)height, 0.0f, -1.0f, 1.0f);
 		glMatrixMode(GL_MODELVIEW);
-		glLoadIdentity();
-		glTranslatef(0.0f, (tb_float_t)height, 0.0f);
-		glScalef(1.0f, -1.0f, 1.0f);
 	}
 	else g2_gl_matrix_ortho(gcontext->matrix, 0.0f, (tb_float_t)width, (tb_float_t)height, 0.0f, -1.0f, 1.0f);
 
@@ -414,9 +411,6 @@ tb_handle_t g2_context_resize(tb_handle_t context, tb_size_t width, tb_size_t he
 		glLoadIdentity();
 		glOrtho(0.0f, (tb_float_t)width, (tb_float_t)height, 0.0f, -1.0f, 1.0f);
 		glMatrixMode(GL_MODELVIEW);
-		glLoadIdentity();
-		glTranslatef(0.0f, (tb_float_t)height, 0.0f);
-		glScalef(1.0f, -1.0f, 1.0f);
 	}
 	else g2_gl_matrix_ortho(gcontext->matrix, 0.0f, (tb_float_t)width, (tb_float_t)height, 0.0f, -1.0f, 1.0f);
 

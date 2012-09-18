@@ -261,8 +261,8 @@ static __tb_inline__ tb_void_t g2_gl_fill_style_draw_shader(g2_gl_fill_t* fill, 
 		tb_float_t by = bounds->y1;
 		tb_float_t bw = bounds->x2 - bounds->x1 + 1;
 		tb_float_t bh = bounds->y2 - bounds->y1 + 1;
-		tb_float_t sw = shader->width;
-		tb_float_t sh = shader->height;
+		tb_float_t sw = shader->u.image.width;
+		tb_float_t sh = shader->u.image.height;
 		tb_float_t sx = fill->matrix[0];
 		tb_float_t sy = fill->matrix[5];
 

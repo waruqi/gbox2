@@ -39,7 +39,7 @@ typedef enum __g2_gl_shader_type_t
 ,	G2_GL_SHADER_TYPE_GRADIENT_LINEAR 	= 1
 ,	G2_GL_SHADER_TYPE_GRADIENT_RADIAL 	= 2
 ,	G2_GL_SHADER_TYPE_GRADIENT_RADIAL2 	= 3
-,	G2_GL_SHADER_TYPE_BITMAP 				= 4
+,	G2_GL_SHADER_TYPE_BITMAP 			= 4
 
 }g2_gl_shader_type_t;
 
@@ -47,7 +47,7 @@ typedef enum __g2_gl_shader_type_t
 typedef enum __g2_gl_shader_flag_t
 {
 	G2_GL_SHADER_FLAG_NONE 				= 0
-,	G2_GL_SHADER_FLAG_ALPHA 				= 1
+,	G2_GL_SHADER_FLAG_ALPHA 			= 1
 
 }g2_gl_shader_flag_t;
 
@@ -66,12 +66,6 @@ typedef struct __g2_gl_shader_t
 	// the refn
 	tb_size_t 				refn;
 
-	// the width
-	tb_size_t 				width;
-
-	// the height
-	tb_size_t 				height;
-
 	// the context
 	tb_handle_t 			context;
 
@@ -80,6 +74,41 @@ typedef struct __g2_gl_shader_t
 
 	// the matrix
 	g2_matrix_t 			matrix;
+
+	// the union
+	union 
+	{
+		// the image info
+		struct
+		{
+			tb_size_t 		width;
+			tb_size_t 		height;
+
+		} 					image;
+
+		// the linear info
+		struct
+		{
+			g2_point_t 		pb;
+			g2_point_t 		pe;
+
+		} 					linear;
+
+		// the radial info
+		struct
+		{
+			g2_circle_t 	cp;
+
+		} 					radial;
+
+		// the radial2 info
+		struct
+		{
+			g2_circle_t 	cb;
+			g2_circle_t 	ce;
+
+		} 					radial2;
+	}u;
 
 }g2_gl_shader_t;
 
