@@ -95,6 +95,7 @@ static __tb_inline__ tb_void_t g2_gl_fill_matrix_leave(g2_gl_fill_t* fill)
 static __tb_inline__ tb_void_t g2_gl_fill_stencil_init(g2_gl_fill_t* fill)
 {
     glDisable(GL_BLEND);
+    glDisable(GL_TEXTURE_1D);
     glDisable(GL_TEXTURE_2D);
 	glEnable(GL_STENCIL_TEST);
 }
@@ -131,9 +132,6 @@ static __tb_inline__ tb_bool_t g2_gl_fill_context_init(g2_gl_fill_t* fill)
 
 	// has fill?
 	tb_check_return_val(mode & G2_STYLE_MODE_FILL, TB_FALSE);
-
-	// enable vertices
-	glEnableClientState(GL_VERTEX_ARRAY);
 
 	// enable antialiasing?
 	if (flag & G2_STYLE_FLAG_ANTI_ALIAS) glEnable(GL_MULTISAMPLE);
@@ -179,7 +177,12 @@ static __tb_inline__ tb_bool_t g2_gl_fill_context_init(g2_gl_fill_t* fill)
 		
 	}
 	
-	if (fill->context->version >= 0x20)
+	if (fill->context->version < 0x20)
+	{
+		// enable vertices
+		glEnableClientState(GL_VERTEX_ARRAY);
+	}
+	else
 	{
 		// init vertices
 		glEnableVertexAttribArray(g2_gl_program_location(fill->program, G2_GL_PROGRAM_LOCATION_VERTICES));
@@ -217,6 +220,7 @@ static __tb_inline__ tb_void_t g2_gl_fill_context_exit(g2_gl_fill_t* fill)
 	glDisable(GL_BLEND);
 
 	// disable texture
+	glDisable(GL_TEXTURE_1D);
 	glDisable(GL_TEXTURE_2D);
 }
 static __tb_inline__ tb_void_t g2_gl_fill_style_draw_color(g2_gl_fill_t* fill, g2_color_t color)
@@ -238,153 +242,344 @@ static __tb_inline__ tb_void_t g2_gl_fill_style_draw_color(g2_gl_fill_t* fill, g
 	// draw
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 }
+static __tb_inline__ tb_void_t g2_gl_fill_style_draw_shader_image(g2_gl_fill_t* fill, g2_gl_shader_t const* shader, g2_gl_rect_t const* bounds)
+{
+	// init texture
+	glEnable(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D, *shader->texture);
+
+	/* the global image matrix => the camera viewport matrix
+	 *
+	 * glScalef(bw / sw, bh / sh, 1.0f); 			//< disable auto scale in the bounds
+	 * glTranslatef(bx / bw, by / bh, 0.0f); 		//< move viewport to global
+	 *
+	 */
+	g2_gl_matrix_from(fill->matrix, &shader->matrix);
+	tb_float_t bx = bounds->x1;
+	tb_float_t by = bounds->y1;
+	tb_float_t bw = bounds->x2 - bounds->x1 + 1;
+	tb_float_t bh = bounds->y2 - bounds->y1 + 1;
+	tb_float_t sw = shader->u.image.width;
+	tb_float_t sh = shader->u.image.height;
+	tb_float_t sx = fill->matrix[0];
+	tb_float_t sy = fill->matrix[5];
+
+	/* adjust scale 
+	 *
+	 * global => camera: (1 / sx)
+	 * disable auto scale in the bounds: (bw / sw)
+	 *
+	 * => sx = (bw / sw) * (1 / sx) => bw / (sx * sw)
+	 *
+	 */
+	fill->matrix[0] 	= bw / (sx * sw);
+	fill->matrix[5] 	= bh / (sy * sh);
+
+	// adjust skew
+	fill->matrix[1] 	*= fill->matrix[5] / sy;
+	fill->matrix[4] 	*= fill->matrix[0] / sx;
+
+	/* adjust translate
+	 *
+	 * scale: sx
+	 * global => camera: -tx / bw
+	 * move viewport to global: bx / bw
+	 *
+	 * => tx = sx * ((bx / bw) + (-tx / bw)) => sx * (bx - tx) / bw
+	 * => tx = (bx - tx) / (sx * sw)
+	 *
+	 */
+	fill->matrix[12] 	= (bx - fill->matrix[12]) / (sx * sw);
+	fill->matrix[13] 	= (by - fill->matrix[13]) / (sy * sh);
+
+	// enter matrix
+	if (fill->context->version < 0x20)
+	{
+		glMatrixMode(GL_TEXTURE);
+		glPushMatrix();
+		glMultMatrixf(fill->matrix);
+	}
+	else glUniformMatrix4fv(g2_gl_program_location(fill->program, G2_GL_PROGRAM_LOCATION_MATRIX_TEXCOORD), 1, GL_FALSE, fill->matrix);
+
+	// blend?
+	tb_byte_t alpha = g2_style_alpha(fill->style);
+	if (shader->flag & G2_GL_SHADER_FLAG_ALPHA
+		|| shader->wrap == G2_SHADER_WRAP_BORDER
+		|| alpha != 0xff
+		)
+	{
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+		if (fill->context->version < 0x20)
+			glColor4f(1.0f, 1.0f, 1.0f, (tb_float_t)alpha / 0xff);
+		else glVertexAttrib4f(g2_gl_program_location(fill->program, G2_GL_PROGRAM_LOCATION_COLOR), 1.0f, 1.0f, 1.0f, (tb_float_t)alpha / 0xff);
+	}
+	else 
+	{
+		glDisable(GL_BLEND);
+		if (fill->context->version < 0x20)
+			glColor4f(1.0f, 1.0f, 1.0f, 1.0f);	
+		else glVertexAttrib4f(g2_gl_program_location(fill->program, G2_GL_PROGRAM_LOCATION_COLOR), 1.0f, 1.0f, 1.0f, 1.0f);
+	}
+
+	// mode
+	glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+
+	// wrap
+	static GLuint wrap[] = 
+	{
+		GL_CLAMP_TO_BORDER
+	,	GL_CLAMP_TO_BORDER
+	,	GL_CLAMP_TO_EDGE
+	,	GL_REPEAT
+	,	GL_MIRRORED_REPEAT
+	};
+	tb_assert(shader->wrap < tb_arrayn(wrap));
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrap[shader->wrap]);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrap[shader->wrap]);
+
+	// filter?
+	if (g2_style_flag(fill->style) & G2_STYLE_FLAG_BITMAP_FILTER)
+	{
+		// init filter
+		tb_size_t filter = g2_quality() > G2_QUALITY_LOW? GL_LINEAR : GL_NEAREST;
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filter);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filter);
+	}
+	else
+	{
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	}
+
+	// texcoords
+	if (fill->context->version < 0x20)
+	{
+		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+		glTexCoordPointer(2, GL_FLOAT, 0, fill->texcoords);
+	}
+	else 
+	{
+		glEnableVertexAttribArray(g2_gl_program_location(fill->program, G2_GL_PROGRAM_LOCATION_TEXCOORDS));
+		glVertexAttribPointer(g2_gl_program_location(fill->program, G2_GL_PROGRAM_LOCATION_TEXCOORDS), 2, GL_FLOAT, GL_FALSE, 0, fill->texcoords);
+	}
+
+	// draw
+	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
+	// leave matrix
+	if (fill->context->version < 0x20)
+	{
+		glPopMatrix();
+		glMatrixMode(GL_MODELVIEW);
+		glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+	}
+	else
+	{
+		// disable texcoords
+		glDisableVertexAttribArray(g2_gl_program_location(fill->program, G2_GL_PROGRAM_LOCATION_TEXCOORDS));
+	}
+
+	// exit texture
+	glDisable(GL_TEXTURE_2D);
+}
+static __tb_inline__ tb_void_t g2_gl_fill_style_draw_shader_linear(g2_gl_fill_t* fill, g2_gl_shader_t const* shader, g2_gl_rect_t const* bounds)
+{
+	// init texture
+	glEnable(GL_TEXTURE_1D);
+	glBindTexture(GL_TEXTURE_1D, *shader->texture);
+
+	// init matrix
+	g2_matrix_t matrix = *g2_matrix(fill->painter);
+
+	// init vector
+	g2_point_t pb = shader->u.linear.pb;
+	g2_point_t pe = shader->u.linear.pe;
+	g2_matrix_apply_point(&matrix, &pb);
+	g2_matrix_apply_point(&matrix, &pe);
+
+	/* init texcoords
+	 *                 pe (01)
+	 *                 *
+	 *             *   | *
+	 *          *      |  *
+	 * (00)  *         |   *
+	 * pb 0*****|******|*****1 (11)  => texture 1d
+	 *      *   |      |   *
+	 *       *  |      *
+	 *        * |  *
+	 *         * (10)
+	 */
+	fill->texcoords[0] = 0.0f;
+	fill->texcoords[1] = 0.6f;
+	fill->texcoords[2] = 0.3f;
+	fill->texcoords[3] = 1.0f;
+
+	/* the global image matrix => the camera viewport matrix
+	 *
+	 * glScalef(bw / sw, bh / sh, 1.0f); 			//< disable auto scale in the bounds
+	 * glTranslatef(bx / bw, by / bh, 0.0f); 		//< move viewport to global
+	 *
+	 */
+	g2_gl_matrix_from(fill->matrix, &shader->matrix);
+	tb_float_t bx = bounds->x1;
+	tb_float_t by = bounds->y1;
+	tb_float_t bw = bounds->x2 - bounds->x1 + 1;
+	tb_float_t bh = bounds->y2 - bounds->y1 + 1;
+	tb_float_t sw = shader->u.image.width;
+	tb_float_t sh = shader->u.image.height;
+	tb_float_t sx = fill->matrix[0];
+	tb_float_t sy = fill->matrix[5];
+
+	/* adjust scale 
+	 *
+	 * global => camera: (1 / sx)
+	 * disable auto scale in the bounds: (bw / sw)
+	 *
+	 * => sx = (bw / sw) * (1 / sx) => bw / (sx * sw)
+	 *
+	 */
+	fill->matrix[0] 	= bw / (sx * sw);
+	fill->matrix[5] 	= bh / (sy * sh);
+
+	// adjust skew
+	fill->matrix[1] 	*= fill->matrix[5] / sy;
+	fill->matrix[4] 	*= fill->matrix[0] / sx;
+
+	/* adjust translate
+	 *
+	 * scale: sx
+	 * global => camera: -tx / bw
+	 * move viewport to global: bx / bw
+	 *
+	 * => tx = sx * ((bx / bw) + (-tx / bw)) => sx * (bx - tx) / bw
+	 * => tx = (bx - tx) / (sx * sw)
+	 *
+	 */
+	fill->matrix[12] 	= (bx - fill->matrix[12]) / (sx * sw);
+	fill->matrix[13] 	= (by - fill->matrix[13]) / (sy * sh);
+
+	// enter matrix
+	if (fill->context->version < 0x20)
+	{
+		glMatrixMode(GL_TEXTURE);
+		glPushMatrix();
+//		glMultMatrixf(fill->matrix);
+	}
+	else glUniformMatrix4fv(g2_gl_program_location(fill->program, G2_GL_PROGRAM_LOCATION_MATRIX_TEXCOORD), 1, GL_FALSE, fill->matrix);
+
+	// blend?
+	tb_byte_t alpha = g2_style_alpha(fill->style);
+	if (shader->flag & G2_GL_SHADER_FLAG_ALPHA
+		|| shader->wrap == G2_SHADER_WRAP_BORDER
+		|| alpha != 0xff
+		)
+	{
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+		if (fill->context->version < 0x20)
+			glColor4f(1.0f, 1.0f, 1.0f, (tb_float_t)alpha / 0xff);
+		else glVertexAttrib4f(g2_gl_program_location(fill->program, G2_GL_PROGRAM_LOCATION_COLOR), 1.0f, 1.0f, 1.0f, (tb_float_t)alpha / 0xff);
+	}
+	else 
+	{
+		glDisable(GL_BLEND);
+		if (fill->context->version < 0x20)
+			glColor4f(1.0f, 1.0f, 1.0f, 1.0f);	
+		else glVertexAttrib4f(g2_gl_program_location(fill->program, G2_GL_PROGRAM_LOCATION_COLOR), 1.0f, 1.0f, 1.0f, 1.0f);
+	}
+
+	// mode
+	glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+
+	// wrap
+	static GLuint wrap[] = 
+	{
+		GL_CLAMP_TO_BORDER
+	,	GL_CLAMP_TO_BORDER
+	,	GL_CLAMP_TO_EDGE
+	,	GL_REPEAT
+	,	GL_MIRRORED_REPEAT
+	};
+	tb_assert(shader->wrap < tb_arrayn(wrap));
+	glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_WRAP_S, wrap[shader->wrap]);
+	glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_WRAP_T, wrap[shader->wrap]);
+
+	// filter?
+	if (g2_style_flag(fill->style) & G2_STYLE_FLAG_BITMAP_FILTER)
+	{
+		// init filter
+		tb_size_t filter = g2_quality() > G2_QUALITY_LOW? GL_LINEAR : GL_NEAREST;
+		glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MAG_FILTER, filter);
+		glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MIN_FILTER, filter);
+	}
+	else
+	{
+		glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	}
+
+	// texcoords
+	if (fill->context->version < 0x20)
+	{
+		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+		glTexCoordPointer(1, GL_FLOAT, 0, fill->texcoords);
+	}
+	else 
+	{
+		glEnableVertexAttribArray(g2_gl_program_location(fill->program, G2_GL_PROGRAM_LOCATION_TEXCOORDS));
+		glVertexAttribPointer(g2_gl_program_location(fill->program, G2_GL_PROGRAM_LOCATION_TEXCOORDS), 2, GL_FLOAT, GL_FALSE, 0, fill->texcoords);
+	}
+
+	// draw
+	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
+	// leave matrix
+	if (fill->context->version < 0x20)
+	{
+		glPopMatrix();
+		glMatrixMode(GL_MODELVIEW);
+		glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+	}
+	else
+	{
+		// disable texcoords
+		glDisableVertexAttribArray(g2_gl_program_location(fill->program, G2_GL_PROGRAM_LOCATION_TEXCOORDS));
+	}
+
+	// exit texture
+	glDisable(GL_TEXTURE_1D);
+}
+static __tb_inline__ tb_void_t g2_gl_fill_style_draw_shader_radial(g2_gl_fill_t* fill, g2_gl_shader_t const* shader, g2_gl_rect_t const* bounds)
+{
+}
+static __tb_inline__ tb_void_t g2_gl_fill_style_draw_shader_radial2(g2_gl_fill_t* fill, g2_gl_shader_t const* shader, g2_gl_rect_t const* bounds)
+{
+}
 static __tb_inline__ tb_void_t g2_gl_fill_style_draw_shader(g2_gl_fill_t* fill, g2_gl_shader_t const* shader, g2_gl_rect_t const* bounds)
 {
 	// check
 	tb_assert_and_check_return(fill && shader && shader->texture);
 
-	// bitmap?
-	if (shader->type == G2_GL_SHADER_TYPE_BITMAP)
+	// draw shader
+	switch (shader->type)
 	{
-		// init texture
-		glEnable(GL_TEXTURE_2D);
-		glBindTexture(GL_TEXTURE_2D, *shader->texture);
-
-		/* the global image matrix => the camera viewport matrix
-		 *
-		 * glScalef(bw / sw, bh / sh, 1.0f); 			//< disable auto scale in the bounds
-		 * glTranslatef(bx / bw, by / bh, 0.0f); 		//< move viewport to global
-		 *
-		 */
-		g2_gl_matrix_from(fill->matrix, &shader->matrix);
-		tb_float_t bx = bounds->x1;
-		tb_float_t by = bounds->y1;
-		tb_float_t bw = bounds->x2 - bounds->x1 + 1;
-		tb_float_t bh = bounds->y2 - bounds->y1 + 1;
-		tb_float_t sw = shader->u.image.width;
-		tb_float_t sh = shader->u.image.height;
-		tb_float_t sx = fill->matrix[0];
-		tb_float_t sy = fill->matrix[5];
-
-		/* adjust scale 
-		 *
-		 * global => camera: (1 / sx)
-		 * disable auto scale in the bounds: (bw / sw)
-		 *
-		 * => sx = (bw / sw) * (1 / sx) => bw / (sx * sw)
-		 *
-		 */
-		fill->matrix[0] 	= bw / (sx * sw);
-		fill->matrix[5] 	= bh / (sy * sh);
-
-		// adjust skew
-		fill->matrix[1] 	*= fill->matrix[5] / sy;
-		fill->matrix[4] 	*= fill->matrix[0] / sx;
-
-		/* adjust translate
-		 *
-		 * scale: sx
-		 * global => camera: -tx / bw
-		 * move viewport to global: bx / bw
-		 *
-		 * => tx = sx * ((bx / bw) + (-tx / bw)) => sx * (bx - tx) / bw
-		 * => tx = (bx - tx) / (sx * sw)
-		 *
-		 */
-		fill->matrix[12] 	= (bx - fill->matrix[12]) / (sx * sw);
-		fill->matrix[13] 	= (by - fill->matrix[13]) / (sy * sh);
-
-		// enter matrix
-		if (fill->context->version < 0x20)
-		{
-			glMatrixMode(GL_TEXTURE);
-			glPushMatrix();
-			glMultMatrixf(fill->matrix);
-		}
-		else glUniformMatrix4fv(g2_gl_program_location(fill->program, G2_GL_PROGRAM_LOCATION_MATRIX_TEXCOORD), 1, GL_FALSE, fill->matrix);
-
-		// blend?
-		tb_byte_t alpha = g2_style_alpha(fill->style);
-		if (shader->flag & G2_GL_SHADER_FLAG_ALPHA
-			|| shader->wrap == G2_SHADER_WRAP_BORDER
-			|| alpha != 0xff
-			)
-		{
-			glEnable(GL_BLEND);
-			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-			if (fill->context->version < 0x20)
-				glColor4f(1.0f, 1.0f, 1.0f, (tb_float_t)alpha / 0xff);
-			else glVertexAttrib4f(g2_gl_program_location(fill->program, G2_GL_PROGRAM_LOCATION_COLOR), 1.0f, 1.0f, 1.0f, (tb_float_t)alpha / 0xff);
-		}
-		else 
-		{
-			glDisable(GL_BLEND);
-			if (fill->context->version < 0x20)
-				glColor4f(1.0f, 1.0f, 1.0f, 1.0f);	
-			else glVertexAttrib4f(g2_gl_program_location(fill->program, G2_GL_PROGRAM_LOCATION_COLOR), 1.0f, 1.0f, 1.0f, 1.0f);
-		}
-
-		// mode
-		glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-
-		// wrap
-		static GLuint wrap[] = 
-		{
-			GL_CLAMP_TO_BORDER
-		,	GL_CLAMP_TO_BORDER
-		,	GL_CLAMP_TO_EDGE
-		,	GL_REPEAT
-		,	GL_MIRRORED_REPEAT
-		};
-		tb_assert(shader->wrap < tb_arrayn(wrap));
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrap[shader->wrap]);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrap[shader->wrap]);
-
-		// filter?
-		if (g2_style_flag(fill->style) & G2_STYLE_FLAG_BITMAP_FILTER)
-		{
-			// init filter
-			tb_size_t filter = g2_quality() > G2_QUALITY_LOW? GL_LINEAR : GL_NEAREST;
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filter);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filter);
-		}
-		else
-		{
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-		}
-
-		// texcoords
-		if (fill->context->version < 0x20)
-		{
-			glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-			glTexCoordPointer(2, GL_FLOAT, 0, fill->texcoords);
-		}
-		else 
-		{
-			glEnableVertexAttribArray(g2_gl_program_location(fill->program, G2_GL_PROGRAM_LOCATION_TEXCOORDS));
-			glVertexAttribPointer(g2_gl_program_location(fill->program, G2_GL_PROGRAM_LOCATION_TEXCOORDS), 2, GL_FLOAT, GL_FALSE, 0, fill->texcoords);
-		}
-
-		// draw
-		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-
-		// leave matrix
-		if (fill->context->version < 0x20)
-		{
-			glPopMatrix();
-			glMatrixMode(GL_MODELVIEW);
-			glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-		}
-		else
-		{
-			// disable texcoords
-			glDisableVertexAttribArray(g2_gl_program_location(fill->program, G2_GL_PROGRAM_LOCATION_TEXCOORDS));
-		}
-
-		// exit texture
-		glDisable(GL_TEXTURE_2D);
+	case G2_GL_SHADER_TYPE_BITMAP:
+		g2_gl_fill_style_draw_shader_image(fill, shader, bounds);
+		break;
+	case G2_GL_SHADER_TYPE_LINEAR:
+		g2_gl_fill_style_draw_shader_linear(fill, shader, bounds);
+		break;
+	case G2_GL_SHADER_TYPE_RADIAL:
+		g2_gl_fill_style_draw_shader_radial(fill, shader, bounds);
+		break;
+	case G2_GL_SHADER_TYPE_RADIAL2:
+		g2_gl_fill_style_draw_shader_radial2(fill, shader, bounds);
+		break;
+	default:
+		break;
 	}
 }
 static __tb_inline__ tb_void_t g2_gl_fill_style_draw(g2_gl_fill_t* fill, g2_gl_rect_t const* bounds)

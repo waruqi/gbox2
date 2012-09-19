@@ -286,7 +286,7 @@ tb_handle_t g2_shader_init_linear(tb_handle_t context, g2_point_t const* pb, g2_
 	tb_assert_and_check_return_val(context && pb && pe && gradient && gradient->color && gradient->count && wrap, TB_NULL);
 
 	// init shader
-	g2_gl_shader_t* shader = g2_gl_shader_init(context, G2_GL_SHADER_TYPE_GRADIENT_LINEAR, wrap);
+	g2_gl_shader_t* shader = g2_gl_shader_init(context, G2_GL_SHADER_TYPE_LINEAR, wrap);
 	tb_assert_and_check_return_val(shader && shader->texture, TB_NULL);
 
 	// init linear
@@ -319,7 +319,7 @@ tb_handle_t g2_shader_init_radial(tb_handle_t context, g2_circle_t const* cp, g2
 	tb_assert_and_check_return_val(context && cp && gradient && gradient->color && gradient->count && wrap, TB_NULL);
 
 	// init shader
-	g2_gl_shader_t* shader = g2_gl_shader_init(context, G2_GL_SHADER_TYPE_GRADIENT_RADIAL, wrap);
+	g2_gl_shader_t* shader = g2_gl_shader_init(context, G2_GL_SHADER_TYPE_RADIAL, wrap);
 	tb_assert_and_check_return_val(shader && shader->texture, TB_NULL);
 
 	// init radial
@@ -351,7 +351,7 @@ tb_handle_t g2_shader_init_radial2(tb_handle_t context, g2_circle_t const* cb, g
 	tb_assert_and_check_return_val(context && cb && ce && gradient && gradient->color && gradient->count && wrap, TB_NULL);
 
 	// init shader
-	g2_gl_shader_t* shader = g2_gl_shader_init(context, G2_GL_SHADER_TYPE_GRADIENT_RADIAL2, wrap);
+	g2_gl_shader_t* shader = g2_gl_shader_init(context, G2_GL_SHADER_TYPE_RADIAL2, wrap);
 	tb_assert_and_check_return_val(shader && shader->texture, TB_NULL);
 
 	// init radial2

@@ -114,6 +114,30 @@ tb_bool_t 		g2_matrix_skew_lhs(g2_matrix_t* matrix, g2_float_t kx, g2_float_t ky
 tb_bool_t 		g2_matrix_multiply(g2_matrix_t* matrix, g2_matrix_t const* mx);
 tb_bool_t 		g2_matrix_multiply_lhs(g2_matrix_t* matrix, g2_matrix_t const* mx);
 
+/* ///////////////////////////////////////////////////////////////////////
+ * inlines
+ */
+static __tb_inline__ g2_float_t g2_matrix_apply_x(g2_matrix_t const* matrix, g2_float_t x, g2_float_t y)
+{
+	return g2_mul(x, matrix->sx) + g2_mul(y, matrix->ky) + matrix->tx;
+}
+static __tb_inline__ g2_float_t g2_matrix_apply_y(g2_matrix_t const* matrix, g2_float_t x, g2_float_t y)
+{
+	return g2_mul(x, matrix->kx) + g2_mul(y, matrix->sy) + matrix->ty;
+}
+static __tb_inline__ tb_void_t g2_matrix_apply_point(g2_matrix_t const* matrix, g2_point_t* point)
+{
+	g2_float_t x = point->x;
+	g2_float_t y = point->y;
+	point->x = g2_matrix_apply_x(matrix, x, y);
+	point->y = g2_matrix_apply_y(matrix, x, y);
+}
+static __tb_inline__ tb_void_t g2_matrix_apply_line(g2_matrix_t const* matrix, g2_line_t* line)
+{
+	g2_matrix_apply_point(matrix, &line->p0);
+	g2_matrix_apply_point(matrix, &line->p1);
+}
+
 // c plus plus
 #ifdef __cplusplus
 }

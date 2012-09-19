@@ -329,6 +329,7 @@ tb_handle_t g2_context_init_gl(tb_size_t pixfmt, tb_size_t width, tb_size_t heig
 	glDisable(GL_BLEND);
 
 	// disable texture
+	glDisable(GL_TEXTURE_1D);
 	glDisable(GL_TEXTURE_2D);
 
 	if (gcontext->version < 0x20)
