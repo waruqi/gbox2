@@ -78,13 +78,13 @@ typedef struct __g2_gl_shader_t
 	// the union
 	union 
 	{
-		// the image info
+		// the bitmap info
 		struct
 		{
 			tb_size_t 		width;
 			tb_size_t 		height;
 
-		} 					image;
+		} 					bitmap;
 
 		// the linear info
 		struct

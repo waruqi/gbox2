@@ -403,8 +403,8 @@ tb_handle_t g2_shader_init_bitmap(tb_handle_t context, tb_handle_t bitmap, tb_si
 	tb_assert_and_check_return_val(shader && shader->texture, TB_NULL);
 
 	// init width & height
-	shader->u.image.width 		= width;
-	shader->u.image.height 		= height;
+	shader->u.bitmap.width 		= width;
+	shader->u.bitmap.height 	= height;
 
 	// alpha?
 	if (g2_bitmap_flag(bitmap) & G2_BITMAP_FLAG_ALPHA)
