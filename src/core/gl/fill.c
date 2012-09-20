@@ -213,11 +213,11 @@ static __tb_inline__ tb_void_t g2_gl_fill_apply_vertices(g2_gl_fill_t* fill)
 	if (fill->context->version < 0x20) glVertexPointer(2, GL_FLOAT, 0, fill->vertices);
 	else glVertexAttribPointer(g2_gl_program_location(fill->program, G2_GL_PROGRAM_LOCATION_VERTICES), 2, GL_FLOAT, GL_FALSE, 0, fill->vertices);
 }
-static __tb_inline__ tb_void_t g2_gl_fill_apply_texcoords(g2_gl_fill_t* fill)
+static __tb_inline__ tb_void_t g2_gl_fill_apply_texcoords(g2_gl_fill_t* fill, GLint size)
 {
 	// texcoords
-	if (fill->context->version < 0x20) glTexCoordPointer(2, GL_FLOAT, 0, fill->texcoords);
-	else glVertexAttribPointer(g2_gl_program_location(fill->program, G2_GL_PROGRAM_LOCATION_TEXCOORDS), 2, GL_FLOAT, GL_FALSE, 0, fill->texcoords);
+	if (fill->context->version < 0x20) glTexCoordPointer(size, GL_FLOAT, 0, fill->texcoords);
+	else glVertexAttribPointer(g2_gl_program_location(fill->program, G2_GL_PROGRAM_LOCATION_TEXCOORDS), size, GL_FLOAT, GL_FALSE, 0, fill->texcoords);
 }
 static __tb_inline__ tb_bool_t g2_gl_fill_apply_program(g2_gl_fill_t* fill)
 {
@@ -329,7 +329,7 @@ static __tb_inline__ tb_void_t g2_gl_fill_style_draw_color(g2_gl_fill_t* fill, g
 	// apply solid
 	g2_gl_fill_apply_solid(fill);
 
-	// apply bounds
+	// init vertices
 	fill->vertices[0] = bounds->x1;
 	fill->vertices[1] = bounds->y1;
 	fill->vertices[2] = bounds->x2;
@@ -417,20 +417,7 @@ static __tb_inline__ tb_void_t g2_gl_fill_style_draw_shader_bitmap(g2_gl_fill_t*
 	// apply filter
 	g2_gl_fill_apply_filter(fill);
 
-	// init texcoords
-	fill->texcoords[0] = 0.0f;
-	fill->texcoords[1] = 0.0f;
-	fill->texcoords[2] = 1.0f;
-	fill->texcoords[3] = 0.0f;
-	fill->texcoords[4] = 0.0f;
-	fill->texcoords[5] = 1.0f;
-	fill->texcoords[6] = 1.0f;
-	fill->texcoords[7] = 1.0f;
-
-	// apply texcoords
-	g2_gl_fill_apply_texcoords(fill);
-
-	// init bounds
+	// init vertices
 	fill->vertices[0] = bounds->x1;
 	fill->vertices[1] = bounds->y1;
 	fill->vertices[2] = bounds->x2;
@@ -442,6 +429,19 @@ static __tb_inline__ tb_void_t g2_gl_fill_style_draw_shader_bitmap(g2_gl_fill_t*
 	
 	// apply vertices
 	g2_gl_fill_apply_vertices(fill);
+
+	// init texcoords
+	fill->texcoords[0] = 0.0f;
+	fill->texcoords[1] = 0.0f;
+	fill->texcoords[2] = 1.0f;
+	fill->texcoords[3] = 0.0f;
+	fill->texcoords[4] = 0.0f;
+	fill->texcoords[5] = 1.0f;
+	fill->texcoords[6] = 1.0f;
+	fill->texcoords[7] = 1.0f;
+
+	// apply texcoords
+	g2_gl_fill_apply_texcoords(fill, 2);
 
 	// draw
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
@@ -461,15 +461,6 @@ static __tb_inline__ tb_void_t g2_gl_fill_style_draw_shader_linear(g2_gl_fill_t*
 	glEnable(GL_TEXTURE_1D);
 	glBindTexture(GL_TEXTURE_1D, *shader->texture);
 
-	// init matrix
-	g2_matrix_t matrix = *g2_matrix(fill->painter);
-
-	// init vector
-	g2_point_t pb = shader->u.linear.pb;
-	g2_point_t pe = shader->u.linear.pe;
-	g2_matrix_apply_point(&matrix, &pb);
-	g2_matrix_apply_point(&matrix, &pe);
-
 	// apply mode
 	glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 	
@@ -485,6 +476,63 @@ static __tb_inline__ tb_void_t g2_gl_fill_style_draw_shader_linear(g2_gl_fill_t*
 
 	// apply filter
 	g2_gl_fill_apply_filter(fill);
+
+	// init matrix
+	g2_matrix_t matrix = *g2_matrix(fill->painter);
+
+	// init vertices
+#if 0
+	fill->vertices[0] = bounds->x1;
+	fill->vertices[1] = bounds->y1;
+	fill->vertices[2] = bounds->x2;
+	fill->vertices[3] = bounds->y1;
+	fill->vertices[4] = bounds->x1;
+	fill->vertices[5] = bounds->y2;
+	fill->vertices[6] = bounds->x2;
+	fill->vertices[7] = bounds->y2;
+#else
+	fill->vertices[0] = 0;
+	fill->vertices[1] = 240;
+	fill->vertices[2] = 320;
+	fill->vertices[3] = 0;
+	fill->vertices[4] = 320;
+	fill->vertices[5] = 480;
+	fill->vertices[6] = 640;
+	fill->vertices[7] = 240;
+#endif
+
+	// apply vertices
+	g2_gl_fill_apply_vertices(fill);
+
+	// init vector
+	g2_point_t pb = shader->u.linear.pb;
+	g2_point_t pe = shader->u.linear.pe;
+//	g2_matrix_apply_point(&matrix, &pb);
+//	g2_matrix_apply_point(&matrix, &pe);
+
+#if 0
+	tb_float_t bx = g2_float_to_tb(pb.x);
+	tb_float_t by = g2_float_to_tb(pb.y);
+	tb_float_t dx = g2_float_to_tb(pe.x - pb.x);
+	tb_float_t dy = g2_float_to_tb(pe.y - pb.y);
+	tb_float_t dn = tb_sqrtf(dx * dx + dy * dy);
+	dx /= dn;
+	dy /= dn;
+
+	tb_size_t i = 0;
+	tb_float_t min = 0;
+	tb_float_t max = 0;
+	for (i = 0; i < 8; i += 2)
+	{
+		tb_float_t vx = fill->vertices[i] - bx;
+		tb_float_t vy = fill->vertices[i + 1] - by;
+		tb_float_t vo = (vx * dx + vy * dy) / dn;
+		if (vo < min || !i) min = vo;
+		if (vo > max || !i) max = vo;
+	}
+
+	tb_print("%f %f", min, max);
+#endif
 
 	/* init texcoords
 	 *                 pe (01)
@@ -504,20 +552,7 @@ static __tb_inline__ tb_void_t g2_gl_fill_style_draw_shader_linear(g2_gl_fill_t*
 	fill->texcoords[3] = 1.0f;
 
 	// apply texcoords
-	g2_gl_fill_apply_texcoords(fill);
-
-	// init bounds
-	fill->vertices[0] = bounds->x1;
-	fill->vertices[1] = bounds->y1;
-	fill->vertices[2] = bounds->x2;
-	fill->vertices[3] = bounds->y1;
-	fill->vertices[4] = bounds->x1;
-	fill->vertices[5] = bounds->y2;
-	fill->vertices[6] = bounds->x2;
-	fill->vertices[7] = bounds->y2;
-	
-	// apply vertices
-	g2_gl_fill_apply_vertices(fill);
+	g2_gl_fill_apply_texcoords(fill, 1);
 
 	// draw
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
@@ -527,9 +562,11 @@ static __tb_inline__ tb_void_t g2_gl_fill_style_draw_shader_linear(g2_gl_fill_t*
 }
 static __tb_inline__ tb_void_t g2_gl_fill_style_draw_shader_radial(g2_gl_fill_t* fill, g2_gl_rect_t const* bounds)
 {
+	tb_trace_noimpl();
 }
 static __tb_inline__ tb_void_t g2_gl_fill_style_draw_shader_radial2(g2_gl_fill_t* fill, g2_gl_rect_t const* bounds)
 {
+	tb_trace_noimpl();
 }
 static __tb_inline__ tb_void_t g2_gl_fill_style_draw_shader(g2_gl_fill_t* fill, g2_gl_rect_t const* bounds)
 {

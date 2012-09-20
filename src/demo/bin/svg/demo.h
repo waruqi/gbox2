@@ -49,6 +49,7 @@ static tb_hong_t 	g_bt 		= 0;
 static tb_hong_t 	g_fp 		= 0;
 static tb_hong_t 	g_rt 		= 0;
 static tb_hong_t 	g_fps 		= 0;
+static tb_bool_t 	g_pt 		= TB_FALSE;
 
 // position
 static tb_long_t 	g_x0 		= G2_DEMO_WIDTH >> 1;
@@ -93,6 +94,11 @@ static tb_void_t g2_demo_gl_keyboard(tb_byte_t key, tb_int_t x, tb_int_t y)
 	case 'm':
 		{
 			g_bm = g_bm? TB_FALSE : TB_TRUE;
+		}
+		break;
+	case 't':
+		{
+			g_pt = g_pt? TB_FALSE : TB_TRUE;
 		}
 		break;
 	default:
@@ -167,10 +173,8 @@ static tb_void_t g2_demo_gl_display()
 		g_fps = (1000000 * g_fp) / (tb_uclock() - g_bt);
 		g_fp = 0;
 		g_bt = 0;
-	
-		tb_char_t title[256] = {0};
-		tb_snprintf(title, 256, "gbox2: fps: %lld, rpt: %lld us", g_fps, g_rt);
-		glutSetWindowTitle (title);
+
+		if (g_pt) tb_print("fps: %lld, rpt: %lld us", g_fps, g_rt);
 	}
 
 	// flush
