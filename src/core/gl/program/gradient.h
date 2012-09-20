@@ -17,18 +17,23 @@
  * Copyright (C) 2009 - 2012, ruki All rights reserved.
  *
  * @author		ruki
- * @file		program.h
+ * @file		gradient.h
  *
  */
-#ifndef G2_CORE_GL_PROGRAM_PROGRAM_H
-#define G2_CORE_GL_PROGRAM_PROGRAM_H
+#ifndef G2_CORE_GL_PROGRAM_GRADIENT_H
+#define G2_CORE_GL_PROGRAM_GRADIENT_H
 
 /* ///////////////////////////////////////////////////////////////////////
  * includes
  */
 #include "prefix.h"
-#include "color.h"
-#include "bitmap.h"
-#include "gradient.h"
+
+/* ///////////////////////////////////////////////////////////////////////
+ * interfaces
+ */
+
+// init program: gradient
+tb_handle_t 			g2_gl_program_init_gradient();
+
 
 #endif

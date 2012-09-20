@@ -35,10 +35,11 @@
 // the gl program type
 typedef enum __g2_gl_program_type_t
 {
-	G2_GL_PROGRAM_TYPE_NONE 	= 0
-,	G2_GL_PROGRAM_TYPE_COLOR 	= 1
-,	G2_GL_PROGRAM_TYPE_IMAGE 	= 2
-, 	G2_GL_PROGRAM_TYPE_MAXN 	= 3
+	G2_GL_PROGRAM_TYPE_NONE 		= 0
+,	G2_GL_PROGRAM_TYPE_COLOR 		= 1
+,	G2_GL_PROGRAM_TYPE_BITMAP		= 2
+,	G2_GL_PROGRAM_TYPE_GRADIENT 	= 3
+, 	G2_GL_PROGRAM_TYPE_MAXN 		= 4
 
 }g2_gl_program_type_t;
 

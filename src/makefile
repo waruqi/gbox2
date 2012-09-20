@@ -58,7 +58,8 @@ gbox2_C_FILES-$(G2_CONFIG_CORE_GL) += \
 						core/gl/painter \
 						core/gl/program \
 						core/gl/program/color \
-						core/gl/program/image
+						core/gl/program/bitmap \
+						core/gl/program/gradient
 
 gbox2_CPP_FILES-$(G2_CONFIG_CORE_SKIA) += \
 						core/skia/path \

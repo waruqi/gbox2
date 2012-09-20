@@ -258,8 +258,8 @@ tb_handle_t g2_context_init_gl(tb_size_t pixfmt, tb_size_t width, tb_size_t heig
 	tb_assert_and_check_return_val(gcontext, TB_NULL);
 
 	// init version 
-//	gcontext->version = g2_gl_context_version();
-	gcontext->version = 0x10;
+	gcontext->version = g2_gl_context_version();
+//	gcontext->version = 0x10;
 	tb_assert_and_check_goto(gcontext->version >= 0x10, fail);
 
 	// init extensions
@@ -294,9 +294,13 @@ tb_handle_t g2_context_init_gl(tb_size_t pixfmt, tb_size_t width, tb_size_t heig
 			gcontext->programs[G2_GL_PROGRAM_TYPE_COLOR] = g2_gl_program_init_color();
 			tb_assert_and_check_break(gcontext->programs[G2_GL_PROGRAM_TYPE_COLOR]);
 
-			// init image program
-			gcontext->programs[G2_GL_PROGRAM_TYPE_IMAGE] = g2_gl_program_init_image();
-			tb_assert_and_check_break(gcontext->programs[G2_GL_PROGRAM_TYPE_IMAGE]);
+			// init bitmap program
+			gcontext->programs[G2_GL_PROGRAM_TYPE_BITMAP] = g2_gl_program_init_bitmap();
+			tb_assert_and_check_break(gcontext->programs[G2_GL_PROGRAM_TYPE_BITMAP]);
+
+			// init gradient program
+			gcontext->programs[G2_GL_PROGRAM_TYPE_GRADIENT] = g2_gl_program_init_gradient();
+			tb_assert_and_check_break(gcontext->programs[G2_GL_PROGRAM_TYPE_GRADIENT]);
 
 			// ok
 			ok = TB_TRUE;

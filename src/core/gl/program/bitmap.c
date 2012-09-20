@@ -17,7 +17,7 @@
  * Copyright (C) 2009 - 2012, ruki All rights reserved.
  *
  * @author		ruki
- * @file		image.c
+ * @file		bitmap.c
  *
  */
 
@@ -29,20 +29,20 @@
 /* ///////////////////////////////////////////////////////////////////////
  * includes
  */
-#include "image.h"
+#include "bitmap.h"
 
 /* ///////////////////////////////////////////////////////////////////////
  * implementation
  */
 
-tb_handle_t g2_gl_program_init_image()
+tb_handle_t g2_gl_program_init_bitmap()
 {
 	// init
 	tb_handle_t program = g2_gl_program_init();
 	tb_assert_and_check_return_val(program, TB_NULL);
 
 	// init type
-	g2_gl_program_type_set(program, G2_GL_PROGRAM_TYPE_IMAGE);
+	g2_gl_program_type_set(program, G2_GL_PROGRAM_TYPE_BITMAP);
 
 	// the vertex shader
 	tb_char_t const* vshader = 

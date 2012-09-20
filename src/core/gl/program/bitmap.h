@@ -17,11 +17,11 @@
  * Copyright (C) 2009 - 2012, ruki All rights reserved.
  *
  * @author		ruki
- * @file		image.h
+ * @file		bitmap.h
  *
  */
-#ifndef G2_CORE_GL_PROGRAM_IMAGE_H
-#define G2_CORE_GL_PROGRAM_IMAGE_H
+#ifndef G2_CORE_GL_PROGRAM_BITMAP_H
+#define G2_CORE_GL_PROGRAM_BITMAP_H
 
 /* ///////////////////////////////////////////////////////////////////////
  * includes
@@ -32,8 +32,8 @@
  * interfaces
  */
 
-// init program: image
-tb_handle_t 			g2_gl_program_init_image();
+// init program: bitmap
+tb_handle_t 			g2_gl_program_init_bitmap();
 
 
 #endif

@@ -219,14 +219,38 @@ static __tb_inline__ tb_void_t g2_gl_fill_apply_texcoords(g2_gl_fill_t* fill)
 	if (fill->context->version < 0x20) glTexCoordPointer(2, GL_FLOAT, 0, fill->texcoords);
 	else glVertexAttribPointer(g2_gl_program_location(fill->program, G2_GL_PROGRAM_LOCATION_TEXCOORDS), 2, GL_FLOAT, GL_FALSE, 0, fill->texcoords);
 }
-static __tb_inline__ tb_void_t g2_gl_fill_apply_program(g2_gl_fill_t* fill)
+static __tb_inline__ tb_bool_t g2_gl_fill_apply_program(g2_gl_fill_t* fill)
 {
 	if (fill->context->version >= 0x20)
 	{	
-		fill->program = fill->context->programs[g2_style_shader(fill->style)? G2_GL_PROGRAM_TYPE_IMAGE : G2_GL_PROGRAM_TYPE_COLOR];
+		// type
+		tb_size_t type = G2_GL_PROGRAM_TYPE_COLOR;
+		if (fill->shader)
+		{
+			switch (fill->shader->type)
+			{
+			case G2_GL_SHADER_TYPE_BITMAP:
+				type = G2_GL_PROGRAM_TYPE_BITMAP;
+				break;
+			case G2_GL_SHADER_TYPE_LINEAR:
+			case G2_GL_SHADER_TYPE_RADIAL:
+			case G2_GL_SHADER_TYPE_RADIAL2:
+				type = G2_GL_PROGRAM_TYPE_GRADIENT;
+				break;
+			default:
+				tb_assert_and_check_return_val(0, TB_FALSE);
+				break;
+			}
+		}
+
+		// program
+		fill->program = fill->context->programs[type];
 		tb_assert_and_check_return_val(fill->program, TB_FALSE);
 		g2_gl_program_uses(fill->program);
 	}
+
+	// ok
+	return TB_TRUE;
 }
 static __tb_inline__ tb_void_t g2_gl_fill_apply_state(g2_gl_fill_t* fill)
 {
@@ -260,7 +284,7 @@ static __tb_inline__ tb_bool_t g2_gl_fill_context_init(g2_gl_fill_t* fill)
 	tb_check_return_val(g2_style_mode(fill->style) & G2_STYLE_MODE_FILL, TB_FALSE);
 
 	// apply program first
-	g2_gl_fill_apply_program(fill);
+	if (!g2_gl_fill_apply_program(fill)) return TB_FALSE;
 
 	// apply state
 	g2_gl_fill_apply_state(fill);
@@ -475,9 +499,9 @@ static __tb_inline__ tb_void_t g2_gl_fill_style_draw_shader_linear(g2_gl_fill_t*
 	 *         * (10)
 	 */
 	fill->texcoords[0] = 0.0f;
-	fill->texcoords[1] = 0.5f;
+	fill->texcoords[1] = 0.0f;
 	fill->texcoords[2] = 1.0f;
-	fill->texcoords[3] = 0.0f;
+	fill->texcoords[3] = 1.0f;
 
 	// apply texcoords
 	g2_gl_fill_apply_texcoords(fill);
