@@ -110,6 +110,10 @@ tb_bool_t 		g2_matrix_translate_lhs(g2_matrix_t* matrix, g2_float_t dx, g2_float
 tb_bool_t 		g2_matrix_skew(g2_matrix_t* matrix, g2_float_t kx, g2_float_t ky);
 tb_bool_t 		g2_matrix_skew_lhs(g2_matrix_t* matrix, g2_float_t kx, g2_float_t ky);
 
+// sincos
+tb_bool_t 		g2_matrix_sincos(g2_matrix_t* matrix, g2_float_t sin, g2_float_t cos);
+tb_bool_t 		g2_matrix_sincos_lhs(g2_matrix_t* matrix, g2_float_t sin, g2_float_t cos);
+
 // multiply
 tb_bool_t 		g2_matrix_multiply(g2_matrix_t* matrix, g2_matrix_t const* mx);
 tb_bool_t 		g2_matrix_multiply_lhs(g2_matrix_t* matrix, g2_matrix_t const* mx);

@@ -94,21 +94,38 @@ static __tb_inline__ tb_size_t g2_shader_make_stops(g2_gradient_t const* gradien
 	{
 		tb_size_t i = 0;
 		tb_bool_t a = TB_FALSE;
-		tb_size_t n = tb_min(count, maxn - 1);
-		for (i = 0; i < n; i++)
+		tb_size_t n = tb_min(count, maxn);
+		if (n > 1)
+		{
+			for (i = 0; i < n; i++)
+			{
+				// add stop
+				stops[i].radio = (i * G2_ONE) / (n - 1);
+				stops[i].color = color[i];
+
+				// has alpha?
+				if (!a && color[i].a != 0xff) a = TB_TRUE;
+			}
+
+			// stopn
+			stopn = i;
+		}
+		else if (n)
 		{
 			// add stop
-			stops[i].radio = (i * G2_ONE) / n;
-			stops[i].color = color[i];
+			stops[0].radio = 0;
+			stops[0].color = color[0];
+
+			// add stop
+			stops[1].radio = G2_ONE;
+			stops[1].color = color[0];
+
+			// stopn
+			stopn = 2;
 
 			// has alpha?
-			if (!a && color[i].a != 0xff) a = TB_TRUE;
+			if (color[0].a != 0xff) a = TB_TRUE;
 		}
-
-		// patch radio 1.0
-		stops[i].radio = G2_ONE;
-		stops[i].color = stops[n - 1].color;
-		stopn = i + 1;
 
 		// alpha?
 		*alpha = a;

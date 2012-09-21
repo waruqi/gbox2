@@ -255,6 +255,20 @@ tb_bool_t g2_matrix_skew_lhs(g2_matrix_t* matrix, g2_float_t kx, g2_float_t ky)
 	g2_matrix_init_skew(&mx, kx, ky);
 	return g2_matrix_multiply_lhs(matrix, &mx);
 }
+tb_bool_t g2_matrix_sincos(g2_matrix_t* matrix, g2_float_t sin, g2_float_t cos)
+{
+	// sincos
+	g2_matrix_t mx;
+	g2_matrix_init_sincos(&mx, sin, cos);
+	return g2_matrix_multiply(matrix, &mx);
+}
+tb_bool_t g2_matrix_sincos_lhs(g2_matrix_t* matrix, g2_float_t sin, g2_float_t cos)
+{
+	// sincos
+	g2_matrix_t mx;
+	g2_matrix_init_sincos(&mx, sin, cos);
+	return g2_matrix_multiply_lhs(matrix, &mx);
+}
 tb_bool_t g2_matrix_multiply(g2_matrix_t* matrix, g2_matrix_t const* mx)
 {
 	// identity?

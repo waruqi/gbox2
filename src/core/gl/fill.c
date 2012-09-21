@@ -478,10 +478,9 @@ static __tb_inline__ tb_void_t g2_gl_fill_style_draw_shader_linear(g2_gl_fill_t*
 	g2_gl_fill_apply_filter(fill);
 
 	// init matrix
-	g2_matrix_t matrix = *g2_matrix(fill->painter);
+//	g2_matrix_t matrix = *g2_matrix(fill->painter);
 
 	// init vertices
-#if 0
 	fill->vertices[0] = bounds->x1;
 	fill->vertices[1] = bounds->y1;
 	fill->vertices[2] = bounds->x2;
@@ -490,66 +489,59 @@ static __tb_inline__ tb_void_t g2_gl_fill_style_draw_shader_linear(g2_gl_fill_t*
 	fill->vertices[5] = bounds->y2;
 	fill->vertices[6] = bounds->x2;
 	fill->vertices[7] = bounds->y2;
-#else
-	fill->vertices[0] = 0;
-	fill->vertices[1] = 240;
-	fill->vertices[2] = 320;
-	fill->vertices[3] = 0;
-	fill->vertices[4] = 320;
-	fill->vertices[5] = 480;
-	fill->vertices[6] = 640;
-	fill->vertices[7] = 240;
-#endif
-
-	// apply vertices
-	g2_gl_fill_apply_vertices(fill);
+	tb_print("bounds: %f %f %f %f", bounds->x1, bounds->y1, bounds->x2, bounds->y2);
 
 	// init vector
 	g2_point_t pb = shader->u.linear.pb;
 	g2_point_t pe = shader->u.linear.pe;
-//	g2_matrix_apply_point(&matrix, &pb);
-//	g2_matrix_apply_point(&matrix, &pe);
+//	g2_matrix_apply_point(&fill->painter->matrix, &pb);
+//	g2_matrix_apply_point(&fill->painter->matrix, &pe);
 
-#if 0
 	tb_float_t bx = g2_float_to_tb(pb.x);
 	tb_float_t by = g2_float_to_tb(pb.y);
-	tb_float_t dx = g2_float_to_tb(pe.x - pb.x);
-	tb_float_t dy = g2_float_to_tb(pe.y - pb.y);
-	tb_float_t dn = tb_sqrtf(dx * dx + dy * dy);
-	dx /= dn;
-	dy /= dn;
+	tb_float_t ex = g2_float_to_tb(pe.x);
+	tb_float_t ey = g2_float_to_tb(pe.y);
+	tb_float_t ux = ex - bx;
+	tb_float_t uy = ey - by;
+	tb_float_t un = tb_sqrtf(ux * ux + uy * uy);
+	tb_print("pb pe: %f %f %f %f", bx, by, ex, ey);
 
-	tb_size_t i = 0;
-	tb_float_t min = 0;
-	tb_float_t max = 0;
-	for (i = 0; i < 8; i += 2)
-	{
-		tb_float_t vx = fill->vertices[i] - bx;
-		tb_float_t vy = fill->vertices[i + 1] - by;
-		tb_float_t vo = (vx * dx + vy * dy) / dn;
-		if (vo < min || !i) min = vo;
-		if (vo > max || !i) max = vo;
-	}
+	g2_matrix_t matrix;
+	g2_matrix_init_translate(&matrix, pb.x, pb.y);
+//	g2_matrix_rotate(&matrix, g2_long_to_float(-90));
+	g2_matrix_sincos(&matrix, tb_float_to_g2(-ux / un), tb_float_to_g2(uy / un));
+	g2_matrix_scale(&matrix, tb_float_to_g2(1.0f / un), tb_float_to_g2(1.0f / un));
+	g2_float_t y1 = g2_matrix_apply_y(&matrix, tb_float_to_g2(bounds->x1), tb_float_to_g2(bounds->y1));
+	g2_float_t y2 = g2_matrix_apply_y(&matrix, tb_float_to_g2(bounds->x2), tb_float_to_g2(bounds->y1));
+	g2_float_t y3 = g2_matrix_apply_y(&matrix, tb_float_to_g2(bounds->x1), tb_float_to_g2(bounds->y2));
+	g2_float_t y4 = g2_matrix_apply_y(&matrix, tb_float_to_g2(bounds->x2), tb_float_to_g2(bounds->y2));
 
-	tb_print("%f %f", min, max);
-#endif
+	g2_float_t x1 = g2_matrix_apply_x(&matrix, tb_float_to_g2(bounds->x1), tb_float_to_g2(bounds->y1));
+	g2_float_t x2 = g2_matrix_apply_x(&matrix, tb_float_to_g2(bounds->x2), tb_float_to_g2(bounds->y1));
+	g2_float_t x3 = g2_matrix_apply_x(&matrix, tb_float_to_g2(bounds->x1), tb_float_to_g2(bounds->y2));
+	g2_float_t x4 = g2_matrix_apply_x(&matrix, tb_float_to_g2(bounds->x2), tb_float_to_g2(bounds->y2));
 
-	/* init texcoords
-	 *                 pe (01)
-	 *                 *
-	 *             *   | *
-	 *          *      |  *
-	 * (00)  *         |   *
-	 * pb 0*****|******|*****1 (11)  => texture 1d
-	 *      *   |      |   *
-	 *       *  |      *
-	 *        * |  *
-	 *         * (10)
-	 */
+#if 1
+	fill->texcoords[0] = g2_float_to_tb(y1);
+	fill->texcoords[1] = g2_float_to_tb(y2);
+	fill->texcoords[2] = g2_float_to_tb(y3);
+	fill->texcoords[3] = g2_float_to_tb(y4);
+#elif 1
+	fill->texcoords[0] = g2_float_to_tb(x1);
+	fill->texcoords[1] = g2_float_to_tb(x2);
+	fill->texcoords[2] = g2_float_to_tb(x3);
+	fill->texcoords[3] = g2_float_to_tb(x4);
+#else
 	fill->texcoords[0] = 0.0f;
-	fill->texcoords[1] = 0.0f;
-	fill->texcoords[2] = 1.0f;
+	fill->texcoords[1] = 1.0f;
+	fill->texcoords[2] = 0.0f;
 	fill->texcoords[3] = 1.0f;
+#endif
+	tb_print("y: %f %f %f %f", fill->texcoords[0], fill->texcoords[1], fill->texcoords[2], fill->texcoords[3]);
+	tb_print("x: %f %f %f %f", g2_float_to_tb(x1), g2_float_to_tb(x2), g2_float_to_tb(x3), g2_float_to_tb(x4));
+
+	// apply vertices
+	g2_gl_fill_apply_vertices(fill);
 
 	// apply texcoords
 	g2_gl_fill_apply_texcoords(fill, 1);
