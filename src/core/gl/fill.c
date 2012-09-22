@@ -252,7 +252,7 @@ static __tb_inline__ tb_bool_t g2_gl_fill_apply_program(g2_gl_fill_t* fill)
 	// ok
 	return TB_TRUE;
 }
-static __tb_inline__ tb_void_t g2_gl_fill_apply_state(g2_gl_fill_t* fill)
+static __tb_inline__ tb_void_t g2_gl_fill_enter_vertex_state(g2_gl_fill_t* fill)
 {
 	// apply antialiasing?
 	g2_gl_fill_apply_antialiasing(fill);
@@ -262,21 +262,85 @@ static __tb_inline__ tb_void_t g2_gl_fill_apply_state(g2_gl_fill_t* fill)
 	{
 		// enable vertices
 		glEnableClientState(GL_VERTEX_ARRAY);
-
-		// enable texcoords
-		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 	}
 	else
 	{
 		// enable vertices
 		glEnableVertexAttribArray(g2_gl_program_location(fill->program, G2_GL_PROGRAM_LOCATION_VERTICES));
 
-		// enable texcoords
-		glEnableVertexAttribArray(g2_gl_program_location(fill->program, G2_GL_PROGRAM_LOCATION_TEXCOORDS));
-
 		// apply project matrix
 		glUniformMatrix4fv(g2_gl_program_location(fill->program, G2_GL_PROGRAM_LOCATION_MATRIX_PROJECT), 1, GL_FALSE, fill->context->matrix);
 	}
+}
+static __tb_inline__ tb_void_t g2_gl_fill_leave_vertex_state(g2_gl_fill_t* fill)
+{
+	// disable antialiasing
+	glDisable(GL_MULTISAMPLE);
+
+	// apply vertices & texcoords
+	if (fill->context->version < 0x20)
+	{
+		// disable vertices
+		glDisableClientState(GL_VERTEX_ARRAY);
+	}
+	else
+	{
+		// disable vertices
+		glDisableVertexAttribArray(g2_gl_program_location(fill->program, G2_GL_PROGRAM_LOCATION_VERTICES));
+	}
+}
+static __tb_inline__ tb_void_t g2_gl_fill_enter_texture_state(g2_gl_fill_t* fill, GLenum texture)
+{
+	// enable texture
+	glEnable(texture);
+
+	// bind texture
+	glBindTexture(texture, *fill->shader->texture);
+
+	// apply vertices & texcoords
+	if (fill->context->version < 0x20)
+	{
+		// enable texcoords
+		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+	}
+	else
+	{
+		// enable texcoords
+		glEnableVertexAttribArray(g2_gl_program_location(fill->program, G2_GL_PROGRAM_LOCATION_TEXCOORDS));
+	}
+
+	// apply mode
+	glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+
+	// apply blend
+	tb_byte_t 	alpha = g2_style_alpha(fill->style);
+	g2_gl_fill_apply_blend(fill, fill->shader->flag & G2_GL_SHADER_FLAG_ALPHA || fill->shader->wrap == G2_SHADER_WRAP_BORDER || alpha != 0xff);
+
+	// apply color
+	g2_gl_fill_apply_color(fill, g2_color_make(alpha, 0xff, 0xff, 0xff));
+
+	// apply wrap
+	g2_gl_fill_apply_wrap(fill);
+
+	// apply filter
+	g2_gl_fill_apply_filter(fill);
+}
+static __tb_inline__ tb_void_t g2_gl_fill_leave_texture_state(g2_gl_fill_t* fill, GLenum texture)
+{
+	// apply vertices & texcoords
+	if (fill->context->version < 0x20)
+	{
+		// disable texcoords
+		glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+	}
+	else
+	{
+		// disable texcoords
+		glDisableVertexAttribArray(g2_gl_program_location(fill->program, G2_GL_PROGRAM_LOCATION_TEXCOORDS));
+	}
+
+	// disable texture
+	glDisable(texture);
 }
 static __tb_inline__ tb_bool_t g2_gl_fill_context_init(g2_gl_fill_t* fill)
 {
@@ -286,8 +350,8 @@ static __tb_inline__ tb_bool_t g2_gl_fill_context_init(g2_gl_fill_t* fill)
 	// apply program first
 	if (!g2_gl_fill_apply_program(fill)) return TB_FALSE;
 
-	// apply state
-	g2_gl_fill_apply_state(fill);
+	// enter vertex state
+	g2_gl_fill_enter_vertex_state(fill);
 
 	// apply solid if no shader
 	if (!fill->shader) g2_gl_fill_apply_solid(fill);
@@ -297,32 +361,15 @@ static __tb_inline__ tb_bool_t g2_gl_fill_context_init(g2_gl_fill_t* fill)
 }
 static __tb_inline__ tb_void_t g2_gl_fill_context_exit(g2_gl_fill_t* fill)
 {
-	if (fill->context->version < 0x20)
-	{
-		// disable vertices
-		glDisableClientState(GL_VERTEX_ARRAY);
+	// leave vertex state
+	g2_gl_fill_leave_vertex_state(fill);
 
-		// disable texcoords
-		glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-	}
-	else
-	{	
-		// disable vertices
-		glDisableVertexAttribArray(g2_gl_program_location(fill->program, G2_GL_PROGRAM_LOCATION_VERTICES));
-
-		// disable texcoords
-		glDisableVertexAttribArray(g2_gl_program_location(fill->program, G2_GL_PROGRAM_LOCATION_TEXCOORDS));
-	}
-
-	// disable antialiasing
-	glDisable(GL_MULTISAMPLE);
+	// leave texture state
+	g2_gl_fill_leave_texture_state(fill, GL_TEXTURE_1D);
+	g2_gl_fill_leave_texture_state(fill, GL_TEXTURE_2D);
 
 	// disable blend
 	glDisable(GL_BLEND);
-
-	// disable texture
-	glDisable(GL_TEXTURE_1D);
-	glDisable(GL_TEXTURE_2D);
 }
 static __tb_inline__ tb_void_t g2_gl_fill_style_draw_color(g2_gl_fill_t* fill, g2_gl_rect_t const* bounds)
 {
@@ -347,12 +394,8 @@ static __tb_inline__ tb_void_t g2_gl_fill_style_draw_color(g2_gl_fill_t* fill, g
 }
 static __tb_inline__ tb_void_t g2_gl_fill_style_draw_shader_bitmap(g2_gl_fill_t* fill, g2_gl_rect_t const* bounds)
 {
-	// shader
-	g2_gl_shader_t const* shader = fill->shader;
-
-	// init texture
-	glEnable(GL_TEXTURE_2D);
-	glBindTexture(GL_TEXTURE_2D, *shader->texture);
+	// enter texture state
+	g2_gl_fill_enter_texture_state(fill, GL_TEXTURE_2D);
 
 	/* the global bitmap matrix => the camera viewport matrix
 	 *
@@ -360,13 +403,13 @@ static __tb_inline__ tb_void_t g2_gl_fill_style_draw_shader_bitmap(g2_gl_fill_t*
 	 * glTranslatef(bx / bw, by / bh, 0.0f); 		//< move viewport to global
 	 *
 	 */
-	g2_gl_matrix_from(fill->matrix, &shader->matrix);
+	g2_gl_matrix_from(fill->matrix, &fill->shader->matrix);
 	tb_float_t bx = bounds->x1;
 	tb_float_t by = bounds->y1;
 	tb_float_t bw = bounds->x2 - bounds->x1 + 1;
 	tb_float_t bh = bounds->y2 - bounds->y1 + 1;
-	tb_float_t sw = shader->u.bitmap.width;
-	tb_float_t sh = shader->u.bitmap.height;
+	tb_float_t sw = fill->shader->u.bitmap.width;
+	tb_float_t sh = fill->shader->u.bitmap.height;
 	tb_float_t sx = fill->matrix[0];
 	tb_float_t sy = fill->matrix[5];
 
@@ -401,22 +444,6 @@ static __tb_inline__ tb_void_t g2_gl_fill_style_draw_shader_bitmap(g2_gl_fill_t*
 	// enter matrix
 	g2_gl_fill_matrix_enter_texture(fill, fill->matrix);
 
-	// apply mode
-	glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-	
-	// apply blend
-	tb_byte_t 	alpha = g2_style_alpha(fill->style);
-	g2_gl_fill_apply_blend(fill, shader->flag & G2_GL_SHADER_FLAG_ALPHA || shader->wrap == G2_SHADER_WRAP_BORDER || alpha != 0xff);
-
-	// apply color
-	g2_gl_fill_apply_color(fill, g2_color_make(alpha, 0xff, 0xff, 0xff));
-
-	// apply wrap
-	g2_gl_fill_apply_wrap(fill);
-
-	// apply filter
-	g2_gl_fill_apply_filter(fill);
-
 	// init vertices
 	fill->vertices[0] = bounds->x1;
 	fill->vertices[1] = bounds->y1;
@@ -449,33 +476,13 @@ static __tb_inline__ tb_void_t g2_gl_fill_style_draw_shader_bitmap(g2_gl_fill_t*
 	// leave matrix
 	g2_gl_fill_matrix_leave_texture(fill);
 
-	// exit texture
-	glDisable(GL_TEXTURE_2D);
+	// leave texture state
+	g2_gl_fill_leave_texture_state(fill, GL_TEXTURE_2D);
 }
 static __tb_inline__ tb_void_t g2_gl_fill_style_draw_shader_linear(g2_gl_fill_t* fill, g2_gl_rect_t const* bounds)
 {
-	// shader
-	g2_gl_shader_t const* shader = fill->shader;
-
-	// init texture
-	glEnable(GL_TEXTURE_1D);
-	glBindTexture(GL_TEXTURE_1D, *shader->texture);
-
-	// apply mode
-	glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-	
-	// apply blend
-	tb_byte_t 	alpha = g2_style_alpha(fill->style);
-	g2_gl_fill_apply_blend(fill, shader->flag & G2_GL_SHADER_FLAG_ALPHA || shader->wrap == G2_SHADER_WRAP_BORDER || alpha != 0xff);
-
-	// apply color
-	g2_gl_fill_apply_color(fill, g2_color_make(alpha, 0xff, 0xff, 0xff));
-
-	// apply wrap
-	g2_gl_fill_apply_wrap(fill);
-
-	// apply filter
-	g2_gl_fill_apply_filter(fill);
+	// enter texture state
+	g2_gl_fill_enter_texture_state(fill, GL_TEXTURE_1D);
 
 	// init matrix
 //	g2_matrix_t matrix = *g2_matrix(fill->painter);
@@ -492,8 +499,8 @@ static __tb_inline__ tb_void_t g2_gl_fill_style_draw_shader_linear(g2_gl_fill_t*
 	tb_print("bounds: %f %f %f %f", bounds->x1, bounds->y1, bounds->x2, bounds->y2);
 
 	// init vector
-	g2_point_t pb = shader->u.linear.pb;
-	g2_point_t pe = shader->u.linear.pe;
+	g2_point_t pb = fill->shader->u.linear.pb;
+	g2_point_t pe = fill->shader->u.linear.pe;
 //	g2_matrix_apply_point(&fill->painter->matrix, &pb);
 //	g2_matrix_apply_point(&fill->painter->matrix, &pe);
 
@@ -526,7 +533,7 @@ static __tb_inline__ tb_void_t g2_gl_fill_style_draw_shader_linear(g2_gl_fill_t*
 	fill->texcoords[1] = g2_float_to_tb(y2);
 	fill->texcoords[2] = g2_float_to_tb(y3);
 	fill->texcoords[3] = g2_float_to_tb(y4);
-#elif 1
+#elif 0
 	fill->texcoords[0] = g2_float_to_tb(x1);
 	fill->texcoords[1] = g2_float_to_tb(x2);
 	fill->texcoords[2] = g2_float_to_tb(x3);
@@ -549,8 +556,8 @@ static __tb_inline__ tb_void_t g2_gl_fill_style_draw_shader_linear(g2_gl_fill_t*
 	// draw
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
-	// exit texture
-	glDisable(GL_TEXTURE_1D);
+	// leave texture state
+	g2_gl_fill_leave_texture_state(fill, GL_TEXTURE_1D);
 }
 static __tb_inline__ tb_void_t g2_gl_fill_style_draw_shader_radial(g2_gl_fill_t* fill, g2_gl_rect_t const* bounds)
 {
