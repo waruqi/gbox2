@@ -82,6 +82,7 @@ tb_void_t 		g2_matrix_init_rotate(g2_matrix_t* matrix, g2_float_t degrees);
 tb_void_t 		g2_matrix_init_sincos(g2_matrix_t* matrix, g2_float_t sin, g2_float_t cos);
 tb_void_t 		g2_matrix_init_skew(g2_matrix_t* matrix, g2_float_t kx, g2_float_t ky);
 tb_void_t 		g2_matrix_init_scale(g2_matrix_t* matrix, g2_float_t sx, g2_float_t sy);
+tb_void_t 		g2_matrix_init_pscale(g2_matrix_t* matrix, g2_float_t sx, g2_float_t sy, g2_float_t px, g2_float_t py);
 tb_void_t 		g2_matrix_init_translate(g2_matrix_t* matrix, g2_float_t tx, g2_float_t ty);
 tb_void_t 		g2_matrix_exit(g2_matrix_t* matrix);
 
@@ -101,6 +102,10 @@ tb_bool_t 		g2_matrix_rotate_lhs(g2_matrix_t* matrix, g2_float_t degrees);
 // scale
 tb_bool_t 		g2_matrix_scale(g2_matrix_t* matrix, g2_float_t sx, g2_float_t sy);
 tb_bool_t 		g2_matrix_scale_lhs(g2_matrix_t* matrix, g2_float_t sx, g2_float_t sy);
+
+// pscale
+tb_bool_t 		g2_matrix_pscale(g2_matrix_t* matrix, g2_float_t sx, g2_float_t sy, g2_float_t px, g2_float_t py);
+tb_bool_t 		g2_matrix_pscale_lhs(g2_matrix_t* matrix, g2_float_t sx, g2_float_t sy, g2_float_t px, g2_float_t py);
 
 // translate
 tb_bool_t 		g2_matrix_translate(g2_matrix_t* matrix, g2_float_t dx, g2_float_t dy);

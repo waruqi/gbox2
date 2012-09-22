@@ -94,6 +94,10 @@ tb_void_t g2_matrix_init_scale(g2_matrix_t* matrix, g2_float_t sx, g2_float_t sy
 {
 	g2_matrix_init(matrix, sx, 0, 0, sy, 0, 0);
 }
+tb_void_t g2_matrix_init_pscale(g2_matrix_t* matrix, g2_float_t sx, g2_float_t sy, g2_float_t px, g2_float_t py)
+{
+	g2_matrix_init(matrix, sx, 0, 0, sy, px - g2_mul(sx, px), py - g2_mul(sy, py));
+}
 tb_void_t g2_matrix_init_translate(g2_matrix_t* matrix, g2_float_t tx, g2_float_t ty)
 {
 	g2_matrix_init(matrix, G2_ONE, 0, 0, G2_ONE, tx, ty);
@@ -197,17 +201,23 @@ tb_bool_t g2_matrix_scale(g2_matrix_t* matrix, g2_float_t sx, g2_float_t sy)
 	// 1/1 ?
 	tb_check_return_val(g2_n1(sx) || g2_n1(sy), TB_TRUE);
 
-	// scale
 #if 0
+	// scale
 	g2_matrix_t mx;
 	g2_matrix_init_scale(&mx, sx, sy);
 	return g2_matrix_multiply(matrix, &mx);
 #else
+
 	matrix->sx = g2_mul(matrix->sx, sx);
-	matrix->kx = g2_mul(matrix->kx, sx);
-	matrix->ky = g2_mul(matrix->ky, sy);
+	matrix->ky = g2_mul(matrix->ky, sx);
+
+	matrix->kx = g2_mul(matrix->kx, sy);
 	matrix->sy = g2_mul(matrix->sy, sy);
-	return TB_TRUE;	
+
+	matrix->tx = g2_mul(matrix->tx, sx);
+	matrix->ty = g2_mul(matrix->ty, sy);
+
+	return TB_TRUE;
 #endif
 }
 tb_bool_t g2_matrix_scale_lhs(g2_matrix_t* matrix, g2_float_t sx, g2_float_t sy)
@@ -215,9 +225,40 @@ tb_bool_t g2_matrix_scale_lhs(g2_matrix_t* matrix, g2_float_t sx, g2_float_t sy)
 	// 1/1 ?
 	tb_check_return_val(g2_n1(sx) || g2_n1(sy), TB_TRUE);
 
+#if 0
 	// scale
 	g2_matrix_t mx;
 	g2_matrix_init_scale(&mx, sx, sy);
+	return g2_matrix_multiply_lhs(matrix, &mx);
+#else
+
+	matrix->sx = g2_mul(sx, matrix->sx);
+	matrix->ky = g2_mul(sy, matrix->ky);
+
+	matrix->kx = g2_mul(sx, matrix->kx);
+	matrix->sy = g2_mul(sy, matrix->sy);
+
+	return TB_TRUE;
+#endif
+}
+tb_bool_t g2_matrix_pscale(g2_matrix_t* matrix, g2_float_t sx, g2_float_t sy, g2_float_t px, g2_float_t py)
+{
+	// 1/1 ?
+	tb_check_return_val(g2_n1(sx) || g2_n1(sy), TB_TRUE);
+
+	// scale
+	g2_matrix_t mx;
+	g2_matrix_init_pscale(&mx, sx, sy, px, py);
+	return g2_matrix_multiply(matrix, &mx);
+}
+tb_bool_t g2_matrix_pscale_lhs(g2_matrix_t* matrix, g2_float_t sx, g2_float_t sy, g2_float_t px, g2_float_t py)
+{
+	// 1/1 ?
+	tb_check_return_val(g2_n1(sx) || g2_n1(sy), TB_TRUE);
+
+	// scale
+	g2_matrix_t mx;
+	g2_matrix_init_pscale(&mx, sx, sy, px, py);
 	return g2_matrix_multiply_lhs(matrix, &mx);
 }
 tb_bool_t g2_matrix_translate(g2_matrix_t* matrix, g2_float_t dx, g2_float_t dy)
@@ -225,21 +266,38 @@ tb_bool_t g2_matrix_translate(g2_matrix_t* matrix, g2_float_t dx, g2_float_t dy)
 	// 0, 0 ?
 	tb_check_return_val(g2_nz(dx) || g2_nz(dy), TB_TRUE);
 
+#if 0
 	// translate
-	matrix->tx = g2_matrix_mul(matrix->sx, dx, matrix->kx, dy) + matrix->tx;
-	matrix->ty = g2_matrix_mul(matrix->ky, dx, matrix->sy, dy) + matrix->ty;
-
-	// ok
-	return TB_TRUE;
-}
-tb_bool_t g2_matrix_translate_lhs(g2_matrix_t* matrix, g2_float_t dx, g2_float_t dy)
-{
+	g2_matrix_t mx;
+	g2_matrix_init_translate(&mx, dx, dy);
+	return g2_matrix_multiply(matrix, &mx);
+#else
 	// translate
 	matrix->tx += dx;
 	matrix->ty += dy;
 
 	// ok
 	return TB_TRUE;
+#endif
+}
+tb_bool_t g2_matrix_translate_lhs(g2_matrix_t* matrix, g2_float_t dx, g2_float_t dy)
+{
+	// 0, 0 ?
+	tb_check_return_val(g2_nz(dx) || g2_nz(dy), TB_TRUE);
+
+#if 0
+	// translate
+	g2_matrix_t mx;
+	g2_matrix_init_translate(&mx, dx, dy);
+	return g2_matrix_multiply_lhs(matrix, &mx);
+#else
+	// translate
+	matrix->tx += g2_matrix_mul(dx, matrix->sx, dy, matrix->ky);
+	matrix->ty += g2_matrix_mul(dx, matrix->kx, dy, matrix->sy);
+
+	// ok
+	return TB_TRUE;
+#endif
 }
 tb_bool_t g2_matrix_skew(g2_matrix_t* matrix, g2_float_t kx, g2_float_t ky)
 {
@@ -282,8 +340,8 @@ tb_bool_t g2_matrix_multiply(g2_matrix_t* matrix, g2_matrix_t const* mx)
 	mt.kx = g2_matrix_mul(matrix->sx, mx->kx, matrix->kx, mx->sy);
 	mt.sy = g2_matrix_mul(matrix->ky, mx->kx, matrix->sy, mx->sy);
 
-	mt.tx = g2_matrix_mul(matrix->sx, mx->tx, matrix->kx, mx->ty) + matrix->tx;
-	mt.ty = g2_matrix_mul(matrix->ky, mx->tx, matrix->sy, mx->ty) + matrix->ty;
+	mt.tx = g2_matrix_mul(matrix->tx, mx->sx, matrix->ty, mx->ky) + mx->tx;
+	mt.ty = g2_matrix_mul(matrix->tx, mx->kx, matrix->ty, mx->sy) + mx->ty;
 
 	// ok
 	*matrix = mt;

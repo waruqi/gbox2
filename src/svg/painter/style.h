@@ -360,9 +360,8 @@ static __tb_inline__ tb_bool_t g2_svg_painter_style_image(g2_svg_painter_t* pain
 
 		// init matrix
 		g2_matrix_t matrix;
-		g2_matrix_clear(&matrix);
-		g2_matrix_init_translate(&matrix, bx + g2_rsh((bw - cw), 1), by + g2_rsh((bh - ch), 1));
-		g2_matrix_scale(&matrix, cw / rw, ch / rh);
+		g2_matrix_init_scale(&matrix, cw / rw, ch / rh);
+		g2_matrix_translate(&matrix, bx + g2_rsh((bw - cw), 1), by + g2_rsh((bh - ch), 1));
 
 		// set matrix
 		g2_shader_matrix_set(shader, &matrix);

@@ -62,6 +62,14 @@ typedef struct __g2_skia_painter_t
 /* ///////////////////////////////////////////////////////////////////////
  * implementation
  */
+static __tb_inline__ tb_void_t g2_skia_apply_matrix(g2_skia_painter_t* spainter)
+{
+	SkMatrix mx;
+	mx.setAll( 	spainter->matrix.sx, spainter->matrix.kx, spainter->matrix.tx
+			, 	spainter->matrix.ky, spainter->matrix.sy, spainter->matrix.ty
+			, 	0, 0, kMatrix22Elem);
+	spainter->canvas->setMatrix(mx);
+}
 static tb_void_t g2_skia_exit(tb_handle_t painter)
 {
 	g2_skia_painter_t* spainter = static_cast<g2_skia_painter_t*>(painter);
@@ -95,7 +103,10 @@ static tb_handle_t g2_skia_init(tb_handle_t context)
 	// init canvas
 	spainter->canvas = new SkCanvas(*surface);
 	tb_assert_and_check_goto(spainter->canvas, fail);
-	spainter->canvas->resetMatrix();
+
+	// init matrix
+	g2_matrix_clear(&spainter->matrix);
+	g2_skia_apply_matrix(spainter);
 
 	// init style
 	spainter->style_def = static_cast<SkPaint*>(g2_style_init());
@@ -169,10 +180,8 @@ static tb_void_t g2_skia_style_set(tb_handle_t painter, tb_handle_t style)
 static g2_matrix_t const* g2_skia_matrix(tb_handle_t painter)
 {
 	g2_skia_painter_t* spainter = static_cast<g2_skia_painter_t*>(painter);
-	tb_assert_and_check_return_val(spainter && spainter->canvas, TB_NULL);
+	tb_assert_and_check_return_val(spainter, TB_NULL);
 
-	SkMatrix const& mx = spainter->canvas->getTotalMatrix();
-	g2_matrix_init(&spainter->matrix, mx.getScaleX(), mx.getScaleY(), mx.getSkewX(), mx.getSkewY(), mx.getTranslateX(), mx.getTranslateY());
 	return &spainter->matrix;
 }
 static tb_void_t g2_skia_matrix_set(tb_handle_t painter, g2_matrix_t const* matrix)
@@ -180,55 +189,82 @@ static tb_void_t g2_skia_matrix_set(tb_handle_t painter, g2_matrix_t const* matr
 	g2_skia_painter_t* spainter = static_cast<g2_skia_painter_t*>(painter);
 	tb_assert_and_check_return(spainter && spainter->canvas);
 
-	if (matrix)
-	{
-		SkMatrix mx;
-		mx.setAll( 	matrix->sx, matrix->kx, matrix->tx
-				, 	matrix->ky, matrix->sy, matrix->ty
-				, 	0, 0, kMatrix22Elem);
-		spainter->canvas->setMatrix(mx);
-	}
-	else spainter->canvas->resetMatrix();
+	// set matrix
+	if (matrix) spainter->matrix = *matrix;
+	else g2_matrix_clear(&spainter->matrix);
+
+	// apply
+	g2_skia_apply_matrix(spainter);
 }
 static tb_bool_t g2_skia_rotate(tb_handle_t painter, g2_float_t degrees)
 {
 	g2_skia_painter_t* spainter = static_cast<g2_skia_painter_t*>(painter);
 	tb_assert_and_check_return_val(spainter && spainter->canvas, TB_FALSE);
 
-	return spainter->canvas->rotate(degrees)? TB_TRUE : TB_FALSE;
+	// rotate
+	tb_bool_t ok = g2_matrix_rotate(&spainter->matrix, degrees); 
+
+	// apply
+	g2_skia_apply_matrix(spainter);
+
+	// ok?
+	return ok;
 }
 static tb_bool_t g2_skia_scale(tb_handle_t painter, g2_float_t sx, g2_float_t sy)
 {
 	g2_skia_painter_t* spainter = static_cast<g2_skia_painter_t*>(painter);
 	tb_assert_and_check_return_val(spainter && spainter->canvas, TB_FALSE);
 
-	return spainter->canvas->scale(sx, sy)? TB_TRUE : TB_FALSE;
+	// scale
+	tb_bool_t ok = g2_matrix_scale(&spainter->matrix, sx, sy); 
+
+	// apply
+	g2_skia_apply_matrix(spainter);
+
+	// ok?
+	return ok;
 }
 static tb_bool_t g2_skia_skew(tb_handle_t painter, g2_float_t kx, g2_float_t ky)
 {
 	g2_skia_painter_t* spainter = static_cast<g2_skia_painter_t*>(painter);
 	tb_assert_and_check_return_val(spainter && spainter->canvas, TB_FALSE);
 
-	return spainter->canvas->skew(kx, ky)? TB_TRUE : TB_FALSE;
+	// skew
+	tb_bool_t ok = g2_matrix_skew(&spainter->matrix, kx, ky); 
+
+	// apply
+	g2_skia_apply_matrix(spainter);
+
+	// ok?
+	return ok;
 }
 static tb_bool_t g2_skia_translate(tb_handle_t painter, g2_float_t dx, g2_float_t dy)
 {
 	g2_skia_painter_t* spainter = static_cast<g2_skia_painter_t*>(painter);
 	tb_assert_and_check_return_val(spainter && spainter->canvas, TB_FALSE);
 
-	return spainter->canvas->translate(dx, dy)? TB_TRUE : TB_FALSE;
+	// translate
+	tb_bool_t ok = g2_matrix_translate(&spainter->matrix, dx, dy); 
+
+	// apply
+	g2_skia_apply_matrix(spainter);
+
+	// ok?
+	return ok;
 }
 static tb_bool_t g2_skia_multiply(tb_handle_t painter, g2_matrix_t const* matrix)
 {
 	g2_skia_painter_t* spainter = static_cast<g2_skia_painter_t*>(painter);
 	tb_assert_and_check_return_val(spainter && spainter->canvas && matrix, TB_FALSE);
 
-	SkMatrix mx;
-	mx.setAll( 	matrix->sx, matrix->kx, matrix->tx
-			, 	matrix->ky, matrix->ky, matrix->ty
-			, 	0, 0, kMatrix22Elem);
-	spainter->canvas->setMatrix(mx);
-	return spainter->canvas->concat(mx)? TB_TRUE : TB_FALSE;
+	// multiply
+	tb_bool_t ok = g2_matrix_multiply(&spainter->matrix, matrix); 
+
+	// apply
+	g2_skia_apply_matrix(spainter);
+
+	// ok?
+	return ok;
 }
 static tb_bool_t g2_skia_clip_path(tb_handle_t painter, tb_size_t mode, tb_handle_t path)
 {
