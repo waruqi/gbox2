@@ -166,13 +166,14 @@ static tb_void_t g2_demo_gl_display()
 			tb_size_t ch 	= g2_bitmap_height(g_surface);
 			if (g_bm)
 			{
-				g2_matrix_init_scale(&mx, g2_long_to_float(200) / bw, g2_long_to_float(200) / bh);
-				g2_matrix_translate(&mx, -g2_long_to_float(100), -g2_long_to_float(100));
+				g2_matrix_init_translate(&mx, -g2_long_to_float(100), -g2_long_to_float(100));
+				g2_matrix_scale(&mx, g2_long_to_float(200) / bw, g2_long_to_float(200) / bh);
 				g2_shader_matrix_set(g_mhader[g_shaderi], &mx);
 			}
 			else
 			{
-				g2_matrix_init_scale(&mx, g2_long_to_float(cw) / bw, g2_long_to_float(ch) / bh);
+				g2_matrix_init_translate(&mx, 0, 0);
+				g2_matrix_scale(&mx, g2_long_to_float(cw) / bw, g2_long_to_float(ch) / bh);
 				g2_shader_matrix_set(g_shader[g_shaderi], &mx);
 			}
 		}
@@ -339,9 +340,9 @@ static tb_void_t g2_demo_gl_move(tb_int_t x, tb_int_t y)
 	dx = g2_lsh(dx, 2);
 	dy = g2_lsh(dy, 2);
 
-	g2_matrix_init_rotate(&g_mx, g_an);
+	g2_matrix_init_translate(&g_mx, x0, y0);
 	g2_matrix_scale(&g_mx, g2_div(dx, dw), g2_div(dy, dh));
-	g2_matrix_translate(&g_mx, x0, y0);
+	g2_matrix_rotate(&g_mx, g_an);
 
 	g2_demo_move(x, y);
 }
@@ -415,7 +416,7 @@ tb_bool_t g2_demo_gbox2_init(tb_int_t argc, tb_char_t** argv)
 	g2_gradient_t 	grad = {color, TB_NULL, 3};
 
 	// init shader
-	g_shader[1]	= g2_shader_init2i_linear(g_context, g_x0 - 100, 0, g_x0 + 100, 0, &grad, G2_SHADER_WRAP_CLAMP);
+	g_shader[1]	= g2_shader_init2i_linear(g_context, g_x0 - 100, g_y0 - 100, g_x0 + 100, g_y0 + 100, &grad, G2_SHADER_WRAP_CLAMP);
 	g_mhader[1]	= g2_shader_init2i_linear(g_context, -50, 0, 50, 0, &grad, G2_SHADER_WRAP_CLAMP);
 
 	g_shader[2]	= g2_shader_init2i_radial(g_context, g_x0, g_y0, 100, &grad, G2_SHADER_WRAP_CLAMP);

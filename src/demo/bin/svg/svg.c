@@ -94,15 +94,10 @@ static tb_void_t g2_demo_render()
 	// save 
 	g2_save(g_painter, G2_SAVE_MODE_MATRIX);
 
-	// matrix
-//	g2_matrix_t matrix = *g2_matrix(g_painter);
-//	g2_matrix_translate(&matrix, rect.x, rect.y);
-//	g2_matrix_pscale(&matrix, g2_div(rect.w, w), g2_div(rect.h, h), matrix.tx, matrix.ty);
-//	g2_matrix_set(g_painter, &matrix);
-
-	g2_scale(g_painter, g2_div(rect.w, w), g2_div(rect.h, h));
+	// trasform
 	g2_translate(g_painter, rect.x, rect.y);
-	
+	g2_scale(g_painter, g2_div(rect.w, w), g2_div(rect.h, h));
+
 	// draw
 	g2_svg_element_draw(g_svg, g_painter);
 	

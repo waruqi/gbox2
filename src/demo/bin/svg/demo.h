@@ -263,9 +263,9 @@ static tb_void_t g2_demo_gl_move(tb_int_t x, tb_int_t y)
 	dx = g2_lsh(dx, 2);
 	dy = g2_lsh(dy, 2);
 
-	g2_matrix_init_rotate(&g_mx, g_an);
+	g2_matrix_init_translate(&g_mx, x0, y0);
 	g2_matrix_scale(&g_mx, g2_div(dx, dw), g2_div(dy, dh));
-	g2_matrix_translate(&g_mx, x0, y0);
+	g2_matrix_rotate(&g_mx, g_an);
 
 	g2_demo_move(x, y);
 }

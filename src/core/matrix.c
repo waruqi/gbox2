@@ -82,19 +82,35 @@ tb_void_t g2_matrix_init_rotate(g2_matrix_t* matrix, g2_float_t degrees)
 	g2_sincos(g2_degree_to_radian(degrees), &s, &c);
 	g2_matrix_init_sincos(matrix, s, c);
 }
+tb_void_t g2_matrix_init_rotatep(g2_matrix_t* matrix, g2_float_t degrees, g2_float_t px, g2_float_t py)
+{
+	g2_float_t s;
+	g2_float_t c;
+	g2_sincos(g2_degree_to_radian(degrees), &s, &c);
+	g2_matrix_init_sincosp(matrix, s, c, px, py);
+}
 tb_void_t g2_matrix_init_sincos(g2_matrix_t* matrix, g2_float_t sin, g2_float_t cos)
 {
 	g2_matrix_init(matrix, cos, -sin, sin, cos, 0, 0);	
+}
+tb_void_t g2_matrix_init_sincosp(g2_matrix_t* matrix, g2_float_t sin, g2_float_t cos, g2_float_t px, g2_float_t py)
+{
+    g2_float_t const one_cos = G2_ONE - cos;
+	g2_matrix_init(matrix, cos, -sin, sin, cos, g2_mul(sin, py) + g2_mul(one_cos, px), g2_mul(-sin, px) + g2_mul(one_cos, py));	
 }
 tb_void_t g2_matrix_init_skew(g2_matrix_t* matrix, g2_float_t kx, g2_float_t ky)
 {
 	g2_matrix_init(matrix, G2_ONE, kx, ky, G2_ONE, 0, 0);
 }
+tb_void_t g2_matrix_init_skewp(g2_matrix_t* matrix, g2_float_t kx, g2_float_t ky, g2_float_t px, g2_float_t py)
+{
+	g2_matrix_init(matrix, G2_ONE, kx, ky, G2_ONE, g2_mul(-kx, py), g2_mul(-ky, px));
+}
 tb_void_t g2_matrix_init_scale(g2_matrix_t* matrix, g2_float_t sx, g2_float_t sy)
 {
 	g2_matrix_init(matrix, sx, 0, 0, sy, 0, 0);
 }
-tb_void_t g2_matrix_init_pscale(g2_matrix_t* matrix, g2_float_t sx, g2_float_t sy, g2_float_t px, g2_float_t py)
+tb_void_t g2_matrix_init_scalep(g2_matrix_t* matrix, g2_float_t sx, g2_float_t sy, g2_float_t px, g2_float_t py)
 {
 	g2_matrix_init(matrix, sx, 0, 0, sy, px - g2_mul(sx, px), py - g2_mul(sy, py));
 }
@@ -196,6 +212,26 @@ tb_bool_t g2_matrix_rotate_lhs(g2_matrix_t* matrix, g2_float_t degrees)
 	g2_matrix_init_rotate(&mx, degrees);
 	return g2_matrix_multiply_lhs(matrix, &mx);
 }
+tb_bool_t g2_matrix_rotatep(g2_matrix_t* matrix, g2_float_t degrees, g2_float_t px, g2_float_t py)
+{
+	// 0 ?
+	tb_check_return_val(g2_nz(degrees), TB_TRUE);
+
+	// rotate
+	g2_matrix_t mx;
+	g2_matrix_init_rotatep(&mx, degrees, px, py);
+	return g2_matrix_multiply(matrix, &mx);
+}
+tb_bool_t g2_matrix_rotatep_lhs(g2_matrix_t* matrix, g2_float_t degrees, g2_float_t px, g2_float_t py)
+{
+	// 0 ?
+	tb_check_return_val(g2_nz(degrees), TB_TRUE);
+
+	// rotate
+	g2_matrix_t mx;
+	g2_matrix_init_rotatep(&mx, degrees, px, py);
+	return g2_matrix_multiply_lhs(matrix, &mx);
+}
 tb_bool_t g2_matrix_scale(g2_matrix_t* matrix, g2_float_t sx, g2_float_t sy)
 {
 	// 1/1 ?
@@ -209,13 +245,9 @@ tb_bool_t g2_matrix_scale(g2_matrix_t* matrix, g2_float_t sx, g2_float_t sy)
 #else
 
 	matrix->sx = g2_mul(matrix->sx, sx);
-	matrix->ky = g2_mul(matrix->ky, sx);
-
-	matrix->kx = g2_mul(matrix->kx, sy);
+	matrix->kx = g2_mul(matrix->kx, sx);
+	matrix->ky = g2_mul(matrix->ky, sy);
 	matrix->sy = g2_mul(matrix->sy, sy);
-
-	matrix->tx = g2_mul(matrix->tx, sx);
-	matrix->ty = g2_mul(matrix->ty, sy);
 
 	return TB_TRUE;
 #endif
@@ -225,40 +257,29 @@ tb_bool_t g2_matrix_scale_lhs(g2_matrix_t* matrix, g2_float_t sx, g2_float_t sy)
 	// 1/1 ?
 	tb_check_return_val(g2_n1(sx) || g2_n1(sy), TB_TRUE);
 
-#if 0
 	// scale
 	g2_matrix_t mx;
 	g2_matrix_init_scale(&mx, sx, sy);
 	return g2_matrix_multiply_lhs(matrix, &mx);
-#else
-
-	matrix->sx = g2_mul(sx, matrix->sx);
-	matrix->ky = g2_mul(sy, matrix->ky);
-
-	matrix->kx = g2_mul(sx, matrix->kx);
-	matrix->sy = g2_mul(sy, matrix->sy);
-
-	return TB_TRUE;
-#endif
 }
-tb_bool_t g2_matrix_pscale(g2_matrix_t* matrix, g2_float_t sx, g2_float_t sy, g2_float_t px, g2_float_t py)
+tb_bool_t g2_matrix_scalep(g2_matrix_t* matrix, g2_float_t sx, g2_float_t sy, g2_float_t px, g2_float_t py)
 {
 	// 1/1 ?
 	tb_check_return_val(g2_n1(sx) || g2_n1(sy), TB_TRUE);
 
 	// scale
 	g2_matrix_t mx;
-	g2_matrix_init_pscale(&mx, sx, sy, px, py);
+	g2_matrix_init_scalep(&mx, sx, sy, px, py);
 	return g2_matrix_multiply(matrix, &mx);
 }
-tb_bool_t g2_matrix_pscale_lhs(g2_matrix_t* matrix, g2_float_t sx, g2_float_t sy, g2_float_t px, g2_float_t py)
+tb_bool_t g2_matrix_scalep_lhs(g2_matrix_t* matrix, g2_float_t sx, g2_float_t sy, g2_float_t px, g2_float_t py)
 {
 	// 1/1 ?
 	tb_check_return_val(g2_n1(sx) || g2_n1(sy), TB_TRUE);
 
 	// scale
 	g2_matrix_t mx;
-	g2_matrix_init_pscale(&mx, sx, sy, px, py);
+	g2_matrix_init_scalep(&mx, sx, sy, px, py);
 	return g2_matrix_multiply_lhs(matrix, &mx);
 }
 tb_bool_t g2_matrix_translate(g2_matrix_t* matrix, g2_float_t dx, g2_float_t dy)
@@ -273,8 +294,8 @@ tb_bool_t g2_matrix_translate(g2_matrix_t* matrix, g2_float_t dx, g2_float_t dy)
 	return g2_matrix_multiply(matrix, &mx);
 #else
 	// translate
-	matrix->tx += dx;
-	matrix->ty += dy;
+	matrix->tx = g2_matrix_mul(matrix->sx, dx, matrix->kx, dy) + matrix->tx;
+	matrix->ty = g2_matrix_mul(matrix->ky, dx, matrix->sy, dy) + matrix->ty;
 
 	// ok
 	return TB_TRUE;
@@ -292,8 +313,8 @@ tb_bool_t g2_matrix_translate_lhs(g2_matrix_t* matrix, g2_float_t dx, g2_float_t
 	return g2_matrix_multiply_lhs(matrix, &mx);
 #else
 	// translate
-	matrix->tx += g2_matrix_mul(dx, matrix->sx, dy, matrix->ky);
-	matrix->ty += g2_matrix_mul(dx, matrix->kx, dy, matrix->sy);
+	matrix->tx += dx;
+	matrix->ty += dy;
 
 	// ok
 	return TB_TRUE;
@@ -313,6 +334,20 @@ tb_bool_t g2_matrix_skew_lhs(g2_matrix_t* matrix, g2_float_t kx, g2_float_t ky)
 	g2_matrix_init_skew(&mx, kx, ky);
 	return g2_matrix_multiply_lhs(matrix, &mx);
 }
+tb_bool_t g2_matrix_skewp(g2_matrix_t* matrix, g2_float_t kx, g2_float_t ky, g2_float_t px, g2_float_t py)
+{
+	// skew
+	g2_matrix_t mx;
+	g2_matrix_init_skewp(&mx, kx, ky, px, py);
+	return g2_matrix_multiply(matrix, &mx);
+}
+tb_bool_t g2_matrix_skewp_lhs(g2_matrix_t* matrix, g2_float_t kx, g2_float_t ky, g2_float_t px, g2_float_t py)
+{
+	// skew
+	g2_matrix_t mx;
+	g2_matrix_init_skewp(&mx, kx, ky, px, py);
+	return g2_matrix_multiply_lhs(matrix, &mx);
+}
 tb_bool_t g2_matrix_sincos(g2_matrix_t* matrix, g2_float_t sin, g2_float_t cos)
 {
 	// sincos
@@ -327,12 +362,39 @@ tb_bool_t g2_matrix_sincos_lhs(g2_matrix_t* matrix, g2_float_t sin, g2_float_t c
 	g2_matrix_init_sincos(&mx, sin, cos);
 	return g2_matrix_multiply_lhs(matrix, &mx);
 }
+tb_bool_t g2_matrix_sincosp(g2_matrix_t* matrix, g2_float_t sin, g2_float_t cos, g2_float_t px, g2_float_t py)
+{
+	// sincos
+	g2_matrix_t mx;
+	g2_matrix_init_sincosp(&mx, sin, cos, px, py);
+	return g2_matrix_multiply(matrix, &mx);
+}
+tb_bool_t g2_matrix_sincosp_lhs(g2_matrix_t* matrix, g2_float_t sin, g2_float_t cos, g2_float_t px, g2_float_t py)
+{
+	// sincos
+	g2_matrix_t mx;
+	g2_matrix_init_sincosp(&mx, sin, cos, px, py);
+	return g2_matrix_multiply_lhs(matrix, &mx);
+}
 tb_bool_t g2_matrix_multiply(g2_matrix_t* matrix, g2_matrix_t const* mx)
 {
 	// identity?
 	if (g2_matrix_identity(mx)) return TB_TRUE;
 
-	// multiply
+	/* multiply
+	 * 
+	 * | lsx lkx ltx |   | rsx rkx rtx |
+	 * | lky lsy lty | * | rky rsy rty | 
+	 * |   0   0   1 |   |   0   0   1 |
+	 *
+	 * =>
+	 *
+	 * | lsx * rsx + lkx * rky | lsx * rkx + lkx * rsy | lsx * rtx + lkx * rty + ltx |
+	 * | lky * rsx + lsy * rky | lky * rkx + lsy * rsy | lky * rtx + lsy * rty + lty |
+	 * |                     0 |                     0 |                           1 |
+	 *
+	 * @note path * (A * B * C) != ((path * A) * B) * C
+	 */
 	g2_matrix_t mt;
 	mt.sx = g2_matrix_mul(matrix->sx, mx->sx, matrix->kx, mx->ky);
 	mt.ky = g2_matrix_mul(matrix->ky, mx->sx, matrix->sy, mx->ky);
@@ -340,8 +402,8 @@ tb_bool_t g2_matrix_multiply(g2_matrix_t* matrix, g2_matrix_t const* mx)
 	mt.kx = g2_matrix_mul(matrix->sx, mx->kx, matrix->kx, mx->sy);
 	mt.sy = g2_matrix_mul(matrix->ky, mx->kx, matrix->sy, mx->sy);
 
-	mt.tx = g2_matrix_mul(matrix->tx, mx->sx, matrix->ty, mx->ky) + mx->tx;
-	mt.ty = g2_matrix_mul(matrix->tx, mx->kx, matrix->ty, mx->sy) + mx->ty;
+	mt.tx = g2_matrix_mul(matrix->sx, mx->tx, matrix->kx, mx->ty) + matrix->tx;
+	mt.ty = g2_matrix_mul(matrix->ky, mx->tx, matrix->sy, mx->ty) + matrix->ty;
 
 	// ok
 	*matrix = mt;
