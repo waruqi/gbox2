@@ -143,11 +143,11 @@ tb_bool_t 		g2_matrix_multiply_lhs(g2_matrix_t* matrix, g2_matrix_t const* mx);
  */
 static __tb_inline__ g2_float_t g2_matrix_apply_x(g2_matrix_t const* matrix, g2_float_t x, g2_float_t y)
 {
-	return g2_mul(x, matrix->sx) + g2_mul(y, matrix->ky) + matrix->tx;
+	return g2_mul(x, matrix->sx) + g2_mul(y, matrix->kx) + matrix->tx;
 }
 static __tb_inline__ g2_float_t g2_matrix_apply_y(g2_matrix_t const* matrix, g2_float_t x, g2_float_t y)
 {
-	return g2_mul(x, matrix->kx) + g2_mul(y, matrix->sy) + matrix->ty;
+	return g2_mul(x, matrix->ky) + g2_mul(y, matrix->sy) + matrix->ty;
 }
 static __tb_inline__ tb_void_t g2_matrix_apply_point(g2_matrix_t const* matrix, g2_point_t* point)
 {

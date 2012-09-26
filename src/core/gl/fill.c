@@ -516,12 +516,12 @@ static __tb_inline__ tb_void_t g2_gl_fill_style_draw_shader_linear(g2_gl_fill_t*
 	g2_matrix_t matrix;
 	g2_matrix_init_translate(&matrix, -pb.x, -pb.y);
 //	g2_matrix_rotate_lhs(&matrix, g2_long_to_float(-90));
-	g2_matrix_rotatep(&matrix, g2_long_to_float(-90), pb.x, pb.y);
+//	g2_matrix_rotatep(&matrix, g2_long_to_float(45), pb.x, pb.y);
 //	g2_matrix_scalep(&matrix, tb_float_to_g2(1.0f / un), tb_float_to_g2(1.0f / un), pb.x, pb.y);
 //	g2_matrix_rotatep(&matrix, g2_long_to_float(-90), -pb.x, -pb.y);
 //	g2_matrix_rotate(&matrix, g2_long_to_float(-90));
-//	g2_matrix_sincosp(&matrix, tb_float_to_g2(-ux / un), tb_float_to_g2(uy / un), -pb.x, -pb.y);
-//	g2_matrix_scalep(&matrix, tb_float_to_g2(1.0f / un), tb_float_to_g2(1.0f / un), -pb.x, -pb.y);
+	g2_matrix_sincosp(&matrix, tb_float_to_g2(ux / un), tb_float_to_g2(uy / un), pb.x, pb.y);
+	g2_matrix_scalep(&matrix, tb_float_to_g2(1.0f / un), tb_float_to_g2(1.0f / un), pb.x, pb.y);
 
 	g2_float_t y1 = g2_matrix_apply_y(&matrix, tb_float_to_g2(bounds->x1), tb_float_to_g2(bounds->y1));
 	g2_float_t y2 = g2_matrix_apply_y(&matrix, tb_float_to_g2(bounds->x2), tb_float_to_g2(bounds->y1));
