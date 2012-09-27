@@ -258,8 +258,8 @@ tb_handle_t g2_context_init_gl(tb_size_t pixfmt, tb_size_t width, tb_size_t heig
 	tb_assert_and_check_return_val(gcontext, TB_NULL);
 
 	// init version 
-//	gcontext->version = g2_gl_context_version();
-	gcontext->version = 0x19;
+	gcontext->version = g2_gl_context_version();
+//	gcontext->version = 0x19;
 	tb_assert_and_check_goto(gcontext->version >= 0x10, fail);
 
 	// init extensions

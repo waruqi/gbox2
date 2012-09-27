@@ -1,0 +1,332 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		BF724567161426AE00289867 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BF724566161426AE00289867 /* UIKit.framework */; };
+		BF724569161426AE00289867 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BF724568161426AE00289867 /* Foundation.framework */; };
+		BF72456B161426AE00289867 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BF72456A161426AE00289867 /* CoreGraphics.framework */; };
+		BF724571161426AE00289867 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = BF72456F161426AE00289867 /* InfoPlist.strings */; };
+		BF724573161426AE00289867 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = BF724572161426AE00289867 /* main.m */; };
+		BF724579161426AE00289867 /* shape.entitlements in Resources */ = {isa = PBXBuildFile; fileRef = BF724578161426AE00289867 /* shape.entitlements */; };
+		BF72458A1614287B00289867 /* G2AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = BF7245871614287B00289867 /* G2AppDelegate.m */; };
+		BF72458B1614287B00289867 /* G2ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = BF7245891614287B00289867 /* G2ViewController.m */; };
+		BF8EAEB91614298F00DCD249 /* G2View.m in Sources */ = {isa = PBXBuildFile; fileRef = BF8EAEB81614298F00DCD249 /* G2View.m */; };
+		BFB6E95A16143A1D003F544E /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BFB6E95916143A1D003F544E /* OpenGLES.framework */; };
+		BFB6E95C16143A25003F544E /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BFB6E95B16143A25003F544E /* QuartzCore.framework */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		BF724562161426AE00289867 /* shape.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = shape.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		BF724566161426AE00289867 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
+		BF724568161426AE00289867 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		BF72456A161426AE00289867 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
+		BF72456E161426AE00289867 /* shape-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "shape-Info.plist"; sourceTree = "<group>"; };
+		BF724570161426AE00289867 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		BF724572161426AE00289867 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		BF724574161426AE00289867 /* shape-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "shape-Prefix.pch"; sourceTree = "<group>"; };
+		BF724578161426AE00289867 /* shape.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = shape.entitlements; sourceTree = "<group>"; };
+		BF7245861614287B00289867 /* G2AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = G2AppDelegate.h; sourceTree = "<group>"; };
+		BF7245871614287B00289867 /* G2AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = G2AppDelegate.m; sourceTree = "<group>"; };
+		BF7245881614287B00289867 /* G2ViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = G2ViewController.h; sourceTree = "<group>"; };
+		BF7245891614287B00289867 /* G2ViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = G2ViewController.m; sourceTree = "<group>"; };
+		BF8EAEB71614298F00DCD249 /* G2View.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = G2View.h; sourceTree = "<group>"; };
+		BF8EAEB81614298F00DCD249 /* G2View.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = G2View.m; sourceTree = "<group>"; };
+		BFB6E95916143A1D003F544E /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
+		BFB6E95B16143A25003F544E /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		BF72455F161426AE00289867 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				BFB6E95C16143A25003F544E /* QuartzCore.framework in Frameworks */,
+				BFB6E95A16143A1D003F544E /* OpenGLES.framework in Frameworks */,
+				BF724567161426AE00289867 /* UIKit.framework in Frameworks */,
+				BF724569161426AE00289867 /* Foundation.framework in Frameworks */,
+				BF72456B161426AE00289867 /* CoreGraphics.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		BF724557161426AE00289867 = {
+			isa = PBXGroup;
+			children = (
+				BF72456C161426AE00289867 /* shape */,
+				BF724565161426AE00289867 /* Frameworks */,
+				BF724563161426AE00289867 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		BF724563161426AE00289867 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				BF724562161426AE00289867 /* shape.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		BF724565161426AE00289867 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				BF724566161426AE00289867 /* UIKit.framework */,
+				BFB6E95916143A1D003F544E /* OpenGLES.framework */,
+				BFB6E95B16143A25003F544E /* QuartzCore.framework */,
+				BF724568161426AE00289867 /* Foundation.framework */,
+				BF72456A161426AE00289867 /* CoreGraphics.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		BF72456C161426AE00289867 /* shape */ = {
+			isa = PBXGroup;
+			children = (
+				BF8EAEB71614298F00DCD249 /* G2View.h */,
+				BF8EAEB81614298F00DCD249 /* G2View.m */,
+				BF7245861614287B00289867 /* G2AppDelegate.h */,
+				BF7245871614287B00289867 /* G2AppDelegate.m */,
+				BF7245881614287B00289867 /* G2ViewController.h */,
+				BF7245891614287B00289867 /* G2ViewController.m */,
+				BF72456D161426AE00289867 /* Supporting Files */,
+			);
+			path = shape;
+			sourceTree = "<group>";
+		};
+		BF72456D161426AE00289867 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				BF72456E161426AE00289867 /* shape-Info.plist */,
+				BF72456F161426AE00289867 /* InfoPlist.strings */,
+				BF724572161426AE00289867 /* main.m */,
+				BF724574161426AE00289867 /* shape-Prefix.pch */,
+				BF724578161426AE00289867 /* shape.entitlements */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		BF724561161426AE00289867 /* shape */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = BF72457C161426AE00289867 /* Build configuration list for PBXNativeTarget "shape" */;
+			buildPhases = (
+				BF72455E161426AE00289867 /* Sources */,
+				BF72455F161426AE00289867 /* Frameworks */,
+				BF724560161426AE00289867 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = shape;
+			productName = shape;
+			productReference = BF724562161426AE00289867 /* shape.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		BF724559161426AE00289867 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				CLASSPREFIX = g2;
+				LastUpgradeCheck = 0440;
+				ORGANIZATIONNAME = tboox;
+			};
+			buildConfigurationList = BF72455C161426AE00289867 /* Build configuration list for PBXProject "shape" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = BF724557161426AE00289867;
+			productRefGroup = BF724563161426AE00289867 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				BF724561161426AE00289867 /* shape */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		BF724560161426AE00289867 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				BF724571161426AE00289867 /* InfoPlist.strings in Resources */,
+				BF724579161426AE00289867 /* shape.entitlements in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		BF72455E161426AE00289867 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				BF724573161426AE00289867 /* main.m in Sources */,
+				BF72458A1614287B00289867 /* G2AppDelegate.m in Sources */,
+				BF72458B1614287B00289867 /* G2ViewController.m in Sources */,
+				BF8EAEB91614298F00DCD249 /* G2View.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXVariantGroup section */
+		BF72456F161426AE00289867 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				BF724570161426AE00289867 /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		BF72457A161426AE00289867 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 5.1;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		BF72457B161426AE00289867 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 5.1;
+				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		BF72457D161426AE00289867 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = shape/shape.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "shape/shape-Prefix.pch";
+				HEADER_SEARCH_PATHS = (
+					../../../../inc/ios_arm,
+					../../../,
+				);
+				INFOPLIST_FILE = "shape/shape-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 4.1;
+				LIBRARY_SEARCH_PATHS = (
+					../../../../lib/ios_arm,
+					../../../,
+				);
+				OTHER_CFLAGS = (
+					"-DTB_PRINT_TAG=\\\"gbox2\\\"",
+					"-DTB_TRACE_ENABLE",
+					"-DTB_ASSERT_ENABLE",
+				);
+				OTHER_LDFLAGS = (
+					"-lgbox2",
+					"-ltbox",
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Debug;
+		};
+		BF72457E161426AE00289867 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = shape/shape.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "shape/shape-Prefix.pch";
+				HEADER_SEARCH_PATHS = (
+					../../../../inc/ios_arm,
+					../../../,
+				);
+				INFOPLIST_FILE = "shape/shape-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 4.1;
+				LIBRARY_SEARCH_PATHS = (
+					../../../../lib/ios_arm,
+					../../../,
+				);
+				OTHER_CFLAGS = "-DTB_PRINT_TAG=\\\"gbox2\\\"";
+				OTHER_LDFLAGS = (
+					"-lgbox2",
+					"-ltbox",
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		BF72455C161426AE00289867 /* Build configuration list for PBXProject "shape" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				BF72457A161426AE00289867 /* Debug */,
+				BF72457B161426AE00289867 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		BF72457C161426AE00289867 /* Build configuration list for PBXNativeTarget "shape" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				BF72457D161426AE00289867 /* Debug */,
+				BF72457E161426AE00289867 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = BF724559161426AE00289867 /* Project object */;
+}
