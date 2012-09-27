@@ -2,17 +2,17 @@
 include $(PRO_DIR)/prefix.mak
 
 NAMES 					= \
-						shape/arc \
-						shape/line \
-						shape/rect \
-						shape/path \
-						shape/clip \
-						shape/point \
-						shape/circle \
-						shape/ellipse \
-						shape/triangle \
-						svg/svg \
-						svg/dump
+						arc \
+						svg \
+						dump \
+						rect \
+						line \
+						clip \
+						path \
+						point \
+						circle \
+						ellipse \
+						triangle
 
 ifeq ($(TB_CONFIG_PLAT),linux_x86)
 demo_LIBS 				= glut GLU GL z m dl pthread
