@@ -53,38 +53,6 @@ static tb_void_t g2_demo_size(tb_int_t w, tb_int_t h)
 }
 static tb_void_t g2_demo_render()
 {
-#if 1
 	if (g_bm) g2_draw2i_rect(g_painter, -100, -100, 200, 200);
 	else g2_draw2i_rect(g_painter, g_x0 - g_dx, g_y0 - g_dy, g_dx << 1, g_dy << 1);
-#elif 0
-	g2_draw2i_rect(g_painter, g_x0 - 100, g_y0 - 100, 200, 200);	
-#else
-	g2_save(g_painter, G2_SAVE_MODE_MATRIX);
-	g2_matrix_t matrix = *g2_matrix(g_painter);
-
-	g2_draw2i_rect(g_painter, g_x0 - 100, g_y0 - 100, 200, 200);
-	g2_matrix_translate(&matrix, -g2_long_to_float(g_x0 - 100), -g2_long_to_float(g_y0 - 100));
-	g2_matrix_rotatep(&matrix, g2_long_to_float(45), g2_long_to_float(g_x0 - 100), g2_long_to_float(g_y0 - 100));
-	g2_matrix_scalep(&matrix, tb_float_to_g2(0.5f), tb_float_to_g2(0.5f), g2_long_to_float(g_x0 - 100), g2_long_to_float(g_y0 - 100));
-
-	g2_float_t x0 = g2_long_to_float(g_x0 - 100);
-	g2_float_t y0 = g2_long_to_float(g_y0 - 100);
-	g2_float_t x1 = g2_long_to_float(g_x0 + 100);
-	g2_float_t y1 = g2_long_to_float(g_y0 + 100);
-	tb_print("1: %f %f", g2_matrix_apply_x(&matrix, x0, y0), g2_matrix_apply_y(&matrix, x0, y0));
-	tb_print("2: %f %f", g2_matrix_apply_x(&matrix, x1, y0), g2_matrix_apply_y(&matrix, x1, y0));
-	tb_print("3: %f %f", g2_matrix_apply_x(&matrix, x0, y1), g2_matrix_apply_y(&matrix, x0, y1));
-	tb_print("4: %f %f", g2_matrix_apply_x(&matrix, x1, y1), g2_matrix_apply_y(&matrix, x1, y1));
-
-	/*
-	g2_matrix_translate(&matrix, g2_long_to_float(g_x0 - 100), g2_long_to_float(g_y0 - 100));
-	g2_matrix_rotate(&matrix, g2_long_to_float(45));
-	g2_matrix_translate(&matrix, -g2_long_to_float(g_x0 - 100), -g2_long_to_float(g_y0 - 100));*/
-//	g2_matrix_rotatep(&matrix, g2_long_to_float(45), g2_long_to_float(g_x0 - 100), g2_long_to_float(g_y0 - 100));
-//	g2_matrix_scale(&matrix, g2_long_to_float(2), g2_long_to_float(2));
-//	g2_matrix_scalep(&matrix, g2_long_to_float(2), g2_long_to_float(2), g2_long_to_float(g_x0 - 100), g2_long_to_float(g_y0 - 100));
-	g2_matrix_set(g_painter, &matrix);
-	g2_draw2i_rect(g_painter, g_x0 - 100, g_y0 - 100, 200, 200);
-	g2_load(g_painter);
-#endif
 }

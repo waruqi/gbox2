@@ -141,7 +141,7 @@ static __tb_inline__ tb_bool_t g2_svg_painter_style_gradient_linear(g2_svg_paint
 	if (!g2_svg_painter_style_gradient_linear_build(painter, element, &gradient, &pb, &pe)) return TB_FALSE;
 
 	// init mode
-	tb_size_t mode = G2_SHADER_WRAP_BORDER;
+	tb_size_t mode = G2_SHADER_WRAP_CLAMP;
 	if (element->spread == G2_SVG_STYLE_GRADIENT_SPREAD_REFLECT) mode = G2_SHADER_WRAP_MIRROR;
 	else if (element->spread == G2_SVG_STYLE_GRADIENT_SPREAD_REPEAT) mode = G2_SHADER_WRAP_REPEAT;
 
@@ -181,7 +181,7 @@ static __tb_inline__ tb_bool_t g2_svg_painter_style_gradient_radial(g2_svg_paint
 	if (!g2_svg_painter_style_gradient_radial_build(painter, element, &gradient, &cp)) return TB_FALSE;
 
 	// init mode
-	tb_size_t mode = G2_SHADER_WRAP_BORDER;
+	tb_size_t mode = G2_SHADER_WRAP_CLAMP;
 	if (element->spread == G2_SVG_STYLE_GRADIENT_SPREAD_REFLECT) mode = G2_SHADER_WRAP_MIRROR;
 	else if (element->spread == G2_SVG_STYLE_GRADIENT_SPREAD_REPEAT) mode = G2_SHADER_WRAP_REPEAT;
 
