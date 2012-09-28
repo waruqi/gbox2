@@ -135,8 +135,15 @@ tb_void_t g2_demo_gbox2_exit()
 /* ///////////////////////////////////////////////////////////////////////
  * demo
  */
-#include "../../../shape.c"
+//#include "../../../arc.c"
+//#include "../../../line.c"
 #include "../../../rect.c"
+//#include "../../../path.c"
+//#include "../../../clip.c"
+//#include "../../../point.c"
+//#include "../../../circle.c"
+//#include "../../../ellipse.c"
+//#include "../../../triangle.c"
 
 /* ///////////////////////////////////////////////////////////////////////
  * interface

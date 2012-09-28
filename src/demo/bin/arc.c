@@ -2,6 +2,5 @@
  * includes
  */
 #include "demo.h"
-#include "../shape.c"
 #include "../arc.c"
 
