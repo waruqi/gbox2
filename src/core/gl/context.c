@@ -260,11 +260,14 @@ tb_handle_t g2_context_init_gl(tb_size_t pixfmt, tb_size_t width, tb_size_t heig
 	// init version 
 //	gcontext->version = g2_gl_context_version();
 	gcontext->version = 0x19;
+//	gcontext->version = 0x20;
 	tb_assert_and_check_goto(gcontext->version >= 0x10, fail);
 
 	// init extensions
+#ifndef TB_CONFIG_OS_IOS
 	g2_gl_context_extensions(gcontext);
 	tb_assert_and_check_goto(gcontext->extensions[G2_GL_EXT_ARB_texture_non_power_of_two], fail);
+#endif
 
 	// init surface
 	gcontext->surface = g2_bitmap_init(pixfmt, width, height, 0);
@@ -324,7 +327,7 @@ tb_handle_t g2_context_init_gl(tb_size_t pixfmt, tb_size_t width, tb_size_t heig
 	// disable antialiasing
 	glDisable(GL_POINT_SMOOTH);
 	glDisable(GL_LINE_SMOOTH);
-#ifndef TB_CONFIG_OS_ANDROID
+#if !defined(TB_CONFIG_OS_ANDROID) && !defined(TB_CONFIG_OS_IOS)
 	glDisable(GL_POLYGON_SMOOTH);
 #endif
 	glDisable(GL_MULTISAMPLE);

@@ -26,7 +26,15 @@
  */
 
 #import <UIKit/UIKit.h>
-#include "gbox2.h"
+#include "gbox2/gbox2.h"
+
+/* //////////////////////////////////////////////////////////////////////////
+ * macros
+ */
+// pixfmt
+#define G2_DEMO_PIXFMT 			(G2_PIXFMT_ARGB8888 | G2_PIXFMT_NENDIAN)
+//#define G2_DEMO_PIXFMT 			(G2_PIXFMT_RGB565 | G2_PIXFMT_NENDIAN)
+
 
 /* ///////////////////////////////////////////////////////////////////////
  * interface

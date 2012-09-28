@@ -44,6 +44,11 @@
 # 	include <OpenGL/gl.h>
 # 	include <OpenGL/glu.h>
 # 	include <GLUT/glut.h>
+#elif defined(TB_CONFIG_OS_IOS)
+#	include <OpenGLES/ES1/gl.h>
+#	include <OpenGLES/ES1/glext.h>
+#	include <OpenGLES/ES2/gl.h>
+#	include <OpenGLES/ES2/glext.h>
 #elif defined(TB_CONFIG_OS_ANDROID)
 # 	include <GLES/gl.h>
 # 	include <GLES/glext.h>
@@ -58,6 +63,14 @@
  */
 #ifdef TB_CONFIG_OS_ANDROID
 # 	define glOrtho 				glOrthof
+#endif
+
+#ifdef TB_CONFIG_OS_IOS
+# 	define glOrtho 				glOrthof
+# 	define GL_TEXTURE_1D 		GL_TEXTURE_2D
+# 	define GL_CLAMP_TO_BORDER 	GL_CLAMP_TO_EDGE
+# 	undef glColor4f
+#	define glColor4f 			glClearColor
 #endif
 
 #ifndef GL_MIRRORED_REPEAT

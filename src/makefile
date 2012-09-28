@@ -105,7 +105,10 @@ INC_FILES 				= \
 						core/path.h \
 						core/core.h \
 						core/style.h \
+						core/shader.h \
 						core/bitmap.h \
+						core/matrix.h \
+						core/context.h \
 						core/painter.h
 	
 	

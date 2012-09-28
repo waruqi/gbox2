@@ -1,5 +1,5 @@
 //
-// Prefix header for all source files of the 'shape' target in the 'shape' project
+// Prefix header for all source files of the 'demo' target in the 'demo' project
 //
 
 #import <Availability.h>

@@ -25,6 +25,7 @@
  * includes
  */
 #import "G2AppDelegate.h"
+#include "gbox2/gbox2.h"
 
 /* ///////////////////////////////////////////////////////////////////////
  * @implementation
@@ -42,6 +43,9 @@
 	// init application
 	[UIApplication sharedApplication].idleTimerDisabled = YES;
 	[UIApplication sharedApplication].statusBarHidden = YES;
+	
+	// init tbox
+	if (!tb_init(TB_NULL, 0)) return NO;
 	
 	// init windows
     self.window = [[[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]] autorelease];
@@ -79,7 +83,8 @@
 
 - (void)applicationWillTerminate:(UIApplication *)application
 {
-	// Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
+	// exit tbox
+	tb_exit();
 }
 
 @end

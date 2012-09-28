@@ -1,8 +1,8 @@
 //
 //  main.m
-//  shape
+//  demo
 //
-//  Created by ruki on 12-9-27.
+//  Created by ruki on 12-9-28.
 //  Copyright (c) 2012年 tboox. All rights reserved.
 //
 

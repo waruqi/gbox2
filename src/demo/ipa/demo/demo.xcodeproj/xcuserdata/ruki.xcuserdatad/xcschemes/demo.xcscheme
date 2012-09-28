@@ -14,10 +14,10 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "BF724561161426AE00289867"
-               BuildableName = "shape.app"
-               BlueprintName = "shape"
-               ReferencedContainer = "container:shape.xcodeproj">
+               BlueprintIdentifier = "BFB5E0A116153441007FB3D6"
+               BuildableName = "demo.app"
+               BlueprintName = "demo"
+               ReferencedContainer = "container:demo.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -32,10 +32,10 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "BF724561161426AE00289867"
-            BuildableName = "shape.app"
-            BlueprintName = "shape"
-            ReferencedContainer = "container:shape.xcodeproj">
+            BlueprintIdentifier = "BFB5E0A116153441007FB3D6"
+            BuildableName = "demo.app"
+            BlueprintName = "demo"
+            ReferencedContainer = "container:demo.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
    </TestAction>
@@ -51,10 +51,10 @@
       <BuildableProductRunnable>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "BF724561161426AE00289867"
-            BuildableName = "shape.app"
-            BlueprintName = "shape"
-            ReferencedContainer = "container:shape.xcodeproj">
+            BlueprintIdentifier = "BFB5E0A116153441007FB3D6"
+            BuildableName = "demo.app"
+            BlueprintName = "demo"
+            ReferencedContainer = "container:demo.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
       <AdditionalOptions>
@@ -69,10 +69,10 @@
       <BuildableProductRunnable>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "BF724561161426AE00289867"
-            BuildableName = "shape.app"
-            BlueprintName = "shape"
-            ReferencedContainer = "container:shape.xcodeproj">
+            BlueprintIdentifier = "BFB5E0A116153441007FB3D6"
+            BuildableName = "demo.app"
+            BlueprintName = "demo"
+            ReferencedContainer = "container:demo.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>
