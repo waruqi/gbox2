@@ -40,7 +40,7 @@
 @interface G2View () 
 {
 	// the gl version
-	GLint				glVersion;
+	tb_byte_t			glVersion;
 	
 	// the gl context
 	EAGLContext*		glContext;
@@ -107,7 +107,7 @@
 	// init layer
 	CAEAGLLayer* glLayer = (CAEAGLLayer*) self.layer;
 	glLayer.opaque = YES;
-	switch (G2_PIXFMT(G2_DEMO_PIXFMT))
+	switch (G2_PIXFMT(G2_VIEW_PIXFMT))
 	{
 		case G2_PIXFMT_RGB565:
 			glLayer.drawableProperties = [NSDictionary dictionaryWithObjectsAndKeys: [NSNumber numberWithBool:FALSE], kEAGLDrawablePropertyRetainedBacking, kEAGLColorFormatRGB565, kEAGLDrawablePropertyColorFormat, nil];
@@ -120,16 +120,19 @@
 	}
 	
 	// for retina
-	self.contentScaleFactor = 2.0f;
-	glLayer.contentsScale = 2.0f;
+	//self.contentScaleFactor = 2.0f;
+	//glLayer.contentsScale = 2.0f;
 	
 	// init gl context
-	glVersion = 2;
-    glContext = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES2];
+	if (G2_VIEW_GL_VERSION >= 0x20 || !G2_VIEW_GL_VERSION)
+	{
+		glVersion = 0x20;
+		glContext = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES2];
+	}
 	if (!glContext) 
 	{
 		glContext = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES1];
-		glVersion = 1;
+		glVersion = 0x19;
 	}
 	tb_assert_and_check_return_val(glContext, TB_FALSE);
 	
@@ -191,16 +194,16 @@
 	if (glRender) glDeleteRenderbuffersOES(1, &glRender);
 	glRender = 0;
 }
-- (tb_bool_t)bind
+- (tb_byte_t)bind
 {
 	// check
-	tb_assert_and_check_return_val(glContext, TB_FALSE);
+	tb_assert_and_check_return_val(glContext, 0);
 	
 	// bind context
     [EAGLContext setCurrentContext:glContext];
 	
 	// ok
-	return TB_TRUE;
+	return glVersion;
 }
 - (tb_bool_t)lock
 {
@@ -215,7 +218,6 @@
 }
 - (tb_void_t)draw
 {
-	
 	// bind render
 	glBindRenderbufferOES(GL_RENDERBUFFER_OES, glRender);
 	

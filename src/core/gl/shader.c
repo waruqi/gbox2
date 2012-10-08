@@ -321,7 +321,9 @@ tb_handle_t g2_shader_init_linear(tb_handle_t context, g2_point_t const* pb, g2_
 	// make texture
 	glBindTexture(GL_TEXTURE_1D, *shader->texture);
  	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+#ifndef TB_CONFIG_OS_IOS
 	glTexImage1D(GL_TEXTURE_1D, 0, GL_RGBA, G2_GL_SHADER_GRAD_TEXCOORD_SIZE, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+#endif
 
 	// ok
 	return shader;
@@ -353,7 +355,9 @@ tb_handle_t g2_shader_init_radial(tb_handle_t context, g2_circle_t const* cp, g2
 	// make texture
 	glBindTexture(GL_TEXTURE_1D, *shader->texture);
  	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+#ifndef TB_CONFIG_OS_IOS
 	glTexImage1D(GL_TEXTURE_1D, 0, GL_RGBA, G2_GL_SHADER_GRAD_TEXCOORD_SIZE, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+#endif
 
 	// ok
 	return shader;
@@ -386,8 +390,10 @@ tb_handle_t g2_shader_init_radial2(tb_handle_t context, g2_circle_t const* cb, g
 	// make texture
 	glBindTexture(GL_TEXTURE_1D, *shader->texture);
  	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+#ifndef TB_CONFIG_OS_IOS
 	glTexImage1D(GL_TEXTURE_1D, 0, GL_RGBA, G2_GL_SHADER_GRAD_TEXCOORD_SIZE, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
-
+#endif
+	
 	// ok
 	return shader;
 

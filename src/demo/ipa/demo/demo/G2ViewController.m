@@ -33,6 +33,11 @@
 #import "G2View.h"
 
 /* ///////////////////////////////////////////////////////////////////////
+ * macros
+ */
+#define G2_DEMO_PIXFMT			G2_VIEW_PIXFMT
+
+/* ///////////////////////////////////////////////////////////////////////
  * globals
  */
 
@@ -50,7 +55,6 @@ static tb_hong_t 	g_bt 		= 0;
 static tb_hong_t 	g_fp 		= 0;
 static tb_hong_t 	g_rt 		= 0;
 static tb_hong_t 	g_fps 		= 0;
-static tb_bool_t 	g_pt 		= TB_TRUE;//TB_FALSE;
 
 // position
 static tb_long_t 	g_x0 		= 0;
@@ -66,7 +70,7 @@ static g2_matrix_t 	g_mx;
 /* ////////////////////////////////////////////////////////////////////////
  * callbacks
  */
-static tb_bool_t g2_demo_init(tb_int_t argc, tb_char_t** argv);
+static tb_bool_t g2_demo_init(tb_int_t argc, tb_char_t const** argv);
 static tb_void_t g2_demo_exit();
 static tb_void_t g2_demo_size(tb_int_t w, tb_int_t h);
 static tb_void_t g2_demo_render();
@@ -83,7 +87,7 @@ static tb_void_t g2_demo_key(tb_int_t key);
 /* ////////////////////////////////////////////////////////////////////////
  * gbox2
  */
-tb_bool_t g2_demo_gbox2_init(tb_int_t argc, tb_char_t** argv)
+tb_bool_t g2_demo_gbox2_init(tb_int_t argc, tb_char_t const** argv, tb_byte_t version)
 {
 	// init width & height
 	tb_size_t width = [[UIScreen mainScreen] bounds].size.width;
@@ -91,7 +95,7 @@ tb_bool_t g2_demo_gbox2_init(tb_int_t argc, tb_char_t** argv)
 	
 	// init context
 #if defined(G2_CONFIG_CORE_GL)
-	g_context = g2_context_init_gl(G2_DEMO_PIXFMT, width, height);
+	g_context = g2_context_init_gl(G2_VIEW_PIXFMT, width, height, version);
 	tb_assert_and_check_return_val(g_context, TB_FALSE);
 #elif defined(G2_CONFIG_CORE_SKIA)
 	g_context = g2_context_init_skia(G2_DEMO_PIXFMT, TB_NULL, width, height, 0);
@@ -153,13 +157,34 @@ tb_void_t g2_demo_gbox2_exit()
 	// the thread
 	tb_handle_t		thread;
 	
+	// the timer
+	NSTimer*		timer;
+	
+	// the info
+	UILabel*		info;
+	
+	// the key
+	UIButton*		qKey;
+	UIButton*		mKey;
+	UIButton*		pKey;
+	UIButton*		wKey;
+	UIButton*		fKey;
+	UIButton*		sKey;
 }
 
 // the render
 @property (strong, atomic)	G2View*		render;
 
 // is stoped?
-@property (atomic)			tb_size_t	bstop;
+@property (atomic)			tb_size_t	stoped;
+
+// recognizer
+- (void)onMove:(UIPanGestureRecognizer *)recognizer;
+- (void)onSingle:(UITapGestureRecognizer *)recognizer;
+- (void)onDouble:(UITapGestureRecognizer *)recognizer;
+
+// key
+- (void)onKey:(id)sender;
 
 @end
 
@@ -176,8 +201,13 @@ static tb_pointer_t onRender(tb_pointer_t data)
 	cl = (G2ViewController*)data;
 	tb_assert_and_check_goto(cl, end);
 	
-	// init gbox2
-	if (!g2_demo_gbox2_init(1, TB_NULL)) goto end;
+	// init args
+	tb_char_t const* argv[] =
+	{
+		TB_NULL
+	,	TB_NULL//[[[NSBundle mainBundle] pathForResource:@"logo" ofType:@"jpg"] UTF8String]
+	};
+	tb_int_t argc = tb_arrayn(argv);
 	
 	// init pool
 	pool = [[NSAutoreleasePool alloc] init];
@@ -185,18 +215,23 @@ static tb_pointer_t onRender(tb_pointer_t data)
 	
 	// bind render
 	tb_trace_impl("render: init");
-	if (![cl.render bind]) goto end;
-
+	tb_byte_t version = [cl.render bind];
+	tb_assert_and_check_goto(version, end);
+	
+	// init gbox2
+	if (!g2_demo_gbox2_init(argc, argv, version)) goto end;
+	
+	// init demo
+	if (!g2_demo_init(argc, argv)) goto end;
+		
 	// loop
-	while (!cl.bstop)
+	while (!cl.stoped)
 	{
 		// lock render
 		if (![cl.render lock]) goto end;
 		
-		//glClear(GL_COLOR_BUFFER_BIT);
-		
 		// clear
-		g2_clear(g_painter, G2_COLOR_GREEN);
+		g2_clear(g_painter, G2_COLOR_BLACK);
 		
 		// matrix
 		if (g_bm)
@@ -217,10 +252,6 @@ static tb_pointer_t onRender(tb_pointer_t data)
 		// load 
 		if (g_bm) g2_load(g_painter);
 		
-		// draw
-#if defined(G2_CONFIG_CORE_SKIA) || defined(G2_CONFIG_CORE_SOFT)
-		// ...
-#endif
 		// render fps & rpt
 		g_fp++;
 		if (!g_bt) g_bt = tb_uclock();
@@ -229,19 +260,17 @@ static tb_pointer_t onRender(tb_pointer_t data)
 			g_fps = (1000000 * g_fp) / (tb_uclock() - g_bt);
 			g_fp = 0;
 			g_bt = 0;
-			
-			if (g_pt) tb_trace_impl("fps: %lld, rpt: %lld us", g_fps, g_rt);
 		}
 		
 		// draw render
 		[cl.render draw];
-
-		// wait some time
-		//tb_msleep(100);
 	}
 
 	// end
 end:
+	// exit demo
+	g2_demo_exit();
+	
 	// exit gbox2
 	g2_demo_gbox2_exit();
 	
@@ -259,14 +288,115 @@ end:
  */
 @implementation G2ViewController
 
+- (void)dealloc
+{
+	// exit info
+	[info release];
+	
+	// exit key
+	[qKey release];
+	[mKey release];
+	[wKey release];
+	[pKey release];
+	[fKey release];
+	[sKey release];
+	
+	// exit render
+	[self.render release];
+	
+	// free it
+    [super dealloc];
+}
+
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self)
 	{
+		// screen bounds
+		CGRect screenBounds = [[UIScreen mainScreen] bounds];
+		
         // init the render
-		self.render = [[G2View alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
+		self.render = [[G2View alloc] initWithFrame:screenBounds];
 		[self.view addSubview:self.render];
+		
+		// init single tap
+		UITapGestureRecognizer* singleTap = [[UITapGestureRecognizer alloc] initWithTarget: self action: @selector(onSingle:)];
+		singleTap.numberOfTouchesRequired = 1;
+		singleTap.numberOfTapsRequired = 1;
+		[self.view addGestureRecognizer:singleTap];
+		[singleTap release];
+		
+		// init double tap
+		UITapGestureRecognizer* doubleTap = [[UITapGestureRecognizer alloc] initWithTarget: self action: @selector(onDouble:)];
+		doubleTap.numberOfTouchesRequired = 1;
+		doubleTap.numberOfTapsRequired = 2;
+		[self.view addGestureRecognizer:doubleTap];
+		[singleTap requireGestureRecognizerToFail: doubleTap];
+		[doubleTap release];
+		
+		// init move pan
+		UIPanGestureRecognizer* movePan = [[UIPanGestureRecognizer alloc] initWithTarget:self action: @selector(onMove:)];
+		[movePan setMinimumNumberOfTouches:1];
+		[movePan setMaximumNumberOfTouches:1];
+		[self.view addGestureRecognizer:movePan];
+		[movePan release];
+		
+		// init info
+		CGRect infoBounds = CGRectMake(screenBounds.origin.x + 30, screenBounds.origin.y + 30, 200, 30);
+		info = [[UILabel alloc] initWithFrame:infoBounds];
+		[info setTextColor:[UIColor blueColor]];
+		[info setBackgroundColor:[UIColor yellowColor]];
+		[self.view addSubview:info];
+		
+		// init key
+		CGRect qKeyBounds = CGRectMake(screenBounds.origin.x + 30, screenBounds.origin.y + screenBounds.size.height - 40, 30, 30);
+		qKey = [[UIButton alloc] initWithFrame:qKeyBounds];
+		[qKey setTitle:@"q" forState:UIControlStateNormal];
+		[qKey setTitleColor:[UIColor blueColor] forState:UIControlStateNormal];
+		[qKey setBackgroundColor:[UIColor yellowColor]];
+		[qKey addTarget:self action:@selector(onKey:) forControlEvents:UIControlEventTouchDown];
+		[self.view addSubview:qKey];
+		
+		CGRect mKeyBounds = CGRectMake(qKeyBounds.origin.x + qKeyBounds.size.width + 10, qKeyBounds.origin.y, 30, 30);
+		mKey = [[UIButton alloc] initWithFrame:mKeyBounds];
+		[mKey setTitle:@"m" forState:UIControlStateNormal];
+		[mKey setTitleColor:[UIColor blueColor] forState:UIControlStateNormal];
+		[mKey setBackgroundColor:[UIColor yellowColor]];
+		[mKey addTarget:self action:@selector(onKey:) forControlEvents:UIControlEventTouchDown];
+		[self.view addSubview:mKey];
+		
+		CGRect wKeyBounds = CGRectMake(mKeyBounds.origin.x + mKeyBounds.size.width + 10, mKeyBounds.origin.y, 30, 30);
+		wKey = [[UIButton alloc] initWithFrame:wKeyBounds];
+		[wKey setTitle:@"w" forState:UIControlStateNormal];
+		[wKey setTitleColor:[UIColor blueColor] forState:UIControlStateNormal];
+		[wKey setBackgroundColor:[UIColor yellowColor]];
+		[wKey addTarget:self action:@selector(onKey:) forControlEvents:UIControlEventTouchDown];
+		[self.view addSubview:wKey];
+		
+		CGRect pKeyBounds = CGRectMake(wKeyBounds.origin.x + wKeyBounds.size.width + 10, wKeyBounds.origin.y, 30, 30);
+		pKey = [[UIButton alloc] initWithFrame:pKeyBounds];
+		[pKey setTitle:@"p" forState:UIControlStateNormal];
+		[pKey setTitleColor:[UIColor blueColor] forState:UIControlStateNormal];
+		[pKey setBackgroundColor:[UIColor yellowColor]];
+		[pKey addTarget:self action:@selector(onKey:) forControlEvents:UIControlEventTouchDown];
+		[self.view addSubview:pKey];
+		
+		CGRect fKeyBounds = CGRectMake(pKeyBounds.origin.x + pKeyBounds.size.width + 10, pKeyBounds.origin.y, 30, 30);
+		fKey = [[UIButton alloc] initWithFrame:fKeyBounds];
+		[fKey setTitle:@"f" forState:UIControlStateNormal];
+		[fKey setTitleColor:[UIColor blueColor] forState:UIControlStateNormal];
+		[fKey setBackgroundColor:[UIColor yellowColor]];
+		[fKey addTarget:self action:@selector(onKey:) forControlEvents:UIControlEventTouchDown];
+		[self.view addSubview:fKey];
+		
+		CGRect sKeyBounds = CGRectMake(fKeyBounds.origin.x + fKeyBounds.size.width + 10, fKeyBounds.origin.y, 30, 30);
+		sKey = [[UIButton alloc] initWithFrame:sKeyBounds];
+		[sKey setTitle:@"s" forState:UIControlStateNormal];
+		[sKey setTitleColor:[UIColor blueColor] forState:UIControlStateNormal];
+		[sKey setBackgroundColor:[UIColor yellowColor]];
+		[sKey addTarget:self action:@selector(onKey:) forControlEvents:UIControlEventTouchDown];
+		[self.view addSubview:sKey];
     }
     return self;
 }
@@ -277,17 +407,21 @@ end:
     [super viewDidLoad];
 	
 	// init the thread
-	self.bstop = 0;
+	self.stoped = 0;
 	thread = tb_thread_init(TB_NULL, onRender, self, 0);
+	
+	// init timer
+	timer = [NSTimer scheduledTimerWithTimeInterval:(NSTimeInterval)1 target:self selector:@selector(onInfo) userInfo:nil repeats:TRUE];
 }
 
 - (void)viewDidUnload
 {
-	// exit view
-    [super viewDidUnload];
+	// exit timer
+	if (timer) [timer invalidate];
+	timer = nil;
 	
 	// exit the thread
-	self.bstop = 1;
+	self.stoped = 1;
 	if (thread)
 	{
 		// wait
@@ -298,11 +432,139 @@ end:
 		tb_thread_exit(thread);
 		thread = TB_NULL;
 	}
+	
+	// exit view
+    [super viewDidUnload];
+}
+- (void)onMove:(UIPanGestureRecognizer *)recognizer
+{
+	CGPoint pt = [recognizer locationInView:self.view];
+//	tb_trace_impl("move: %f %f", pt.x, pt.y);
+	tb_check_return(!tb_isnanf(pt.x) && !tb_isnanf(pt.y));
+	
+	tb_int_t x = pt.x;
+	tb_int_t y = pt.y;
+	
+	g_x = x;
+	g_y = y;
+	
+	g_dx = x > g_x0? (x - g_x0) << 1 : (g_x0 - x) << 1;
+	g_dy = y > g_y0? (y - g_y0) << 1 : (g_y0 - y) << 1;
+	
+	g2_float_t x0 = g2_long_to_float(g_x0);
+	g2_float_t y0 = g2_long_to_float(g_y0);
+	g2_float_t dx = g2_long_to_float(g_dx);
+	g2_float_t dy = g2_long_to_float(g_dy);
+	g2_float_t dw = g2_long_to_float(g2_bitmap_width(g_surface));
+	g2_float_t dh = g2_long_to_float(g2_bitmap_height(g_surface));
+	
+	g2_float_t an = 0;
+	if (y == g_y0) an = 0;
+	else if (x == g_x0) an = g2_long_to_float(90);
+	else an = g2_div(g2_atan(g2_div(dy, dx)) * 180, G2_PI);
+	if (y < g_y0 && x < g_x0) an = g2_long_to_float(180) - an;
+	if (y > g_y0 && x < g_x0) an += g2_long_to_float(180);
+	if (y > g_y0 && x > g_x0) an = g2_long_to_float(360) - an;
+	g_an = -an;
+	
+	dx = g2_lsh(dx, 2);
+	dy = g2_lsh(dy, 2);
+	
+	g2_matrix_init_translate(&g_mx, x0, y0);
+	g2_matrix_scale(&g_mx, g2_div(dx, dw), g2_div(dy, dh));
+	g2_matrix_rotate(&g_mx, g_an);
+
+	g2_demo_move(x, y);
+}
+- (void)onSingle:(UITapGestureRecognizer *)recognizer
+{
+	CGPoint pt = [recognizer locationInView:self.view];
+	tb_trace_impl("single: %f %f", pt.x, pt.y);
+}
+- (void)onDouble:(UITapGestureRecognizer *)recognizer
+{
+	CGPoint pt = [recognizer locationInView:self.view];
+	tb_trace_impl("double: %f %f", pt.x, pt.y);
+	
+	info.hidden = !info.hidden;
+	qKey.hidden = !qKey.hidden;
+	mKey.hidden = !mKey.hidden;
+	pKey.hidden = !pKey.hidden;
+	wKey.hidden = !wKey.hidden;
+	fKey.hidden = !fKey.hidden;
+	sKey.hidden = !sKey.hidden;
+}
+- (void)onKey:(id)sender
+{
+	UIButton* btn = (UIButton*)sender;
+	tb_assert_and_check_return(btn);
+	
+	tb_char_t key = [[btn titleForState:UIControlEventTouchDown] UTF8String][0];
+	tb_trace_impl("key: %c", key);
+	switch (key)
+	{
+		case 'q':
+			g2_quality_set((g2_quality() + 1) % 3);
+			break;
+		case 'm':
+			g_bm = g_bm? TB_FALSE : TB_TRUE;
+			break;
+		default:
+			break;
+	}
+	
+	g2_demo_key(key);
 }
 
+- (void)onInfo
+{
+	if (!info.hidden)
+		[info setText:[NSString stringWithFormat:@"   fps: %lld, rpt: %lld us", g_fps, g_rt]];
+}
+- (void) willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
+{
+	if (	toInterfaceOrientation == UIInterfaceOrientationLandscapeRight
+		||	toInterfaceOrientation == UIInterfaceOrientationLandscapeLeft)
+	{
+		CGRect screenBounds = [[UIScreen mainScreen] bounds];
+		CGRect infoBounds = CGRectMake(screenBounds.origin.y + 30, screenBounds.origin.x + 30, 200, 30);
+		CGRect qKeyBounds = CGRectMake(screenBounds.origin.y + 30, screenBounds.origin.x + screenBounds.size.width - 40, 30, 30);
+		CGRect mKeyBounds = CGRectMake(qKeyBounds.origin.x + qKeyBounds.size.width + 10, qKeyBounds.origin.y, 30, 30);
+		CGRect wKeyBounds = CGRectMake(mKeyBounds.origin.x + mKeyBounds.size.width + 10, mKeyBounds.origin.y, 30, 30);
+		CGRect pKeyBounds = CGRectMake(wKeyBounds.origin.x + wKeyBounds.size.width + 10, wKeyBounds.origin.y, 30, 30);
+		CGRect fKeyBounds = CGRectMake(pKeyBounds.origin.x + pKeyBounds.size.width + 10, pKeyBounds.origin.y, 30, 30);
+		CGRect sKeyBounds = CGRectMake(fKeyBounds.origin.x + fKeyBounds.size.width + 10, fKeyBounds.origin.y, 30, 30);
+		info.frame = infoBounds;
+		qKey.frame = qKeyBounds;
+		mKey.frame = mKeyBounds;
+		wKey.frame = wKeyBounds;
+		pKey.frame = pKeyBounds;
+		fKey.frame = fKeyBounds;
+		sKey.frame = sKeyBounds;
+	}
+	else 
+	{
+		CGRect screenBounds = [[UIScreen mainScreen] bounds];
+		CGRect infoBounds = CGRectMake(screenBounds.origin.x + 30, screenBounds.origin.y + 30, 200, 30);
+		CGRect qKeyBounds = CGRectMake(screenBounds.origin.x + 30, screenBounds.origin.y + screenBounds.size.height - 40, 30, 30);
+		CGRect mKeyBounds = CGRectMake(qKeyBounds.origin.x + qKeyBounds.size.width + 10, qKeyBounds.origin.y, 30, 30);
+		CGRect wKeyBounds = CGRectMake(mKeyBounds.origin.x + mKeyBounds.size.width + 10, mKeyBounds.origin.y, 30, 30);
+		CGRect pKeyBounds = CGRectMake(wKeyBounds.origin.x + wKeyBounds.size.width + 10, wKeyBounds.origin.y, 30, 30);
+		CGRect fKeyBounds = CGRectMake(pKeyBounds.origin.x + pKeyBounds.size.width + 10, pKeyBounds.origin.y, 30, 30);
+		CGRect sKeyBounds = CGRectMake(fKeyBounds.origin.x + fKeyBounds.size.width + 10, fKeyBounds.origin.y, 30, 30);
+		info.frame = infoBounds;
+		qKey.frame = qKeyBounds;
+		mKey.frame = mKeyBounds;
+		wKey.frame = wKeyBounds;
+		pKey.frame = pKeyBounds;
+		fKey.frame = fKeyBounds;
+		sKey.frame = sKeyBounds;
+	}
+}
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
 {
-    return (interfaceOrientation == UIInterfaceOrientationPortrait);
+	if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) 
+		return (interfaceOrientation != UIInterfaceOrientationPortraitUpsideDown);
+	else return YES;
 }
-
 @end

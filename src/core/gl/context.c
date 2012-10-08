@@ -240,7 +240,7 @@ tb_void_t g2_gl_context_shader_del(g2_gl_context_t* context, g2_gl_shader_t cons
 /* ///////////////////////////////////////////////////////////////////////
  * implementation
  */
-tb_handle_t g2_context_init_gl(tb_size_t pixfmt, tb_size_t width, tb_size_t height)
+tb_handle_t g2_context_init_gl(tb_size_t pixfmt, tb_size_t width, tb_size_t height, tb_byte_t version)
 {
 	// check
 	tb_assert_and_check_return_val(G2_PIXFMT_OK(pixfmt) && width && height, TB_NULL);
@@ -258,9 +258,7 @@ tb_handle_t g2_context_init_gl(tb_size_t pixfmt, tb_size_t width, tb_size_t heig
 	tb_assert_and_check_return_val(gcontext, TB_NULL);
 
 	// init version 
-//	gcontext->version = g2_gl_context_version();
-	gcontext->version = 0x19;
-//	gcontext->version = 0x20;
+	gcontext->version = version? version : g2_gl_context_version();
 	tb_assert_and_check_goto(gcontext->version >= 0x10, fail);
 
 	// init extensions

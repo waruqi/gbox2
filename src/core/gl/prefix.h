@@ -69,8 +69,6 @@
 # 	define glOrtho 				glOrthof
 # 	define GL_TEXTURE_1D 		GL_TEXTURE_2D
 # 	define GL_CLAMP_TO_BORDER 	GL_CLAMP_TO_EDGE
-# 	undef glColor4f
-#	define glColor4f 			glClearColor
 #endif
 
 #ifndef GL_MIRRORED_REPEAT

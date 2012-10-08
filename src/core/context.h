@@ -38,7 +38,7 @@ extern "C" {
  */
 
 // init & exit
-tb_handle_t 		g2_context_init_gl(tb_size_t pixfmt, tb_size_t width, tb_size_t height);
+tb_handle_t 		g2_context_init_gl(tb_size_t pixfmt, tb_size_t width, tb_size_t height, tb_byte_t version);
 tb_handle_t 		g2_context_init_skia(tb_size_t pixfmt, tb_pointer_t data, tb_size_t width, tb_size_t height, tb_size_t lpitch);
 tb_handle_t 		g2_context_init_soft(tb_size_t pixfmt, tb_pointer_t data, tb_size_t width, tb_size_t height, tb_size_t lpitch);
 tb_void_t 			g2_context_exit(tb_handle_t context);

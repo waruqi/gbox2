@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		BF848A1B162279BA00CD4779 /* logo.jpg in Resources */ = {isa = PBXBuildFile; fileRef = BF848A1A162279BA00CD4779 /* logo.jpg */; };
 		BFB5E0A716153441007FB3D6 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BFB5E0A616153441007FB3D6 /* UIKit.framework */; };
 		BFB5E0A916153441007FB3D6 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BFB5E0A816153441007FB3D6 /* Foundation.framework */; };
 		BFB5E0AB16153441007FB3D6 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BFB5E0AA16153441007FB3D6 /* CoreGraphics.framework */; };
@@ -21,6 +22,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		BF848A1A162279BA00CD4779 /* logo.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = logo.jpg; path = ../../../../res/jpg/logo.jpg; sourceTree = "<group>"; };
 		BFB5E0A216153441007FB3D6 /* demo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = demo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		BFB5E0A616153441007FB3D6 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		BFB5E0A816153441007FB3D6 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -56,6 +58,31 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		BF848A1C16227A1900CD4779 /* res */ = {
+			isa = PBXGroup;
+			children = (
+				BF848A1E16227A2C00CD4779 /* svg */,
+				BF848A1D16227A2300CD4779 /* jpg */,
+			);
+			name = res;
+			path = ..;
+			sourceTree = "<group>";
+		};
+		BF848A1D16227A2300CD4779 /* jpg */ = {
+			isa = PBXGroup;
+			children = (
+				BF848A1A162279BA00CD4779 /* logo.jpg */,
+			);
+			name = jpg;
+			sourceTree = "<group>";
+		};
+		BF848A1E16227A2C00CD4779 /* svg */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = svg;
+			sourceTree = "<group>";
+		};
 		BFB5E09716153441007FB3D6 = {
 			isa = PBXGroup;
 			children = (
@@ -95,6 +122,7 @@
 				BFB5E0B516153441007FB3D6 /* G2AppDelegate.h */,
 				BFB5E0B616153441007FB3D6 /* G2AppDelegate.m */,
 				BFB5E0AD16153441007FB3D6 /* Supporting Files */,
+				BF848A1C16227A1900CD4779 /* res */,
 			);
 			path = demo;
 			sourceTree = "<group>";
@@ -165,6 +193,7 @@
 			files = (
 				BFB5E0B116153441007FB3D6 /* InfoPlist.strings in Resources */,
 				BFB5E0B916153441007FB3D6 /* demo.entitlements in Resources */,
+				BF848A1B162279BA00CD4779 /* logo.jpg in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -324,6 +353,7 @@
 				BFB5E0BE16153441007FB3D6 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

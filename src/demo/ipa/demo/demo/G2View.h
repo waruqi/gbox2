@@ -31,10 +31,13 @@
 /* //////////////////////////////////////////////////////////////////////////
  * macros
  */
-// pixfmt
-#define G2_DEMO_PIXFMT 			(G2_PIXFMT_ARGB8888 | G2_PIXFMT_NENDIAN)
-//#define G2_DEMO_PIXFMT 			(G2_PIXFMT_RGB565 | G2_PIXFMT_NENDIAN)
 
+// pixfmt
+#define G2_VIEW_PIXFMT 			(G2_PIXFMT_ARGB8888 | G2_PIXFMT_NENDIAN)
+//#define G2_VIEW_PIXFMT 			(G2_PIXFMT_RGB565 | G2_PIXFMT_NENDIAN)
+
+// version
+#define G2_VIEW_GL_VERSION		(0x19)
 
 /* ///////////////////////////////////////////////////////////////////////
  * interface
@@ -42,7 +45,7 @@
 
 @interface G2View : UIView
 
-- (tb_bool_t)	bind;
+- (tb_byte_t)	bind;
 - (tb_bool_t)	lock;
 - (tb_void_t)	draw;
 

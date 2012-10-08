@@ -38,8 +38,8 @@ static tb_void_t g2_demo_wheelup(tb_int_t x, tb_int_t y)
 {
 }
 static tb_void_t g2_demo_lclickdown(tb_int_t x, tb_int_t y)
-{
-	g_shaderi = (g_shaderi + 1) % (g_bitmap? 5 : 4);
+{	
+		g_shaderi = (g_shaderi + 1) % (g_bitmap? 5 : 4);
 }
 static tb_void_t g2_demo_lclickup(tb_int_t x, tb_int_t y)
 {
@@ -62,6 +62,17 @@ static tb_void_t g2_demo_key(tb_int_t key)
 			else g_penw++;
 		}
 		break;
+	case 'f':
+		{
+			g_shaderi = (g_shaderi + 1) % (g_bitmap? 5 : 4);
+		}
+		break;
+	case 's':
+		{
+			g_capi = (g_capi + 1) % 3;
+			g_joini = (g_joini + 1) % 3;
+		}
+		break;
 	default:
 		break;
 	}
@@ -72,7 +83,7 @@ static tb_void_t g2_demo_key(tb_int_t key)
 /* ////////////////////////////////////////////////////////////////////////
  * implemention
  */
-static tb_bool_t g2_demo_init(tb_int_t argc, tb_char_t** argv)
+static tb_bool_t g2_demo_init(tb_int_t argc, tb_char_t const** argv)
 {
 	// init style
 	g_style = g2_style(g_painter);
