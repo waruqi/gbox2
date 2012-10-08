@@ -65,7 +65,7 @@ static g2_matrix_t 	g_mx;
 /* ////////////////////////////////////////////////////////////////////////
  * callbacks
  */
-static tb_bool_t g2_demo_init(tb_int_t argc, tb_char_t** argv);
+static tb_bool_t g2_demo_init(tb_int_t argc, tb_char_t const** argv);
 static tb_void_t g2_demo_exit();
 static tb_void_t g2_demo_size(tb_int_t w, tb_int_t h);
 static tb_void_t g2_demo_render();
@@ -297,7 +297,7 @@ tb_bool_t g2_demo_gbox2_init(tb_int_t argc, tb_char_t** argv)
 {
 	// init context
 #if defined(G2_CONFIG_CORE_GL)
-	g_context = g2_context_init_gl(G2_DEMO_PIXFMT, G2_DEMO_WIDTH, G2_DEMO_HEIGHT);
+	g_context = g2_context_init_gl(G2_DEMO_PIXFMT, G2_DEMO_WIDTH, G2_DEMO_HEIGHT, 0x0);
 	tb_assert_and_check_return_val(g_context, TB_FALSE);
 #elif defined(G2_CONFIG_CORE_SKIA)
 	g_context = g2_context_init_skia(G2_DEMO_PIXFMT, TB_NULL, G2_DEMO_WIDTH, G2_DEMO_HEIGHT, 0);

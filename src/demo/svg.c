@@ -37,7 +37,7 @@ static tb_void_t g2_demo_key(tb_int_t key)
 /* ////////////////////////////////////////////////////////////////////////
  * implemention
  */
-static tb_bool_t g2_demo_init(tb_int_t argc, tb_char_t** argv)
+static tb_bool_t g2_demo_init(tb_int_t argc, tb_char_t const** argv)
 {
 	// check
 	tb_assert_and_check_return_val(argv[1], TB_FALSE);
