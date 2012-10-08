@@ -155,21 +155,24 @@ tb_void_t g2_demo_gbox2_exit()
 @interface G2ViewController ()
 {
 	// the thread
-	tb_handle_t		thread;
+	tb_handle_t				thread;
 	
-	// the timer
-	NSTimer*		timer;
+	// the timer	
+	NSTimer*				timer;
 	
 	// the info
-	UILabel*		info;
+	UILabel*				info;
 	
 	// the key
-	UIButton*		qKey;
-	UIButton*		mKey;
-	UIButton*		pKey;
-	UIButton*		wKey;
-	UIButton*		fKey;
-	UIButton*		sKey;
+	UIButton*				qKey;
+	UIButton*				mKey;
+	UIButton*				pKey;
+	UIButton*				wKey;
+	UIButton*				fKey;
+	UIButton*				sKey;
+	
+	// the orientaion
+	UIInterfaceOrientation	orientaion;
 }
 
 // the render
@@ -242,14 +245,19 @@ static tb_pointer_t onRender(tb_pointer_t data)
 		
 		// start clock
 		g_rt = tb_uclock();
-		
+#if 0
+		g2_style_clear(g_style);
+		g2_style_mode_set(g_style, G2_STYLE_MODE_FILL);
+		g2_style_color_set(g_style, G2_COLOR_RED);
+		g2_draw2i_rect(g_painter, 0, 0, 310, 100);
+#endif
 		// render
 		g2_demo_render();
 		
 		// stop clock
 		g_rt = tb_uclock() - g_rt;
 		
-		// load 
+		// load
 		if (g_bm) g2_load(g_painter);
 		
 		// render fps & rpt
@@ -442,6 +450,14 @@ end:
 //	tb_trace_impl("move: %f %f", pt.x, pt.y);
 	tb_check_return(!tb_isnanf(pt.x) && !tb_isnanf(pt.y));
 	
+	if (	orientaion == UIInterfaceOrientationLandscapeRight
+		||	orientaion == UIInterfaceOrientationLandscapeLeft)
+	{
+		CGRect screenBounds = [[UIScreen mainScreen] bounds];
+		pt.x *= screenBounds.size.width / screenBounds.size.height;
+		pt.y *= screenBounds.size.height / screenBounds.size.width;
+	}
+	
 	tb_int_t x = pt.x;
 	tb_int_t y = pt.y;
 	
@@ -527,6 +543,7 @@ end:
 		||	toInterfaceOrientation == UIInterfaceOrientationLandscapeLeft)
 	{
 		CGRect screenBounds = [[UIScreen mainScreen] bounds];
+		CGRect viewBounds = CGRectMake(screenBounds.origin.y, screenBounds.origin.x, screenBounds.size.height, screenBounds.size.width);
 		CGRect infoBounds = CGRectMake(screenBounds.origin.y + 30, screenBounds.origin.x + 30, 200, 30);
 		CGRect qKeyBounds = CGRectMake(screenBounds.origin.y + 30, screenBounds.origin.x + screenBounds.size.width - 40, 30, 30);
 		CGRect mKeyBounds = CGRectMake(qKeyBounds.origin.x + qKeyBounds.size.width + 10, qKeyBounds.origin.y, 30, 30);
@@ -534,6 +551,8 @@ end:
 		CGRect pKeyBounds = CGRectMake(wKeyBounds.origin.x + wKeyBounds.size.width + 10, wKeyBounds.origin.y, 30, 30);
 		CGRect fKeyBounds = CGRectMake(pKeyBounds.origin.x + pKeyBounds.size.width + 10, pKeyBounds.origin.y, 30, 30);
 		CGRect sKeyBounds = CGRectMake(fKeyBounds.origin.x + fKeyBounds.size.width + 10, fKeyBounds.origin.y, 30, 30);
+		self.view.frame = viewBounds;
+		self.render.frame = viewBounds;
 		info.frame = infoBounds;
 		qKey.frame = qKeyBounds;
 		mKey.frame = mKeyBounds;
@@ -545,6 +564,7 @@ end:
 	else 
 	{
 		CGRect screenBounds = [[UIScreen mainScreen] bounds];
+		CGRect viewBounds = screenBounds;
 		CGRect infoBounds = CGRectMake(screenBounds.origin.x + 30, screenBounds.origin.y + 30, 200, 30);
 		CGRect qKeyBounds = CGRectMake(screenBounds.origin.x + 30, screenBounds.origin.y + screenBounds.size.height - 40, 30, 30);
 		CGRect mKeyBounds = CGRectMake(qKeyBounds.origin.x + qKeyBounds.size.width + 10, qKeyBounds.origin.y, 30, 30);
@@ -552,6 +572,8 @@ end:
 		CGRect pKeyBounds = CGRectMake(wKeyBounds.origin.x + wKeyBounds.size.width + 10, wKeyBounds.origin.y, 30, 30);
 		CGRect fKeyBounds = CGRectMake(pKeyBounds.origin.x + pKeyBounds.size.width + 10, pKeyBounds.origin.y, 30, 30);
 		CGRect sKeyBounds = CGRectMake(fKeyBounds.origin.x + fKeyBounds.size.width + 10, fKeyBounds.origin.y, 30, 30);
+		self.view.frame = viewBounds;
+		self.render.frame = viewBounds;
 		info.frame = infoBounds;
 		qKey.frame = qKeyBounds;
 		mKey.frame = mKeyBounds;
@@ -560,6 +582,8 @@ end:
 		fKey.frame = fKeyBounds;
 		sKey.frame = sKeyBounds;
 	}
+	
+	orientaion = toInterfaceOrientation;
 }
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
 {

@@ -119,9 +119,13 @@
 			break;
 	}
 	
-	// for retina
-	//self.contentScaleFactor = 2.0f;
-	//glLayer.contentsScale = 2.0f;
+	
+	// retina?
+	if ([UIScreen instancesRespondToSelector:@selector(currentMode)] && CGSizeEqualToSize(CGSizeMake(640, 960), [[UIScreen mainScreen] currentMode].size))
+	{
+		self.contentScaleFactor = 2.0f;
+		glLayer.contentsScale = 2.0f;
+	}
 	
 	// init gl context
 	if (G2_VIEW_GL_VERSION >= 0x20 || !G2_VIEW_GL_VERSION)
