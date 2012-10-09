@@ -37,7 +37,8 @@
 //#define G2_VIEW_PIXFMT 			(G2_PIXFMT_RGB565 | G2_PIXFMT_NENDIAN)
 
 // version
-#define G2_VIEW_GL_VERSION		(0x19)
+//#define G2_VIEW_GL_VERSION		(0x19)
+#define G2_VIEW_GL_VERSION		(0x0)
 
 /* ///////////////////////////////////////////////////////////////////////
  * interface

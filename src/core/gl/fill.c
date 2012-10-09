@@ -302,15 +302,15 @@ static __tb_inline__ tb_void_t g2_gl_fill_enter_texture_state(g2_gl_fill_t* fill
 	{
 		// enable texcoords
 		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+
+		// apply mode
+		glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 	}
 	else
 	{
 		// enable texcoords
 		glEnableVertexAttribArray(g2_gl_program_location(fill->program, G2_GL_PROGRAM_LOCATION_TEXCOORDS));
 	}
-
-	// apply mode
-	glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 
 	// apply blend
 	tb_byte_t 	alpha = g2_style_alpha(fill->style);

@@ -300,8 +300,10 @@ tb_handle_t g2_context_init_gl(tb_size_t pixfmt, tb_size_t width, tb_size_t heig
 			tb_assert_and_check_break(gcontext->programs[G2_GL_PROGRAM_TYPE_BITMAP]);
 
 			// init gradient program
+#ifndef TB_CONFIG_OS_IOS
 			gcontext->programs[G2_GL_PROGRAM_TYPE_GRADIENT] = g2_gl_program_init_gradient();
 			tb_assert_and_check_break(gcontext->programs[G2_GL_PROGRAM_TYPE_GRADIENT]);
+#endif
 
 			// ok
 			ok = TB_TRUE;

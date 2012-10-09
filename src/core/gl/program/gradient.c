@@ -46,7 +46,9 @@ tb_handle_t g2_gl_program_init_gradient()
 
 	// the vertex shader
 	tb_char_t const* vshader = 
-//		"precision mediump float; 															\n"
+#ifdef G2_CONFIG_CORE_GLES
+		"precision mediump float; 															\n"
+#endif
 		" 																					\n"
 		"attribute vec4 aColor; 															\n"
 		"attribute vec4 aTexcoords; 														\n"
@@ -66,7 +68,9 @@ tb_handle_t g2_gl_program_init_gradient()
 	
 	// the fragment shader
 	tb_char_t const* fshader = 
-//		"precision mediump float; 															\n"
+#ifdef G2_CONFIG_CORE_GLES
+		"precision mediump float; 															\n"
+#endif
 		" 																					\n"
 		"varying vec4 vColor; 																\n"
 		"varying vec4 vTexcoords; 															\n"

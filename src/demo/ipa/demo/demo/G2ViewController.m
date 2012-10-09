@@ -139,10 +139,11 @@ tb_void_t g2_demo_gbox2_exit()
 /* ///////////////////////////////////////////////////////////////////////
  * demo
  */
+//#include "../../../svg.c"
 //#include "../../../arc.c"
 //#include "../../../line.c"
-//#include "../../../rect.c"
-#include "../../../path.c"
+#include "../../../rect.c"
+//#include "../../../path.c"
 //#include "../../../clip.c"
 //#include "../../../point.c"
 //#include "../../../circle.c"
@@ -213,6 +214,9 @@ static tb_pointer_t onRender(tb_pointer_t data)
 	{
 		TB_NULL
 	,	[[[NSBundle mainBundle] pathForResource:@"logo" ofType:@"jpg"] UTF8String]
+//	,	[[[NSBundle mainBundle] pathForResource:@"tiger" ofType:@"svg"] UTF8String]
+//	,	[[[NSBundle mainBundle] pathForResource:@"tiger2" ofType:@"svg"] UTF8String]
+//	,	[[[NSBundle mainBundle] pathForResource:@"lineargradient1" ofType:@"svg"] UTF8String]
 	};
 	tb_int_t argc = tb_arrayn(argv);
 	
@@ -245,12 +249,7 @@ static tb_pointer_t onRender(tb_pointer_t data)
 		
 		// start clock
 		g_rt = tb_uclock();
-#if 0
-		g2_style_clear(g_style);
-		g2_style_mode_set(g_style, G2_STYLE_MODE_FILL);
-		g2_style_color_set(g_style, G2_COLOR_RED);
-		g2_draw2i_rect(g_painter, 0, 0, 310, 100);
-#endif
+
 		// render
 		g2_demo_render();
 		

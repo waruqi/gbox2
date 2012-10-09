@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		BF6D7BF416241085000FADDB /* tiger.svg in Resources */ = {isa = PBXBuildFile; fileRef = BF6D7BF316241085000FADDB /* tiger.svg */; };
+		BF6D7BF71624115D000FADDB /* tiger2.svg in Resources */ = {isa = PBXBuildFile; fileRef = BF6D7BF61624115D000FADDB /* tiger2.svg */; };
+		BF6D7BF91624117C000FADDB /* lineargradient1.svg in Resources */ = {isa = PBXBuildFile; fileRef = BF6D7BF81624117C000FADDB /* lineargradient1.svg */; };
 		BF848A1B162279BA00CD4779 /* logo.jpg in Resources */ = {isa = PBXBuildFile; fileRef = BF848A1A162279BA00CD4779 /* logo.jpg */; };
 		BFB5E0A716153441007FB3D6 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BFB5E0A616153441007FB3D6 /* UIKit.framework */; };
 		BFB5E0A916153441007FB3D6 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BFB5E0A816153441007FB3D6 /* Foundation.framework */; };
@@ -22,6 +25,9 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		BF6D7BF316241085000FADDB /* tiger.svg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = tiger.svg; path = ../../../../res/svg/tiger.svg; sourceTree = "<group>"; };
+		BF6D7BF61624115D000FADDB /* tiger2.svg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; name = tiger2.svg; path = ../../../../res/svg/tiger2.svg; sourceTree = "<group>"; };
+		BF6D7BF81624117C000FADDB /* lineargradient1.svg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; name = lineargradient1.svg; path = ../../../../res/svg/lineargradient1.svg; sourceTree = "<group>"; };
 		BF848A1A162279BA00CD4779 /* logo.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = logo.jpg; path = ../../../../res/jpg/logo.jpg; sourceTree = "<group>"; };
 		BFB5E0A216153441007FB3D6 /* demo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = demo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		BFB5E0A616153441007FB3D6 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
@@ -79,6 +85,9 @@
 		BF848A1E16227A2C00CD4779 /* svg */ = {
 			isa = PBXGroup;
 			children = (
+				BF6D7BF81624117C000FADDB /* lineargradient1.svg */,
+				BF6D7BF316241085000FADDB /* tiger.svg */,
+				BF6D7BF61624115D000FADDB /* tiger2.svg */,
 			);
 			name = svg;
 			sourceTree = "<group>";
@@ -194,6 +203,9 @@
 				BFB5E0B116153441007FB3D6 /* InfoPlist.strings in Resources */,
 				BFB5E0B916153441007FB3D6 /* demo.entitlements in Resources */,
 				BF848A1B162279BA00CD4779 /* logo.jpg in Resources */,
+				BF6D7BF416241085000FADDB /* tiger.svg in Resources */,
+				BF6D7BF71624115D000FADDB /* tiger2.svg in Resources */,
+				BF6D7BF91624117C000FADDB /* lineargradient1.svg in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
