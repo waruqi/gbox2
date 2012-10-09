@@ -2,7 +2,7 @@
 IS_CONFIG = yes
 
 # architecture
-PLAT = mac_x64
+PLAT = ios_armv7
 
 # root
 PRO_DIR = /Users/ruki/projects/personal/gbox2

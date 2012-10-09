@@ -45,17 +45,29 @@
 	// the gl context
 	EAGLContext*		glContext;
 	
-	// the gl frame
-	GLuint				glFrame;
-	
 	// the gl width
 	GLint				glWidth;
 	
 	// the gl height
 	GLint				glHeight;
 	
-	// the gl render
-	GLuint				glRender;
+	// the gl frame
+	GLuint				glFrame;
+	
+	// the gl color render
+	GLuint				glRenderColor;
+	
+	// the gl stencil render
+	GLuint				glRenderStencil;
+	
+	// the gl frame for msaa
+	GLuint				glFrameMsaa;
+	
+	// the gl color render for msaa
+	GLuint				glRenderColorMsaa;
+	
+	// the gl stencil render for mssa
+	GLuint				glRenderStencilMssa;
 }
 
 // the gl init & exit
@@ -166,24 +178,53 @@
 // gl frame init & exit
 - (tb_bool_t)glFrameInit
 {
-	// add frame & render
-	glGenFramebuffersOES(1, &glFrame);
-	glGenRenderbuffersOES(1, &glRender);
+	// init frame
+	glGenFramebuffers(1, &glFrame);
+	glBindFramebuffer(GL_FRAMEBUFFER, glFrame);
 	
-	// bind frame & render
-	glBindFramebufferOES(GL_FRAMEBUFFER_OES, glFrame);
-	glBindRenderbufferOES(GL_RENDERBUFFER_OES, glRender);
-	
-	// attach render to layer
-	[glContext renderbufferStorage:GL_RENDERBUFFER_OES fromDrawable:(id<EAGLDrawable>)self.layer];
-	glFramebufferRenderbufferOES(GL_FRAMEBUFFER_OES, GL_COLOR_ATTACHMENT0_OES, GL_RENDERBUFFER_OES, glRender);
-	
-	// get width & height
-	glGetRenderbufferParameterivOES(GL_RENDERBUFFER_OES, GL_RENDERBUFFER_WIDTH_OES, &glWidth);
-	glGetRenderbufferParameterivOES(GL_RENDERBUFFER_OES, GL_RENDERBUFFER_HEIGHT_OES, &glHeight);
+	// add color render to frame
+	glGenRenderbuffers(1, &glRenderColor);
+	glBindRenderbuffer(GL_RENDERBUFFER, glRenderColor);
+	[glContext renderbufferStorage:GL_RENDERBUFFER fromDrawable:(id<EAGLDrawable>)self.layer];
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, glRenderColor);
 	
 	// check
-	tb_check_return_val(glCheckFramebufferStatusOES(GL_FRAMEBUFFER_OES) == GL_FRAMEBUFFER_COMPLETE_OES, TB_FALSE);
+	tb_assert_and_check_return_val(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE, TB_FALSE);
+	
+	// get width & height
+	glGetRenderbufferParameteriv(GL_RENDERBUFFER, GL_RENDERBUFFER_WIDTH, &glWidth);
+	glGetRenderbufferParameteriv(GL_RENDERBUFFER, GL_RENDERBUFFER_HEIGHT, &glHeight);
+	
+	// add stencil render to frame
+	glGenRenderbuffers(1, &glRenderStencil);
+	glBindRenderbuffer(GL_RENDERBUFFER, glRenderStencil);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_STENCIL_INDEX8, glWidth, glHeight);
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, GL_RENDERBUFFER, glRenderStencil);
+	
+	// check
+	tb_assert_and_check_return_val(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE, TB_FALSE);
+	
+	// init mssa frame
+	glGenFramebuffers(1, &glFrameMsaa);
+    glBindFramebuffer(GL_FRAMEBUFFER, glFrameMsaa);
+	
+	// add color render to the mssa frame
+    glGenRenderbuffers(1, &glRenderColorMsaa);
+    glBindRenderbuffer(GL_RENDERBUFFER, glRenderColorMsaa);
+    glRenderbufferStorageMultisampleAPPLE(GL_RENDERBUFFER, 4, GL_RGBA8_OES, glWidth, glHeight);
+    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, glRenderColorMsaa);
+	
+	// check
+	tb_assert_and_check_return_val(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE, TB_FALSE);
+	
+	// add stencil render to the mssa frame
+	glGenRenderbuffers(1, &glRenderStencilMssa);
+	glBindRenderbuffer(GL_RENDERBUFFER, glRenderStencilMssa);
+	glRenderbufferStorageMultisampleAPPLE(GL_RENDERBUFFER, 4, GL_STENCIL_INDEX8, glWidth, glHeight);
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, GL_RENDERBUFFER, glRenderStencilMssa);
+	
+	// check
+	tb_assert_and_check_return_val(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE, TB_FALSE);
 	
 	// ok
 	return TB_TRUE;
@@ -191,12 +232,28 @@
 - (tb_void_t)glFrameExit
 {
 	// free frame
-	if (glFrame) glDeleteFramebuffersOES(1, &glFrame);
+	if (glFrame) glDeleteFramebuffers(1, &glFrame);
 	glFrame = 0;
 	
-	// free render
-	if (glRender) glDeleteRenderbuffersOES(1, &glRender);
-	glRender = 0;
+	// free color render
+	if (glRenderColor) glDeleteRenderbuffers(1, &glRenderColor);
+	glRenderColor = 0;
+	
+	// free stencil render
+	if (glRenderStencil) glDeleteRenderbuffers(1, &glRenderStencil);
+	glRenderStencil = 0;
+	
+	// free frame for mssa
+	if (glFrameMsaa) glDeleteFramebuffers(1, &glFrameMsaa);
+	glFrameMsaa = 0;
+	
+	// free color render for mssa
+	if (glRenderColorMsaa) glDeleteRenderbuffers(1, &glRenderColorMsaa);
+	glRenderColorMsaa = 0;
+	
+	// free stencil render for mssa
+	if (glRenderStencilMssa) glDeleteRenderbuffers(1, &glRenderStencilMssa);
+	glRenderStencilMssa = 0;
 }
 - (tb_byte_t)bind
 {
@@ -215,7 +272,12 @@
 	tb_assert_and_check_return_val(glFrame, TB_FALSE);
 	
 	// bind frame
-	glBindFramebufferOES(GL_FRAMEBUFFER_OES, glFrame);
+	if (g2_quality() > G2_QUALITY_LOW)
+	{
+		glBindFramebuffer(GL_FRAMEBUFFER, glFrameMsaa);
+		glBindRenderbuffer(GL_RENDERBUFFER, glRenderColorMsaa);
+	}
+	else glBindFramebuffer(GL_FRAMEBUFFER, glFrame);
 	
 	// ok
 	return TB_TRUE;
@@ -223,10 +285,18 @@
 - (tb_void_t)draw
 {
 	// bind render
-	glBindRenderbufferOES(GL_RENDERBUFFER_OES, glRender);
+	if (g2_quality() > G2_QUALITY_LOW)
+	{
+		glBindFramebuffer(GL_READ_FRAMEBUFFER_APPLE, glFrameMsaa);
+		glBindFramebuffer(GL_DRAW_FRAMEBUFFER_APPLE, glFrame);
+		glResolveMultisampleFramebufferAPPLE();
+		glBindFramebuffer(GL_FRAMEBUFFER, glFrame);
+		glBindRenderbuffer(GL_RENDERBUFFER, glRenderColor);
+	}
+	else glBindRenderbuffer(GL_RENDERBUFFER, glRenderColor);
 	
 	// render
-	[glContext presentRenderbuffer:GL_RENDERBUFFER_OES];
+	[glContext presentRenderbuffer:GL_RENDERBUFFER];
 }
 
 @end

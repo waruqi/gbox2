@@ -302,6 +302,11 @@ tb_handle_t g2_shader_init_linear(tb_handle_t context, g2_point_t const* pb, g2_
 	// check
 	tb_assert_and_check_return_val(context && pb && pe && gradient && gradient->color && gradient->count && wrap, TB_NULL);
 
+#ifdef TB_CONFIG_OS_IOS
+	tb_trace_noimpl();
+	return TB_NULL;
+#endif
+
 	// init shader
 	g2_gl_shader_t* shader = g2_gl_shader_init(context, G2_GL_SHADER_TYPE_LINEAR, wrap);
 	tb_assert_and_check_return_val(shader && shader->texture, TB_NULL);
@@ -337,6 +342,11 @@ tb_handle_t g2_shader_init_radial(tb_handle_t context, g2_circle_t const* cp, g2
 	// check
 	tb_assert_and_check_return_val(context && cp && gradient && gradient->color && gradient->count && wrap, TB_NULL);
 
+#ifdef TB_CONFIG_OS_IOS
+	tb_trace_noimpl();
+	return TB_NULL;
+#endif
+
 	// init shader
 	g2_gl_shader_t* shader = g2_gl_shader_init(context, G2_GL_SHADER_TYPE_RADIAL, wrap);
 	tb_assert_and_check_return_val(shader && shader->texture, TB_NULL);
@@ -370,6 +380,11 @@ tb_handle_t g2_shader_init_radial2(tb_handle_t context, g2_circle_t const* cb, g
 {
 	// check
 	tb_assert_and_check_return_val(context && cb && ce && gradient && gradient->color && gradient->count && wrap, TB_NULL);
+
+#ifdef TB_CONFIG_OS_IOS
+	tb_trace_noimpl();
+	return TB_NULL;
+#endif
 
 	// init shader
 	g2_gl_shader_t* shader = g2_gl_shader_init(context, G2_GL_SHADER_TYPE_RADIAL2, wrap);

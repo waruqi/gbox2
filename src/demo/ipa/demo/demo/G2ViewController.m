@@ -94,7 +94,7 @@ tb_bool_t g2_demo_gbox2_init(tb_int_t argc, tb_char_t const** argv, tb_byte_t ve
 	tb_size_t height = [[UIScreen mainScreen] bounds].size.height;
 	
 	// init context
-#if defined(G2_CONFIG_CORE_GL)
+#if defined(G2_CONFIG_CORE_GL) || defined(G2_CONFIG_CORE_GLES)
 	g_context = g2_context_init_gl(G2_VIEW_PIXFMT, width, height, version);
 	tb_assert_and_check_return_val(g_context, TB_FALSE);
 #elif defined(G2_CONFIG_CORE_SKIA)
@@ -141,8 +141,8 @@ tb_void_t g2_demo_gbox2_exit()
  */
 //#include "../../../arc.c"
 //#include "../../../line.c"
-#include "../../../rect.c"
-//#include "../../../path.c"
+//#include "../../../rect.c"
+#include "../../../path.c"
 //#include "../../../clip.c"
 //#include "../../../point.c"
 //#include "../../../circle.c"
@@ -204,17 +204,17 @@ static tb_pointer_t onRender(tb_pointer_t data)
 	cl = (G2ViewController*)data;
 	tb_assert_and_check_goto(cl, end);
 	
+	// init pool
+	pool = [[NSAutoreleasePool alloc] init];
+	tb_assert_and_check_goto(pool, end);
+	
 	// init args
 	tb_char_t const* argv[] =
 	{
 		TB_NULL
-	,	TB_NULL//[[[NSBundle mainBundle] pathForResource:@"logo" ofType:@"jpg"] UTF8String]
+	,	[[[NSBundle mainBundle] pathForResource:@"logo" ofType:@"jpg"] UTF8String]
 	};
 	tb_int_t argc = tb_arrayn(argv);
-	
-	// init pool
-	pool = [[NSAutoreleasePool alloc] init];
-	tb_assert_and_check_goto(pool, end);
 	
 	// bind render
 	tb_trace_impl("render: init");
@@ -326,6 +326,7 @@ end:
 		
         // init the render
 		self.render = [[G2View alloc] initWithFrame:screenBounds];
+		tb_assert_and_check_return_val(self.render, nil);
 		[self.view addSubview:self.render];
 		
 		// init single tap
@@ -414,12 +415,16 @@ end:
 	// load view
     [super viewDidLoad];
 	
-	// init the thread
-	self.stoped = 0;
-	thread = tb_thread_init(TB_NULL, onRender, self, 0);
+	// load render
+	if (self.render)
+	{
+		// init the thread
+		self.stoped = 0;
+		thread = tb_thread_init(TB_NULL, onRender, self, 0);
 	
-	// init timer
-	timer = [NSTimer scheduledTimerWithTimeInterval:(NSTimeInterval)1 target:self selector:@selector(onInfo) userInfo:nil repeats:TRUE];
+		// init timer
+		timer = [NSTimer scheduledTimerWithTimeInterval:(NSTimeInterval)1 target:self selector:@selector(onInfo) userInfo:nil repeats:TRUE];
+	}
 }
 
 - (void)viewDidUnload

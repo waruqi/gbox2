@@ -296,7 +296,7 @@ tb_bool_t g2_demo_gl_init(tb_int_t argc, tb_char_t** argv)
 tb_bool_t g2_demo_gbox2_init(tb_int_t argc, tb_char_t** argv)
 {
 	// init context
-#if defined(G2_CONFIG_CORE_GL)
+#if defined(G2_CONFIG_CORE_GL) || defined(G2_CONFIG_CORE_GLES)
 	g_context = g2_context_init_gl(G2_DEMO_PIXFMT, G2_DEMO_WIDTH, G2_DEMO_HEIGHT, 0x0);
 	tb_assert_and_check_return_val(g_context, TB_FALSE);
 #elif defined(G2_CONFIG_CORE_SKIA)

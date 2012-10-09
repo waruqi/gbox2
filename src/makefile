@@ -61,6 +61,23 @@ gbox2_C_FILES-$(G2_CONFIG_CORE_GL) += \
 						core/gl/program/bitmap \
 						core/gl/program/gradient
 
+gbox2_C_FILES-$(G2_CONFIG_CORE_GLES) += \
+						core/soft/style \
+						core/soft/bitmap \
+						core/soft/split/quad \
+						core/soft/split/cube \
+						core/soft/split/circle \
+						core/soft/split/ellipse \
+						core/gl/path \
+						core/gl/fill \
+						core/gl/shader \
+						core/gl/context \
+						core/gl/painter \
+						core/gl/program \
+						core/gl/program/color \
+						core/gl/program/bitmap \
+						core/gl/program/gradient
+
 gbox2_CPP_FILES-$(G2_CONFIG_CORE_SKIA) += \
 						core/skia/path \
 						core/skia/style \
