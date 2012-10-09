@@ -55,14 +55,14 @@ typedef struct __g2_gl_program_t
 	tb_size_t 		type;
 
 	// the program
-	GLuint 			program;
+	g2_GLuint_t 			program;
 
 	// the shaders
-	GLuint 			shaders[G2_GL_PROGRAM_SHADER_MAXN];
+	g2_GLuint_t 			shaders[G2_GL_PROGRAM_SHADER_MAXN];
 	tb_size_t 		shadern;
 
 	// the locations
-	GLint 			location[G2_GL_PROGRAM_LOCATION_MAXN];
+	g2_GLint_t 			location[G2_GL_PROGRAM_LOCATION_MAXN];
 
 }g2_gl_program_t;
 
@@ -70,10 +70,10 @@ typedef struct __g2_gl_program_t
  * shader
  */
 
-static GLuint g2_gl_program_shader(tb_char_t const* data, tb_size_t type)
+static g2_GLuint_t g2_gl_program_shader(tb_char_t const* data, tb_size_t type)
 {
 	// init shader
-	GLuint shader = glCreateShader((GLenum)type);
+	g2_GLuint_t shader = glCreateShader((g2_GLenum_t)type);
 	tb_assert_and_check_return_val(shader, 0);
 
 	// init source
@@ -83,7 +83,7 @@ static GLuint g2_gl_program_shader(tb_char_t const* data, tb_size_t type)
 	glCompileShader(shader);
 
 	// ok?
-	GLint ok = GL_FALSE;
+	g2_GLint_t ok = GL_FALSE;
 	glGetShaderiv(shader, GL_COMPILE_STATUS, &ok);
 	if (ok == GL_FALSE)
 	{
@@ -164,7 +164,7 @@ tb_bool_t g2_gl_program_make(tb_handle_t program)
 	glLinkProgram(gprogram->program);
 
 	// ok?
-	GLint ok = 0;
+	g2_GLint_t ok = 0;
 	glGetProgramiv(gprogram->program, GL_LINK_STATUS, &ok);
 	if (!ok) 
 	{
@@ -199,7 +199,7 @@ tb_void_t g2_gl_program_uses(tb_handle_t program)
 	// use it
 	glUseProgram(gprogram->program);
 }
-GLint g2_gl_program_attr(tb_handle_t program, tb_char_t const* name)
+g2_GLint_t g2_gl_program_attr(tb_handle_t program, tb_char_t const* name)
 {
 	// check
 	g2_gl_program_t* gprogram = (g2_gl_program_t*)program;
@@ -207,7 +207,7 @@ GLint g2_gl_program_attr(tb_handle_t program, tb_char_t const* name)
 
 	return glGetAttribLocation(gprogram->program, name);
 }
-GLint g2_gl_program_unif(tb_handle_t program, tb_char_t const* name)
+g2_GLint_t g2_gl_program_unif(tb_handle_t program, tb_char_t const* name)
 {
 	// check
 	g2_gl_program_t* gprogram = (g2_gl_program_t*)program;
@@ -231,7 +231,7 @@ tb_void_t g2_gl_program_type_set(tb_handle_t program, tb_size_t type)
 
 	gprogram->type = type;
 }
-GLint g2_gl_program_location(tb_handle_t program, tb_size_t index)
+g2_GLint_t g2_gl_program_location(tb_handle_t program, tb_size_t index)
 {
 	// check
 	g2_gl_program_t* gprogram = (g2_gl_program_t*)program;
@@ -239,7 +239,7 @@ GLint g2_gl_program_location(tb_handle_t program, tb_size_t index)
 
 	return gprogram->location[index];
 }
-tb_void_t g2_gl_program_location_set(tb_handle_t program, tb_size_t index, GLuint location)
+tb_void_t g2_gl_program_location_set(tb_handle_t program, tb_size_t index, g2_GLuint_t location)
 {
 	// check
 	g2_gl_program_t* gprogram = (g2_gl_program_t*)program;

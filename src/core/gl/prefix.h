@@ -39,6 +39,7 @@
 #include "rect.h"
 #include "path.h"
 #include "matrix.h"
+#include "interface.h"
 #include "extensions.h"
 #if defined(TB_CONFIG_OS_MAC)
 # 	include <OpenGL/gl.h>
@@ -52,6 +53,8 @@
 #elif defined(TB_CONFIG_OS_ANDROID)
 # 	include <GLES/gl.h>
 # 	include <GLES/glext.h>
+# 	include <GLES2/gl2.h>
+# 	include <GLES2/gl2ext.h>
 #else
 # 	define GL_GLEXT_PROTOTYPES
 # 	include <GL/glut.h>
@@ -61,11 +64,7 @@
 /* ///////////////////////////////////////////////////////////////////////
  * macros
  */
-#ifdef TB_CONFIG_OS_ANDROID
-# 	define glOrtho 				glOrthof
-#endif
-
-#ifdef TB_CONFIG_OS_IOS
+#ifdef G2_CONFIG_CORE_GLES
 # 	define glOrtho 				glOrthof
 # 	define GL_TEXTURE_1D 		GL_TEXTURE_2D
 # 	define GL_CLAMP_TO_BORDER 	GL_CLAMP_TO_EDGE

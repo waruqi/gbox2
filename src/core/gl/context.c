@@ -91,11 +91,11 @@ static __tb_inline__ tb_void_t g2_gl_context_extensions(g2_gl_context_t* context
  * texture & shader
  */
 
-GLuint* g2_gl_context_texture_alc(g2_gl_context_t* context)
+g2_GLuint_t* g2_gl_context_texture_alc(g2_gl_context_t* context)
 {
 	// init
-	GLuint* 	itor = TB_NULL;
-	GLuint* 	data = context->texture;
+	g2_GLuint_t* 	itor = TB_NULL;
+	g2_GLuint_t* 	data = context->texture;
 	tb_byte_t* 	used = context->used;
 	tb_size_t 	pred = context->texture_pred;
 
@@ -142,7 +142,7 @@ GLuint* g2_gl_context_texture_alc(g2_gl_context_t* context)
 	// ok?
 	return itor;
 }
-tb_void_t g2_gl_context_texture_del(g2_gl_context_t* context, GLuint const* texture)
+tb_void_t g2_gl_context_texture_del(g2_gl_context_t* context, g2_GLuint_t const* texture)
 {
 	// check
 	tb_assert_and_check_return(texture);

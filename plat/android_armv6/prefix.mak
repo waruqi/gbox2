@@ -35,7 +35,7 @@ PWD 				= pwd
 CPPFLAGS_RELEASE 	= -O3 -DNDEBUG -freg-struct-return -fno-bounds-check
 CPPFLAGS_DEBUG 		= -g
 CPPFLAGS 			= -c -Wall -fomit-frame-pointer -march=armv6 \
-					  -I$(NDK)/platforms/android-4/arch-arm/usr/include 
+					  -I$(NDK)/platforms/android-8/arch-arm/usr/include 
 CPPFLAGS-I 			= -I
 CPPFLAGS-o 			= -o
 

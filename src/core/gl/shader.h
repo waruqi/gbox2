@@ -70,7 +70,7 @@ typedef struct __g2_gl_shader_t
 	tb_handle_t 			context;
 
 	// the texture
-	GLuint* 				texture;
+	g2_GLuint_t* 				texture;
 
 	// the matrix
 	g2_matrix_t 			matrix;

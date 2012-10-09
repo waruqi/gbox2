@@ -172,7 +172,7 @@ static __tb_inline__ tb_void_t g2_gl_fill_apply_solid(g2_gl_fill_t* fill)
 static __tb_inline__ tb_void_t g2_gl_fill_apply_wrap(g2_gl_fill_t* fill)
 {
 	// wrap
-	static GLuint wrap[] = 
+	static g2_GLuint_t wrap[] = 
 	{
 		GL_CLAMP_TO_BORDER
 	,	GL_CLAMP_TO_BORDER
@@ -183,7 +183,7 @@ static __tb_inline__ tb_void_t g2_gl_fill_apply_wrap(g2_gl_fill_t* fill)
 	tb_assert(fill->shader->wrap < tb_arrayn(wrap));
 
 	// the texture type
-	GLenum texture = fill->shader->type == G2_GL_SHADER_TYPE_BITMAP? GL_TEXTURE_2D : GL_TEXTURE_1D;
+	g2_GLenum_t texture = fill->shader->type == G2_GL_SHADER_TYPE_BITMAP? GL_TEXTURE_2D : GL_TEXTURE_1D;
 
 	// wrap
 	glTexParameteri(texture, GL_TEXTURE_WRAP_S, wrap[fill->shader->wrap]);
@@ -192,7 +192,7 @@ static __tb_inline__ tb_void_t g2_gl_fill_apply_wrap(g2_gl_fill_t* fill)
 static __tb_inline__ tb_void_t g2_gl_fill_apply_filter(g2_gl_fill_t* fill)
 {
 	// the texture type
-	GLenum texture = fill->shader->type == G2_GL_SHADER_TYPE_BITMAP? GL_TEXTURE_2D : GL_TEXTURE_1D;
+	g2_GLenum_t texture = fill->shader->type == G2_GL_SHADER_TYPE_BITMAP? GL_TEXTURE_2D : GL_TEXTURE_1D;
 
 	// filter?
 	if (g2_style_flag(fill->style) & G2_STYLE_FLAG_BITMAP_FILTER)
@@ -213,7 +213,7 @@ static __tb_inline__ tb_void_t g2_gl_fill_apply_vertices(g2_gl_fill_t* fill)
 	if (fill->context->version < 0x20) glVertexPointer(2, GL_FLOAT, 0, fill->vertices);
 	else glVertexAttribPointer(g2_gl_program_location(fill->program, G2_GL_PROGRAM_LOCATION_VERTICES), 2, GL_FLOAT, GL_FALSE, 0, fill->vertices);
 }
-static __tb_inline__ tb_void_t g2_gl_fill_apply_texcoords(g2_gl_fill_t* fill, GLint size)
+static __tb_inline__ tb_void_t g2_gl_fill_apply_texcoords(g2_gl_fill_t* fill, g2_GLint_t size)
 {
 	// texcoords
 	if (fill->context->version < 0x20) glTexCoordPointer(size, GL_FLOAT, 0, fill->texcoords);
@@ -289,7 +289,7 @@ static __tb_inline__ tb_void_t g2_gl_fill_leave_vertex_state(g2_gl_fill_t* fill)
 		glDisableVertexAttribArray(g2_gl_program_location(fill->program, G2_GL_PROGRAM_LOCATION_VERTICES));
 	}
 }
-static __tb_inline__ tb_void_t g2_gl_fill_enter_texture_state(g2_gl_fill_t* fill, GLenum texture)
+static __tb_inline__ tb_void_t g2_gl_fill_enter_texture_state(g2_gl_fill_t* fill, g2_GLenum_t texture)
 {
 	// enable texture
 	glEnable(texture);
@@ -325,7 +325,7 @@ static __tb_inline__ tb_void_t g2_gl_fill_enter_texture_state(g2_gl_fill_t* fill
 	// apply filter
 	g2_gl_fill_apply_filter(fill);
 }
-static __tb_inline__ tb_void_t g2_gl_fill_leave_texture_state(g2_gl_fill_t* fill, GLenum texture)
+static __tb_inline__ tb_void_t g2_gl_fill_leave_texture_state(g2_gl_fill_t* fill, g2_GLenum_t texture)
 {
 	// apply vertices & texcoords
 	if (fill->context->version < 0x20)
@@ -780,7 +780,7 @@ tb_void_t g2_gl_fill_path(g2_gl_painter_t* painter, g2_gl_path_t const* path)
 	for (; itor != tail; itor++)
 	{
 		size = tb_iterator_item(path->fill.size, itor);
-		glDrawArrays(GL_TRIANGLE_FAN, (GLint)head, (GLint)size);
+		glDrawArrays(GL_TRIANGLE_FAN, (g2_GLint_t)head, (g2_GLint_t)size);
 		head += size;
 	}
 
@@ -821,7 +821,7 @@ tb_void_t g2_gl_fill_circle(g2_gl_painter_t* painter, g2_circle_t const* circle)
 	// draw vertices
 	if (fill.context->version < 0x20) glVertexPointer(2, GL_FLOAT, 0, data);
 	else glVertexAttribPointer(g2_gl_program_location(fill.program, G2_GL_PROGRAM_LOCATION_VERTICES), 2, GL_FLOAT, GL_FALSE, 0, data);
-	glDrawArrays(GL_TRIANGLE_FAN, 0, (GLint)size);
+	glDrawArrays(GL_TRIANGLE_FAN, 0, (g2_GLint_t)size);
 
 	// draw fill
 	g2_gl_fill_draw(&fill, &bounds);
@@ -860,7 +860,7 @@ tb_void_t g2_gl_fill_ellipse(g2_gl_painter_t* painter, g2_ellipse_t const* ellip
 	// draw vertices
 	if (fill.context->version < 0x20) glVertexPointer(2, GL_FLOAT, 0, data);
 	else glVertexAttribPointer(g2_gl_program_location(fill.program, G2_GL_PROGRAM_LOCATION_VERTICES), 2, GL_FLOAT, GL_FALSE, 0, data);
-	glDrawArrays(GL_TRIANGLE_FAN, 0, (GLint)size);
+	glDrawArrays(GL_TRIANGLE_FAN, 0, (g2_GLint_t)size);
 
 	// draw fill
 	g2_gl_fill_draw(&fill, &bounds);

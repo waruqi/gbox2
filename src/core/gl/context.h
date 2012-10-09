@@ -65,7 +65,7 @@ typedef struct __g2_gl_context_t
 	tb_byte_t 			used[G2_GL_TEXTURE_MAXN];
 
 	// the texture
-	GLuint 				texture[G2_GL_TEXTURE_MAXN];
+	g2_GLuint_t 		texture[G2_GL_TEXTURE_MAXN];
 	tb_size_t 			texture_pred;
 
 	// the shaders
@@ -85,8 +85,8 @@ typedef struct __g2_gl_context_t
  */
 
 // the context texture
-GLuint* 			g2_gl_context_texture_alc(g2_gl_context_t* context);
-tb_void_t 			g2_gl_context_texture_del(g2_gl_context_t* context, GLuint const* texture);
+g2_GLuint_t* 		g2_gl_context_texture_alc(g2_gl_context_t* context);
+tb_void_t 			g2_gl_context_texture_del(g2_gl_context_t* context, g2_GLuint_t const* texture);
 
 // the context shader
 g2_gl_shader_t* 	g2_gl_context_shader_alc(g2_gl_context_t* context);

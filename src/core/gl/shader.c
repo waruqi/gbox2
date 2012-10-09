@@ -47,7 +47,7 @@ static __tb_inline__ g2_gl_shader_t* g2_gl_shader_init(tb_handle_t context, tb_s
 	tb_assert_and_check_return_val(gcontext && type, TB_NULL);
 
 	// make texture
-	GLuint* texture = g2_gl_context_texture_alc(context);
+	g2_GLuint_t* texture = g2_gl_context_texture_alc(context);
 	tb_assert_and_check_return_val(texture, TB_NULL);
 
 	// make shader

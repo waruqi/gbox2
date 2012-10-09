@@ -73,18 +73,18 @@ tb_bool_t 			g2_gl_program_make(tb_handle_t program);
 tb_void_t 			g2_gl_program_uses(tb_handle_t program);
 
 // the attribute location
-GLint 				g2_gl_program_attr(tb_handle_t program, tb_char_t const* name);
+g2_GLint_t 				g2_gl_program_attr(tb_handle_t program, tb_char_t const* name);
 
 // the uniform location
-GLint 				g2_gl_program_unif(tb_handle_t program, tb_char_t const* name);
+g2_GLint_t 				g2_gl_program_unif(tb_handle_t program, tb_char_t const* name);
 
 // the type
 tb_size_t 			g2_gl_program_type(tb_handle_t program);
 tb_void_t 			g2_gl_program_type_set(tb_handle_t program, tb_size_t type);
 
 // the location
-GLint 				g2_gl_program_location(tb_handle_t program, tb_size_t index);
-tb_void_t 			g2_gl_program_location_set(tb_handle_t program, tb_size_t index, GLuint GLint);
+g2_GLint_t 				g2_gl_program_location(tb_handle_t program, tb_size_t index);
+tb_void_t 			g2_gl_program_location_set(tb_handle_t program, tb_size_t index, g2_GLuint_t g2_GLint_t);
 
 
 #endif
