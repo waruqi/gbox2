@@ -64,6 +64,12 @@ static g2_matrix_t 	g_mx;
 
 tb_bool_t g2_demo_gl_init(tb_byte_t version)
 {
+	// init library
+	//RTLD_NOW
+	g_library = tb_dynamic_init("libGLESv1_CM.so");
+	tb_assert_and_check_return_val(g_library, TB_FALSE);
+
+#if 0
 	// load interfaces for common
 	G2_GL_INTERFACE_LOAD_S(glAlphaFunc);
 	G2_GL_INTERFACE_LOAD_S(glBindTexture);
@@ -135,6 +141,7 @@ tb_bool_t g2_demo_gl_init(tb_byte_t version)
 	G2_GL_INTERFACE_LOAD_S(glUseProgram);
 	G2_GL_INTERFACE_LOAD_S(glVertexAttrib4f);
 	G2_GL_INTERFACE_LOAD_S(glVertexAttribPointer);
+#endif
 #endif
 
 	// init width & height

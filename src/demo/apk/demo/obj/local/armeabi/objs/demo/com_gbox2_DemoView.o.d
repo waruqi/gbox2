@@ -1,7 +1,6 @@
 obj/local/armeabi/objs/demo/com_gbox2_DemoView.o: \
  jni/com_gbox2_DemoView.c jni/prefix.h \
  /home/ruki/programs/android-ndk-r8/platforms/android-8/arch-arm/usr/include/jni.h \
- /home/ruki/programs/android-ndk-r8/platforms/android-8/arch-arm/usr/include/android/log.h \
  /home/ruki/projects/personal/gbox2/src/gbox2.h \
  /home/ruki/projects/personal/gbox2/src/prefix.h \
  /home/ruki/projects/personal/gbox2/src/prefix/prefix.h \
@@ -255,8 +254,6 @@ obj/local/armeabi/objs/demo/com_gbox2_DemoView.o: \
 jni/prefix.h:
 
 /home/ruki/programs/android-ndk-r8/platforms/android-8/arch-arm/usr/include/jni.h:
-
-/home/ruki/programs/android-ndk-r8/platforms/android-8/arch-arm/usr/include/android/log.h:
 
 /home/ruki/projects/personal/gbox2/src/gbox2.h:
 

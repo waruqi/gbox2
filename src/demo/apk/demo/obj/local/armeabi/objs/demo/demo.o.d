@@ -1,6 +1,5 @@
 obj/local/armeabi/objs/demo/demo.o: jni/demo.c jni/demo.h jni/prefix.h \
  /home/ruki/programs/android-ndk-r8/platforms/android-8/arch-arm/usr/include/jni.h \
- /home/ruki/programs/android-ndk-r8/platforms/android-8/arch-arm/usr/include/android/log.h \
  /home/ruki/projects/personal/gbox2/src/gbox2.h \
  /home/ruki/projects/personal/gbox2/src/prefix.h \
  /home/ruki/projects/personal/gbox2/src/prefix/prefix.h \
@@ -249,23 +248,14 @@ obj/local/armeabi/objs/demo/demo.o: jni/demo.c jni/demo.h jni/prefix.h \
  /home/ruki/projects/personal/gbox2/src/svg/reader.h \
  /home/ruki/projects/personal/gbox2/src/svg/element.h \
  /home/ruki/projects/personal/gbox2/src/svg/writer.h \
- /home/ruki/projects/personal/gbox2/src/core/core.h \
- /home/ruki/programs/android-ndk-r8/platforms/android-8/arch-arm/usr/include/GLES2/gl2.h \
- /home/ruki/programs/android-ndk-r8/platforms/android-8/arch-arm/usr/include/GLES2/gl2platform.h \
- /home/ruki/programs/android-ndk-r8/platforms/android-8/arch-arm/usr/include/KHR/khrplatform.h \
- /home/ruki/programs/android-ndk-r8/platforms/android-8/arch-arm/usr/include/stdint.h \
- /home/ruki/programs/android-ndk-r8/platforms/android-8/arch-arm/usr/include/sys/_types.h \
- /home/ruki/programs/android-ndk-r8/platforms/android-8/arch-arm/usr/include/machine/_types.h \
- /home/ruki/programs/android-ndk-r8/platforms/android-8/arch-arm/usr/include/GLES2/gl2ext.h \
- jni/../../../path.c jni/../../../shape.c
+ /home/ruki/projects/personal/gbox2/src/core/core.h jni/../../../path.c \
+ jni/../../../shape.c
 
 jni/demo.h:
 
 jni/prefix.h:
 
 /home/ruki/programs/android-ndk-r8/platforms/android-8/arch-arm/usr/include/jni.h:
-
-/home/ruki/programs/android-ndk-r8/platforms/android-8/arch-arm/usr/include/android/log.h:
 
 /home/ruki/projects/personal/gbox2/src/gbox2.h:
 
@@ -764,20 +754,6 @@ jni/prefix.h:
 /home/ruki/projects/personal/gbox2/src/svg/writer.h:
 
 /home/ruki/projects/personal/gbox2/src/core/core.h:
-
-/home/ruki/programs/android-ndk-r8/platforms/android-8/arch-arm/usr/include/GLES2/gl2.h:
-
-/home/ruki/programs/android-ndk-r8/platforms/android-8/arch-arm/usr/include/GLES2/gl2platform.h:
-
-/home/ruki/programs/android-ndk-r8/platforms/android-8/arch-arm/usr/include/KHR/khrplatform.h:
-
-/home/ruki/programs/android-ndk-r8/platforms/android-8/arch-arm/usr/include/stdint.h:
-
-/home/ruki/programs/android-ndk-r8/platforms/android-8/arch-arm/usr/include/sys/_types.h:
-
-/home/ruki/programs/android-ndk-r8/platforms/android-8/arch-arm/usr/include/machine/_types.h:
-
-/home/ruki/programs/android-ndk-r8/platforms/android-8/arch-arm/usr/include/GLES2/gl2ext.h:
 
 jni/../../../path.c:
 
