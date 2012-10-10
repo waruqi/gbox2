@@ -32,8 +32,11 @@
  * macros
  */
 
+// gl apicall
+#define G2_GL_APICALL 							G2_CONFIG_GL_APICALL
+
 // type
-#define G2_GL_INTERFACE_TYPE(func) 				__tb_cdecl__ *g2_##func##_t
+#define G2_GL_INTERFACE_TYPE(func) 				G2_GL_APICALL *g2_##func##_t
 
 // extern
 #define G2_GL_INTERFACE_EXTERN(func) 			extern g2_##func##_t g2_##func

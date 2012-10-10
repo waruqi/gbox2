@@ -51,7 +51,7 @@ CFLAGS 				= \
 					-std=c99 \
 					-fomit-frame-pointer \
 					-D_GNU_SOURCE=1 -D_REENTRANT \
-					-D_STDCALL_SUPPORTED -D_M_IX86 \
+					-DGL_NO_STDCALL -D_M_IX86 \
 					-DFREEGLUT_STATIC \
 					-Wno-parentheses \
 					-Wno-switch -Wno-format-zero-length -Wdisabled-optimization \

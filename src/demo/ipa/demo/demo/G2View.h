@@ -38,7 +38,7 @@
 
 // version
 //#define G2_VIEW_GL_VERSION		(0x19)
-#define G2_VIEW_GL_VERSION		(0x0)
+#define G2_VIEW_GL_VERSION		(G2_CONFIG_GL_VERSION)
 
 /* ///////////////////////////////////////////////////////////////////////
  * interface

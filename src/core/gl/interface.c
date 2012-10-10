@@ -34,8 +34,8 @@
 // check
 #define G2_GL_INTERFACE_CHECK(func) 			tb_assert_and_check_return_val(g2_##func, TB_FALSE)
 
-// wrap & check
-#define G2_GL_INTERFACE_WCHECK(func, wrap) 		if (!g2_##func && g2_##wrap) g2_##func = g2_gl_wraper_##func; tb_assert_and_check_return_val(g2_##func, TB_FALSE)
+// check & wrap
+#define G2_GL_INTERFACE_CHECKW(func, wrap) 		if (!g2_##func && g2_##wrap) g2_##func = g2_gl_wraper_##func; tb_assert_and_check_return_val(g2_##func, TB_FALSE)
 
 /* ///////////////////////////////////////////////////////////////////////
  * functions
@@ -105,7 +105,7 @@ G2_GL_INTERFACE_DEFINE(glViewport);
 /* ///////////////////////////////////////////////////////////////////////
  * wraper
  */
-static g2_GLvoid_t __tb_cdecl__ g2_gl_wraper_glOrthof(g2_GLfloat_t left, g2_GLfloat_t right, g2_GLfloat_t bottom, g2_GLfloat_t top, g2_GLfloat_t near, g2_GLfloat_t far)
+static g2_GLvoid_t G2_GL_APICALL g2_gl_wraper_glOrthof(g2_GLfloat_t left, g2_GLfloat_t right, g2_GLfloat_t bottom, g2_GLfloat_t top, g2_GLfloat_t near, g2_GLfloat_t far)
 {
 	g2_glOrtho(left, right, bottom, top, near, far);
 }
@@ -116,7 +116,7 @@ static g2_GLvoid_t __tb_cdecl__ g2_gl_wraper_glOrthof(g2_GLfloat_t left, g2_GLfl
 
 tb_bool_t g2_gl_interface_check(tb_byte_t version)
 {
-	// check interfaces 
+	// check interfaces for common
 	G2_GL_INTERFACE_CHECK 	(glAlphaFunc);
 	G2_GL_INTERFACE_CHECK 	(glBindTexture);
 	G2_GL_INTERFACE_CHECK 	(glBlendFunc);
@@ -153,7 +153,7 @@ tb_bool_t g2_gl_interface_check(tb_byte_t version)
 		G2_GL_INTERFACE_CHECK 	(glLoadMatrixf);
 		G2_GL_INTERFACE_CHECK 	(glMatrixMode);
 		G2_GL_INTERFACE_CHECK 	(glMultMatrixf);
-		G2_GL_INTERFACE_WCHECK 	(glOrthof, glOrtho);
+		G2_GL_INTERFACE_CHECKW 	(glOrthof, glOrtho);
 		G2_GL_INTERFACE_CHECK 	(glPopMatrix);
 		G2_GL_INTERFACE_CHECK 	(glPushMatrix);
 		G2_GL_INTERFACE_CHECK 	(glRotatef);

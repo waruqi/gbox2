@@ -158,67 +158,78 @@
 	// init gl frame
 	if (![self glFrameInit]) return TB_FALSE;
 	
-	// init gl interfaces
+	// load interfaces for common
 	G2_GL_INTERFACE_LOAD_S(glAlphaFunc);
-	G2_GL_INTERFACE_LOAD_S(glAttachShader);
 	G2_GL_INTERFACE_LOAD_S(glBindTexture);
 	G2_GL_INTERFACE_LOAD_S(glBlendFunc);
 	G2_GL_INTERFACE_LOAD_S(glClear);
 	G2_GL_INTERFACE_LOAD_S(glClearColor);
 	G2_GL_INTERFACE_LOAD_S(glClearStencil);
-	G2_GL_INTERFACE_LOAD_S(glColor4f);
 	G2_GL_INTERFACE_LOAD_S(glColorMask);
+	G2_GL_INTERFACE_LOAD_S(glDeleteTextures);
+	G2_GL_INTERFACE_LOAD_S(glDisable);
+	G2_GL_INTERFACE_LOAD_S(glDrawArrays);
+	G2_GL_INTERFACE_LOAD_S(glEnable);
+	G2_GL_INTERFACE_LOAD_S(glGenTextures);
+	G2_GL_INTERFACE_LOAD_S(glGetString);
+	G2_GL_INTERFACE_LOAD_S(glIsTexture);
+	G2_GL_INTERFACE_LOAD_S(glPixelStorei);
+	G2_GL_INTERFACE_LOAD_S(glStencilFunc);
+	G2_GL_INTERFACE_LOAD_S(glStencilMask);
+	G2_GL_INTERFACE_LOAD_S(glStencilOp);
+#ifndef G2_CONFIG_CORE_GLES
+	G2_GL_INTERFACE_LOAD_S(glTexImage1D);
+#endif
+	G2_GL_INTERFACE_LOAD_S(glTexImage2D);
+	G2_GL_INTERFACE_LOAD_S(glTexParameterf);
+	G2_GL_INTERFACE_LOAD_S(glTexParameteri);
+	G2_GL_INTERFACE_LOAD_S(glViewport);
+
+	// load interfaces for gl 1.x
+	G2_GL_INTERFACE_LOAD_S(glColor4f);
+	G2_GL_INTERFACE_LOAD_S(glDisableClientState);
+	G2_GL_INTERFACE_LOAD_S(glEnableClientState);
+	G2_GL_INTERFACE_LOAD_S(glLoadIdentity);
+	G2_GL_INTERFACE_LOAD_S(glLoadMatrixf);
+	G2_GL_INTERFACE_LOAD_S(glMatrixMode);
+	G2_GL_INTERFACE_LOAD_S(glMultMatrixf);
+# 	ifdef G2_CONFIG_CORE_GLES
+	G2_GL_INTERFACE_LOAD_S(glOrthof);
+# 	else
+	G2_GL_INTERFACE_LOAD_S(glOrtho);
+# 	endif
+	G2_GL_INTERFACE_LOAD_S(glPopMatrix);
+	G2_GL_INTERFACE_LOAD_S(glPushMatrix);
+	G2_GL_INTERFACE_LOAD_S(glRotatef);
+	G2_GL_INTERFACE_LOAD_S(glScalef);
+	G2_GL_INTERFACE_LOAD_S(glTexCoordPointer);
+	G2_GL_INTERFACE_LOAD_S(glTexEnvi);
+	G2_GL_INTERFACE_LOAD_S(glTranslatef);
+	G2_GL_INTERFACE_LOAD_S(glVertexPointer);
+
+	// load interfaces for gl >= 2.0
+#if !G2_VIEW_GL_VERSION || G2_VIEW_GL_VERSION >= 0x20
+	G2_GL_INTERFACE_LOAD_S(glAttachShader);
 	G2_GL_INTERFACE_LOAD_S(glCompileShader);
 	G2_GL_INTERFACE_LOAD_S(glCreateProgram);
 	G2_GL_INTERFACE_LOAD_S(glCreateShader);
 	G2_GL_INTERFACE_LOAD_S(glDeleteProgram);
 	G2_GL_INTERFACE_LOAD_S(glDeleteShader);
-	G2_GL_INTERFACE_LOAD_S(glDeleteTextures);
-	G2_GL_INTERFACE_LOAD_S(glDisable);
-	G2_GL_INTERFACE_LOAD_S(glDisableClientState);
 	G2_GL_INTERFACE_LOAD_S(glDisableVertexAttribArray);
-	G2_GL_INTERFACE_LOAD_S(glDrawArrays);
-	G2_GL_INTERFACE_LOAD_S(glEnable);
-	G2_GL_INTERFACE_LOAD_S(glEnableClientState);
 	G2_GL_INTERFACE_LOAD_S(glEnableVertexAttribArray);
-	G2_GL_INTERFACE_LOAD_S(glGenTextures);
 	G2_GL_INTERFACE_LOAD_S(glGetAttribLocation);
 	G2_GL_INTERFACE_LOAD_S(glGetProgramiv);
 	G2_GL_INTERFACE_LOAD_S(glGetProgramInfoLog);
 	G2_GL_INTERFACE_LOAD_S(glGetShaderiv);
 	G2_GL_INTERFACE_LOAD_S(glGetShaderInfoLog);
-	G2_GL_INTERFACE_LOAD_S(glGetString);
 	G2_GL_INTERFACE_LOAD_S(glGetUniformLocation);
-	G2_GL_INTERFACE_LOAD_S(glIsTexture);
 	G2_GL_INTERFACE_LOAD_S(glLinkProgram);
-	G2_GL_INTERFACE_LOAD_S(glLoadIdentity);
-	G2_GL_INTERFACE_LOAD_S(glLoadMatrixf);
-	G2_GL_INTERFACE_LOAD_S(glMatrixMode);
-	G2_GL_INTERFACE_LOAD_S(glMultMatrixf);
-//	G2_GL_INTERFACE_LOAD_S(glOrtho);
-	G2_GL_INTERFACE_LOAD_S(glOrthof);
-	G2_GL_INTERFACE_LOAD_S(glPixelStorei);
-	G2_GL_INTERFACE_LOAD_S(glPopMatrix);
-	G2_GL_INTERFACE_LOAD_S(glPushMatrix);
-	G2_GL_INTERFACE_LOAD_S(glRotatef);
-	G2_GL_INTERFACE_LOAD_S(glScalef);
 	G2_GL_INTERFACE_LOAD_S(glShaderSource);
-	G2_GL_INTERFACE_LOAD_S(glStencilFunc);
-	G2_GL_INTERFACE_LOAD_S(glStencilMask);
-	G2_GL_INTERFACE_LOAD_S(glStencilOp);
-	G2_GL_INTERFACE_LOAD_S(glTexCoordPointer);
-	G2_GL_INTERFACE_LOAD_S(glTexEnvi);
-//	G2_GL_INTERFACE_LOAD_S(glTexImage1D);
-	G2_GL_INTERFACE_LOAD_S(glTexImage2D);
-	G2_GL_INTERFACE_LOAD_S(glTexParameterf);
-	G2_GL_INTERFACE_LOAD_S(glTexParameteri);
-	G2_GL_INTERFACE_LOAD_S(glTranslatef);
 	G2_GL_INTERFACE_LOAD_S(glUniformMatrix4fv);
 	G2_GL_INTERFACE_LOAD_S(glUseProgram);
 	G2_GL_INTERFACE_LOAD_S(glVertexAttrib4f);
 	G2_GL_INTERFACE_LOAD_S(glVertexAttribPointer);
-	G2_GL_INTERFACE_LOAD_S(glVertexPointer);
-	G2_GL_INTERFACE_LOAD_S(glViewport);
+#endif
 
 	// ok
 	return TB_TRUE;
