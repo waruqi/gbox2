@@ -45,18 +45,24 @@ import android.os.SystemClock;
 import android.app.AlertDialog;  
 import android.content.DialogInterface;  
 import android.content.Intent;
-import android.os.Handler; 
-import android.opengl.GLU;  
-import android.view.GestureDetector;
-import android.view.MotionEvent;
+import android.os.Handler;
+import android.graphics.Rect;
+import android.opengl.GLES20;
+import android.opengl.Matrix;
+import android.content.pm.ConfigurationInfo;
+import android.app.ActivityManager;
+import android.graphics.drawable.BitmapDrawable;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.FileOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.nio.FloatBuffer;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.nio.IntBuffer;
 import javax.microedition.khronos.egl.EGLConfig;
-import javax.microedition.khronos.opengles.GL1x;
+import javax.microedition.khronos.opengles.GL10;
 import java.io.IOException;
 import java.io.File;
 
@@ -76,8 +82,23 @@ class DemoView extends GLSurfaceView
 		// init context
 		this.context = context;
 
+		// version
+		int version = 0x19;
+
+		// has gles2.0?
+		ActivityManager am = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+        ConfigurationInfo info = am.getDeviceConfigurationInfo();
+        if (info.reqGlEsVersion >= 0x20000)
+		{
+			// enbale gles 2.0
+			setEGLContextClientVersion(2);
+
+			// version
+			version = 0x20;
+		}
+
 		// init render
-		setRenderer(new DemoRender(this));
+		setRenderer(new DemoRender(this, version));
 
 		// init focus
 		requestFocus();
@@ -129,36 +150,40 @@ class DemoView extends GLSurfaceView
 	public class DemoRender implements GLSurfaceView.Renderer
 	{
 		// view
-		private DemoView view;
+		private DemoView 	view 	= null;
+
+		// version
+		private int 		version = 0x19;
 
 		// init
-		public DemoRender(DemoView view)
+		public DemoRender(DemoView view, int version)
 		{
-			this.view = view;	
+			this.view = view;
+			this.version = version;
 		}
 
 		// init surface
-		public void onSurfaceCreated(GL1x gl, EGLConfig config)
+		public void onSurfaceCreated(GL10 gl, EGLConfig config)
 		{
 			// init demo
-			demo_init();
+			demo_init(version);
 		}
 
 		// draw frame
-		public void onDrawFrame(GL1x gl)
+		public void onDrawFrame(GL10 gl)
 		{
 			demo_draw();
 		}
 
 		// resize surface
-		public void onSurfaceChanged(GL1x gl, int width, int height)
+		public void onSurfaceChanged(GL10 gl, int width, int height)
 		{
 			demo_size(width, height);
 		}
 	}
 
 	// native
-	private static native void 		demo_init();
+	private static native void 		demo_init(int version);
 	private static native void 		demo_exit();
 	private static native void 		demo_draw();
 	private static native void 		demo_size(int width, int height);

@@ -94,16 +94,8 @@ tb_bool_t g2_demo_gbox2_init(tb_int_t argc, tb_char_t const** argv, tb_byte_t ve
 	tb_size_t height = [[UIScreen mainScreen] bounds].size.height;
 	
 	// init context
-#if defined(G2_CONFIG_CORE_GL) || defined(G2_CONFIG_CORE_GLES)
 	g_context = g2_context_init_gl(G2_VIEW_PIXFMT, width, height, version);
 	tb_assert_and_check_return_val(g_context, TB_FALSE);
-#elif defined(G2_CONFIG_CORE_SKIA)
-	g_context = g2_context_init_skia(G2_DEMO_PIXFMT, TB_NULL, width, height, 0);
-	tb_assert_and_check_return_val(g_context, TB_FALSE);
-#else
-	g_context = g2_context_init_soft(G2_DEMO_PIXFMT, TB_NULL, width, height, 0);
-	tb_assert_and_check_return_val(g_context, TB_FALSE);
-#endif
 	
 	// init surface
 	g_surface = g2_context_surface(g_context);
@@ -131,9 +123,11 @@ tb_void_t g2_demo_gbox2_exit()
 {
 	// exit painter
 	if (g_painter) g2_exit(g_painter);
-	
+	g_painter = TB_NULL;
+
 	// exit context
 	if (g_context) g2_context_exit(g_context);
+	g_context = TB_NULL;
 }
 
 /* ///////////////////////////////////////////////////////////////////////

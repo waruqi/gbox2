@@ -2,7 +2,7 @@
 include $(PRO_DIR)/prefix.mak
 
 # demo
-SUB_PROS 				= gl1x
+SUB_PROS 				= demo
 
 include $(PRO_DIR)/suffix.mak
 

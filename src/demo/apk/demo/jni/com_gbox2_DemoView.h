@@ -1,30 +1,26 @@
+#ifndef G2_APK_GL1x_JNI_H
+#define G2_APK_GL1x_JNI_H
+
+// c plus plus
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /* ///////////////////////////////////////////////////////////////////////
  * includes
  */
-#include "prefix.h"
+#include <jni.h>
 
 /* ///////////////////////////////////////////////////////////////////////
- * implementation
+ * interfaces
  */
-
 /*
  * Class:     com_gbox2_DemoView
  * Method:    demo_init
- * Signature: ()Z
+ * Signature: (I)Z
  */
 JNIEXPORT jboolean JNICALL Java_com_gbox2_DemoView_demo_1init
-  (JNIEnv * env, jclass this)
-{
-	// init tbox
-	static tb_bool_t init = TB_FALSE;
-	if (!init)
-	{
-		if (!tb_init(TB_NULL, 0)) return JNI_FALSE;
-		init = TB_TRUE;
-	}
-
-	return g2_demo_gl_init()? JNI_TRUE : JNI_FALSE;
-}
+  (JNIEnv *, jclass, jint);
 
 /*
  * Class:     com_gbox2_DemoView
@@ -32,10 +28,7 @@ JNIEXPORT jboolean JNICALL Java_com_gbox2_DemoView_demo_1init
  * Signature: ()V
  */
 JNIEXPORT void JNICALL Java_com_gbox2_DemoView_demo_1exit
-  (JNIEnv * env, jclass this)
-{
-	g2_demo_gl_exit();
-}
+  (JNIEnv *, jclass);
 
 /*
  * Class:     com_gbox2_DemoView
@@ -43,10 +36,7 @@ JNIEXPORT void JNICALL Java_com_gbox2_DemoView_demo_1exit
  * Signature: ()V
  */
 JNIEXPORT void JNICALL Java_com_gbox2_DemoView_demo_1draw
-  (JNIEnv * env, jclass this)
-{
-	g2_demo_gl_draw();
-}
+  (JNIEnv *, jclass);
 
 /*
  * Class:     com_gbox2_DemoView
@@ -54,10 +44,7 @@ JNIEXPORT void JNICALL Java_com_gbox2_DemoView_demo_1draw
  * Signature: (II)V
  */
 JNIEXPORT void JNICALL Java_com_gbox2_DemoView_demo_1size
-  (JNIEnv * env, jclass this, jint width, jint height)
-{
-	g2_demo_gl_size(width, height);
-}
+  (JNIEnv *, jclass, jint, jint);
 
 /*
  * Class:     com_gbox2_DemoView
@@ -65,10 +52,7 @@ JNIEXPORT void JNICALL Java_com_gbox2_DemoView_demo_1size
  * Signature: (FF)V
  */
 JNIEXPORT void JNICALL Java_com_gbox2_DemoView_demo_1move
-  (JNIEnv * env, jclass this, jfloat x, jfloat y)
-{
-	g2_demo_gl_move((tb_long_t)x, (tb_long_t)y);
-}
+  (JNIEnv *, jclass, jfloat, jfloat);
 
 /*
  * Class:     com_gbox2_DemoView
@@ -76,10 +60,7 @@ JNIEXPORT void JNICALL Java_com_gbox2_DemoView_demo_1move
  * Signature: ()I
  */
 JNIEXPORT jint JNICALL Java_com_gbox2_DemoView_demo_1tfps
-  (JNIEnv * env, jclass this)
-{
-	return g2_demo_gl_tfps();
-}
+  (JNIEnv *, jclass);
 
 /*
  * Class:     com_gbox2_DemoView
@@ -87,18 +68,21 @@ JNIEXPORT jint JNICALL Java_com_gbox2_DemoView_demo_1tfps
  * Signature: ()I
  */
 JNIEXPORT jint JNICALL Java_com_gbox2_DemoView_demo_1trpt
-  (JNIEnv * env, jclass this)
-{
-	return g2_demo_gl_trpt();
-}
+  (JNIEnv *, jclass);
+
 /*
  * Class:     com_gbox2_DemoView
  * Method:    demo_tkey
  * Signature: (I)V
  */
 JNIEXPORT void JNICALL Java_com_gbox2_DemoView_demo_1tkey
-  (JNIEnv * env, jclass this, jint key)
-{
-	g2_demo_gl_tkey(key);
+  (JNIEnv *, jclass, jint );
+
+// c plus plus
+#ifdef __cplusplus
 }
+#endif
+
+#endif
+
 

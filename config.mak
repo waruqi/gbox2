@@ -2,15 +2,15 @@
 IS_CONFIG = yes
 
 # architecture
-PLAT = ios_armv7
+PLAT = android_armv5te
 
 # root
-PRO_DIR = /Users/ruki/projects/personal/gbox2
+PRO_DIR = /home/ruki/projects/personal/gbox2
 PRO_NAME = gbox2
 DEBUG = y
-SDK = /Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS5.1.sdk
+SDK = /home/ruki/programs/android-sdk-linux_x86
 NDK = /home/ruki/programs/android-ndk-r8
-BIN = /Developer/Platforms/iPhoneOS.platform/Developer/usr/bin
+BIN = /home/ruki/programs/android-ndk-r8/toolchains/arm-linux-androideabi-4.4.3/prebuilt/linux-x86/bin
 HOST = mac
 CCACHE = ccache
 DISTCC =
