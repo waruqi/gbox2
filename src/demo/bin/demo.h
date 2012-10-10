@@ -308,6 +308,8 @@ static tb_void_t g2_demo_gbox2_init_gl()
 	G2_GL_INTERFACE_LOAD_S(glCompileShader);
 	G2_GL_INTERFACE_LOAD_S(glCreateProgram);
 	G2_GL_INTERFACE_LOAD_S(glCreateShader);
+	G2_GL_INTERFACE_LOAD_S(glDeleteProgram);
+	G2_GL_INTERFACE_LOAD_S(glDeleteShader);
 	G2_GL_INTERFACE_LOAD_S(glDeleteTextures);
 	G2_GL_INTERFACE_LOAD_S(glDisable);
 	G2_GL_INTERFACE_LOAD_S(glDisableClientState);
