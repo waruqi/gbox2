@@ -324,10 +324,10 @@ tb_handle_t g2_shader_init_linear(tb_handle_t context, g2_point_t const* pb, g2_
 	if (alpha) shader->flag |= G2_GL_SHADER_FLAG_ALPHA;
 
 	// make texture
-	glBindTexture(GL_TEXTURE_1D, *shader->texture);
- 	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+	g2_glBindTexture(G2_GL_TEXTURE_1D, *shader->texture);
+ 	g2_glPixelStorei(G2_GL_UNPACK_ALIGNMENT, 1);
 #ifndef TB_CONFIG_OS_IOS
-	glTexImage1D(GL_TEXTURE_1D, 0, GL_RGBA, G2_GL_SHADER_GRAD_TEXCOORD_SIZE, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+	g2_glTexImage1D(G2_GL_TEXTURE_1D, 0, G2_GL_RGBA, G2_GL_SHADER_GRAD_TEXCOORD_SIZE, 0, G2_GL_RGBA, G2_GL_UNSIGNED_BYTE, data);
 #endif
 
 	// ok
@@ -363,10 +363,10 @@ tb_handle_t g2_shader_init_radial(tb_handle_t context, g2_circle_t const* cp, g2
 	if (alpha) shader->flag |= G2_GL_SHADER_FLAG_ALPHA;
 
 	// make texture
-	glBindTexture(GL_TEXTURE_1D, *shader->texture);
- 	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+	g2_glBindTexture(G2_GL_TEXTURE_1D, *shader->texture);
+ 	g2_glPixelStorei(G2_GL_UNPACK_ALIGNMENT, 1);
 #ifndef TB_CONFIG_OS_IOS
-	glTexImage1D(GL_TEXTURE_1D, 0, GL_RGBA, G2_GL_SHADER_GRAD_TEXCOORD_SIZE, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+	g2_glTexImage1D(G2_GL_TEXTURE_1D, 0, G2_GL_RGBA, G2_GL_SHADER_GRAD_TEXCOORD_SIZE, 0, G2_GL_RGBA, G2_GL_UNSIGNED_BYTE, data);
 #endif
 
 	// ok
@@ -403,10 +403,10 @@ tb_handle_t g2_shader_init_radial2(tb_handle_t context, g2_circle_t const* cb, g
 	if (alpha) shader->flag |= G2_GL_SHADER_FLAG_ALPHA;
 
 	// make texture
-	glBindTexture(GL_TEXTURE_1D, *shader->texture);
- 	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+	g2_glBindTexture(G2_GL_TEXTURE_1D, *shader->texture);
+ 	g2_glPixelStorei(G2_GL_UNPACK_ALIGNMENT, 1);
 #ifndef TB_CONFIG_OS_IOS
-	glTexImage1D(GL_TEXTURE_1D, 0, GL_RGBA, G2_GL_SHADER_GRAD_TEXCOORD_SIZE, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+	g2_glTexImage1D(G2_GL_TEXTURE_1D, 0, G2_GL_RGBA, G2_GL_SHADER_GRAD_TEXCOORD_SIZE, 0, G2_GL_RGBA, G2_GL_UNSIGNED_BYTE, data);
 #endif
 	
 	// ok
@@ -449,8 +449,8 @@ tb_handle_t g2_shader_init_bitmap(tb_handle_t context, tb_handle_t bitmap, tb_si
 		shader->flag |= G2_GL_SHADER_FLAG_ALPHA;
 
 	// make texture
-	glBindTexture(GL_TEXTURE_2D, *shader->texture);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, G2_PIXFMT_BE(pixfmt)? GL_RGBA : GL_BGRA, GL_UNSIGNED_BYTE, data);
+	g2_glBindTexture(G2_GL_TEXTURE_2D, *shader->texture);
+	g2_glTexImage2D(G2_GL_TEXTURE_2D, 0, G2_GL_RGBA, width, height, 0, G2_PIXFMT_BE(pixfmt)? G2_GL_RGBA : G2_GL_BGRA, G2_GL_UNSIGNED_BYTE, data);
 
 	// ok
 	return shader;

@@ -14,6 +14,7 @@
 # 	include <GLES/gl.h>
 # 	include <GLES/glext.h>
 #else
+# 	define GL_GLEXT_PROTOTYPES
 # 	include <GL/glut.h>
 # 	include <GL/glext.h>
 #endif
@@ -269,7 +270,7 @@ static tb_void_t g2_demo_gl_move(tb_int_t x, tb_int_t y)
 
 	g2_demo_move(x, y);
 }
-tb_bool_t g2_demo_gl_init(tb_int_t argc, tb_char_t** argv)
+static tb_bool_t g2_demo_gl_init(tb_int_t argc, tb_char_t** argv)
 {
 	// init gl
 	glutInit (&argc, argv);
@@ -293,11 +294,73 @@ tb_bool_t g2_demo_gl_init(tb_int_t argc, tb_char_t** argv)
 /* ////////////////////////////////////////////////////////////////////////
  * gbox2
  */
-tb_bool_t g2_demo_gbox2_init(tb_int_t argc, tb_char_t** argv)
+static tb_void_t g2_demo_gbox2_init_gl()
+{
+	G2_GL_INTERFACE_LOAD_S(glAlphaFunc);
+	G2_GL_INTERFACE_LOAD_S(glAttachShader);
+	G2_GL_INTERFACE_LOAD_S(glBindTexture);
+	G2_GL_INTERFACE_LOAD_S(glBlendFunc);
+	G2_GL_INTERFACE_LOAD_S(glClear);
+	G2_GL_INTERFACE_LOAD_S(glClearColor);
+	G2_GL_INTERFACE_LOAD_S(glClearStencil);
+	G2_GL_INTERFACE_LOAD_S(glColor4f);
+	G2_GL_INTERFACE_LOAD_S(glColorMask);
+	G2_GL_INTERFACE_LOAD_S(glCompileShader);
+	G2_GL_INTERFACE_LOAD_S(glCreateProgram);
+	G2_GL_INTERFACE_LOAD_S(glCreateShader);
+	G2_GL_INTERFACE_LOAD_S(glDeleteTextures);
+	G2_GL_INTERFACE_LOAD_S(glDisable);
+	G2_GL_INTERFACE_LOAD_S(glDisableClientState);
+	G2_GL_INTERFACE_LOAD_S(glDisableVertexAttribArray);
+	G2_GL_INTERFACE_LOAD_S(glDrawArrays);
+	G2_GL_INTERFACE_LOAD_S(glEnable);
+	G2_GL_INTERFACE_LOAD_S(glEnableClientState);
+	G2_GL_INTERFACE_LOAD_S(glEnableVertexAttribArray);
+	G2_GL_INTERFACE_LOAD_S(glGenTextures);
+	G2_GL_INTERFACE_LOAD_S(glGetAttribLocation);
+	G2_GL_INTERFACE_LOAD_S(glGetProgramiv);
+	G2_GL_INTERFACE_LOAD_S(glGetProgramInfoLog);
+	G2_GL_INTERFACE_LOAD_S(glGetShaderiv);
+	G2_GL_INTERFACE_LOAD_S(glGetShaderInfoLog);
+	G2_GL_INTERFACE_LOAD_S(glGetString);
+	G2_GL_INTERFACE_LOAD_S(glGetUniformLocation);
+	G2_GL_INTERFACE_LOAD_S(glIsTexture);
+	G2_GL_INTERFACE_LOAD_S(glLinkProgram);
+	G2_GL_INTERFACE_LOAD_S(glLoadIdentity);
+	G2_GL_INTERFACE_LOAD_S(glLoadMatrixf);
+	G2_GL_INTERFACE_LOAD_S(glMatrixMode);
+	G2_GL_INTERFACE_LOAD_S(glMultMatrixf);
+	G2_GL_INTERFACE_LOAD_S(glOrtho);
+//	G2_GL_INTERFACE_LOAD_S(glOrthof);
+	G2_GL_INTERFACE_LOAD_S(glPixelStorei);
+	G2_GL_INTERFACE_LOAD_S(glPopMatrix);
+	G2_GL_INTERFACE_LOAD_S(glPushMatrix);
+	G2_GL_INTERFACE_LOAD_S(glRotatef);
+	G2_GL_INTERFACE_LOAD_S(glScalef);
+	G2_GL_INTERFACE_LOAD_S(glShaderSource);
+	G2_GL_INTERFACE_LOAD_S(glStencilFunc);
+	G2_GL_INTERFACE_LOAD_S(glStencilMask);
+	G2_GL_INTERFACE_LOAD_S(glStencilOp);
+	G2_GL_INTERFACE_LOAD_S(glTexCoordPointer);
+	G2_GL_INTERFACE_LOAD_S(glTexEnvi);
+	G2_GL_INTERFACE_LOAD_S(glTexImage1D);
+	G2_GL_INTERFACE_LOAD_S(glTexImage2D);
+	G2_GL_INTERFACE_LOAD_S(glTexParameterf);
+	G2_GL_INTERFACE_LOAD_S(glTexParameteri);
+	G2_GL_INTERFACE_LOAD_S(glTranslatef);
+	G2_GL_INTERFACE_LOAD_S(glUniformMatrix4fv);
+	G2_GL_INTERFACE_LOAD_S(glUseProgram);
+	G2_GL_INTERFACE_LOAD_S(glVertexAttrib4f);
+	G2_GL_INTERFACE_LOAD_S(glVertexAttribPointer);
+	G2_GL_INTERFACE_LOAD_S(glVertexPointer);
+	G2_GL_INTERFACE_LOAD_S(glViewport);
+}
+static tb_bool_t g2_demo_gbox2_init(tb_int_t argc, tb_char_t** argv)
 {
 	// init context
 #if defined(G2_CONFIG_CORE_GL) || defined(G2_CONFIG_CORE_GLES)
-	g_context = g2_context_init_gl(G2_DEMO_PIXFMT, G2_DEMO_WIDTH, G2_DEMO_HEIGHT, 0x0);
+	g2_demo_gbox2_init_gl();
+	g_context = g2_context_init_gl(G2_DEMO_PIXFMT, G2_DEMO_WIDTH, G2_DEMO_HEIGHT, 0x19);
 	tb_assert_and_check_return_val(g_context, TB_FALSE);
 #elif defined(G2_CONFIG_CORE_SKIA)
 	g_context = g2_context_init_skia(G2_DEMO_PIXFMT, TB_NULL, G2_DEMO_WIDTH, G2_DEMO_HEIGHT, 0);
@@ -329,7 +392,7 @@ tb_bool_t g2_demo_gbox2_init(tb_int_t argc, tb_char_t** argv)
 	// ok
 	return TB_TRUE;
 }
-tb_void_t g2_demo_gbox2_exit()
+static tb_void_t g2_demo_gbox2_exit()
 {
 	// exit painter
 	if (g_painter) g2_exit(g_painter);

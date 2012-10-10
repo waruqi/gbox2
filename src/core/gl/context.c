@@ -53,7 +53,7 @@
 static __tb_inline__ tb_byte_t g2_gl_context_version()
 {
 	// version 
-	tb_char_t const* version = glGetString(GL_VERSION);
+	tb_char_t const* version = g2_glGetString(G2_GL_VERSION);
 	tb_assert_and_check_return_val(version && tb_isdigit(version[0]) && version[1] == '.' && tb_isdigit(version[2]), 0);
 
 	// major & minor
@@ -68,7 +68,7 @@ static __tb_inline__ tb_byte_t g2_gl_context_version()
 }
 static __tb_inline__ tb_void_t g2_gl_context_extensions(g2_gl_context_t* context)
 {
-	tb_char_t const* 	p = glGetString(GL_EXTENSIONS);
+	tb_char_t const* 	p = g2_glGetString(G2_GL_EXTENSIONS);
 	tb_size_t 			n = tb_strlen(p);
 	tb_char_t const* 	e = p + n;
 	tb_assert_and_check_return(p && n);
@@ -245,13 +245,13 @@ tb_handle_t g2_context_init_gl(tb_size_t pixfmt, tb_size_t width, tb_size_t heig
 	// check
 	tb_assert_and_check_return_val(G2_PIXFMT_OK(pixfmt) && width && height, TB_NULL);
 
-	// check type
-	tb_assert_static(sizeof(GLfloat) == sizeof(tb_float_t));
-
 	// check pixfmt
 	tb_assert_and_check_return_val( 	G2_PIXFMT(pixfmt) == G2_PIXFMT_ARGB8888
 									|| 	G2_PIXFMT(pixfmt) == G2_PIXFMT_ARGB4444 
 									|| 	G2_PIXFMT(pixfmt) == G2_PIXFMT_RGB565, TB_NULL);
+
+	// check interfaces
+	tb_check_return_val(g2_gl_interface_check(version), TB_NULL);
 
 	// alloc
 	g2_gl_context_t* gcontext = tb_malloc0(sizeof(g2_gl_context_t));
@@ -275,7 +275,7 @@ tb_handle_t g2_context_init_gl(tb_size_t pixfmt, tb_size_t width, tb_size_t heig
 	tb_memset(gcontext->used, 0, G2_GL_TEXTURE_MAXN);
 
 	// init texture
- 	glGenTextures(G2_GL_TEXTURE_MAXN, gcontext->texture);
+ 	g2_glGenTextures(G2_GL_TEXTURE_MAXN, gcontext->texture);
 	gcontext->texture_pred = 0;
 
 	// init shaders
@@ -283,7 +283,7 @@ tb_handle_t g2_context_init_gl(tb_size_t pixfmt, tb_size_t width, tb_size_t heig
 	gcontext->shaders_pred = 0;
 
 	// init viewport
-	glViewport(0, 0, width, height);
+	g2_glViewport(0, 0, width, height);
 
 	// init programs
 	if (gcontext->version >= 0x20)
@@ -317,35 +317,30 @@ tb_handle_t g2_context_init_gl(tb_size_t pixfmt, tb_size_t width, tb_size_t heig
 	// init matrix
 	if (gcontext->version < 0x20)
 	{
-		glMatrixMode(GL_PROJECTION);
-		glLoadIdentity();
-		glOrtho(0.0f, (tb_float_t)width, (tb_float_t)height, 0.0f, -1.0f, 1.0f);
-		glMatrixMode(GL_MODELVIEW);
+		g2_glMatrixMode(G2_GL_PROJECTION);
+		g2_glLoadIdentity();
+		g2_glOrthof(0.0f, (tb_float_t)width, (tb_float_t)height, 0.0f, -1.0f, 1.0f);
+		g2_glMatrixMode(G2_GL_MODELVIEW);
 	}
 	else g2_gl_matrix_ortho(gcontext->matrix, 0.0f, (tb_float_t)width, (tb_float_t)height, 0.0f, -1.0f, 1.0f);
 
 	// disable antialiasing
-	glDisable(GL_POINT_SMOOTH);
-	glDisable(GL_LINE_SMOOTH);
-#if !defined(TB_CONFIG_OS_ANDROID) && !defined(TB_CONFIG_OS_IOS)
-	glDisable(GL_POLYGON_SMOOTH);
-#endif
-	glDisable(GL_MULTISAMPLE);
+	g2_glDisable(G2_GL_MULTISAMPLE);
 
 	// disable blend
-	glDisable(GL_BLEND);
+	g2_glDisable(G2_GL_BLEND);
 
 	// disable texture
-	glDisable(GL_TEXTURE_1D);
-	glDisable(GL_TEXTURE_2D);
+	g2_glDisable(G2_GL_TEXTURE_1D);
+	g2_glDisable(G2_GL_TEXTURE_2D);
 
 	if (gcontext->version < 0x20)
 	{
 		// disable vertices
-		glDisableClientState(GL_VERTEX_ARRAY);
+		g2_glDisableClientState(G2_GL_VERTEX_ARRAY);
 
 		// disable texcoords
-		glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+		g2_glDisableClientState(G2_GL_TEXTURE_COORD_ARRAY);
 	}
 
 	// ok
@@ -385,7 +380,7 @@ tb_void_t g2_context_exit(tb_handle_t context)
 		}
 		
 		// exit texture
-		glDeleteTextures(G2_GL_TEXTURE_MAXN, gcontext->texture);
+		g2_glDeleteTextures(G2_GL_TEXTURE_MAXN, gcontext->texture);
 
 		// free surface
 		if (gcontext->surface) g2_bitmap_exit(gcontext->surface);
@@ -410,15 +405,15 @@ tb_handle_t g2_context_resize(tb_handle_t context, tb_size_t width, tb_size_t he
 	if (!g2_bitmap_resize(gcontext->surface, width, height)) return TB_NULL;
 
 	// update viewport
-	glViewport(0, 0, width, height);
+	g2_glViewport(0, 0, width, height);
 
 	// update matrix	
 	if (gcontext->version < 0x20)
 	{
-		glMatrixMode(GL_PROJECTION);
-		glLoadIdentity();
-		glOrtho(0.0f, (tb_float_t)width, (tb_float_t)height, 0.0f, -1.0f, 1.0f);
-		glMatrixMode(GL_MODELVIEW);
+		g2_glMatrixMode(G2_GL_PROJECTION);
+		g2_glLoadIdentity();
+		g2_glOrthof(0.0f, (tb_float_t)width, (tb_float_t)height, 0.0f, -1.0f, 1.0f);
+		g2_glMatrixMode(G2_GL_MODELVIEW);
 	}
 	else g2_gl_matrix_ortho(gcontext->matrix, 0.0f, (tb_float_t)width, (tb_float_t)height, 0.0f, -1.0f, 1.0f);
 

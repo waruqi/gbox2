@@ -128,7 +128,8 @@ INC_FILES 				= \
 						core/bitmap.h \
 						core/matrix.h \
 						core/context.h \
-						core/painter.h
+						core/painter.h \
+						core/gl/interface.h
 	
 	
 # freetype files

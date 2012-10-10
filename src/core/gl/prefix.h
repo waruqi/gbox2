@@ -41,38 +41,7 @@
 #include "matrix.h"
 #include "interface.h"
 #include "extensions.h"
-#if defined(TB_CONFIG_OS_MAC)
-# 	include <OpenGL/gl.h>
-# 	include <OpenGL/glu.h>
-# 	include <GLUT/glut.h>
-#elif defined(TB_CONFIG_OS_IOS)
-#	include <OpenGLES/ES1/gl.h>
-#	include <OpenGLES/ES1/glext.h>
-#	include <OpenGLES/ES2/gl.h>
-#	include <OpenGLES/ES2/glext.h>
-#elif defined(TB_CONFIG_OS_ANDROID)
-# 	include <GLES/gl.h>
-# 	include <GLES/glext.h>
-# 	include <GLES2/gl2.h>
-# 	include <GLES2/gl2ext.h>
-#else
-# 	define GL_GLEXT_PROTOTYPES
-# 	include <GL/glut.h>
-# 	include <GL/glext.h>
-#endif
 
-/* ///////////////////////////////////////////////////////////////////////
- * macros
- */
-#ifdef G2_CONFIG_CORE_GLES
-# 	define glOrtho 				glOrthof
-# 	define GL_TEXTURE_1D 		GL_TEXTURE_2D
-# 	define GL_CLAMP_TO_BORDER 	GL_CLAMP_TO_EDGE
-#endif
-
-#ifndef GL_MIRRORED_REPEAT
-# 	define GL_MIRRORED_REPEAT 	GL_MIRRORED_REPEAT_ARB
-#endif
 
 #endif
 

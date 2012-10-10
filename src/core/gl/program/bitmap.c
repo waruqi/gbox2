@@ -84,10 +84,10 @@ tb_handle_t g2_gl_program_init_bitmap()
 
 
 	// load shader: vertex
-	if (!g2_gl_program_load(program, vshader, GL_VERTEX_SHADER)) goto fail;
+	if (!g2_gl_program_load(program, vshader, G2_GL_VERTEX_SHADER)) goto fail;
 	
 	// load shader: fragment
-	if (!g2_gl_program_load(program, fshader, GL_FRAGMENT_SHADER)) goto fail;
+	if (!g2_gl_program_load(program, fshader, G2_GL_FRAGMENT_SHADER)) goto fail;
 
 	// make program
 	if (!g2_gl_program_make(program)) goto fail;
