@@ -184,9 +184,15 @@ tb_void_t g2_demo_gl_exit()
 
 	// exit painter
 	if (g_painter) g2_exit(g_painter);
-	
+	g_painter = TB_NULL;
+
 	// exit context
 	if (g_context) g2_context_exit(g_context);
+	g_context = TB_NULL;
+
+	// exit library
+	if (g_library) tb_dynamic_exit(g_library);
+	g_library = TB_NULL;
 }
 tb_void_t g2_demo_gl_draw()
 {	
