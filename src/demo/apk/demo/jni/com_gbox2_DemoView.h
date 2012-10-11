@@ -17,10 +17,10 @@ extern "C" {
 /*
  * Class:     com_gbox2_DemoView
  * Method:    demo_init
- * Signature: (I)Z
+ * Signature: (III)Z
  */
 JNIEXPORT jboolean JNICALL Java_com_gbox2_DemoView_demo_1init
-  (JNIEnv *, jclass, jint);
+  (JNIEnv *, jclass, jint, jint, jint);
 
 /*
  * Class:     com_gbox2_DemoView

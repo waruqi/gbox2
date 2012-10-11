@@ -24,6 +24,7 @@ install : .null
 clean : .null
 	-@$(RM) ./jni/*.o
 	-@$(RMDIR) -rf ./gen
+	-@$(RMDIR) -rf ./obj
 	-@$(RMDIR) -rf ./bin
 
 # make update

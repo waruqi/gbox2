@@ -72,7 +72,10 @@ import java.io.File;
 class DemoView extends GLSurfaceView
 {
 	// context
-	private Context 			context 		= null;
+	private Context 				context 	= null;
+	
+	// chooser
+	private DemoViewConfigChooser 	chooser 	= null;
 
 	// init
 	public DemoView(Context context, AttributeSet attrs) 
@@ -96,6 +99,13 @@ class DemoView extends GLSurfaceView
 			// version
 			version = 0x20;
 		}
+
+		// init config chooser
+//		setEGLConfigChooser(8, 8, 8, 8, 16, 4); //!< no multisample
+
+		// @note multisample is not supported for gl 1.x now.
+		// @note render bitmap is not supported for gl >= 2.0 now.
+		setEGLConfigChooser(chooser = new DemoViewConfigChooser(8, 8, 8, 8, 16, 4, 4, version)); //!< multisample: 4 samples
 
 		// init render
 		setRenderer(new DemoRender(this, version));
@@ -166,12 +176,20 @@ class DemoView extends GLSurfaceView
 		public void onSurfaceCreated(GL10 gl, EGLConfig config)
 		{
 			// init demo
-			demo_init(version);
+			demo_init(view.getWidth(), view.getHeight(), version);
 		}
 
 		// draw frame
 		public void onDrawFrame(GL10 gl)
 		{
+			if (chooser != null && chooser.usesCoverageAa())
+			{
+				final int GL_COVERAGE_BUFFER_BIT_NV = 0x8000;
+				if (version < 0x20) gl.glClear(GL_COVERAGE_BUFFER_BIT_NV);
+				else GLES20.glClear(GL_COVERAGE_BUFFER_BIT_NV);
+				Log.i("gbox2", "clear GL_COVERAGE_BUFFER_BIT_NV");
+			}
+
 			demo_draw();
 		}
 
@@ -183,7 +201,7 @@ class DemoView extends GLSurfaceView
 	}
 
 	// native
-	private static native void 		demo_init(int version);
+	private static native void 		demo_init(int width, int height, int version);
 	private static native void 		demo_exit();
 	private static native void 		demo_draw();
 	private static native void 		demo_size(int width, int height);

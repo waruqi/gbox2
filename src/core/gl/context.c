@@ -262,7 +262,7 @@ tb_handle_t g2_context_init_gl(tb_size_t pixfmt, tb_size_t width, tb_size_t heig
 	tb_assert_and_check_goto(gcontext->version >= 0x10, fail);
 
 	// init extensions
-#ifndef TB_CONFIG_OS_IOS
+#ifndef G2_CONFIG_CORE_GLES
 	g2_gl_context_extensions(gcontext);
 	tb_assert_and_check_goto(gcontext->extensions[G2_GL_EXT_ARB_texture_non_power_of_two], fail);
 #endif
@@ -300,7 +300,7 @@ tb_handle_t g2_context_init_gl(tb_size_t pixfmt, tb_size_t width, tb_size_t heig
 			tb_assert_and_check_break(gcontext->programs[G2_GL_PROGRAM_TYPE_BITMAP]);
 
 			// init gradient program
-#ifndef TB_CONFIG_OS_IOS
+#ifndef G2_CONFIG_CORE_GLES
 			gcontext->programs[G2_GL_PROGRAM_TYPE_GRADIENT] = g2_gl_program_init_gradient();
 			tb_assert_and_check_break(gcontext->programs[G2_GL_PROGRAM_TYPE_GRADIENT]);
 #endif

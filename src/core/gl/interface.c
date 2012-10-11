@@ -117,12 +117,12 @@ static g2_GLvoid_t G2_GL_APICALL g2_gl_wraper_glOrthof(g2_GLfloat_t left, g2_GLf
 tb_bool_t g2_gl_interface_check(tb_byte_t version)
 {
 	// check interfaces for common
-	G2_GL_INTERFACE_CHECK 	(glAlphaFunc);
+//	G2_GL_INTERFACE_CHECK 	(glAlphaFunc);
 	G2_GL_INTERFACE_CHECK 	(glBindTexture);
 	G2_GL_INTERFACE_CHECK 	(glBlendFunc);
 	G2_GL_INTERFACE_CHECK 	(glClear);
 	G2_GL_INTERFACE_CHECK 	(glClearColor);
-	G2_GL_INTERFACE_CHECK 	(glClearStencil);
+//	G2_GL_INTERFACE_CHECK 	(glClearStencil);
 	G2_GL_INTERFACE_CHECK 	(glColorMask);
 	G2_GL_INTERFACE_CHECK 	(glDeleteTextures);
 	G2_GL_INTERFACE_CHECK 	(glDisable);
@@ -130,8 +130,8 @@ tb_bool_t g2_gl_interface_check(tb_byte_t version)
 	G2_GL_INTERFACE_CHECK 	(glEnable);
 	G2_GL_INTERFACE_CHECK 	(glGenTextures);
 	G2_GL_INTERFACE_CHECK 	(glGetString);
-	G2_GL_INTERFACE_CHECK 	(glIsTexture);
-	G2_GL_INTERFACE_CHECK 	(glPixelStorei);
+//	G2_GL_INTERFACE_CHECK 	(glIsTexture);
+//	G2_GL_INTERFACE_CHECK 	(glPixelStorei);
 	G2_GL_INTERFACE_CHECK 	(glStencilFunc);
 	G2_GL_INTERFACE_CHECK 	(glStencilMask);
 	G2_GL_INTERFACE_CHECK 	(glStencilOp);
@@ -156,11 +156,11 @@ tb_bool_t g2_gl_interface_check(tb_byte_t version)
 		G2_GL_INTERFACE_CHECKW 	(glOrthof, glOrtho);
 		G2_GL_INTERFACE_CHECK 	(glPopMatrix);
 		G2_GL_INTERFACE_CHECK 	(glPushMatrix);
-		G2_GL_INTERFACE_CHECK 	(glRotatef);
-		G2_GL_INTERFACE_CHECK 	(glScalef);
+//		G2_GL_INTERFACE_CHECK 	(glRotatef);
+//		G2_GL_INTERFACE_CHECK 	(glScalef);
 		G2_GL_INTERFACE_CHECK 	(glTexCoordPointer);
 		G2_GL_INTERFACE_CHECK 	(glTexEnvi);
-		G2_GL_INTERFACE_CHECK 	(glTranslatef);
+//		G2_GL_INTERFACE_CHECK 	(glTranslatef);
 		G2_GL_INTERFACE_CHECK 	(glVertexPointer);
 	}
 	// check interfaces for gl >= 2.0

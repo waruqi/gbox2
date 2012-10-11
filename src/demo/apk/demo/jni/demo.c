@@ -62,92 +62,88 @@ static g2_matrix_t 	g_mx;
  * implementation
  */
 
-tb_bool_t g2_demo_gl_init(tb_byte_t version)
+tb_bool_t g2_demo_gl_init(tb_size_t width, tb_size_t height, tb_byte_t version)
 {
 	// init library
-	//RTLD_NOW
-	g_library = tb_dynamic_init("libGLESv1_CM.so");
+	g_library = version < 0x20? tb_dynamic_init("libGLESv1_CM.so") : tb_dynamic_init("libGLESv2.so");
 	tb_assert_and_check_return_val(g_library, TB_FALSE);
 
-#if 0
 	// load interfaces for common
-	G2_GL_INTERFACE_LOAD_S(glAlphaFunc);
-	G2_GL_INTERFACE_LOAD_S(glBindTexture);
-	G2_GL_INTERFACE_LOAD_S(glBlendFunc);
-	G2_GL_INTERFACE_LOAD_S(glClear);
-	G2_GL_INTERFACE_LOAD_S(glClearColor);
-	G2_GL_INTERFACE_LOAD_S(glClearStencil);
-	G2_GL_INTERFACE_LOAD_S(glColorMask);
-	G2_GL_INTERFACE_LOAD_S(glDeleteTextures);
-	G2_GL_INTERFACE_LOAD_S(glDisable);
-	G2_GL_INTERFACE_LOAD_S(glDrawArrays);
-	G2_GL_INTERFACE_LOAD_S(glEnable);
-	G2_GL_INTERFACE_LOAD_S(glGenTextures);
-	G2_GL_INTERFACE_LOAD_S(glGetString);
-	G2_GL_INTERFACE_LOAD_S(glIsTexture);
-	G2_GL_INTERFACE_LOAD_S(glPixelStorei);
-	G2_GL_INTERFACE_LOAD_S(glStencilFunc);
-	G2_GL_INTERFACE_LOAD_S(glStencilMask);
-	G2_GL_INTERFACE_LOAD_S(glStencilOp);
+	G2_GL_INTERFACE_LOAD_D(g_library, glAlphaFunc);
+	G2_GL_INTERFACE_LOAD_D(g_library, glBindTexture);
+	G2_GL_INTERFACE_LOAD_D(g_library, glBlendFunc);
+	G2_GL_INTERFACE_LOAD_D(g_library, glClear);
+	G2_GL_INTERFACE_LOAD_D(g_library, glClearColor);
+	G2_GL_INTERFACE_LOAD_D(g_library, glClearStencil);
+	G2_GL_INTERFACE_LOAD_D(g_library, glColorMask);
+	G2_GL_INTERFACE_LOAD_D(g_library, glDeleteTextures);
+	G2_GL_INTERFACE_LOAD_D(g_library, glDisable);
+	G2_GL_INTERFACE_LOAD_D(g_library, glDrawArrays);
+	G2_GL_INTERFACE_LOAD_D(g_library, glEnable);
+	G2_GL_INTERFACE_LOAD_D(g_library, glGenTextures);
+	G2_GL_INTERFACE_LOAD_D(g_library, glGetString);
+	G2_GL_INTERFACE_LOAD_D(g_library, glIsTexture);
+	G2_GL_INTERFACE_LOAD_D(g_library, glPixelStorei);
+	G2_GL_INTERFACE_LOAD_D(g_library, glStencilFunc);
+	G2_GL_INTERFACE_LOAD_D(g_library, glStencilMask);
+	G2_GL_INTERFACE_LOAD_D(g_library, glStencilOp);
 #ifndef G2_CONFIG_CORE_GLES
-	G2_GL_INTERFACE_LOAD_S(glTexImage1D);
+	G2_GL_INTERFACE_LOAD_D(g_library, glTexImage1D);
 #endif
-	G2_GL_INTERFACE_LOAD_S(glTexImage2D);
-	G2_GL_INTERFACE_LOAD_S(glTexParameterf);
-	G2_GL_INTERFACE_LOAD_S(glTexParameteri);
-	G2_GL_INTERFACE_LOAD_S(glViewport);
+	G2_GL_INTERFACE_LOAD_D(g_library, glTexImage2D);
+	G2_GL_INTERFACE_LOAD_D(g_library, glTexParameterf);
+	G2_GL_INTERFACE_LOAD_D(g_library, glTexParameteri);
+	G2_GL_INTERFACE_LOAD_D(g_library, glViewport);
 
 	// load interfaces for gl 1.x
-	G2_GL_INTERFACE_LOAD_S(glColor4f);
-	G2_GL_INTERFACE_LOAD_S(glDisableClientState);
-	G2_GL_INTERFACE_LOAD_S(glEnableClientState);
-	G2_GL_INTERFACE_LOAD_S(glLoadIdentity);
-	G2_GL_INTERFACE_LOAD_S(glLoadMatrixf);
-	G2_GL_INTERFACE_LOAD_S(glMatrixMode);
-	G2_GL_INTERFACE_LOAD_S(glMultMatrixf);
+	if (version < 0x20)
+	{
+		G2_GL_INTERFACE_LOAD_D(g_library, glColor4f);
+		G2_GL_INTERFACE_LOAD_D(g_library, glDisableClientState);
+		G2_GL_INTERFACE_LOAD_D(g_library, glEnableClientState);
+		G2_GL_INTERFACE_LOAD_D(g_library, glLoadIdentity);
+		G2_GL_INTERFACE_LOAD_D(g_library, glLoadMatrixf);
+		G2_GL_INTERFACE_LOAD_D(g_library, glMatrixMode);
+		G2_GL_INTERFACE_LOAD_D(g_library, glMultMatrixf);
 # 	ifdef G2_CONFIG_CORE_GLES
-	G2_GL_INTERFACE_LOAD_S(glOrthof);
+		G2_GL_INTERFACE_LOAD_D(g_library, glOrthof);
 # 	else
-	G2_GL_INTERFACE_LOAD_S(glOrtho);
+		G2_GL_INTERFACE_LOAD_D(g_library, glOrtho);
 # 	endif
-	G2_GL_INTERFACE_LOAD_S(glPopMatrix);
-	G2_GL_INTERFACE_LOAD_S(glPushMatrix);
-	G2_GL_INTERFACE_LOAD_S(glRotatef);
-	G2_GL_INTERFACE_LOAD_S(glScalef);
-	G2_GL_INTERFACE_LOAD_S(glTexCoordPointer);
-	G2_GL_INTERFACE_LOAD_S(glTexEnvi);
-	G2_GL_INTERFACE_LOAD_S(glTranslatef);
-	G2_GL_INTERFACE_LOAD_S(glVertexPointer);
-
+		G2_GL_INTERFACE_LOAD_D(g_library, glPopMatrix);
+		G2_GL_INTERFACE_LOAD_D(g_library, glPushMatrix);
+		G2_GL_INTERFACE_LOAD_D(g_library, glRotatef);
+		G2_GL_INTERFACE_LOAD_D(g_library, glScalef);
+		G2_GL_INTERFACE_LOAD_D(g_library, glTexCoordPointer);
+		G2_GL_INTERFACE_LOAD_D(g_library, glTexEnvi);
+		G2_GL_INTERFACE_LOAD_D(g_library, glTranslatef);
+		G2_GL_INTERFACE_LOAD_D(g_library, glVertexPointer);
+	}
 	// load interfaces for gl >= 2.0
-#if !G2_CONFIG_GL_VERSION || G2_CONFIG_GL_VERSION >= 0x20
-	G2_GL_INTERFACE_LOAD_S(glAttachShader);
-	G2_GL_INTERFACE_LOAD_S(glCompileShader);
-	G2_GL_INTERFACE_LOAD_S(glCreateProgram);
-	G2_GL_INTERFACE_LOAD_S(glCreateShader);
-	G2_GL_INTERFACE_LOAD_S(glDeleteProgram);
-	G2_GL_INTERFACE_LOAD_S(glDeleteShader);
-	G2_GL_INTERFACE_LOAD_S(glDisableVertexAttribArray);
-	G2_GL_INTERFACE_LOAD_S(glEnableVertexAttribArray);
-	G2_GL_INTERFACE_LOAD_S(glGetAttribLocation);
-	G2_GL_INTERFACE_LOAD_S(glGetProgramiv);
-	G2_GL_INTERFACE_LOAD_S(glGetProgramInfoLog);
-	G2_GL_INTERFACE_LOAD_S(glGetShaderiv);
-	G2_GL_INTERFACE_LOAD_S(glGetShaderInfoLog);
-	G2_GL_INTERFACE_LOAD_S(glGetUniformLocation);
-	G2_GL_INTERFACE_LOAD_S(glLinkProgram);
-	G2_GL_INTERFACE_LOAD_S(glShaderSource);
-	G2_GL_INTERFACE_LOAD_S(glUniformMatrix4fv);
-	G2_GL_INTERFACE_LOAD_S(glUseProgram);
-	G2_GL_INTERFACE_LOAD_S(glVertexAttrib4f);
-	G2_GL_INTERFACE_LOAD_S(glVertexAttribPointer);
-#endif
-#endif
+	else
+	{
+		G2_GL_INTERFACE_LOAD_D(g_library, glAttachShader);
+		G2_GL_INTERFACE_LOAD_D(g_library, glCompileShader);
+		G2_GL_INTERFACE_LOAD_D(g_library, glCreateProgram);
+		G2_GL_INTERFACE_LOAD_D(g_library, glCreateShader);
+		G2_GL_INTERFACE_LOAD_D(g_library, glDeleteProgram);
+		G2_GL_INTERFACE_LOAD_D(g_library, glDeleteShader);
+		G2_GL_INTERFACE_LOAD_D(g_library, glDisableVertexAttribArray);
+		G2_GL_INTERFACE_LOAD_D(g_library, glEnableVertexAttribArray);
+		G2_GL_INTERFACE_LOAD_D(g_library, glGetAttribLocation);
+		G2_GL_INTERFACE_LOAD_D(g_library, glGetProgramiv);
+		G2_GL_INTERFACE_LOAD_D(g_library, glGetProgramInfoLog);
+		G2_GL_INTERFACE_LOAD_D(g_library, glGetShaderiv);
+		G2_GL_INTERFACE_LOAD_D(g_library, glGetShaderInfoLog);
+		G2_GL_INTERFACE_LOAD_D(g_library, glGetUniformLocation);
+		G2_GL_INTERFACE_LOAD_D(g_library, glLinkProgram);
+		G2_GL_INTERFACE_LOAD_D(g_library, glShaderSource);
+		G2_GL_INTERFACE_LOAD_D(g_library, glUniformMatrix4fv);
+		G2_GL_INTERFACE_LOAD_D(g_library, glUseProgram);
+		G2_GL_INTERFACE_LOAD_D(g_library, glVertexAttrib4f);
+		G2_GL_INTERFACE_LOAD_D(g_library, glVertexAttribPointer);
+	}
 
-	// init width & height
-	tb_size_t width = 0;
-	tb_size_t height = 0;
-	
 	// init context
 	g_context = g2_context_init_gl(G2_DEMO_PIXFMT, width, height, version);
 	tb_assert_and_check_return_val(g_context, TB_FALSE);
@@ -237,7 +233,22 @@ tb_void_t g2_demo_gl_draw()
 }
 tb_void_t g2_demo_gl_size(tb_size_t width, tb_size_t height)
 {
+	// update position
+	g_x0 		= width >> 1;
+	g_y0 		= height >> 1;
+	g_dx 		= width >> 2;
+	g_dy 		= height >> 2;
+	g_x 		= g_dx;
+	g_y 		= g_dy;
 
+	// update matrix
+	g2_matrix_init_translate(&g_mx, g2_long_to_float(g_x0), g2_long_to_float(g_y0));	
+
+	// resize context
+	g2_context_set(g_painter, g2_context_resize(g_context, width, height));
+
+	// resize
+	g2_demo_size(width, height);
 }
 tb_void_t g2_demo_gl_move(tb_long_t x, tb_long_t y)
 {

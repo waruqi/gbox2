@@ -16,7 +16,7 @@ extern "C" {
  */
 
 // init & exit
-tb_bool_t 		g2_demo_gl_init(tb_byte_t version);
+tb_bool_t 		g2_demo_gl_init(tb_size_t width, tb_size_t height, tb_byte_t version);
 tb_void_t 		g2_demo_gl_exit();
 
 // draw

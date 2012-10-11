@@ -10,10 +10,10 @@
 /*
  * Class:     com_gbox2_DemoView
  * Method:    demo_init
- * Signature: (I)Z
+ * Signature: (III)Z
  */
 JNIEXPORT jboolean JNICALL Java_com_gbox2_DemoView_demo_1init
-  (JNIEnv * env, jclass this, jint version)
+  (JNIEnv * env, jclass this, jint width, jint height, jint version)
 {
 	// init tbox
 	static tb_bool_t init = TB_FALSE;
@@ -23,7 +23,7 @@ JNIEXPORT jboolean JNICALL Java_com_gbox2_DemoView_demo_1init
 		init = TB_TRUE;
 	}
 
-	return g2_demo_gl_init(version)? JNI_TRUE : JNI_FALSE;
+	return g2_demo_gl_init(width, height, version)? JNI_TRUE : JNI_FALSE;
 }
 
 /*
