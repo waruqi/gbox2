@@ -297,6 +297,7 @@ static tb_bool_t g2_demo_gl_init(tb_int_t argc, tb_char_t** argv)
 static tb_void_t g2_demo_gbox2_init_gl()
 {
 	// load interfaces for common
+	G2_GL_INTERFACE_LOAD_S(glActiveTexture);
 	G2_GL_INTERFACE_LOAD_S(glAlphaFunc);
 	G2_GL_INTERFACE_LOAD_S(glBindTexture);
 	G2_GL_INTERFACE_LOAD_S(glBlendFunc);
@@ -363,6 +364,7 @@ static tb_void_t g2_demo_gbox2_init_gl()
 	G2_GL_INTERFACE_LOAD_S(glGetUniformLocation);
 	G2_GL_INTERFACE_LOAD_S(glLinkProgram);
 	G2_GL_INTERFACE_LOAD_S(glShaderSource);
+	G2_GL_INTERFACE_LOAD_S(glUniform1i);
 	G2_GL_INTERFACE_LOAD_S(glUniformMatrix4fv);
 	G2_GL_INTERFACE_LOAD_S(glUseProgram);
 	G2_GL_INTERFACE_LOAD_S(glVertexAttrib4f);

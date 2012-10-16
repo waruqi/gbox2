@@ -247,6 +247,8 @@ static __tb_inline__ tb_bool_t g2_gl_fill_apply_program(g2_gl_fill_t* fill)
 		fill->program = fill->context->programs[type];
 		tb_assert_and_check_return_val(fill->program, TB_FALSE);
 		g2_gl_program_uses(fill->program);
+
+		//if (fill->shader) g2_glUniform1i(g2_gl_program_location(fill->program, G2_GL_PROGRAM_LOCATION_SAMPLER), 0);
 	}
 
 	// ok
@@ -711,6 +713,7 @@ static tb_void_t g2_gl_fill_split_ellipse_func(g2_soft_split_ellipse_t* split, g
  */
 tb_void_t g2_gl_fill_rect(g2_gl_painter_t* painter, g2_rect_t const* rect)
 {
+#if 0
 	// init bounds
 	g2_gl_rect_t bounds;
 	bounds.x1 = g2_float_to_tb(rect->x);
@@ -728,6 +731,101 @@ tb_void_t g2_gl_fill_rect(g2_gl_painter_t* painter, g2_rect_t const* rect)
 
 	// exit fill
 	g2_gl_fill_exit(&fill);
+#else
+	// the vertices
+	tb_float_t 			vertices[8];
+
+	// the texcoords
+	tb_float_t 			texcoords[8];
+
+	// the matrix
+	tb_float_t 			matrix1[16];
+	tb_float_t 			matrix2[16];
+
+	// init bounds
+	g2_gl_rect_t bounds;
+	bounds.x1 = g2_float_to_tb(rect->x);
+	bounds.y1 = g2_float_to_tb(rect->y);
+	bounds.x2 = g2_float_to_tb(rect->x + rect->w - 1);
+	bounds.y2 = g2_float_to_tb(rect->y + rect->h - 1);
+	tb_check_return(bounds.x1 < bounds.x2 && bounds.y1 < bounds.y2);
+	bounds.x1 = -1;
+	bounds.y1 = -1;
+	bounds.x2 = 1;
+	bounds.y2 = 1;
+
+	// init shader
+	g2_gl_shader_t* shader = (g2_gl_shader_t*)g2_style_shader(painter->style_usr);
+	tb_check_return(shader);
+
+	tb_print("111111111111111111111111111111111111 b");
+
+	// init program
+	tb_handle_t program = painter->context->programs[G2_GL_PROGRAM_TYPE_BITMAP];
+	tb_assert_and_check_return_val(program, TB_FALSE);
+	g2_gl_program_uses(program);
+
+	g2_glUniform1i(g2_gl_program_location(program, G2_GL_PROGRAM_LOCATION_SAMPLER), 0);
+	g2_glActiveTexture(G2_GL_TEXTURE0);
+
+	// enable texture
+	g2_glEnable(G2_GL_TEXTURE_2D);
+
+	// bind texture
+	g2_glBindTexture(G2_GL_TEXTURE_2D, *shader->texture);
+	tb_print("bind: %d", *shader->texture);
+
+	g2_glTexParameteri(G2_GL_TEXTURE_2D, G2_GL_TEXTURE_WRAP_S, G2_GL_CLAMP_TO_EDGE);
+	g2_glTexParameteri(G2_GL_TEXTURE_2D, G2_GL_TEXTURE_WRAP_T, G2_GL_CLAMP_TO_EDGE);
+	g2_glTexParameteri(G2_GL_TEXTURE_2D, G2_GL_TEXTURE_MAG_FILTER, G2_GL_NEAREST);
+	g2_glTexParameteri(G2_GL_TEXTURE_2D, G2_GL_TEXTURE_MIN_FILTER, G2_GL_NEAREST);
+
+	// enable vertices
+	g2_glEnableVertexAttribArray(g2_gl_program_location(program, G2_GL_PROGRAM_LOCATION_VERTICES));
+	tb_print("vertices: %d", g2_gl_program_location(program, G2_GL_PROGRAM_LOCATION_VERTICES));
+
+	// enable texcoords
+	g2_glEnableVertexAttribArray(g2_gl_program_location(program, G2_GL_PROGRAM_LOCATION_TEXCOORDS));
+	tb_print("texcoords: %d", g2_gl_program_location(program, G2_GL_PROGRAM_LOCATION_TEXCOORDS));
+
+	// apply vertices
+	vertices[0] = bounds.x1;
+	vertices[1] = bounds.y1;
+	vertices[2] = bounds.x2;
+	vertices[3] = bounds.y1;
+	vertices[4] = bounds.x1;
+	vertices[5] = bounds.y2;
+	vertices[6] = bounds.x2;
+	vertices[7] = bounds.y2;
+	g2_glVertexAttribPointer(g2_gl_program_location(program, G2_GL_PROGRAM_LOCATION_VERTICES), 2, G2_GL_FLOAT, G2_GL_FALSE, 0, vertices);
+
+	// apply texcoords
+	texcoords[0] = 0.0f;
+	texcoords[1] = 0.0f;
+	texcoords[2] = 1.0f;
+	texcoords[3] = 0.0f;
+	texcoords[4] = 0.0f;
+	texcoords[5] = 1.0f;
+	texcoords[6] = 1.0f;
+	texcoords[7] = 1.0f;
+	g2_glVertexAttribPointer(g2_gl_program_location(program, G2_GL_PROGRAM_LOCATION_TEXCOORDS), 2, G2_GL_FLOAT, G2_GL_FALSE, 0, texcoords);
+
+	// draw
+	tb_print("222222222222222222222222222222222222 b");
+	g2_glDrawArrays(G2_GL_TRIANGLE_STRIP, 0, 4);
+	tb_print("222222222222222222222222222222222222 e");
+
+	// disable vertices
+	g2_glDisableVertexAttribArray(g2_gl_program_location(program, G2_GL_PROGRAM_LOCATION_VERTICES));
+	
+	// disable texcoords
+	g2_glDisableVertexAttribArray(g2_gl_program_location(program, G2_GL_PROGRAM_LOCATION_TEXCOORDS));
+
+	// disable texture
+	g2_glDisable(G2_GL_TEXTURE_2D);
+
+	tb_print("111111111111111111111111111111111111 e");
+#endif
 }
 tb_void_t g2_gl_fill_path(g2_gl_painter_t* painter, g2_gl_path_t const* path)
 {

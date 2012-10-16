@@ -248,7 +248,7 @@ obj/local/armeabi/objs/demo/demo.o: jni/demo.c jni/demo.h jni/prefix.h \
  /home/ruki/projects/personal/gbox2/src/svg/reader.h \
  /home/ruki/projects/personal/gbox2/src/svg/element.h \
  /home/ruki/projects/personal/gbox2/src/svg/writer.h \
- /home/ruki/projects/personal/gbox2/src/core/core.h jni/../../../path.c \
+ /home/ruki/projects/personal/gbox2/src/core/core.h jni/../../../rect.c \
  jni/../../../shape.c
 
 jni/demo.h:
@@ -755,6 +755,6 @@ jni/prefix.h:
 
 /home/ruki/projects/personal/gbox2/src/core/core.h:
 
-jni/../../../path.c:
+jni/../../../rect.c:
 
 jni/../../../shape.c:

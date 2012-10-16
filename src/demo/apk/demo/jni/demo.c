@@ -50,8 +50,8 @@ static g2_matrix_t 	g_mx;
 //#include "../../../svg.c"
 //#include "../../../arc.c"
 //#include "../../../line.c"
-//#include "../../../rect.c"
-#include "../../../path.c"
+#include "../../../rect.c"
+//#include "../../../path.c"
 //#include "../../../clip.c"
 //#include "../../../point.c"
 //#include "../../../circle.c"
@@ -69,6 +69,7 @@ tb_bool_t g2_demo_gl_init(tb_size_t width, tb_size_t height, tb_byte_t version)
 	tb_assert_and_check_return_val(g_library, TB_FALSE);
 
 	// load interfaces for common
+	G2_GL_INTERFACE_LOAD_D(g_library, glActiveTexture);
 	G2_GL_INTERFACE_LOAD_D(g_library, glAlphaFunc);
 	G2_GL_INTERFACE_LOAD_D(g_library, glBindTexture);
 	G2_GL_INTERFACE_LOAD_D(g_library, glBlendFunc);
@@ -138,6 +139,7 @@ tb_bool_t g2_demo_gl_init(tb_size_t width, tb_size_t height, tb_byte_t version)
 		G2_GL_INTERFACE_LOAD_D(g_library, glGetUniformLocation);
 		G2_GL_INTERFACE_LOAD_D(g_library, glLinkProgram);
 		G2_GL_INTERFACE_LOAD_D(g_library, glShaderSource);
+		G2_GL_INTERFACE_LOAD_D(g_library, glUniform1i);
 		G2_GL_INTERFACE_LOAD_D(g_library, glUniformMatrix4fv);
 		G2_GL_INTERFACE_LOAD_D(g_library, glUseProgram);
 		G2_GL_INTERFACE_LOAD_D(g_library, glVertexAttrib4f);

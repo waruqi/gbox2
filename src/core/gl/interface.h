@@ -199,6 +199,41 @@
 #define G2_GL_SHADER_SOURCE_LENGTH 	(0x8B88)
 #define G2_GL_SHADER_COMPILER    	(0x8DFA)
 
+// texture unit
+#define G2_GL_TEXTURE0    			(0x84C0)
+#define G2_GL_TEXTURE1    			(0x84C1)
+#define G2_GL_TEXTURE2    			(0x84C2)
+#define G2_GL_TEXTURE3    			(0x84C3)
+#define G2_GL_TEXTURE4    			(0x84C4)
+#define G2_GL_TEXTURE5    			(0x84C5)
+#define G2_GL_TEXTURE6    			(0x84C6)
+#define G2_GL_TEXTURE7    			(0x84C7)
+#define G2_GL_TEXTURE8    			(0x84C8)
+#define G2_GL_TEXTURE9    			(0x84C9)
+#define G2_GL_TEXTURE10    			(0x84CA)
+#define G2_GL_TEXTURE11    			(0x84CB)
+#define G2_GL_TEXTURE12    			(0x84CC)
+#define G2_GL_TEXTURE13    			(0x84CD)
+#define G2_GL_TEXTURE14    			(0x84CE)
+#define G2_GL_TEXTURE15    			(0x84CF)
+#define G2_GL_TEXTURE16    			(0x84D0)
+#define G2_GL_TEXTURE17    			(0x84D1)
+#define G2_GL_TEXTURE18    			(0x84D2)
+#define G2_GL_TEXTURE19    			(0x84D3)
+#define G2_GL_TEXTURE20    			(0x84D4)
+#define G2_GL_TEXTURE21    			(0x84D5)
+#define G2_GL_TEXTURE22    			(0x84D6)
+#define G2_GL_TEXTURE23    			(0x84D7)
+#define G2_GL_TEXTURE24    			(0x84D8)
+#define G2_GL_TEXTURE25    			(0x84D9)
+#define G2_GL_TEXTURE26    			(0x84DA)
+#define G2_GL_TEXTURE27    			(0x84DB)
+#define G2_GL_TEXTURE28    			(0x84DC)
+#define G2_GL_TEXTURE29    			(0x84DD)
+#define G2_GL_TEXTURE30    			(0x84DE)
+#define G2_GL_TEXTURE31    			(0x84DF)
+#define G2_GL_ACTIVE_TEXTURE    	(0x84E0)
+
 /* ///////////////////////////////////////////////////////////////////////
  * basic type
  */
@@ -223,6 +258,7 @@ typedef tb_double_t 	g2_GLclampd_t;
 /* ///////////////////////////////////////////////////////////////////////
  * interface types
  */
+typedef g2_GLvoid_t 			(G2_GL_INTERFACE_TYPE(glActiveTexture)) 			(g2_GLenum_t texture);
 typedef g2_GLvoid_t 			(G2_GL_INTERFACE_TYPE(glAlphaFunc)) 				(g2_GLenum_t func, g2_GLclampf_t ref);
 typedef g2_GLvoid_t 			(G2_GL_INTERFACE_TYPE(glAttachShader)) 				(g2_GLuint_t program, g2_GLuint_t shader);
 typedef g2_GLvoid_t 			(G2_GL_INTERFACE_TYPE(glBindTexture)) 				(g2_GLenum_t target, g2_GLuint_t texture);
@@ -277,6 +313,7 @@ typedef g2_GLvoid_t 			(G2_GL_INTERFACE_TYPE(glTexImage2D)) 				(g2_GLenum_t tar
 typedef g2_GLvoid_t 			(G2_GL_INTERFACE_TYPE(glTexParameterf)) 			(g2_GLenum_t target, g2_GLenum_t pname, g2_GLfloat_t param);
 typedef g2_GLvoid_t 			(G2_GL_INTERFACE_TYPE(glTexParameteri)) 			(g2_GLenum_t target, g2_GLenum_t pname, g2_GLint_t param);
 typedef g2_GLvoid_t 			(G2_GL_INTERFACE_TYPE(glTranslatef)) 				(g2_GLfloat_t x, g2_GLfloat_t y, g2_GLfloat_t z);
+typedef g2_GLvoid_t 			(G2_GL_INTERFACE_TYPE(glUniform1i)) 				(g2_GLint_t location, g2_GLint_t x);
 typedef g2_GLvoid_t 			(G2_GL_INTERFACE_TYPE(glUniformMatrix4fv)) 			(g2_GLint_t location, g2_GLsizei_t count, g2_GLboolean_t transpose, g2_GLfloat_t const* value);
 typedef g2_GLvoid_t 			(G2_GL_INTERFACE_TYPE(glUseProgram))				(g2_GLuint_t program);
 typedef g2_GLvoid_t 			(G2_GL_INTERFACE_TYPE(glVertexAttrib4f)) 			(g2_GLuint_t indx, g2_GLfloat_t x, g2_GLfloat_t y, g2_GLfloat_t z, g2_GLfloat_t w);
@@ -287,6 +324,7 @@ typedef g2_GLvoid_t 			(G2_GL_INTERFACE_TYPE(glViewport)) 					(g2_GLint_t x, g2
 /* ///////////////////////////////////////////////////////////////////////
  * functions
  */
+G2_GL_INTERFACE_EXTERN(glActiveTexture);
 G2_GL_INTERFACE_EXTERN(glAlphaFunc);
 G2_GL_INTERFACE_EXTERN(glAttachShader);
 G2_GL_INTERFACE_EXTERN(glBindTexture);
@@ -341,6 +379,7 @@ G2_GL_INTERFACE_EXTERN(glTexImage2D);
 G2_GL_INTERFACE_EXTERN(glTexParameterf);
 G2_GL_INTERFACE_EXTERN(glTexParameteri);
 G2_GL_INTERFACE_EXTERN(glTranslatef);
+G2_GL_INTERFACE_EXTERN(glUniform1i);
 G2_GL_INTERFACE_EXTERN(glUniformMatrix4fv);
 G2_GL_INTERFACE_EXTERN(glUseProgram);
 G2_GL_INTERFACE_EXTERN(glVertexAttrib4f);

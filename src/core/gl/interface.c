@@ -41,6 +41,7 @@
  * functions
  */
 
+G2_GL_INTERFACE_DEFINE(glActiveTexture);
 G2_GL_INTERFACE_DEFINE(glAlphaFunc);
 G2_GL_INTERFACE_DEFINE(glAttachShader);
 G2_GL_INTERFACE_DEFINE(glBindTexture);
@@ -95,6 +96,7 @@ G2_GL_INTERFACE_DEFINE(glTexImage2D);
 G2_GL_INTERFACE_DEFINE(glTexParameterf);
 G2_GL_INTERFACE_DEFINE(glTexParameteri);
 G2_GL_INTERFACE_DEFINE(glTranslatef);
+G2_GL_INTERFACE_DEFINE(glUniform1i);
 G2_GL_INTERFACE_DEFINE(glUniformMatrix4fv);
 G2_GL_INTERFACE_DEFINE(glUseProgram);
 G2_GL_INTERFACE_DEFINE(glVertexAttrib4f);
@@ -117,6 +119,7 @@ static g2_GLvoid_t G2_GL_APICALL g2_gl_wraper_glOrthof(g2_GLfloat_t left, g2_GLf
 tb_bool_t g2_gl_interface_check(tb_byte_t version)
 {
 	// check interfaces for common
+	G2_GL_INTERFACE_CHECK 	(glActiveTexture);
 //	G2_GL_INTERFACE_CHECK 	(glAlphaFunc);
 	G2_GL_INTERFACE_CHECK 	(glBindTexture);
 	G2_GL_INTERFACE_CHECK 	(glBlendFunc);
@@ -182,6 +185,7 @@ tb_bool_t g2_gl_interface_check(tb_byte_t version)
 		G2_GL_INTERFACE_CHECK 	(glGetUniformLocation);
 		G2_GL_INTERFACE_CHECK 	(glLinkProgram);
 		G2_GL_INTERFACE_CHECK 	(glShaderSource);
+		G2_GL_INTERFACE_CHECK 	(glUniform1i);
 		G2_GL_INTERFACE_CHECK 	(glUniformMatrix4fv);
 		G2_GL_INTERFACE_CHECK 	(glUseProgram);
 		G2_GL_INTERFACE_CHECK 	(glVertexAttrib4f);

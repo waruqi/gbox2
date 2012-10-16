@@ -159,6 +159,7 @@
 	if (![self glFrameInit]) return TB_FALSE;
 	
 	// load interfaces for common
+	G2_GL_INTERFACE_LOAD_S(glActiveTexture);
 	G2_GL_INTERFACE_LOAD_S(glAlphaFunc);
 	G2_GL_INTERFACE_LOAD_S(glBindTexture);
 	G2_GL_INTERFACE_LOAD_S(glBlendFunc);
@@ -225,6 +226,7 @@
 	G2_GL_INTERFACE_LOAD_S(glGetUniformLocation);
 	G2_GL_INTERFACE_LOAD_S(glLinkProgram);
 	G2_GL_INTERFACE_LOAD_S(glShaderSource);
+	G2_GL_INTERFACE_LOAD_S(glUniform1i);
 	G2_GL_INTERFACE_LOAD_S(glUniformMatrix4fv);
 	G2_GL_INTERFACE_LOAD_S(glUseProgram);
 	G2_GL_INTERFACE_LOAD_S(glVertexAttrib4f);

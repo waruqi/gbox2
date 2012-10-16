@@ -444,6 +444,7 @@ tb_handle_t g2_shader_init_bitmap(tb_handle_t context, tb_handle_t bitmap, tb_si
 
 	// make texture
 	g2_glBindTexture(G2_GL_TEXTURE_2D, *shader->texture);
+	g2_glPixelStorei(G2_GL_UNPACK_ALIGNMENT, 1);
 	g2_glTexImage2D(G2_GL_TEXTURE_2D, 0, G2_GL_RGBA, width, height, 0, G2_PIXFMT_BE(pixfmt)? G2_GL_RGBA : G2_GL_BGRA, G2_GL_UNSIGNED_BYTE, data);
 
 	// ok

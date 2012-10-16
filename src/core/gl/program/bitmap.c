@@ -44,6 +44,7 @@ tb_handle_t g2_gl_program_init_bitmap()
 	// init type
 	g2_gl_program_type_set(program, G2_GL_PROGRAM_TYPE_BITMAP);
 
+#if 0
 	// the vertex shader
 	tb_char_t const* vshader = 
 #ifdef G2_CONFIG_CORE_GLES
@@ -96,9 +97,57 @@ tb_handle_t g2_gl_program_init_bitmap()
 	g2_gl_program_location_set(program, G2_GL_PROGRAM_LOCATION_COLOR, g2_gl_program_attr(program, "aColor"));
 	g2_gl_program_location_set(program, G2_GL_PROGRAM_LOCATION_VERTICES, g2_gl_program_attr(program, "aVertices"));
 	g2_gl_program_location_set(program, G2_GL_PROGRAM_LOCATION_TEXCOORDS, g2_gl_program_attr(program, "aTexcoords"));
+	g2_gl_program_location_set(program, G2_GL_PROGRAM_LOCATION_SAMPLER, g2_gl_program_unif(program, "uSampler"));
 	g2_gl_program_location_set(program, G2_GL_PROGRAM_LOCATION_MATRIX_MODEL, g2_gl_program_unif(program, "uMatrixModel"));
 	g2_gl_program_location_set(program, G2_GL_PROGRAM_LOCATION_MATRIX_PROJECT, g2_gl_program_unif(program, "uMatrixProject"));
 	g2_gl_program_location_set(program, G2_GL_PROGRAM_LOCATION_MATRIX_TEXCOORD, g2_gl_program_unif(program, "uMatrixTexcoord"));
+#else	
+	// the vertex shader
+	tb_char_t const* vshader = 
+#ifdef G2_CONFIG_CORE_GLES
+		"precision mediump float; 															\n"
+#endif
+		" 																					\n"
+		"attribute vec2 aTexcoords; 														\n"
+		"attribute vec4 aVertices; 															\n"
+		" 																					\n"
+		"varying vec2 vTexcoords; 															\n"
+		"void main() 																		\n"
+		"{ 																					\n"
+		" 	vTexcoords = aTexcoords; 														\n"  
+		" 	gl_Position = aVertices;														\n"
+		"} 																					\n";
+	
+	// the fragment shader
+	tb_char_t const* fshader = 
+#ifdef G2_CONFIG_CORE_GLES
+		"precision mediump float; 															\n"
+#endif
+		" 																					\n"
+		"varying vec2 vTexcoords; 															\n"
+		"uniform sampler2D uSampler; 														\n"
+		" 																					\n"
+		"void main() 																		\n"
+		"{ 																					\n"
+		"   gl_FragColor = texture2D(uSampler, vTexcoords.st, 0.0); 						\n"
+		"} 																					\n";
+
+
+	// load shader: vertex
+	if (!g2_gl_program_load(program, vshader, G2_GL_VERTEX_SHADER)) goto fail;
+	
+	// load shader: fragment
+	if (!g2_gl_program_load(program, fshader, G2_GL_FRAGMENT_SHADER)) goto fail;
+
+	// make program
+	if (!g2_gl_program_make(program)) goto fail;
+
+	// init location
+	g2_gl_program_location_set(program, G2_GL_PROGRAM_LOCATION_VERTICES, g2_gl_program_attr(program, "aVertices"));
+	g2_gl_program_location_set(program, G2_GL_PROGRAM_LOCATION_TEXCOORDS, g2_gl_program_attr(program, "aTexcoords"));
+	g2_gl_program_location_set(program, G2_GL_PROGRAM_LOCATION_SAMPLER, g2_gl_program_unif(program, "uSampler"));
+
+#endif
 
 	// ok
 	return program;
