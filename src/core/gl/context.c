@@ -54,11 +54,17 @@ static __tb_inline__ tb_byte_t g2_gl_context_version()
 {
 	// version 
 	tb_char_t const* version = g2_glGetString(G2_GL_VERSION);
-	tb_assert_and_check_return_val(version && tb_isdigit(version[0]) && version[1] == '.' && tb_isdigit(version[2]), 0);
+	tb_assert_and_check_return_val(version, 0);
+
+	// find
+	tb_char_t const* p = version;
+	tb_char_t const* e = version + tb_strlen(version);
+	for (; p < e && *p && !tb_isdigit(*p); p++) ;
+	tb_assert_and_check_return_val(p + 2 < e && p[1] == '.' && tb_isdigit(p[2]), 0);
 
 	// major & minor
-	tb_byte_t major = version[0] - '0';
-	tb_byte_t minor = version[2] - '0';
+	tb_byte_t major = p[0] - '0';
+	tb_byte_t minor = p[2] - '0';
 
 	// trace
 	tb_trace_impl("version: %s: %x", version, ((major << 4) + minor));
@@ -78,6 +84,13 @@ static __tb_inline__ tb_void_t g2_gl_context_extensions(g2_gl_context_t* context
 		// find
 		tb_char_t const* 	q = tb_strchr(p, ' ');
 		tb_size_t 			l = q? q - p : tb_strlen(p);
+
+		// dump
+#ifdef G2_DEBUG
+		tb_char_t 			e[4096] = {0};
+		tb_strncpy(e, p, tb_min(4096, l));
+		tb_trace_impl("extension: %s", e);
+#endif
 
 		// init
 		G2_GL_CONTEXT_EXT_INIT(ARB_texture_non_power_of_two);
@@ -246,9 +259,10 @@ tb_handle_t g2_context_init_gl(tb_size_t pixfmt, tb_size_t width, tb_size_t heig
 	tb_assert_and_check_return_val(G2_PIXFMT_OK(pixfmt) && width && height, TB_NULL);
 
 	// check pixfmt
-	tb_assert_and_check_return_val( 	G2_PIXFMT(pixfmt) == G2_PIXFMT_ARGB8888
-									|| 	G2_PIXFMT(pixfmt) == G2_PIXFMT_ARGB4444 
-									|| 	G2_PIXFMT(pixfmt) == G2_PIXFMT_RGB565, TB_NULL);
+	tb_assert_and_check_return_val( 	(pixfmt == G2_PIXFMT_RGBA8888 | G2_PIXFMT_BENDIAN)
+									|| 	(pixfmt == G2_PIXFMT_RGB565 | G2_PIXFMT_BENDIAN)
+									|| 	(pixfmt == G2_PIXFMT_RGBA4444 | G2_PIXFMT_BENDIAN)
+									|| 	(pixfmt == G2_PIXFMT_RGBA5551 | G2_PIXFMT_BENDIAN), TB_NULL);
 
 	// check interfaces
 	tb_check_return_val(g2_gl_interface_check(version), TB_NULL);
@@ -258,14 +272,12 @@ tb_handle_t g2_context_init_gl(tb_size_t pixfmt, tb_size_t width, tb_size_t heig
 	tb_assert_and_check_return_val(gcontext, TB_NULL);
 
 	// init version 
-	gcontext->version = version? version : g2_gl_context_version();
+	tb_byte_t gversion = g2_gl_context_version();
+	gcontext->version = version? version : gversion;
 	tb_assert_and_check_goto(gcontext->version >= 0x10, fail);
 
 	// init extensions
-#ifndef G2_CONFIG_CORE_GLES
 	g2_gl_context_extensions(gcontext);
-	tb_assert_and_check_goto(gcontext->extensions[G2_GL_EXT_ARB_texture_non_power_of_two], fail);
-#endif
 
 	// init surface
 	gcontext->surface = g2_bitmap_init(pixfmt, width, height, 0);
@@ -331,7 +343,9 @@ tb_handle_t g2_context_init_gl(tb_size_t pixfmt, tb_size_t width, tb_size_t heig
 	g2_glDisable(G2_GL_BLEND);
 
 	// disable texture
+#ifndef G2_CONFIG_CORE_GLES
 	g2_glDisable(G2_GL_TEXTURE_1D);
+#endif
 	g2_glDisable(G2_GL_TEXTURE_2D);
 
 	if (gcontext->version < 0x20)

@@ -427,8 +427,10 @@ tb_handle_t g2_shader_init_bitmap(tb_handle_t context, tb_handle_t bitmap, tb_si
 
 	// pixfmt
 	tb_size_t 		pixfmt = g2_bitmap_pixfmt(bitmap);
-	tb_assert_and_check_return_val( 	(G2_PIXFMT(pixfmt) == G2_PIXFMT_ARGB8888 && !G2_PIXFMT_BE(pixfmt))
-									|| 	(G2_PIXFMT(pixfmt) == G2_PIXFMT_RGBA8888 && G2_PIXFMT_BE(pixfmt)), TB_NULL);
+	tb_assert_and_check_return_val( 	(pixfmt == G2_PIXFMT_RGBA8888 | G2_PIXFMT_BENDIAN)
+									|| 	(pixfmt == G2_PIXFMT_RGB565 | G2_PIXFMT_BENDIAN)
+									|| 	(pixfmt == G2_PIXFMT_RGBA4444 | G2_PIXFMT_BENDIAN)
+									|| 	(pixfmt == G2_PIXFMT_RGBA5551 | G2_PIXFMT_BENDIAN), TB_NULL);
 
 	// init shader
 	g2_gl_shader_t* shader = g2_gl_shader_init(context, G2_GL_SHADER_TYPE_BITMAP, wrap);
@@ -444,8 +446,26 @@ tb_handle_t g2_shader_init_bitmap(tb_handle_t context, tb_handle_t bitmap, tb_si
 
 	// make texture
 	g2_glBindTexture(G2_GL_TEXTURE_2D, *shader->texture);
-	g2_glPixelStorei(G2_GL_UNPACK_ALIGNMENT, 1);
-	g2_glTexImage2D(G2_GL_TEXTURE_2D, 0, G2_GL_RGBA, width, height, 0, G2_PIXFMT_BE(pixfmt)? G2_GL_RGBA : G2_GL_BGRA, G2_GL_UNSIGNED_BYTE, data);
+//	g2_glPixelStorei(G2_GL_UNPACK_ALIGNMENT, 1);
+	
+	switch (G2_PIXFMT(pixfmt))
+	{
+	case G2_PIXFMT_RGBA8888:
+		g2_glTexImage2D(G2_GL_TEXTURE_2D, 0, G2_GL_RGBA, width, height, 0, G2_GL_RGBA, G2_GL_UNSIGNED_BYTE, data);
+		break;
+	case G2_PIXFMT_RGB565:
+		g2_glTexImage2D(G2_GL_TEXTURE_2D, 0, G2_GL_RGB, width, height, 0, G2_GL_RGB, G2_GL_UNSIGNED_SHORT_5_6_5, data);
+		break;
+	case G2_PIXFMT_RGBA4444:
+		g2_glTexImage2D(G2_GL_TEXTURE_2D, 0, G2_GL_RGBA, width, height, 0, G2_GL_RGBA, G2_GL_UNSIGNED_SHORT_4_4_4_4, data);
+		break;
+	case G2_PIXFMT_RGBA5551:
+		g2_glTexImage2D(G2_GL_TEXTURE_2D, 0, G2_GL_RGBA, width, height, 0, G2_GL_RGBA, G2_GL_UNSIGNED_SHORT_5_5_5_1, data);
+		break;
+	default:
+		tb_assert_and_check_return_val(0, TB_NULL);
+		break;
+	}
 
 	// ok
 	return shader;

@@ -102,10 +102,16 @@ class DemoView extends GLSurfaceView
 
 		// init config chooser
 //		setEGLConfigChooser(8, 8, 8, 8, 16, 4); //!< no multisample
+//		setEGLConfigChooser(5, 6, 5, 0, 16, 4); //!< no multisample
+//		setEGLConfigChooser(4, 4, 4, 4, 16, 4); //!< no multisample
+//		setEGLConfigChooser(5, 5, 5, 1, 16, 4); //!< no multisample
 
 		// @note multisample is not supported for gl 1.x now.
 		// @note render bitmap is not supported for gl >= 2.0 now.
-		setEGLConfigChooser(chooser = new DemoViewConfigChooser(8, 8, 8, 8, 16, 4, 4, version)); //!< multisample: 4 samples
+//		setEGLConfigChooser(chooser = new DemoViewConfigChooser(8, 8, 8, 8, 16, 4, 4, version)); //!< multisample: 4 samples
+		setEGLConfigChooser(chooser = new DemoViewConfigChooser(5, 6, 5, 0, 16, 4, 4, version)); //!< multisample: 4 samples
+//		setEGLConfigChooser(chooser = new DemoViewConfigChooser(4, 4, 4, 4, 16, 4, 4, version)); //!< multisample: 4 samples
+//		setEGLConfigChooser(chooser = new DemoViewConfigChooser(5, 5, 5, 1, 16, 4, 4, version)); //!< multisample: 4 samples
 
 		// init render
 		setRenderer(new DemoRender(this, version));
@@ -153,7 +159,8 @@ class DemoView extends GLSurfaceView
 	// exit
 	public void exit()
 	{
-		demo_exit();
+		// FIXME
+//		demo_exit();
 	}
 
 	// render
