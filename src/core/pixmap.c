@@ -31,8 +31,14 @@
 #include "pixmap/xrgb1555.h"
 #include "pixmap/argb8888.h"
 #include "pixmap/xrgb8888.h"
+#include "pixmap/argb4444.h"
+#include "pixmap/xrgb4444.h"
+#include "pixmap/rgba5551.h"
+#include "pixmap/rgbx5551.h"
 #include "pixmap/rgba8888.h"
 #include "pixmap/rgbx8888.h"
+#include "pixmap/rgba4444.h"
+#include "pixmap/rgbx4444.h"
 #include "../gbox2.h"
 
 /* ////////////////////////////////////////////////////////////////////////
@@ -49,13 +55,17 @@ static g2_pixmap_t const* g_pixmaps_lo[] =
 ,	&g_pixmap_lo_xrgb1555
 ,	&g_pixmap_lo_argb8888
 ,	&g_pixmap_lo_xrgb8888
-,	TB_NULL
-,	TB_NULL
+,	&g_pixmap_lo_argb4444
+,	&g_pixmap_lo_xrgb4444
+,	&g_pixmap_lo_rgba5551
+,	&g_pixmap_lo_rgbx5551
 ,	&g_pixmap_lo_rgba8888
 ,	&g_pixmap_lo_rgbx8888
-,	TB_NULL
-,	TB_NULL
+,	&g_pixmap_lo_rgba4444
+,	&g_pixmap_lo_rgbx4444
 
+,	TB_NULL
+,	TB_NULL
 ,	TB_NULL
 ,	TB_NULL
 ,	TB_NULL
@@ -81,13 +91,17 @@ static g2_pixmap_t const* g_pixmaps_bo[] =
 ,	&g_pixmap_bo_xrgb1555
 ,	&g_pixmap_bo_argb8888
 ,	&g_pixmap_bo_xrgb8888
-,	TB_NULL
-,	TB_NULL
+,	&g_pixmap_bo_argb4444
+,	&g_pixmap_bo_xrgb4444
+,	&g_pixmap_bo_rgba5551
+,	&g_pixmap_bo_rgbx5551
 ,	&g_pixmap_bo_rgba8888
 ,	&g_pixmap_bo_rgbx8888
-,	TB_NULL
-,	TB_NULL
+,	&g_pixmap_bo_rgba4444
+,	&g_pixmap_bo_rgbx4444
 
+,	TB_NULL
+,	TB_NULL
 ,	TB_NULL
 ,	TB_NULL
 ,	TB_NULL
@@ -113,13 +127,17 @@ static g2_pixmap_t const* g_pixmaps_la[] =
 ,	&g_pixmap_la_xrgb1555
 ,	&g_pixmap_la_argb8888
 ,	&g_pixmap_la_xrgb8888
-,	TB_NULL
-,	TB_NULL
+,	&g_pixmap_la_argb4444
+,	&g_pixmap_la_xrgb4444
+,	&g_pixmap_la_rgba5551
+,	&g_pixmap_la_rgbx5551
 ,	&g_pixmap_la_rgba8888
 ,	&g_pixmap_la_rgbx8888
-,	TB_NULL
-,	TB_NULL
+,	&g_pixmap_la_rgba4444
+,	&g_pixmap_la_rgbx4444
 
+,	TB_NULL
+,	TB_NULL
 ,	TB_NULL
 ,	TB_NULL
 ,	TB_NULL
@@ -145,13 +163,17 @@ static g2_pixmap_t const* g_pixmaps_ba[] =
 ,	&g_pixmap_ba_xrgb1555
 ,	&g_pixmap_ba_argb8888
 ,	&g_pixmap_ba_xrgb8888
-,	TB_NULL
-,	TB_NULL
+,	&g_pixmap_ba_argb4444
+,	&g_pixmap_ba_xrgb4444
+,	&g_pixmap_ba_rgba5551
+,	&g_pixmap_ba_rgbx5551
 ,	&g_pixmap_ba_rgba8888
 ,	&g_pixmap_ba_rgbx8888
-,	TB_NULL
-,	TB_NULL
+,	&g_pixmap_ba_rgba4444
+,	&g_pixmap_ba_rgbx4444
 
+,	TB_NULL
+,	TB_NULL
 ,	TB_NULL
 ,	TB_NULL
 ,	TB_NULL

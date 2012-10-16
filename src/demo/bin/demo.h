@@ -29,8 +29,10 @@
 #define G2_DEMO_HEIGHT 			(480)
 
 // pixfmt
-#define G2_DEMO_PIXFMT 			(G2_PIXFMT_ARGB8888 | G2_PIXFMT_NENDIAN)
-//#define G2_DEMO_PIXFMT 			(G2_PIXFMT_RGB565 | G2_PIXFMT_NENDIAN)
+//#define G2_DEMO_PIXFMT 			(G2_PIXFMT_RGBA8888 | G2_PIXFMT_BENDIAN)
+#define G2_DEMO_PIXFMT 			(G2_PIXFMT_RGB565 | G2_PIXFMT_BENDIAN)
+//#define G2_DEMO_PIXFMT 			(G2_PIXFMT_RGBA4444 | G2_PIXFMT_BENDIAN)
+//#define G2_DEMO_PIXFMT 			(G2_PIXFMT_RGBA5551 | G2_PIXFMT_BENDIAN)
 
 /* ////////////////////////////////////////////////////////////////////////
  * globals

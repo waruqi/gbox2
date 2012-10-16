@@ -20,8 +20,8 @@
  * @file		xrgb8888.h
  *
  */
-#ifndef G2_CORE_PIXMAP_XXRGB88888_H
-#define G2_CORE_PIXMAP_XXRGB88888_H
+#ifndef G2_CORE_PIXMAP_XRGB8888_H
+#define G2_CORE_PIXMAP_XRGB8888_H
 
 /* ///////////////////////////////////////////////////////////////////////
  * includes
