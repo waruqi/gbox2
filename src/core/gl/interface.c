@@ -134,7 +134,7 @@ tb_bool_t g2_gl_interface_check(tb_byte_t version)
 	G2_GL_INTERFACE_CHECK 	(glGenTextures);
 	G2_GL_INTERFACE_CHECK 	(glGetString);
 //	G2_GL_INTERFACE_CHECK 	(glIsTexture);
-//	G2_GL_INTERFACE_CHECK 	(glPixelStorei);
+	G2_GL_INTERFACE_CHECK 	(glPixelStorei);
 	G2_GL_INTERFACE_CHECK 	(glStencilFunc);
 	G2_GL_INTERFACE_CHECK 	(glStencilMask);
 	G2_GL_INTERFACE_CHECK 	(glStencilOp);

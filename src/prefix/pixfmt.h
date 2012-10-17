@@ -33,50 +33,89 @@
  */
 
 // argb => pixel
-#define G2_ARGB_1555(a, r, g, b) 	((((a) << 8) & 0x8000) | (((r) << 7) & 0x7c00) | (((g) << 2) & 0x3e0) | (((b) >> 3)))
-#define G2_XRGB_1555(r, g, b) 		((0x8000) | (((r) << 7) & 0x7c00) | (((g) << 2) & 0x3e0) | (((b) >> 3)))
 #define G2_RGB_565(r, g, b) 		((((r) << 8) & 0xf800) | (((g) << 3) & 0x7e0) | (((b) >> 3)))
 #define G2_RGB_888(r, g, b) 		((b) | ((g) << 8) | ((r) << 16))
+
+#define G2_ARGB_1555(a, r, g, b) 	((((a) << 8) & 0x8000) | (((r) << 7) & 0x7c00) | (((g) << 2) & 0x3e0) | (((b) >> 3)))
+#define G2_XRGB_1555(r, g, b) 		((0x8000) | (((r) << 7) & 0x7c00) | (((g) << 2) & 0x3e0) | (((b) >> 3)))
+
+#define G2_ARGB_4444(a, r, g, b) 	((((a) << 8) & 0xf000) | (((r) << 4) & 0x0f00) | ((g) & 0x00f0) | (((b) >> 4)))
+#define G2_XRGB_4444(r, g, b) 		((0xf000) | (((r) << 4) & 0x0f00) | ((g) & 0x00f0) | (((b) >> 4)))
+
 #define G2_ARGB_8888(a, r, g, b) 	((b) | ((g) << 8) | ((r) << 16) | ((a) << 24))
 #define G2_XRGB_8888(r, g, b) 		((b) | ((g) << 8) | ((r) << 16) | ((0xff) << 24))
+
+#define G2_RGBA_5551(r, g, b, a) 	((((r) << 8) & 0xf800) | (((g) << 3) & 0x07c0) | (((b) >> 2) & 0x03e) | (((a) >> 7)))
+#define G2_RGBX_5551(r, g, b) 		((((r) << 8) & 0xf800) | (((g) << 3) & 0x07c0) | (((b) >> 2) & 0x03e) | (0x0001))
+
+#define G2_RGBA_4444(r, g, b, a) 	((((r) << 8) & 0xf000) | (((g) << 4) & 0x0f00) | ((b) & 0x00f0) | (((a) >> 4)))
+#define G2_RGBX_4444(r, g, b) 		((((r) << 8) & 0xf000) | (((g) << 4) & 0x0f00) | ((b) & 0x00f0) | (0x000f))
+
 #define G2_RGBA_8888(r, g, b, a) 	((a) | ((b) << 8) | ((g) << 16) | ((r) << 24))
 #define G2_RGBX_8888(r, g, b) 		(0xff | ((b) << 8) | ((g) << 16) | ((r) << 24))
 
-// pixel => a r g b
-#define G2_RGB_565_R(c) 			(((c) >> 8) & 0x00f8)
-#define G2_RGB_565_G(c) 			(((c) >> 3) & 0x00fc)
-#define G2_RGB_565_B(c) 			(((c) << 3) & 0x00f8)
+// pixel => argb
+#define G2_RGB_565_R(c) 			(((c) >> 8) & 0x00f8) 	//!< 1111 1000
+#define G2_RGB_565_G(c) 			(((c) >> 3) & 0x00fc) 	//!< 1111 1100
+#define G2_RGB_565_B(c) 			(((c) << 3) & 0x00f8) 	//!< 1111 1000
 	
-#define G2_RGB_888_R(c) 			(((c) >> 16) & 0xff)
-#define G2_RGB_888_G(c) 			(((c) >> 8) & 0xff)
-#define G2_RGB_888_B(c) 			((c) & 0xff)
+#define G2_RGB_888_R(c) 			(((c) >> 16) & 0x0000ff)
+#define G2_RGB_888_G(c) 			(((c) >> 8) & 0x0000ff)
+#define G2_RGB_888_B(c) 			((c) & 0x0000ff)
 
-#define G2_ARGB_1555_R(c) 			(((c) >> 7) & 0x00f8)
-#define G2_ARGB_1555_G(c) 			(((c) >> 2) & 0x00f8)
-#define G2_ARGB_1555_B(c) 			(((c) << 3) & 0x00f8)
-#define G2_ARGB_1555_A(c) 			(((c) >> 8) & 0x0001)
+#define G2_ARGB_1555_A(c) 			(((c) >> 8) & 0x0080) 	//!< 1000 0000
+#define G2_ARGB_1555_R(c) 			(((c) >> 7) & 0x00f8) 	//!< 1111 1000
+#define G2_ARGB_1555_G(c) 			(((c) >> 2) & 0x00f8) 	//!< 1111 1000
+#define G2_ARGB_1555_B(c) 			(((c) << 3) & 0x00f8) 	//!< 1111 1000
 
-#define G2_XRGB_1555_R(c) 			(((c) >> 7) & 0x00f8)
-#define G2_XRGB_1555_G(c) 			(((c) >> 2) & 0x00f8)
-#define G2_XRGB_1555_B(c) 			(((c) << 3) & 0x00f8)
+#define G2_XRGB_1555_R(c) 			(((c) >> 7) & 0x00f8) 	//!< 1111 1000
+#define G2_XRGB_1555_G(c) 			(((c) >> 2) & 0x00f8) 	//!< 1111 1000
+#define G2_XRGB_1555_B(c) 			(((c) << 3) & 0x00f8) 	//!< 1111 1000
 
-#define G2_ARGB_8888_R(c) 			(((c) >> 16) & 0xff)
-#define G2_ARGB_8888_G(c) 			(((c) >> 8) & 0xff)
-#define G2_ARGB_8888_B(c) 			((c) & 0xff)
-#define G2_ARGB_8888_A(c) 			(((c) >> 24) & 0xff)
+#define G2_ARGB_4444_A(c) 			(((c) >> 8) & 0x00f0) 	//!< 1111 0000
+#define G2_ARGB_4444_R(c) 			(((c) >> 4) & 0x00f0) 	//!< 1111 0000
+#define G2_ARGB_4444_G(c) 			((c) & 0x00f0) 			//!< 1111 0000
+#define G2_ARGB_4444_B(c) 			(((c) << 4) & 0x00f0) 	//!< 1111 0000
 
-#define G2_RGBA_8888_R(c) 			(((c) >> 24) & 0xff)
-#define G2_RGBA_8888_G(c) 			(((c) >> 16) & 0xff)
-#define G2_RGBA_8888_B(c) 			(((c) >> 8) & 0xff)
-#define G2_RGBA_8888_A(c) 			((c) & 0xff)
+#define G2_XRGB_4444_R(c) 			(((c) >> 4) & 0x00f0) 	//!< 1111 0000
+#define G2_XRGB_4444_G(c) 			((c) & 0x00f0) 			//!< 1111 0000
+#define G2_XRGB_4444_B(c) 			(((c) << 4) & 0x00f0) 	//!< 1111 0000
 
-#define G2_XRGB_8888_R(c) 			(((c) >> 16) & 0xff)
-#define G2_XRGB_8888_G(c) 			(((c) >> 8) & 0xff)
-#define G2_XRGB_8888_B(c) 			((c) & 0xff)
+#define G2_ARGB_8888_A(c) 			(((c) >> 24) & 0x000000ff)
+#define G2_ARGB_8888_R(c) 			(((c) >> 16) & 0x000000ff)
+#define G2_ARGB_8888_G(c) 			(((c) >> 8) & 0x000000ff)
+#define G2_ARGB_8888_B(c) 			((c) & 0x000000ff)
 
-#define G2_RGBX_8888_R(c) 			(((c) >> 24) & 0xff)
-#define G2_RGBX_8888_G(c) 			(((c) >> 16) & 0xff)
-#define G2_RGBX_8888_B(c) 			(((c) >> 8) & 0xff)
+#define G2_XRGB_8888_R(c) 			(((c) >> 16) & 0x000000ff)
+#define G2_XRGB_8888_G(c) 			(((c) >> 8) & 0x000000ff)
+#define G2_XRGB_8888_B(c) 			((c) & 0x000000ff)
+
+#define G2_RGBA_5551_R(c) 			(((c) >> 8) & 0x00f8) 	//!< 1111 1000
+#define G2_RGBA_5551_G(c) 			(((c) >> 3) & 0x00f8) 	//!< 1111 1000
+#define G2_RGBA_5551_B(c) 			(((c) << 2) & 0x00f8) 	//!< 1111 1000
+#define G2_RGBA_5551_A(c) 			(((c) << 7) & 0x0080) 	//!< 1000 0000
+
+#define G2_RGBX_5551_R(c) 			(((c) >> 8) & 0x00f8) 	//!< 1111 1000
+#define G2_RGBX_5551_G(c) 			(((c) >> 3) & 0x00f8) 	//!< 1111 1000
+#define G2_RGBX_5551_B(c) 			(((c) << 2) & 0x00f8) 	//!< 1111 1000
+
+#define G2_RGBA_4444_R(c) 			(((c) >> 8) & 0x00f0) 	//!< 1111 0000
+#define G2_RGBA_4444_G(c) 			(((c) >> 4) & 0x00f0) 	//!< 1111 0000
+#define G2_RGBA_4444_B(c) 			((c) & 0x00f0) 			//!< 1111 0000
+#define G2_RGBA_4444_A(c) 			(((c) << 4) & 0x00f0) 	//!< 1111 0000
+
+#define G2_RGBX_4444_R(c) 			(((c) >> 8) & 0x00f0) 	//!< 1111 0000
+#define G2_RGBX_4444_G(c) 			(((c) >> 4) & 0x00f0) 	//!< 1111 0000
+#define G2_RGBX_4444_B(c) 			((c) & 0x00f0) 			//!< 1111 0000
+
+#define G2_RGBA_8888_R(c) 			(((c) >> 24) & 0x000000ff)
+#define G2_RGBA_8888_G(c) 			(((c) >> 16) & 0x000000ff)
+#define G2_RGBA_8888_B(c) 			(((c) >> 8) & 0x000000ff)
+#define G2_RGBA_8888_A(c) 			((c) & 0x000000ff)
+
+#define G2_RGBX_8888_R(c) 			(((c) >> 24) & 0x000000ff)
+#define G2_RGBX_8888_G(c) 			(((c) >> 16) & 0x000000ff)
+#define G2_RGBX_8888_B(c) 			(((c) >> 8) & 0x000000ff)
 
 // the endian for the stored pixfmt
 #define G2_PIXFMT_LENDIAN 			(0x0000)
@@ -110,31 +149,31 @@ typedef enum __g2_pixfmt_t
 , 	G2_PIXFMT_RGB888		= 3		//!< 24-bit r g b: 8 8 8
 , 	G2_PIXFMT_ARGB1555		= 4		//!< 16-bit a r g b: 1 5 5 5 a: 10000000 r: 11111000 g: 11111000 b: 11111000
 , 	G2_PIXFMT_XRGB1555		= 5		//!< 16-bit x r g b: 1 5 5 5 x: 10000000 r: 11111000 g: 11111000 b: 11111000
-, 	G2_PIXFMT_ARGB8888		= 6		//!< 32-bit a r g b: 8 8 8 8
-, 	G2_PIXFMT_XRGB8888		= 7		//!< 32-bit x r g b: 8 8 8 8
-, 	G2_PIXFMT_ARGB4444		= 8		//!< 32-bit a r g b: 4 4 4 4
-, 	G2_PIXFMT_XRGB4444		= 9		//!< 32-bit x r g b: 4 4 4 4
+, 	G2_PIXFMT_ARGB4444		= 6		//!< 16-bit a r g b: 4 4 4 4
+, 	G2_PIXFMT_XRGB4444		= 7		//!< 16-bit x r g b: 4 4 4 4
+, 	G2_PIXFMT_ARGB8888		= 8		//!< 32-bit a r g b: 8 8 8 8
+, 	G2_PIXFMT_XRGB8888		= 9		//!< 32-bit x r g b: 8 8 8 8
 , 	G2_PIXFMT_RGBA5551		= 10	//!< 16-bit r g b a: 5 5 5 1 r: 11111000 g: 11111000 b: 11111000 a: 10000000
 , 	G2_PIXFMT_RGBX5551		= 11	//!< 16-bit r g b x: 5 5 5 1 r: 11111000 g: 11111000 b: 11111000 x: 10000000
-, 	G2_PIXFMT_RGBA8888		= 12	//!< 32-bit r g b a: 8 8 8 8
-, 	G2_PIXFMT_RGBX8888		= 13	//!< 32-bit r g b x: 8 8 8 8
-, 	G2_PIXFMT_RGBA4444		= 14	//!< 32-bit r g b a: 4 4 4 4
-, 	G2_PIXFMT_RGBX4444		= 15	//!< 32-bit r g b x: 4 4 4 4
+, 	G2_PIXFMT_RGBA4444		= 12	//!< 16-bit r g b a: 4 4 4 4
+, 	G2_PIXFMT_RGBX4444		= 13	//!< 16-bit r g b x: 4 4 4 4
+, 	G2_PIXFMT_RGBA8888		= 14	//!< 32-bit r g b a: 8 8 8 8
+, 	G2_PIXFMT_RGBX8888		= 15	//!< 32-bit r g b x: 8 8 8 8
 
 , 	G2_PIXFMT_BGR565		= 16	//!< 16-bit b g r: 5 6 5 b: 11111000 g: 11111100 r: 11111000
 , 	G2_PIXFMT_BGR888		= 17	//!< 24-bit b g r: 8 8 8
 , 	G2_PIXFMT_ABGR1555		= 18	//!< 16-bit a b g r: 1 5 5 5 a: 10000000 b: 11111000 g: 11111000 r: 11111000
 , 	G2_PIXFMT_XBGR1555		= 19	//!< 16-bit x b g r: 1 5 5 5 x: 10000000 b: 11111000 g: 11111000 r: 11111000
-, 	G2_PIXFMT_ABGR8888		= 20	//!< 32-bit a b g r: 8 8 8 8
-, 	G2_PIXFMT_XBGR8888		= 21	//!< 32-bit x b g r: 8 8 8 8
-, 	G2_PIXFMT_ABGR4444		= 22	//!< 32-bit a b g r: 4 4 4 4
-, 	G2_PIXFMT_XBGR4444		= 23 	//!< 32-bit x b g r: 4 4 4 4
+, 	G2_PIXFMT_ABGR4444		= 20	//!< 16-bit a b g r: 4 4 4 4
+, 	G2_PIXFMT_XBGR4444		= 21 	//!< 16-bit x b g r: 4 4 4 4
+, 	G2_PIXFMT_ABGR8888		= 22	//!< 32-bit a b g r: 8 8 8 8
+, 	G2_PIXFMT_XBGR8888		= 23	//!< 32-bit x b g r: 8 8 8 8
 , 	G2_PIXFMT_BGRA5551		= 24	//!< 16-bit b g r a: 5 5 5 1 b: 11111000 g: 11111000 r: 11111000 a: 10000000 
 , 	G2_PIXFMT_BGRX5551		= 25	//!< 16-bit b g r x: 5 5 5 1 b: 11111000 g: 11111000 r: 11111000 x: 10000000
-, 	G2_PIXFMT_BGRA8888		= 26	//!< 32-bit b g r a: 8 8 8 8
-, 	G2_PIXFMT_BGRX8888		= 27	//!< 32-bit b g r x: 8 8 8 8
-, 	G2_PIXFMT_BGRA4444		= 28	//!< 32-bit b g r a: 4 4 4 4
-, 	G2_PIXFMT_BGRX4444		= 29	//!< 32-bit b g r x: 4 4 4 4
+, 	G2_PIXFMT_BGRA4444		= 26	//!< 16-bit b g r a: 4 4 4 4
+, 	G2_PIXFMT_BGRX4444		= 27	//!< 16-bit b g r x: 4 4 4 4
+, 	G2_PIXFMT_BGRA8888		= 28	//!< 32-bit b g r a: 8 8 8 8
+, 	G2_PIXFMT_BGRX8888		= 29	//!< 32-bit b g r x: 8 8 8 8
 
 }g2_pixfmt_t;
 

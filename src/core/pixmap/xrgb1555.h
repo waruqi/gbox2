@@ -28,58 +28,44 @@
  */
 #include "prefix.h"
 #include "rgb16.h"
-#if defined(TB_ARCH_x86)
-# 	include "opt/x86/xrgb1555_blend.h"
-#endif
-
-/* ///////////////////////////////////////////////////////////////////////
- * macros
- */
-
-#ifndef g2_pixmap_xrgb1555_blend
-# 	define g2_pixmap_xrgb1555_blend(d, s, a) 		g2_pixmap_xrgb1555_blend_inline(d, s, a)
-#endif
-
-#ifndef g2_pixmap_xrgb1555_blend2
-# 	define g2_pixmap_xrgb1555_blend2(d, s, a) 		g2_pixmap_xrgb1555_blend2_inline(d, s, a)
-#endif
 
 /* ///////////////////////////////////////////////////////////////////////
  * inlines
  */
 
+
 /* the alpha blend 
  *
  * c: 
- * 0000 0000 0000 0000 arrr rrgg gggb bbbb
+ * 0000 0000 0000 0000 xrrr rrgg gggb bbbb
  *
- * c | c << 16:
- * arrr rrgg gggb bbbb arrr rrgg gggb bbbb
+ * c | c << 15:
+ * 0xrr rrrg gggg bbbb xrrr rrgg gggb bbbb
  *
- * 0x3e07c1f:
- * 0000 0011 1110 0000 0111 1100 0001 1111
+ * 0x1f07c1f:
+ * 0000 0001 1111 0000 0111 1100 0001 1111
  *
- * d = (c | c << 16) & 0x3e07c1f:
- * 0000 00gg ggg0 0000 0rrr rr00 000b bbbb
+ * d = (c | c << 15) & 0x1f07c1f:
+ * 0000 000g gggg 0000 0rrr rr00 000b bbbb
  *
- * (d & 0xffff) | (d >> 16):
+ * (d & 0xffff) | (d >> 15):
  * 0000 0000 0000 0000 0rrr rrgg gggb bbbb
  *
  * (s * a + d * (32 - a)) >> 5 => ((s - d) * a) >> 5 + d
  */
-static __tb_inline__ tb_uint16_t g2_pixmap_xrgb1555_blend_inline(tb_uint32_t d, tb_uint32_t s, tb_byte_t a)
+static __tb_inline__ tb_uint16_t g2_pixmap_xrgb1555_blend(tb_uint32_t d, tb_uint32_t s, tb_byte_t a)
 {
 	// FIXME: s - d? overflow?
-	s = (s | (s << 16)) & 0x3e07c1f;
-	d = (d | (d << 16)) & 0x3e07c1f;
+	s = (s | (s << 15)) & 0x3e07c1f;
+	d = (d | (d << 15)) & 0x3e07c1f;
 	d = ((((s - d) * a) >> 5) + d) & 0x3e07c1f;
-	return (tb_uint16_t)((d & 0xffff) | (d >> 16) | 0x8000);
+	return (tb_uint16_t)((d & 0xffff) | (d >> 15) | 0x8000);
 }
-static __tb_inline__ tb_uint16_t g2_pixmap_xrgb1555_blend2_inline(tb_uint32_t d, tb_uint32_t s, tb_byte_t a)
+static __tb_inline__ tb_uint16_t g2_pixmap_xrgb1555_blend2(tb_uint32_t d, tb_uint32_t s, tb_byte_t a)
 {
-	d = (d | (d << 16)) & 0x3e07c1f;
+	d = (d | (d << 15)) & 0x3e07c1f;
 	d = ((((s - d) * a) >> 5) + d) & 0x3e07c1f;
-	return (tb_uint16_t)((d & 0xffff) | (d >> 16) | 0x8000);
+	return (tb_uint16_t)((d & 0xffff) | (d >> 15) | 0x8000);
 }
 /* ///////////////////////////////////////////////////////////////////////
  * implementation
@@ -91,10 +77,10 @@ static __tb_inline__ g2_pixel_t g2_pixmap_xrgb1555_pixel(g2_color_t color)
 static __tb_inline__ g2_color_t g2_pixmap_xrgb1555_color(g2_pixel_t pixel)
 {
 	g2_color_t color;
+	color.a = 0xff;
 	color.r = G2_XRGB_1555_R(pixel);
 	color.g = G2_XRGB_1555_G(pixel);
 	color.b = G2_XRGB_1555_B(pixel);
-	color.a = 0xff;
 	return color;
 }
 static __tb_inline__ tb_void_t g2_pixmap_xrgb1555_pixel_set_la(tb_pointer_t data, g2_pixel_t pixel, tb_byte_t alpha)

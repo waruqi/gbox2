@@ -32,7 +32,9 @@ extern "C" {
  * includes
  */
 #include "prefix.h"
-#include "gl/interface.h"
+#if defined(G2_CONFIG_CORE_GL) || defined(G2_CONFIG_CORE_GLES)
+# 	include "gl/interface.h"
+#endif
 
 /* ///////////////////////////////////////////////////////////////////////
  * interfaces

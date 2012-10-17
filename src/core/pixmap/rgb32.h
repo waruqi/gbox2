@@ -27,27 +27,12 @@
  * includes
  */
 #include "prefix.h"
-#if defined(TB_ARCH_x86)
-# 	include "opt/x86/rgb32_blend.h"
-#endif
-
-/* ///////////////////////////////////////////////////////////////////////
- * macros
- */
-
-#ifndef g2_pixmap_rgb32_blend
-# 	define g2_pixmap_rgb32_blend(d, s, a) 		g2_pixmap_rgb32_blend_inline(d, s, a)
-#endif
-
-#ifndef g2_pixmap_rgb32_blend2
-# 	define g2_pixmap_rgb32_blend2(d, hs, ls, a) 	g2_pixmap_rgb32_blend2_inline(d, hs, ls, a)
-#endif
 
 /* ///////////////////////////////////////////////////////////////////////
  * inlines
  */
 
-static __tb_inline__ tb_uint32_t g2_pixmap_rgb32_blend_inline(tb_uint32_t d, tb_uint32_t s, tb_byte_t a)
+static __tb_inline__ tb_uint32_t g2_pixmap_rgb32_blend(tb_uint32_t d, tb_uint32_t s, tb_byte_t a)
 {
 	tb_uint32_t hs = (s >> 8) & 0x00ff00ff;
 	tb_uint32_t hd = (d >> 8) & 0x00ff00ff;
@@ -57,7 +42,7 @@ static __tb_inline__ tb_uint32_t g2_pixmap_rgb32_blend_inline(tb_uint32_t d, tb_
 	ld = (((a * (ls - ld)) >> 8) + ld) & 0x00ff00ff;
 	return (hd << 8) | ld;
 }
-static __tb_inline__ tb_uint32_t g2_pixmap_rgb32_blend2_inline(tb_uint32_t d, tb_uint32_t hs, tb_uint32_t ls, tb_byte_t a)
+static __tb_inline__ tb_uint32_t g2_pixmap_rgb32_blend2(tb_uint32_t d, tb_uint32_t hs, tb_uint32_t ls, tb_byte_t a)
 {
 	tb_uint32_t hd = (d >> 8) & 0x00ff00ff;
 	tb_uint32_t ld = d & 0x00ff00ff;

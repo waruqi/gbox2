@@ -259,10 +259,11 @@ tb_handle_t g2_context_init_gl(tb_size_t pixfmt, tb_size_t width, tb_size_t heig
 	tb_assert_and_check_return_val(G2_PIXFMT_OK(pixfmt) && width && height, TB_NULL);
 
 	// check pixfmt
-	tb_assert_and_check_return_val( 	(pixfmt == G2_PIXFMT_RGBA8888 | G2_PIXFMT_BENDIAN)
-									|| 	(pixfmt == G2_PIXFMT_RGB565 | G2_PIXFMT_BENDIAN)
-									|| 	(pixfmt == G2_PIXFMT_RGBA4444 | G2_PIXFMT_BENDIAN)
-									|| 	(pixfmt == G2_PIXFMT_RGBA5551 | G2_PIXFMT_BENDIAN), TB_NULL);
+	tb_assert_and_check_return_val( 	(pixfmt == (G2_PIXFMT_RGBA8888 | G2_PIXFMT_BENDIAN))
+									|| 	(pixfmt == (G2_PIXFMT_RGB565 | G2_PIXFMT_LENDIAN))
+									|| 	(pixfmt == (G2_PIXFMT_RGB888 | G2_PIXFMT_BENDIAN))
+									|| 	(pixfmt == (G2_PIXFMT_RGBA4444 | G2_PIXFMT_LENDIAN))
+									|| 	(pixfmt == (G2_PIXFMT_RGBA5551 | G2_PIXFMT_LENDIAN)), TB_NULL);
 
 	// check interfaces
 	tb_check_return_val(g2_gl_interface_check(version), TB_NULL);

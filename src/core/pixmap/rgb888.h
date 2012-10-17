@@ -31,24 +31,12 @@
 #include "rgb32.h"
 
 /* //////////////////////////////////////////////////////////////////////
- * macros
- */
-
-#ifndef g2_pixmap_rgb888_blend
-# 	define g2_pixmap_rgb888_blend(d, s, a) 		g2_pixmap_rgb888_blend_inline(d, s, a)
-#endif
-
-#ifndef g2_pixmap_rgb888_blend2
-# 	define g2_pixmap_rgb888_blend2(d, s, a) 	g2_pixmap_rgb888_blend2_inline(d, s, a)
-#endif
-
-/* //////////////////////////////////////////////////////////////////////
  * inlines
  */
 
 static g2_pixel_t g2_pixmap_rgb888_pixel(g2_color_t color);
 static g2_color_t g2_pixmap_rgb888_color(g2_pixel_t pixel);
-static __tb_inline__ tb_uint32_t g2_pixmap_rgb888_blend_inline(tb_uint32_t d, tb_uint32_t s, tb_byte_t a)
+static __tb_inline__ tb_uint32_t g2_pixmap_rgb888_blend(tb_uint32_t d, tb_uint32_t s, tb_byte_t a)
 {
 	g2_color_t c;
 	g2_color_t cs = g2_pixmap_rgb888_color(s & 0x00ffffff);
@@ -58,7 +46,7 @@ static __tb_inline__ tb_uint32_t g2_pixmap_rgb888_blend_inline(tb_uint32_t d, tb
 	c.b = ((a * (cs.b - cd.b)) >> 8) + cd.b;
 	return g2_pixmap_rgb888_pixel(c) & 0x00ffffff;
 }
-static __tb_inline__ tb_uint32_t g2_pixmap_rgb888_blend2_inline(tb_uint32_t d, g2_color_t s, tb_byte_t a)
+static __tb_inline__ tb_uint32_t g2_pixmap_rgb888_blend2(tb_uint32_t d, g2_color_t s, tb_byte_t a)
 {
 	g2_color_t c;
 	g2_color_t cd = g2_pixmap_rgb888_color(d & 0x00ffffff);

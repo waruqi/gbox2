@@ -28,21 +28,6 @@
  */
 #include "prefix.h"
 #include "rgb16.h"
-#if defined(TB_ARCH_x86)
-# 	include "opt/x86/rgb565_blend.h"
-#endif
-
-/* ///////////////////////////////////////////////////////////////////////
- * macros
- */
-
-#ifndef g2_pixmap_rgb565_blend
-# 	define g2_pixmap_rgb565_blend(d, s, a) 		g2_pixmap_rgb565_blend_inline(d, s, a)
-#endif
-
-#ifndef g2_pixmap_rgb565_blend2
-# 	define g2_pixmap_rgb565_blend2(d, s, a) 	g2_pixmap_rgb565_blend2_inline(d, s, a)
-#endif
 
 /* ///////////////////////////////////////////////////////////////////////
  * inlines
@@ -67,7 +52,7 @@
  *
  * (s * a + d * (32 - a)) >> 5 => ((s - d) * a) >> 5 + d
  */
-static __tb_inline__ tb_uint16_t g2_pixmap_rgb565_blend_inline(tb_uint32_t d, tb_uint32_t s, tb_byte_t a)
+static __tb_inline__ tb_uint16_t g2_pixmap_rgb565_blend(tb_uint32_t d, tb_uint32_t s, tb_byte_t a)
 {
 	// FIXME: s - d? overflow?
 	s = (s | (s << 16)) & 0x7e0f81f;
@@ -75,7 +60,7 @@ static __tb_inline__ tb_uint16_t g2_pixmap_rgb565_blend_inline(tb_uint32_t d, tb
 	d = ((((s - d) * a) >> 5) + d) & 0x7e0f81f;
 	return (tb_uint16_t)((d & 0xffff) | (d >> 16));
 }
-static __tb_inline__ tb_uint16_t g2_pixmap_rgb565_blend2_inline(tb_uint32_t d, tb_uint32_t s, tb_byte_t a)
+static __tb_inline__ tb_uint16_t g2_pixmap_rgb565_blend2(tb_uint32_t d, tb_uint32_t s, tb_byte_t a)
 {
 	d = (d | (d << 16)) & 0x7e0f81f;
 	d = ((((s - d) * a) >> 5) + d) & 0x7e0f81f;
@@ -91,10 +76,10 @@ static __tb_inline__ g2_pixel_t g2_pixmap_rgb565_pixel(g2_color_t color)
 static __tb_inline__ g2_color_t g2_pixmap_rgb565_color(g2_pixel_t pixel)
 {
 	g2_color_t color;
+	color.a = 0xff;
 	color.r = G2_RGB_565_R(pixel);
 	color.g = G2_RGB_565_G(pixel);
 	color.b = G2_RGB_565_B(pixel);
-	color.a = 0xff;
 	return color;
 }
 static __tb_inline__ tb_void_t g2_pixmap_rgb565_pixel_set_la(tb_pointer_t data, g2_pixel_t pixel, tb_byte_t alpha)

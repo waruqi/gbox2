@@ -425,12 +425,17 @@ tb_handle_t g2_shader_init_bitmap(tb_handle_t context, tb_handle_t bitmap, tb_si
 	tb_size_t 		height = g2_bitmap_height(bitmap);
 	tb_assert_and_check_return_val(width && height, TB_NULL);
 
+	// lpitch
+	tb_size_t 		lpitch = g2_bitmap_lpitch(bitmap);
+	tb_assert_and_check_return_val(lpitch, TB_NULL);
+
 	// pixfmt
 	tb_size_t 		pixfmt = g2_bitmap_pixfmt(bitmap);
-	tb_assert_and_check_return_val( 	(pixfmt == G2_PIXFMT_RGBA8888 | G2_PIXFMT_BENDIAN)
-									|| 	(pixfmt == G2_PIXFMT_RGB565 | G2_PIXFMT_BENDIAN)
-									|| 	(pixfmt == G2_PIXFMT_RGBA4444 | G2_PIXFMT_BENDIAN)
-									|| 	(pixfmt == G2_PIXFMT_RGBA5551 | G2_PIXFMT_BENDIAN), TB_NULL);
+	tb_assert_and_check_return_val( 	(pixfmt == (G2_PIXFMT_RGBA8888 | G2_PIXFMT_BENDIAN))
+									|| 	(pixfmt == (G2_PIXFMT_RGB565 | G2_PIXFMT_LENDIAN))
+									|| 	(pixfmt == (G2_PIXFMT_RGB888 | G2_PIXFMT_BENDIAN))
+									|| 	(pixfmt == (G2_PIXFMT_RGBA4444 | G2_PIXFMT_LENDIAN))
+									|| 	(pixfmt == (G2_PIXFMT_RGBA5551 | G2_PIXFMT_LENDIAN)), TB_NULL);
 
 	// init shader
 	g2_gl_shader_t* shader = g2_gl_shader_init(context, G2_GL_SHADER_TYPE_BITMAP, wrap);
@@ -446,8 +451,11 @@ tb_handle_t g2_shader_init_bitmap(tb_handle_t context, tb_handle_t bitmap, tb_si
 
 	// make texture
 	g2_glBindTexture(G2_GL_TEXTURE_2D, *shader->texture);
-//	g2_glPixelStorei(G2_GL_UNPACK_ALIGNMENT, 1);
+
+	// init line alignment
+	g2_glPixelStorei(G2_GL_UNPACK_ALIGNMENT, !(lpitch & 0x3)? 4 : 1);
 	
+	// make data
 	switch (G2_PIXFMT(pixfmt))
 	{
 	case G2_PIXFMT_RGBA8888:
@@ -455,6 +463,9 @@ tb_handle_t g2_shader_init_bitmap(tb_handle_t context, tb_handle_t bitmap, tb_si
 		break;
 	case G2_PIXFMT_RGB565:
 		g2_glTexImage2D(G2_GL_TEXTURE_2D, 0, G2_GL_RGB, width, height, 0, G2_GL_RGB, G2_GL_UNSIGNED_SHORT_5_6_5, data);
+		break;
+	case G2_PIXFMT_RGB888:
+		g2_glTexImage2D(G2_GL_TEXTURE_2D, 0, G2_GL_RGB, width, height, 0, G2_GL_RGB, G2_GL_UNSIGNED_BYTE, data);
 		break;
 	case G2_PIXFMT_RGBA4444:
 		g2_glTexImage2D(G2_GL_TEXTURE_2D, 0, G2_GL_RGBA, width, height, 0, G2_GL_RGBA, G2_GL_UNSIGNED_SHORT_4_4_4_4, data);

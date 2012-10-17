@@ -44,27 +44,31 @@ static __tb_inline__ SkBitmap::Config g2_pixfmt_to_skia(tb_size_t pixfmt)
 	, 	G2_PIXFMT_RGB888		= 3		//!< 24-bit r g b: 8 8 8
 	, 	G2_PIXFMT_ARGB1555		= 4		//!< 16-bit a r g b: 1 5 5 5 a: 10000000 r: 11111000 g: 11111000 b: 11111000
 	, 	G2_PIXFMT_XRGB1555		= 5		//!< 16-bit x r g b: 1 5 5 5 x: 10000000 r: 11111000 g: 11111000 b: 11111000
-	, 	G2_PIXFMT_ARGB8888		= 6		//!< 32-bit a r g b: 8 8 8 8
-	, 	G2_PIXFMT_XRGB8888		= 7		//!< 32-bit x r g b: 8 8 8 8
-	, 	G2_PIXFMT_ARGB4444		= 8		//!< 32-bit a r g b: 4 4 4 4
-	, 	G2_PIXFMT_XRGB4444		= 9		//!< 32-bit x r g b: 4 4 4 4
-	, 	G2_PIXFMT_RGBA8888		= 10	//!< 32-bit r g b a: 8 8 8 8
-	, 	G2_PIXFMT_RGBX8888		= 11	//!< 32-bit r g b x: 8 8 8 8
-	, 	G2_PIXFMT_RGBA4444		= 12	//!< 32-bit r g b a: 4 4 4 4
-	, 	G2_PIXFMT_RGBX4444		= 13	//!< 32-bit r g b x: 4 4 4 4
+	, 	G2_PIXFMT_ARGB4444		= 6		//!< 16-bit a r g b: 4 4 4 4
+	, 	G2_PIXFMT_XRGB4444		= 7		//!< 16-bit x r g b: 4 4 4 4
+	, 	G2_PIXFMT_ARGB8888		= 8		//!< 32-bit a r g b: 8 8 8 8
+	, 	G2_PIXFMT_XRGB8888		= 9		//!< 32-bit x r g b: 8 8 8 8
+	, 	G2_PIXFMT_RGBA5551		= 10	//!< 16-bit r g b a: 5 5 5 1 r: 11111000 g: 11111000 b: 11111000 a: 10000000
+	, 	G2_PIXFMT_RGBX5551		= 11	//!< 16-bit r g b x: 5 5 5 1 r: 11111000 g: 11111000 b: 11111000 x: 10000000
+	, 	G2_PIXFMT_RGBA4444		= 12	//!< 16-bit r g b a: 4 4 4 4
+	, 	G2_PIXFMT_RGBX4444		= 13	//!< 16-bit r g b x: 4 4 4 4
+	, 	G2_PIXFMT_RGBA8888		= 14	//!< 32-bit r g b a: 8 8 8 8
+	, 	G2_PIXFMT_RGBX8888		= 15	//!< 32-bit r g b x: 8 8 8 8
 
-	, 	G2_PIXFMT_BGR565		= 14	//!< 16-bit b g r: 5 6 5 b: 11111000 g: 11111100 r: 11111000
-	, 	G2_PIXFMT_BGR888		= 15	//!< 24-bit b g r: 8 8 8
-	, 	G2_PIXFMT_ABGR1555		= 16	//!< 16-bit a b g r: 1 5 5 5 a: 10000000 b: 11111000 g: 11111000 r: 11111000
-	, 	G2_PIXFMT_XBGR1555		= 17	//!< 16-bit x b g r: 1 5 5 5 x: 10000000 b: 11111000 g: 11111000 r: 11111000
-	, 	G2_PIXFMT_ABGR8888		= 18	//!< 32-bit a b g r: 8 8 8 8
-	, 	G2_PIXFMT_XBGR8888		= 19	//!< 32-bit x b g r: 8 8 8 8
-	, 	G2_PIXFMT_ABGR4444		= 20	//!< 32-bit a b g r: 4 4 4 4
-	, 	G2_PIXFMT_XBGR4444		= 21	//!< 32-bit x b g r: 4 4 4 4
-	, 	G2_PIXFMT_BGRA8888		= 22	//!< 32-bit b g r a: 8 8 8 8
-	, 	G2_PIXFMT_BGRX8888		= 23	//!< 32-bit b g r x: 8 8 8 8
-	, 	G2_PIXFMT_BGRA4444		= 24	//!< 32-bit b g r a: 4 4 4 4
-	, 	G2_PIXFMT_BGRX4444		= 25	//!< 32-bit b g r x: 4 4 4 4
+	, 	G2_PIXFMT_BGR565		= 16	//!< 16-bit b g r: 5 6 5 b: 11111000 g: 11111100 r: 11111000
+	, 	G2_PIXFMT_BGR888		= 17	//!< 24-bit b g r: 8 8 8
+	, 	G2_PIXFMT_ABGR1555		= 18	//!< 16-bit a b g r: 1 5 5 5 a: 10000000 b: 11111000 g: 11111000 r: 11111000
+	, 	G2_PIXFMT_XBGR1555		= 19	//!< 16-bit x b g r: 1 5 5 5 x: 10000000 b: 11111000 g: 11111000 r: 11111000
+	, 	G2_PIXFMT_ABGR4444		= 20	//!< 16-bit a b g r: 4 4 4 4
+	, 	G2_PIXFMT_XBGR4444		= 21 	//!< 16-bit x b g r: 4 4 4 4
+	, 	G2_PIXFMT_ABGR8888		= 22	//!< 32-bit a b g r: 8 8 8 8
+	, 	G2_PIXFMT_XBGR8888		= 23	//!< 32-bit x b g r: 8 8 8 8
+	, 	G2_PIXFMT_BGRA5551		= 24	//!< 16-bit b g r a: 5 5 5 1 b: 11111000 g: 11111000 r: 11111000 a: 10000000 
+	, 	G2_PIXFMT_BGRX5551		= 25	//!< 16-bit b g r x: 5 5 5 1 b: 11111000 g: 11111000 r: 11111000 x: 10000000
+	, 	G2_PIXFMT_BGRA4444		= 26	//!< 16-bit b g r a: 4 4 4 4
+	, 	G2_PIXFMT_BGRX4444		= 27	//!< 16-bit b g r x: 4 4 4 4
+	, 	G2_PIXFMT_BGRA8888		= 28	//!< 32-bit b g r a: 8 8 8 8
+	, 	G2_PIXFMT_BGRX8888		= 29	//!< 32-bit b g r x: 8 8 8 8
 
 	}g2_pixfmt_t;
 #endif
@@ -73,14 +77,17 @@ static __tb_inline__ SkBitmap::Config g2_pixfmt_to_skia(tb_size_t pixfmt)
 	{
 		SkBitmap::kNo_Config
 	, 	SkBitmap::kNo_Config
+
 	, 	SkBitmap::kRGB_565_Config
 	, 	SkBitmap::kNo_Config
 	, 	SkBitmap::kNo_Config
 	, 	SkBitmap::kNo_Config
-	, 	SkBitmap::kARGB_8888_Config
-	, 	SkBitmap::kARGB_8888_Config
 	, 	SkBitmap::kARGB_4444_Config
 	, 	SkBitmap::kARGB_4444_Config
+	, 	SkBitmap::kARGB_8888_Config
+	, 	SkBitmap::kARGB_8888_Config
+	, 	SkBitmap::kNo_Config
+	, 	SkBitmap::kNo_Config
 	, 	SkBitmap::kNo_Config
 	, 	SkBitmap::kNo_Config
 	, 	SkBitmap::kNo_Config
@@ -98,6 +105,9 @@ static __tb_inline__ SkBitmap::Config g2_pixfmt_to_skia(tb_size_t pixfmt)
 	, 	SkBitmap::kNo_Config
 	, 	SkBitmap::kNo_Config
 	, 	SkBitmap::kNo_Config
+	, 	SkBitmap::kNo_Config
+	, 	SkBitmap::kNo_Config
+
 	};
 
 	pixfmt &= ~G2_PIXFMT_MENDIAN;

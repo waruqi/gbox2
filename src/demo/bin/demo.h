@@ -29,10 +29,25 @@
 #define G2_DEMO_HEIGHT 			(480)
 
 // pixfmt
-//#define G2_DEMO_PIXFMT 			(G2_PIXFMT_RGBA8888 | G2_PIXFMT_BENDIAN)
-#define G2_DEMO_PIXFMT 			(G2_PIXFMT_RGB565 | G2_PIXFMT_BENDIAN)
-//#define G2_DEMO_PIXFMT 			(G2_PIXFMT_RGBA4444 | G2_PIXFMT_BENDIAN)
-//#define G2_DEMO_PIXFMT 			(G2_PIXFMT_RGBA5551 | G2_PIXFMT_BENDIAN)
+#if defined(G2_CONFIG_CORE_SKIA)
+//# 	define G2_DEMO_PIXFMT 			(G2_PIXFMT_RGB565 | G2_PIXFMT_NENDIAN)
+# 	define G2_DEMO_PIXFMT 			(G2_PIXFMT_ARGB8888 | G2_PIXFMT_NENDIAN)
+#elif defined(G2_CONFIG_CORE_GL) || defined(G2_CONFIG_CORE_GLES)
+# 	define G2_DEMO_PIXFMT 			(G2_PIXFMT_RGB565 | G2_PIXFMT_LENDIAN)
+//# 	define G2_DEMO_PIXFMT 			(G2_PIXFMT_RGB888 | G2_PIXFMT_BENDIAN)
+//# 	define G2_DEMO_PIXFMT 			(G2_PIXFMT_RGBA5551 | G2_PIXFMT_LENDIAN)
+//# 	define G2_DEMO_PIXFMT 			(G2_PIXFMT_RGBA4444 | G2_PIXFMT_LENDIAN)
+//# 	define G2_DEMO_PIXFMT 			(G2_PIXFMT_RGBA8888 | G2_PIXFMT_BENDIAN)
+#else
+//# 	define G2_DEMO_PIXFMT 			(G2_PIXFMT_RGB565 | G2_PIXFMT_NENDIAN)
+//# 	define G2_DEMO_PIXFMT 			(G2_PIXFMT_ARGB1555 | G2_PIXFMT_NENDIAN)
+//# 	define G2_DEMO_PIXFMT 			(G2_PIXFMT_ARGB4444 | G2_PIXFMT_NENDIAN)
+# 	define G2_DEMO_PIXFMT 			(G2_PIXFMT_ARGB8888 | G2_PIXFMT_NENDIAN)
+//# 	define G2_DEMO_PIXFMT 			(G2_PIXFMT_RGB565 | G2_PIXFMT_NENDIAN)
+//# 	define G2_DEMO_PIXFMT 			(G2_PIXFMT_RGBA5551 | G2_PIXFMT_NENDIAN)
+//# 	define G2_DEMO_PIXFMT 			(G2_PIXFMT_RGBA4444 | G2_PIXFMT_NENDIAN)
+//# 	define G2_DEMO_PIXFMT 			(G2_PIXFMT_RGBA8888 | G2_PIXFMT_NENDIAN)
+#endif
 
 /* ////////////////////////////////////////////////////////////////////////
  * globals
@@ -296,6 +311,7 @@ static tb_bool_t g2_demo_gl_init(tb_int_t argc, tb_char_t** argv)
 /* ////////////////////////////////////////////////////////////////////////
  * gbox2
  */
+#if defined(G2_CONFIG_CORE_GL) || defined(G2_CONFIG_CORE_GLES)
 static tb_void_t g2_demo_gbox2_init_gl()
 {
 	// load interfaces for common
@@ -373,6 +389,7 @@ static tb_void_t g2_demo_gbox2_init_gl()
 	G2_GL_INTERFACE_LOAD_S(glVertexAttribPointer);
 #endif
 }
+#endif
 static tb_bool_t g2_demo_gbox2_init(tb_int_t argc, tb_char_t** argv)
 {
 	// init context
