@@ -51,6 +51,7 @@ G2_GL_INTERFACE_DEFINE(glClearColor);
 G2_GL_INTERFACE_DEFINE(glClearStencil);
 G2_GL_INTERFACE_DEFINE(glColor4f);
 G2_GL_INTERFACE_DEFINE(glColorMask);
+G2_GL_INTERFACE_DEFINE(glColorPointer);
 G2_GL_INTERFACE_DEFINE(glCompileShader);
 G2_GL_INTERFACE_DEFINE(glCreateProgram);
 G2_GL_INTERFACE_DEFINE(glCreateShader);
@@ -91,7 +92,6 @@ G2_GL_INTERFACE_DEFINE(glStencilMask);
 G2_GL_INTERFACE_DEFINE(glStencilOp);
 G2_GL_INTERFACE_DEFINE(glTexCoordPointer);
 G2_GL_INTERFACE_DEFINE(glTexEnvi);
-G2_GL_INTERFACE_DEFINE(glTexImage1D);
 G2_GL_INTERFACE_DEFINE(glTexImage2D);
 G2_GL_INTERFACE_DEFINE(glTexParameterf);
 G2_GL_INTERFACE_DEFINE(glTexParameteri);
@@ -138,9 +138,6 @@ tb_bool_t g2_gl_interface_check(tb_byte_t version)
 	G2_GL_INTERFACE_CHECK 	(glStencilFunc);
 	G2_GL_INTERFACE_CHECK 	(glStencilMask);
 	G2_GL_INTERFACE_CHECK 	(glStencilOp);
-#ifndef G2_CONFIG_CORE_GLES
-	G2_GL_INTERFACE_CHECK 	(glTexImage1D);
-#endif
 	G2_GL_INTERFACE_CHECK 	(glTexImage2D);
 	G2_GL_INTERFACE_CHECK 	(glTexParameterf);
 	G2_GL_INTERFACE_CHECK 	(glTexParameteri);
@@ -150,6 +147,7 @@ tb_bool_t g2_gl_interface_check(tb_byte_t version)
 	if (version < 0x20)
 	{
 		G2_GL_INTERFACE_CHECK 	(glColor4f);
+		G2_GL_INTERFACE_CHECK 	(glColorPointer);
 		G2_GL_INTERFACE_CHECK 	(glDisableClientState);
 		G2_GL_INTERFACE_CHECK 	(glEnableClientState);
 		G2_GL_INTERFACE_CHECK 	(glLoadIdentity);

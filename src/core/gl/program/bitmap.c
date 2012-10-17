@@ -50,11 +50,11 @@ tb_handle_t g2_gl_program_init_bitmap()
 		"precision mediump float; 															\n"
 #endif
 		" 																					\n"
-		"attribute vec4 aColor; 															\n"
+		"attribute vec4 aColors; 															\n"
 		"attribute vec4 aTexcoords; 														\n"
 		"attribute vec4 aVertices; 															\n"
 		" 																					\n"
-		"varying vec4 vColor; 																\n"
+		"varying vec4 vColors; 																\n"
 		"varying vec4 vTexcoords; 															\n"
 		"uniform mat4 uMatrixModel; 														\n"
 		"uniform mat4 uMatrixProject; 														\n"
@@ -62,7 +62,7 @@ tb_handle_t g2_gl_program_init_bitmap()
 		" 																					\n"
 		"void main() 																		\n"
 		"{ 																					\n"
-		" 	vColor = aColor; 																\n" 
+		" 	vColors = aColors; 																\n" 
 		" 	vTexcoords = uMatrixTexcoord * aTexcoords; 										\n"  
 		" 	gl_Position = uMatrixProject * uMatrixModel * aVertices;						\n"
 		"} 																					\n";
@@ -73,13 +73,13 @@ tb_handle_t g2_gl_program_init_bitmap()
 		"precision mediump float; 															\n"
 #endif
 		" 																					\n"
-		"varying vec4 vColor; 																\n"
+		"varying vec4 vColors; 																\n"
 		"varying vec4 vTexcoords; 															\n"
 		"uniform sampler2D uSampler; 														\n"
 		" 																					\n"
 		"void main() 																		\n"
 		"{ 																					\n"
-		"   gl_FragColor = vColor * texture2D(uSampler, vec2(vTexcoords.x, vTexcoords.y)); 	\n"
+		"   gl_FragColor = vColors * texture2D(uSampler, vec2(vTexcoords.x, vTexcoords.y)); \n"
 		"} 																					\n";
 
 
@@ -93,7 +93,7 @@ tb_handle_t g2_gl_program_init_bitmap()
 	if (!g2_gl_program_make(program)) goto fail;
 
 	// init location
-	g2_gl_program_location_set(program, G2_GL_PROGRAM_LOCATION_COLOR, g2_gl_program_attr(program, "aColor"));
+	g2_gl_program_location_set(program, G2_GL_PROGRAM_LOCATION_COLORS, g2_gl_program_attr(program, "aColors"));
 	g2_gl_program_location_set(program, G2_GL_PROGRAM_LOCATION_VERTICES, g2_gl_program_attr(program, "aVertices"));
 	g2_gl_program_location_set(program, G2_GL_PROGRAM_LOCATION_TEXCOORDS, g2_gl_program_attr(program, "aTexcoords"));
 	g2_gl_program_location_set(program, G2_GL_PROGRAM_LOCATION_MATRIX_MODEL, g2_gl_program_unif(program, "uMatrixModel"));

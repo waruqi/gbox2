@@ -179,9 +179,6 @@
 	G2_GL_INTERFACE_LOAD_S(glStencilFunc);
 	G2_GL_INTERFACE_LOAD_S(glStencilMask);
 	G2_GL_INTERFACE_LOAD_S(glStencilOp);
-#ifndef G2_CONFIG_CORE_GLES
-	G2_GL_INTERFACE_LOAD_S(glTexImage1D);
-#endif
 	G2_GL_INTERFACE_LOAD_S(glTexImage2D);
 	G2_GL_INTERFACE_LOAD_S(glTexParameterf);
 	G2_GL_INTERFACE_LOAD_S(glTexParameteri);
@@ -189,6 +186,7 @@
 
 	// load interfaces for gl 1.x
 	G2_GL_INTERFACE_LOAD_S(glColor4f);
+	G2_GL_INTERFACE_LOAD_S(glColorPointer);
 	G2_GL_INTERFACE_LOAD_S(glDisableClientState);
 	G2_GL_INTERFACE_LOAD_S(glEnableClientState);
 	G2_GL_INTERFACE_LOAD_S(glLoadIdentity);

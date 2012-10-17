@@ -90,9 +90,6 @@ tb_bool_t g2_demo_gl_init(tb_size_t width, tb_size_t height, tb_byte_t version)
 	G2_GL_INTERFACE_LOAD_D(g_library, glStencilFunc);
 	G2_GL_INTERFACE_LOAD_D(g_library, glStencilMask);
 	G2_GL_INTERFACE_LOAD_D(g_library, glStencilOp);
-#ifndef G2_CONFIG_CORE_GLES
-	G2_GL_INTERFACE_LOAD_D(g_library, glTexImage1D);
-#endif
 	G2_GL_INTERFACE_LOAD_D(g_library, glTexImage2D);
 	G2_GL_INTERFACE_LOAD_D(g_library, glTexParameterf);
 	G2_GL_INTERFACE_LOAD_D(g_library, glTexParameteri);
@@ -102,6 +99,7 @@ tb_bool_t g2_demo_gl_init(tb_size_t width, tb_size_t height, tb_byte_t version)
 	if (version < 0x20)
 	{
 		G2_GL_INTERFACE_LOAD_D(g_library, glColor4f);
+		G2_GL_INTERFACE_LOAD_D(g_library, glColorPointer);
 		G2_GL_INTERFACE_LOAD_D(g_library, glDisableClientState);
 		G2_GL_INTERFACE_LOAD_D(g_library, glEnableClientState);
 		G2_GL_INTERFACE_LOAD_D(g_library, glLoadIdentity);

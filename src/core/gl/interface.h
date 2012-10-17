@@ -77,6 +77,11 @@
 
 // vertex arrays
 #define G2_GL_VERTEX_ARRAY 				(0x8074)
+
+// color arrays
+#define G2_GL_COLOR_ARRAY 				(0x8076)
+
+// texture arrays
 #define G2_GL_TEXTURE_COORD_ARRAY 		(0x8078)
 
 // texture parameter name
@@ -143,7 +148,6 @@
 #define G2_GL_ALWAYS 					(0x0207)
 
 // enable cap
-#define G2_GL_TEXTURE_1D 				(0x0DE0)
 #define G2_GL_TEXTURE_2D 				(0x0DE1)
 #define G2_GL_BLEND 					(0x0BE2)
 #define G2_GL_DITHER 					(0x0BD0)
@@ -274,6 +278,7 @@ typedef g2_GLvoid_t 			(G2_GL_INTERFACE_TYPE(glClearColor)) 				(g2_GLclampf_t r
 typedef g2_GLvoid_t 			(G2_GL_INTERFACE_TYPE(glClearStencil)) 				(g2_GLint_t s);
 typedef g2_GLvoid_t 			(G2_GL_INTERFACE_TYPE(glColor4f)) 					(g2_GLfloat_t red, g2_GLfloat_t green, g2_GLfloat_t blue, g2_GLfloat_t alpha);
 typedef g2_GLvoid_t 			(G2_GL_INTERFACE_TYPE(glColorMask)) 				(g2_GLboolean_t red, g2_GLboolean_t green, g2_GLboolean_t blue, g2_GLboolean_t alpha);
+typedef g2_GLvoid_t 			(G2_GL_INTERFACE_TYPE(glColorPointer)) 				(g2_GLint_t size, g2_GLenum_t type, g2_GLsizei_t stride, g2_GLvoid_t const* pointer);
 typedef g2_GLvoid_t 			(G2_GL_INTERFACE_TYPE(glCompileShader))				(g2_GLuint_t shader);
 typedef g2_GLuint_t 			(G2_GL_INTERFACE_TYPE(glCreateProgram))				(g2_GLvoid_t);
 typedef g2_GLuint_t 			(G2_GL_INTERFACE_TYPE(glCreateShader)) 				(g2_GLenum_t type);
@@ -314,7 +319,6 @@ typedef g2_GLvoid_t 			(G2_GL_INTERFACE_TYPE(glStencilMask)) 				(g2_GLuint_t ma
 typedef g2_GLvoid_t 			(G2_GL_INTERFACE_TYPE(glStencilOp)) 				(g2_GLenum_t fail, g2_GLenum_t zfail, g2_GLenum_t zpass);
 typedef g2_GLvoid_t 			(G2_GL_INTERFACE_TYPE(glTexCoordPointer)) 			(g2_GLint_t size, g2_GLenum_t type, g2_GLsizei_t stride, g2_GLvoid_t const* ptr);
 typedef g2_GLvoid_t 			(G2_GL_INTERFACE_TYPE(glTexEnvi)) 					(g2_GLenum_t target, g2_GLenum_t pname, g2_GLint_t param);
-typedef g2_GLvoid_t 			(G2_GL_INTERFACE_TYPE(glTexImage1D)) 				(g2_GLenum_t target, g2_GLint_t level, g2_GLint_t internalFormat, g2_GLsizei_t width, g2_GLint_t border, g2_GLenum_t format, g2_GLenum_t type, g2_GLvoid_t const* pixels);
 typedef g2_GLvoid_t 			(G2_GL_INTERFACE_TYPE(glTexImage2D)) 				(g2_GLenum_t target, g2_GLint_t level, g2_GLint_t internalFormat, g2_GLsizei_t width, g2_GLsizei_t height, g2_GLint_t border, g2_GLenum_t format, g2_GLenum_t type, g2_GLvoid_t const* pixels);
 typedef g2_GLvoid_t 			(G2_GL_INTERFACE_TYPE(glTexParameterf)) 			(g2_GLenum_t target, g2_GLenum_t pname, g2_GLfloat_t param);
 typedef g2_GLvoid_t 			(G2_GL_INTERFACE_TYPE(glTexParameteri)) 			(g2_GLenum_t target, g2_GLenum_t pname, g2_GLint_t param);
@@ -340,6 +344,7 @@ G2_GL_INTERFACE_EXTERN(glClearColor);
 G2_GL_INTERFACE_EXTERN(glClearStencil);
 G2_GL_INTERFACE_EXTERN(glColor4f);
 G2_GL_INTERFACE_EXTERN(glColorMask);
+G2_GL_INTERFACE_EXTERN(glColorPointer);
 G2_GL_INTERFACE_EXTERN(glCompileShader);
 G2_GL_INTERFACE_EXTERN(glCreateProgram);
 G2_GL_INTERFACE_EXTERN(glCreateShader);
@@ -380,7 +385,6 @@ G2_GL_INTERFACE_EXTERN(glStencilMask);
 G2_GL_INTERFACE_EXTERN(glStencilOp);
 G2_GL_INTERFACE_EXTERN(glTexCoordPointer);
 G2_GL_INTERFACE_EXTERN(glTexEnvi);
-G2_GL_INTERFACE_EXTERN(glTexImage1D);
 G2_GL_INTERFACE_EXTERN(glTexImage2D);
 G2_GL_INTERFACE_EXTERN(glTexParameterf);
 G2_GL_INTERFACE_EXTERN(glTexParameteri);

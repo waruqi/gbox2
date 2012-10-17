@@ -59,7 +59,6 @@ gbox2_C_FILES-$(G2_CONFIG_CORE_GL) += \
 						core/gl/program \
 						core/gl/program/color \
 						core/gl/program/bitmap \
-						core/gl/program/gradient \
 						core/gl/interface 
 
 gbox2_C_FILES-$(G2_CONFIG_CORE_GLES) += \
@@ -77,7 +76,6 @@ gbox2_C_FILES-$(G2_CONFIG_CORE_GLES) += \
 						core/gl/program \
 						core/gl/program/color \
 						core/gl/program/bitmap \
-						core/gl/program/gradient \
 						core/gl/interface 
 
 gbox2_CPP_FILES-$(G2_CONFIG_CORE_SKIA) += \

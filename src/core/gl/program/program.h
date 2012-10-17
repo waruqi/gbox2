@@ -29,6 +29,5 @@
 #include "prefix.h"
 #include "color.h"
 #include "bitmap.h"
-#include "gradient.h"
 
 #endif

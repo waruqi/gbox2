@@ -323,11 +323,6 @@ tb_handle_t g2_shader_init_linear(tb_handle_t context, g2_point_t const* pb, g2_
 	// alpha?
 	if (alpha) shader->flag |= G2_GL_SHADER_FLAG_ALPHA;
 
-	// make texture
-	g2_glBindTexture(G2_GL_TEXTURE_1D, *shader->texture);
- 	g2_glPixelStorei(G2_GL_UNPACK_ALIGNMENT, 1);
-	g2_glTexImage1D(G2_GL_TEXTURE_1D, 0, G2_GL_RGBA, G2_GL_SHADER_GRAD_TEXCOORD_SIZE, 0, G2_GL_RGBA, G2_GL_UNSIGNED_BYTE, data);
-
 	// ok
 	return shader;
 
@@ -359,11 +354,6 @@ tb_handle_t g2_shader_init_radial(tb_handle_t context, g2_circle_t const* cp, g2
 
 	// alpha?
 	if (alpha) shader->flag |= G2_GL_SHADER_FLAG_ALPHA;
-
-	// make texture
-	g2_glBindTexture(G2_GL_TEXTURE_1D, *shader->texture);
- 	g2_glPixelStorei(G2_GL_UNPACK_ALIGNMENT, 1);
-	g2_glTexImage1D(G2_GL_TEXTURE_1D, 0, G2_GL_RGBA, G2_GL_SHADER_GRAD_TEXCOORD_SIZE, 0, G2_GL_RGBA, G2_GL_UNSIGNED_BYTE, data);
 
 	// ok
 	return shader;
@@ -398,11 +388,6 @@ tb_handle_t g2_shader_init_radial2(tb_handle_t context, g2_circle_t const* cb, g
 	// alpha?
 	if (alpha) shader->flag |= G2_GL_SHADER_FLAG_ALPHA;
 
-	// make texture
-	g2_glBindTexture(G2_GL_TEXTURE_1D, *shader->texture);
- 	g2_glPixelStorei(G2_GL_UNPACK_ALIGNMENT, 1);
-	g2_glTexImage1D(G2_GL_TEXTURE_1D, 0, G2_GL_RGBA, G2_GL_SHADER_GRAD_TEXCOORD_SIZE, 0, G2_GL_RGBA, G2_GL_UNSIGNED_BYTE, data);
-	
 	// ok
 	return shader;
 

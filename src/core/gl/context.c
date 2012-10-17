@@ -312,12 +312,6 @@ tb_handle_t g2_context_init_gl(tb_size_t pixfmt, tb_size_t width, tb_size_t heig
 			gcontext->programs[G2_GL_PROGRAM_TYPE_BITMAP] = g2_gl_program_init_bitmap();
 			tb_assert_and_check_break(gcontext->programs[G2_GL_PROGRAM_TYPE_BITMAP]);
 
-			// init gradient program
-#ifndef G2_CONFIG_CORE_GLES
-			gcontext->programs[G2_GL_PROGRAM_TYPE_GRADIENT] = g2_gl_program_init_gradient();
-			tb_assert_and_check_break(gcontext->programs[G2_GL_PROGRAM_TYPE_GRADIENT]);
-#endif
-
 			// ok
 			ok = TB_TRUE;
 
@@ -344,9 +338,6 @@ tb_handle_t g2_context_init_gl(tb_size_t pixfmt, tb_size_t width, tb_size_t heig
 	g2_glDisable(G2_GL_BLEND);
 
 	// disable texture
-#ifndef G2_CONFIG_CORE_GLES
-	g2_glDisable(G2_GL_TEXTURE_1D);
-#endif
 	g2_glDisable(G2_GL_TEXTURE_2D);
 
 	if (gcontext->version < 0x20)

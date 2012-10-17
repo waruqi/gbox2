@@ -50,16 +50,16 @@ tb_handle_t g2_gl_program_init_color()
 		"precision mediump float; 												\n"
 #endif
 		" 																		\n"
-		"attribute vec4 aColor; 												\n"
+		"attribute vec4 aColors; 												\n"
 		"attribute vec4 aVertices; 												\n"
 		" 																		\n"
-		"varying vec4 vColor; 													\n"
+		"varying vec4 vColors; 													\n"
 		"uniform mat4 uMatrixModel; 											\n"
 		"uniform mat4 uMatrixProject; 											\n"
 		" 																		\n"
 		"void main() 															\n"
 		"{ 																		\n"
-		" 	vColor = aColor; 													\n"  
+		" 	vColors = aColors; 													\n"  
 		" 	gl_Position = uMatrixProject * uMatrixModel * aVertices;			\n"
 		"} 																		\n";
 	
@@ -69,11 +69,11 @@ tb_handle_t g2_gl_program_init_color()
 		"precision mediump float; 												\n"
 #endif
 		" 																		\n"
-		"varying vec4 vColor; 													\n"
+		"varying vec4 vColors; 													\n"
 		" 																		\n"
 		"void main() 															\n"
 		"{ 																		\n"
-		"   gl_FragColor = vColor; 												\n"
+		"   gl_FragColor = vColors; 											\n"
 		"} 																		\n";
 
 
@@ -87,7 +87,7 @@ tb_handle_t g2_gl_program_init_color()
 	if (!g2_gl_program_make(program)) goto fail;
 
 	// init location
-	g2_gl_program_location_set(program, G2_GL_PROGRAM_LOCATION_COLOR, g2_gl_program_attr(program, "aColor"));
+	g2_gl_program_location_set(program, G2_GL_PROGRAM_LOCATION_COLORS, g2_gl_program_attr(program, "aColors"));
 	g2_gl_program_location_set(program, G2_GL_PROGRAM_LOCATION_VERTICES, g2_gl_program_attr(program, "aVertices"));
 	g2_gl_program_location_set(program, G2_GL_PROGRAM_LOCATION_MATRIX_MODEL, g2_gl_program_unif(program, "uMatrixModel"));
 	g2_gl_program_location_set(program, G2_GL_PROGRAM_LOCATION_MATRIX_PROJECT, g2_gl_program_unif(program, "uMatrixProject"));
