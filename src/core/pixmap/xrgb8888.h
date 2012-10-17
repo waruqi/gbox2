@@ -131,7 +131,7 @@ static g2_pixmap_t const g_pixmap_lo_xrgb8888 =
 	"xrgb8888"
 , 	32
 , 	4
-, 	G2_PIXFMT_XRGB8888
+, 	G2_PIXFMT_XRGB8888 | G2_PIXFMT_LENDIAN
 , 	g2_pixmap_xrgb8888_pixel
 , 	g2_pixmap_xrgb8888_color
 ,	g2_pixmap_rgb32_pixel_get_l
@@ -147,7 +147,7 @@ static g2_pixmap_t const g_pixmap_bo_xrgb8888 =
 	"xrgb8888"
 , 	32
 , 	4
-, 	G2_PIXFMT_XRGB8888
+, 	G2_PIXFMT_XRGB8888 | G2_PIXFMT_BENDIAN
 , 	g2_pixmap_xrgb8888_pixel
 , 	g2_pixmap_xrgb8888_color
 ,	g2_pixmap_rgb32_pixel_get_b
@@ -163,7 +163,7 @@ static g2_pixmap_t const g_pixmap_la_xrgb8888 =
 	"xrgb8888"
 , 	32
 , 	4
-, 	G2_PIXFMT_XRGB8888
+, 	G2_PIXFMT_XRGB8888 | G2_PIXFMT_LENDIAN
 , 	g2_pixmap_xrgb8888_pixel
 , 	g2_pixmap_xrgb8888_color
 ,	g2_pixmap_rgb32_pixel_get_l
@@ -179,7 +179,7 @@ static g2_pixmap_t const g_pixmap_ba_xrgb8888 =
 	"xrgb8888"
 , 	32
 , 	4
-, 	G2_PIXFMT_XRGB8888
+, 	G2_PIXFMT_XRGB8888 | G2_PIXFMT_BENDIAN
 , 	g2_pixmap_xrgb8888_pixel
 , 	g2_pixmap_xrgb8888_color
 ,	g2_pixmap_rgb32_pixel_get_b

@@ -118,13 +118,14 @@
 	
 	// init layer
 	CAEAGLLayer* glLayer = (CAEAGLLayer*) self.layer;
-	glLayer.opaque = YES;
 	switch (G2_PIXFMT(G2_VIEW_PIXFMT))
 	{
 		case G2_PIXFMT_RGB565:
+			glLayer.opaque = YES;
 			glLayer.drawableProperties = [NSDictionary dictionaryWithObjectsAndKeys: [NSNumber numberWithBool:FALSE], kEAGLDrawablePropertyRetainedBacking, kEAGLColorFormatRGB565, kEAGLDrawablePropertyColorFormat, nil];
 			break;
-		case G2_PIXFMT_ARGB8888:
+		case G2_PIXFMT_RGBA8888:
+			glLayer.opaque = NO;
 			glLayer.drawableProperties = [NSDictionary dictionaryWithObjectsAndKeys: [NSNumber numberWithBool:FALSE], kEAGLDrawablePropertyRetainedBacking, kEAGLColorFormatRGBA8, kEAGLDrawablePropertyColorFormat, nil];
 			break;
 		default:

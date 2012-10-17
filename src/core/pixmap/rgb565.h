@@ -172,7 +172,7 @@ static g2_pixmap_t const g_pixmap_lo_rgb565 =
 	"rgb565"
 , 	16
 , 	2
-, 	G2_PIXFMT_RGB565
+, 	G2_PIXFMT_RGB565 | G2_PIXFMT_LENDIAN
 , 	g2_pixmap_rgb565_pixel
 , 	g2_pixmap_rgb565_color
 ,	g2_pixmap_rgb16_pixel_get_l
@@ -188,7 +188,7 @@ static g2_pixmap_t const g_pixmap_bo_rgb565 =
 	"rgb565"
 , 	16
 , 	2
-, 	G2_PIXFMT_RGB565
+, 	G2_PIXFMT_RGB565 | G2_PIXFMT_BENDIAN
 , 	g2_pixmap_rgb565_pixel
 , 	g2_pixmap_rgb565_color
 ,	g2_pixmap_rgb16_pixel_get_l
@@ -204,7 +204,7 @@ static g2_pixmap_t const g_pixmap_la_rgb565 =
 	"rgb565"
 , 	16
 , 	2
-, 	G2_PIXFMT_RGB565
+, 	G2_PIXFMT_RGB565 | G2_PIXFMT_LENDIAN
 , 	g2_pixmap_rgb565_pixel
 , 	g2_pixmap_rgb565_color
 ,	g2_pixmap_rgb16_pixel_get_l
@@ -220,7 +220,7 @@ static g2_pixmap_t const g_pixmap_ba_rgb565 =
 	"rgb565"
 , 	16
 , 	2
-, 	G2_PIXFMT_RGB565
+, 	G2_PIXFMT_RGB565 | G2_PIXFMT_BENDIAN
 , 	g2_pixmap_rgb565_pixel
 , 	g2_pixmap_rgb565_color
 ,	g2_pixmap_rgb16_pixel_get_b
