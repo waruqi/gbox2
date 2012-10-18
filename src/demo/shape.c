@@ -97,7 +97,8 @@ static tb_bool_t g2_demo_init(tb_int_t argc, tb_char_t const** argv)
 	g2_gradient_t 	grad = {color, TB_NULL, 3};
 
 	// init shader
-	g_shader[1]	= g2_shader_init2i_linear(g_context, g_x0 - 100, g_y0 - 100, g_x0 + 100, g_y0 + 100, &grad, G2_SHADER_WRAP_CLAMP);
+	g_shader[1]	= g2_shader_init2i_linear(g_context, g_x0 - 100, 0, g_x0 + 100, 0, &grad, G2_SHADER_WRAP_CLAMP);
+//	g_shader[1]	= g2_shader_init2i_linear(g_context, g_x0 - 100, g_y0 - 100, g_x0 + 100, g_y0 + 100, &grad, G2_SHADER_WRAP_CLAMP);
 	g_mhader[1]	= g2_shader_init2i_linear(g_context, -50, -50, 50, 50, &grad, G2_SHADER_WRAP_CLAMP);
 
 	g_shader[2]	= g2_shader_init2i_radial(g_context, g_x0, g_y0, 100, &grad, G2_SHADER_WRAP_CLAMP);

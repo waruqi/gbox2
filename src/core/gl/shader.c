@@ -302,11 +302,6 @@ tb_handle_t g2_shader_init_linear(tb_handle_t context, g2_point_t const* pb, g2_
 	// check
 	tb_assert_and_check_return_val(context && pb && pe && gradient && gradient->color && gradient->count && wrap, TB_NULL);
 
-#ifdef G2_CONFIG_CORE_GLES
-	tb_trace_noimpl();
-	return TB_NULL;
-#endif
-
 	// init shader
 	g2_gl_shader_t* shader = g2_gl_shader_init(context, G2_GL_SHADER_TYPE_LINEAR, wrap);
 	tb_assert_and_check_return_val(shader && shader->texture, TB_NULL);
@@ -323,6 +318,15 @@ tb_handle_t g2_shader_init_linear(tb_handle_t context, g2_point_t const* pb, g2_
 	// alpha?
 	if (alpha) shader->flag |= G2_GL_SHADER_FLAG_ALPHA;
 
+	// make texture
+	g2_glBindTexture(G2_GL_TEXTURE_2D, *shader->texture);
+
+	// init line alignment
+	g2_glPixelStorei(G2_GL_UNPACK_ALIGNMENT, 4);
+	
+	// make data
+	g2_glTexImage2D(G2_GL_TEXTURE_2D, 0, G2_GL_RGBA, G2_GL_SHADER_GRAD_TEXCOORD_SIZE, 1, 0, G2_GL_RGBA, G2_GL_UNSIGNED_BYTE, data);
+
 	// ok
 	return shader;
 
@@ -334,11 +338,6 @@ tb_handle_t g2_shader_init_radial(tb_handle_t context, g2_circle_t const* cp, g2
 {
 	// check
 	tb_assert_and_check_return_val(context && cp && gradient && gradient->color && gradient->count && wrap, TB_NULL);
-
-#ifdef G2_CONFIG_CORE_GLES
-	tb_trace_noimpl();
-	return TB_NULL;
-#endif
 
 	// init shader
 	g2_gl_shader_t* shader = g2_gl_shader_init(context, G2_GL_SHADER_TYPE_RADIAL, wrap);
@@ -355,6 +354,15 @@ tb_handle_t g2_shader_init_radial(tb_handle_t context, g2_circle_t const* cp, g2
 	// alpha?
 	if (alpha) shader->flag |= G2_GL_SHADER_FLAG_ALPHA;
 
+	// make texture
+	g2_glBindTexture(G2_GL_TEXTURE_2D, *shader->texture);
+
+	// init line alignment
+	g2_glPixelStorei(G2_GL_UNPACK_ALIGNMENT, 4);
+	
+	// make data
+	g2_glTexImage2D(G2_GL_TEXTURE_2D, 0, G2_GL_RGBA, G2_GL_SHADER_GRAD_TEXCOORD_SIZE, 1, 0, G2_GL_RGBA, G2_GL_UNSIGNED_BYTE, data);
+
 	// ok
 	return shader;
 
@@ -366,11 +374,6 @@ tb_handle_t g2_shader_init_radial2(tb_handle_t context, g2_circle_t const* cb, g
 {
 	// check
 	tb_assert_and_check_return_val(context && cb && ce && gradient && gradient->color && gradient->count && wrap, TB_NULL);
-
-#ifdef G2_CONFIG_CORE_GLES
-	tb_trace_noimpl();
-	return TB_NULL;
-#endif
 
 	// init shader
 	g2_gl_shader_t* shader = g2_gl_shader_init(context, G2_GL_SHADER_TYPE_RADIAL2, wrap);
@@ -387,6 +390,15 @@ tb_handle_t g2_shader_init_radial2(tb_handle_t context, g2_circle_t const* cb, g
 
 	// alpha?
 	if (alpha) shader->flag |= G2_GL_SHADER_FLAG_ALPHA;
+
+	// make texture
+	g2_glBindTexture(G2_GL_TEXTURE_2D, *shader->texture);
+
+	// init line alignment
+	g2_glPixelStorei(G2_GL_UNPACK_ALIGNMENT, 4);
+	
+	// make data
+	g2_glTexImage2D(G2_GL_TEXTURE_2D, 0, G2_GL_RGBA, G2_GL_SHADER_GRAD_TEXCOORD_SIZE, 1, 0, G2_GL_RGBA, G2_GL_UNSIGNED_BYTE, data);
 
 	// ok
 	return shader;
@@ -492,6 +504,7 @@ tb_void_t g2_shader_matrix_set(tb_handle_t shader, g2_matrix_t const* matrix)
 	if (matrix) gshader->matrix = *matrix;
 	else g2_matrix_clear(&gshader->matrix);
 }
+
 tb_size_t g2_shader_ref(tb_handle_t shader)
 {
 	// shader

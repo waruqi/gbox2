@@ -70,7 +70,7 @@ typedef struct __g2_gl_shader_t
 	tb_handle_t 			context;
 
 	// the texture
-	g2_GLuint_t* 				texture;
+	g2_GLuint_t* 			texture;
 
 	// the matrix
 	g2_matrix_t 			matrix;
@@ -85,6 +85,7 @@ typedef struct __g2_gl_shader_t
 			tb_size_t 		height;
 
 		} 					bitmap;
+
 
 		// the linear info
 		struct

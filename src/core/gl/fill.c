@@ -214,11 +214,11 @@ static __tb_inline__ tb_void_t g2_gl_fill_apply_colors(g2_gl_fill_t* fill)
 	if (fill->context->version < 0x20) g2_glColorPointer(4, G2_GL_FLOAT, 0, fill->colors);
 	else g2_glVertexAttribPointer(g2_gl_program_location(fill->program, G2_GL_PROGRAM_LOCATION_COLORS), 4, G2_GL_FLOAT, G2_GL_FALSE, 0, fill->colors);
 }
-static __tb_inline__ tb_void_t g2_gl_fill_apply_texcoords(g2_gl_fill_t* fill, g2_GLint_t size)
+static __tb_inline__ tb_void_t g2_gl_fill_apply_texcoords(g2_gl_fill_t* fill)
 {
 	// texcoords
-	if (fill->context->version < 0x20) g2_glTexCoordPointer(size, G2_GL_FLOAT, 0, fill->texcoords);
-	else g2_glVertexAttribPointer(g2_gl_program_location(fill->program, G2_GL_PROGRAM_LOCATION_TEXCOORDS), size, G2_GL_FLOAT, G2_GL_FALSE, 0, fill->texcoords);
+	if (fill->context->version < 0x20) g2_glTexCoordPointer(2, G2_GL_FLOAT, 0, fill->texcoords);
+	else g2_glVertexAttribPointer(g2_gl_program_location(fill->program, G2_GL_PROGRAM_LOCATION_TEXCOORDS), 2, G2_GL_FLOAT, G2_GL_FALSE, 0, fill->texcoords);
 }
 static __tb_inline__ tb_bool_t g2_gl_fill_apply_program(g2_gl_fill_t* fill)
 {
@@ -236,7 +236,7 @@ static __tb_inline__ tb_bool_t g2_gl_fill_apply_program(g2_gl_fill_t* fill)
 			case G2_GL_SHADER_TYPE_LINEAR:
 			case G2_GL_SHADER_TYPE_RADIAL:
 			case G2_GL_SHADER_TYPE_RADIAL2:
-				type = G2_GL_PROGRAM_TYPE_COLOR;
+				type = G2_GL_PROGRAM_TYPE_BITMAP;
 				break;
 			default:
 				tb_assert_and_check_return_val(0, TB_FALSE);
@@ -288,34 +288,6 @@ static __tb_inline__ tb_void_t g2_gl_fill_leave_vertex_state(g2_gl_fill_t* fill)
 	{
 		// disable vertices
 		g2_glDisableVertexAttribArray(g2_gl_program_location(fill->program, G2_GL_PROGRAM_LOCATION_VERTICES));
-	}
-}
-static __tb_inline__ tb_void_t g2_gl_fill_enter_color_state(g2_gl_fill_t* fill)
-{
-	// apply colors
-	if (fill->context->version < 0x20)
-	{
-		// enable colors
-		g2_glEnableClientState(G2_GL_COLOR_ARRAY);
-	}
-	else
-	{
-		// enable colors
-		g2_glEnableVertexAttribArray(g2_gl_program_location(fill->program, G2_GL_PROGRAM_LOCATION_COLORS));
-	}
-}
-static __tb_inline__ tb_void_t g2_gl_fill_leave_color_state(g2_gl_fill_t* fill)
-{
-	// apply colors
-	if (fill->context->version < 0x20)
-	{
-		// disable colors
-		g2_glDisableClientState(G2_GL_COLOR_ARRAY);
-	}
-	else
-	{
-		// disable colors
-		g2_glDisableVertexAttribArray(g2_gl_program_location(fill->program, G2_GL_PROGRAM_LOCATION_COLORS));
 	}
 }
 static __tb_inline__ tb_void_t g2_gl_fill_enter_texture_state(g2_gl_fill_t* fill)
@@ -390,9 +362,6 @@ static __tb_inline__ tb_bool_t g2_gl_fill_context_init(g2_gl_fill_t* fill)
 }
 static __tb_inline__ tb_void_t g2_gl_fill_context_exit(g2_gl_fill_t* fill)
 {
-	// leave color state
-	g2_gl_fill_leave_color_state(fill);
-
 	// leave vertex state
 	g2_gl_fill_leave_vertex_state(fill);
 
@@ -499,7 +468,7 @@ static __tb_inline__ tb_void_t g2_gl_fill_style_draw_shader_bitmap(g2_gl_fill_t*
 	fill->texcoords[7] = 1.0f;
 
 	// apply texcoords
-	g2_gl_fill_apply_texcoords(fill, 2);
+	g2_gl_fill_apply_texcoords(fill);
 
 	// draw
 	g2_glDrawArrays(G2_GL_TRIANGLE_STRIP, 0, 4);
@@ -510,27 +479,10 @@ static __tb_inline__ tb_void_t g2_gl_fill_style_draw_shader_bitmap(g2_gl_fill_t*
 	// leave texture state
 	g2_gl_fill_leave_texture_state(fill);
 }
-#if 0
 static __tb_inline__ tb_void_t g2_gl_fill_style_draw_shader_linear(g2_gl_fill_t* fill, g2_gl_rect_t const* bounds)
 {
 	// enter texture state
-	g2_gl_fill_enter_texture_state(fill, G2_GL_TEXTURE_1D);
-
-	// init vertices
-	fill->vertices[0] = bounds->x1;
-	fill->vertices[1] = bounds->y1;
-	fill->vertices[2] = bounds->x2;
-	fill->vertices[3] = bounds->y1;
-	fill->vertices[4] = bounds->x1;
-	fill->vertices[5] = bounds->y2;
-	fill->vertices[6] = bounds->x2;
-	fill->vertices[7] = bounds->y2;
-
-	// init bounds
-	g2_float_t x1 = tb_float_to_g2(bounds->x1);
-	g2_float_t x2 = tb_float_to_g2(bounds->x2);
-	g2_float_t y1 = tb_float_to_g2(bounds->y1);
-	g2_float_t y2 = tb_float_to_g2(bounds->y2);
+	g2_gl_fill_enter_texture_state(fill);
 
 	// init vector
 	g2_point_t pb = fill->shader->u.linear.pb;
@@ -538,96 +490,66 @@ static __tb_inline__ tb_void_t g2_gl_fill_style_draw_shader_linear(g2_gl_fill_t*
 	tb_float_t ux = g2_float_to_tb(pe.x - pb.x);
 	tb_float_t uy = g2_float_to_tb(pe.y - pb.y);
 	tb_float_t un = tb_sqrtf(ux * ux + uy * uy);
-	tb_float_t uf = 1.0f / un;
 
-#if 1
-	// init matrix
+	// matrix
 	g2_matrix_t matrix;
-	g2_matrix_init_translate(&matrix, -pb.x, -pb.y);
-	g2_matrix_sincosp(&matrix, tb_float_to_g2(ux * uf), tb_float_to_g2(uy * uf), pb.x, pb.y);
-	g2_matrix_scalep(&matrix, tb_float_to_g2(uf), tb_float_to_g2(uf), pb.x, pb.y);
-#else
-	g2_matrix_t matrix = fill->shader->matrix;
-	g2_matrix_invert(&matrix);
-	g2_matrix_translate(&matrix, -pb.x, -pb.y);
-	g2_matrix_sincosp(&matrix, tb_float_to_g2(ux * uf), tb_float_to_g2(uy * uf), pb.x, pb.y);
-	g2_matrix_scalep(&matrix, tb_float_to_g2(uf), tb_float_to_g2(uf), pb.x, pb.y);
-#endif
+//	g2_matrix_clear(&matrix);
+//g2_matrix_init_rotatep(&matrix, g2_long_to_float(45), pb.x, pb.y);
+	g2_matrix_init_scale(&matrix, tb_float_to_g2(un / 1024), G2_ONE);
+//	g2_matrix_sincos(&matrix, tb_float_to_g2(uy / un), tb_float_to_g2(ux / un));
+//	g2_matrix_init_translate(&matrix, pb.x, pb.y);
+//	g2_matrix_scalep(&matrix, tb_float_to_g2(un / 1024), G2_ONE, pb.x, pb.y);
+//	g2_matrix_sincosp(&matrix, tb_float_to_g2(uy / un), tb_float_to_g2(ux / un), pb.x, pb.y);
+//	g2_matrix_init_sincosp(&matrix, tb_float_to_g2(ux * uf), tb_float_to_g2(uy * uf), pb.x, pb.y);
+//	g2_matrix_scalep(&matrix, tb_float_to_g2(uf), G2_ONE, pb.x, pb.y);
+//	g2_matrix_multiply(&matrix, &fill->shader->matrix);
 
-	/* transform the y-coordinate of bounds
-	 *          
-	 * O----------------------------------------->
-	 * |         
-	 * |        pb(0)
-	 * |         *****************************
-	 * |         * *                         *
-	 * |         *   *                     * *
-	 * |         *     *                 *   *
-	 * |         *       *  (0.5)      *     *
-	 * |         *         *         *       *
-	 * |         *       *   *     *         *
-	 * |         *     *       * *           *
-	 * |         *   *     (0.8) *           *
-	 * |         * *               *pe(1)    *
-	 * |         *****************************
-	 * |                              *     *
-	 * |                                * *
-	 * |                           (1.3)  *
-	 * |                                    *
-	 * |
-	 * |
+	/* the global bitmap matrix => the camera viewport matrix
 	 *
-	 * texcoords: 0.0, 0.8, 0.5, 1.3
-	 *
-	 *
-	 * transform:
-	 *
-	 * ------------------------------O---------------------------------> x
-	 *                         pb   * * (0.0)
-	 *                            *  |  *
-	 *                          *    |    *
-	 *                        *      |      *
-	 *                      *        |        *
-	 *                    *          |          *
-	 *                  * ***********| (0.5)      *
-	 *                    *          |              *
-	 *                      *        |                *
-	 *                        * (0.8)|******************
-	 *                          *    |              *
-	 *                            *  |            *
-	 *                              *| pe       *
-	 *                          (1.0)|*       *
-	 *                               |  *   *
-	 *                          (1.3)|*****
-	 *                               |
-	 *                               | y
+	 * glScalef(bw / sw, bh / sh, 1.0f); 			//< disable auto scale in the bounds
+	 * glTranslatef(bx / bw, by / bh, 0.0f); 		//< move viewport to global
 	 *
 	 */
-	fill->texcoords[0] = g2_float_to_tb(g2_matrix_apply_y(&matrix, x1, y1));
-	fill->texcoords[1] = g2_float_to_tb(g2_matrix_apply_y(&matrix, x2, y1));
-	fill->texcoords[2] = g2_float_to_tb(g2_matrix_apply_y(&matrix, x1, y2));
-	fill->texcoords[3] = g2_float_to_tb(g2_matrix_apply_y(&matrix, x2, y2));
+	g2_gl_matrix_from(fill->matrix, &matrix);
+	tb_float_t bx = bounds->x1;
+	tb_float_t by = bounds->y1;
+	tb_float_t bw = bounds->x2 - bounds->x1 + 1;
+	tb_float_t bh = bounds->y2 - bounds->y1 + 1;
+	tb_float_t sw = 1024;
+	tb_float_t sh = 1;
+	tb_float_t sx = fill->matrix[0];
+	tb_float_t sy = fill->matrix[5];
 
-	// apply vertices
-	g2_gl_fill_apply_vertices(fill);
+	/* adjust scale 
+	 *
+	 * global => camera: (1 / sx)
+	 * disable auto scale in the bounds: (bw / sw)
+	 *
+	 * => sx = (bw / sw) * (1 / sx) => bw / (sx * sw)
+	 *
+	 */
+	fill->matrix[0] 	= bw / (sx * sw);
+	fill->matrix[5] 	= bh / (sy * sh);
 
-	// apply texcoords
-	g2_gl_fill_apply_texcoords(fill, 1);
+	// adjust skew
+	fill->matrix[1] 	*= fill->matrix[5] / sy;
+	fill->matrix[4] 	*= fill->matrix[0] / sx;
 
-	// draw
-	g2_glDrawArrays(G2_GL_TRIANGLE_STRIP, 0, 4);
+	/* adjust translate
+	 *
+	 * scale: sx
+	 * global => camera: -tx / bw
+	 * move viewport to global: bx / bw
+	 *
+	 * => tx = sx * ((bx / bw) + (-tx / bw)) => sx * (bx - tx) / bw
+	 * => tx = (bx - tx) / (sx * sw)
+	 *
+	 */
+	fill->matrix[12] 	= (bx - fill->matrix[12]) / (sx * sw);
+	fill->matrix[13] 	= (by - fill->matrix[13]) / (sy * sh);
 
-	// leave texture state
-	g2_gl_fill_leave_texture_state(fill, G2_GL_TEXTURE_1D);
-}
-#else
-static __tb_inline__ tb_void_t g2_gl_fill_style_draw_shader_linear(g2_gl_fill_t* fill, g2_gl_rect_t const* bounds)
-{
-	// enter color state
-	g2_gl_fill_enter_color_state(fill);
-
-	// apply blend
-	g2_gl_fill_apply_blend(fill, g2_style_alpha(fill->style) != 0xff);
+	// enter matrix
+	g2_gl_fill_matrix_enter_texture(fill, fill->matrix);
 
 	// init vertices
 	fill->vertices[0] = bounds->x1;
@@ -641,38 +563,29 @@ static __tb_inline__ tb_void_t g2_gl_fill_style_draw_shader_linear(g2_gl_fill_t*
 	
 	// apply vertices
 	g2_gl_fill_apply_vertices(fill);
-	
-	// init colors
-	fill->colors[0] = 1.0f;
-	fill->colors[1] = 0.0f;
-	fill->colors[2] = 0.0f;
-	fill->colors[3] = 1.0f;
 
-	fill->colors[4] = 1.0f;
-	fill->colors[5] = 0.0f;
-	fill->colors[6] = 0.0f;
-	fill->colors[7] = 1.0f;
-	
-	fill->colors[8] = 0.0f;
-	fill->colors[9] = 0.0f;
-	fill->colors[10] = 1.0f;
-	fill->colors[11] = 1.0f;
+	// init texcoords
+	fill->texcoords[0] = 0.0f;
+	fill->texcoords[1] = 0.0f;
+	fill->texcoords[2] = 1.0f;
+	fill->texcoords[3] = 0.0f;
+	fill->texcoords[4] = 0.0f;
+	fill->texcoords[5] = 1.0f;
+	fill->texcoords[6] = 1.0f;
+	fill->texcoords[7] = 1.0f;
 
-	fill->colors[12] = 0.0f;
-	fill->colors[13] = 0.0f;
-	fill->colors[14] = 1.0f;
-	fill->colors[15] = 1.0f;
-
-	// apply colors
-	g2_gl_fill_apply_colors(fill);
+	// apply texcoords
+	g2_gl_fill_apply_texcoords(fill);
 
 	// draw
 	g2_glDrawArrays(G2_GL_TRIANGLE_STRIP, 0, 4);
 
-	// leave color state
-	g2_gl_fill_leave_color_state(fill);
+	// leave matrix
+	g2_gl_fill_matrix_leave_texture(fill);
+
+	// leave texture state
+	g2_gl_fill_leave_texture_state(fill);
 }
-#endif
 static __tb_inline__ tb_void_t g2_gl_fill_style_draw_shader_radial(g2_gl_fill_t* fill, g2_gl_rect_t const* bounds)
 {
 	tb_trace_noimpl();
