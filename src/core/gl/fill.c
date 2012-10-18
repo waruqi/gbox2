@@ -397,6 +397,7 @@ static __tb_inline__ tb_void_t g2_gl_fill_style_draw_shader_bitmap(g2_gl_fill_t*
 	// enter texture state
 	g2_gl_fill_enter_texture_state(fill);
 
+#if 0
 	/* the global bitmap matrix => the camera viewport matrix
 	 *
 	 * glScalef(bw / sw, bh / sh, 1.0f); 			//< disable auto scale in the bounds
@@ -440,6 +441,28 @@ static __tb_inline__ tb_void_t g2_gl_fill_style_draw_shader_bitmap(g2_gl_fill_t*
 	 */
 	fill->matrix[12] 	= (bx - fill->matrix[12]) / (sx * sw);
 	fill->matrix[13] 	= (by - fill->matrix[13]) / (sy * sh);
+#else
+	tb_float_t bx = bounds->x1;
+	tb_float_t by = bounds->y1;
+	tb_float_t bw = bounds->x2 - bounds->x1 + 1;
+	tb_float_t bh = bounds->y2 - bounds->y1 + 1;
+	tb_float_t sw = fill->shader->u.bitmap.width;
+	tb_float_t sh = fill->shader->u.bitmap.height;
+	tb_float_t sx = g2_float_to_tb(fill->shader->matrix.sx);
+	tb_float_t sy = g2_float_to_tb(fill->shader->matrix.sy);
+
+	g2_matrix_t matrix = fill->shader->matrix;
+	matrix.sx = tb_float_to_g2(1 / sx);
+	matrix.sy = tb_float_to_g2(1 / sy);
+//	matrix.kx = g2_mul(matrix.kx, matrix.sx / sx);
+//	matrix.ky = g2_mul(matrix.ky, matrix.sy / sy);
+	matrix.tx /= -sx * sw;
+	matrix.ty /= -sy * sh;
+	g2_matrix_scale(&matrix, tb_float_to_g2(bw / sw), tb_float_to_g2(bh / sh));
+	g2_matrix_translate(&matrix, tb_float_to_g2(bx / bw), tb_float_to_g2(by / bh));
+
+	g2_gl_matrix_from(fill->matrix, &matrix);
+#endif
 
 	// enter matrix
 	g2_gl_fill_matrix_enter_texture(fill, fill->matrix);
@@ -495,15 +518,22 @@ static __tb_inline__ tb_void_t g2_gl_fill_style_draw_shader_linear(g2_gl_fill_t*
 	g2_matrix_t matrix;
 //	g2_matrix_clear(&matrix);
 //g2_matrix_init_rotatep(&matrix, g2_long_to_float(45), pb.x, pb.y);
-	g2_matrix_init_scale(&matrix, tb_float_to_g2(un / 1024), G2_ONE);
-//	g2_matrix_sincos(&matrix, tb_float_to_g2(uy / un), tb_float_to_g2(ux / un));
+//	g2_matrix_init_scale(&matrix, tb_float_to_g2(un / 1024), G2_ONE);
+//	g2_matrix_translate_lhs(&matrix, pb.x, pb.y);
+
 //	g2_matrix_init_translate(&matrix, pb.x, pb.y);
+//	g2_matrix_scale(&matrix, tb_float_to_g2(un / 1024), G2_ONE);
+	
+	g2_matrix_init_rotate(&matrix, g2_long_to_float(45));
+
+	//g2_matrix_sincos(&matrix, tb_float_to_g2(uy / un), tb_float_to_g2(ux / un));
 //	g2_matrix_scalep(&matrix, tb_float_to_g2(un / 1024), G2_ONE, pb.x, pb.y);
 //	g2_matrix_sincosp(&matrix, tb_float_to_g2(uy / un), tb_float_to_g2(ux / un), pb.x, pb.y);
 //	g2_matrix_init_sincosp(&matrix, tb_float_to_g2(ux * uf), tb_float_to_g2(uy * uf), pb.x, pb.y);
 //	g2_matrix_scalep(&matrix, tb_float_to_g2(uf), G2_ONE, pb.x, pb.y);
 //	g2_matrix_multiply(&matrix, &fill->shader->matrix);
 
+#if 0
 	/* the global bitmap matrix => the camera viewport matrix
 	 *
 	 * glScalef(bw / sw, bh / sh, 1.0f); 			//< disable auto scale in the bounds
@@ -547,6 +577,29 @@ static __tb_inline__ tb_void_t g2_gl_fill_style_draw_shader_linear(g2_gl_fill_t*
 	 */
 	fill->matrix[12] 	= (bx - fill->matrix[12]) / (sx * sw);
 	fill->matrix[13] 	= (by - fill->matrix[13]) / (sy * sh);
+#else
+	tb_float_t bx = bounds->x1;
+	tb_float_t by = bounds->y1;
+	tb_float_t bw = bounds->x2 - bounds->x1 + 1;
+	tb_float_t bh = bounds->y2 - bounds->y1 + 1;
+	tb_float_t sw = 1024;
+	tb_float_t sh = 1;
+	tb_float_t sx = g2_float_to_tb(matrix.sx);
+	tb_float_t sy = g2_float_to_tb(matrix.sy);
+	tb_float_t kx = g2_float_to_tb(matrix.kx);
+	tb_float_t ky = g2_float_to_tb(matrix.ky);
+
+	matrix.sx = tb_float_to_g2(1 / sx);
+	matrix.sy = tb_float_to_g2(1 / sy);
+	matrix.kx = tb_float_to_g2(ky);
+	matrix.ky = tb_float_to_g2(kx);
+	matrix.tx /= -sx * sw;
+	matrix.ty /= -sy * sh;
+	g2_matrix_scale(&matrix, tb_float_to_g2(bw / sw), tb_float_to_g2(bh / sh));
+	g2_matrix_translate(&matrix, tb_float_to_g2(bx / bw), tb_float_to_g2(by / bh));
+
+	g2_gl_matrix_from(fill->matrix, &matrix);
+#endif
 
 	// enter matrix
 	g2_gl_fill_matrix_enter_texture(fill, fill->matrix);
