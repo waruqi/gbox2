@@ -50,7 +50,7 @@ tb_handle_t g2_gl_program_init_color()
 		"precision mediump float; 												\n"
 #endif
 		" 																		\n"
-		"attribute vec4 aColors; 												\n"
+		"attribute vec4 aColor; 												\n"
 		"attribute vec4 aVertices; 												\n"
 		" 																		\n"
 		"varying vec4 vColors; 													\n"
@@ -59,7 +59,7 @@ tb_handle_t g2_gl_program_init_color()
 		" 																		\n"
 		"void main() 															\n"
 		"{ 																		\n"
-		" 	vColors = aColors; 													\n"  
+		" 	vColors = aColor; 													\n"  
 		" 	gl_Position = uMatrixProject * uMatrixModel * aVertices;			\n"
 		"} 																		\n";
 	
@@ -87,7 +87,7 @@ tb_handle_t g2_gl_program_init_color()
 	if (!g2_gl_program_make(program)) goto fail;
 
 	// init location
-	g2_gl_program_location_set(program, G2_GL_PROGRAM_LOCATION_COLORS, g2_gl_program_attr(program, "aColors"));
+	g2_gl_program_location_set(program, G2_GL_PROGRAM_LOCATION_COLORS, g2_gl_program_attr(program, "aColor"));	//!< FIXME some name can not work for mac, .e.g aColors aColorx ...
 	g2_gl_program_location_set(program, G2_GL_PROGRAM_LOCATION_VERTICES, g2_gl_program_attr(program, "aVertices"));
 	g2_gl_program_location_set(program, G2_GL_PROGRAM_LOCATION_MATRIX_MODEL, g2_gl_program_unif(program, "uMatrixModel"));
 	g2_gl_program_location_set(program, G2_GL_PROGRAM_LOCATION_MATRIX_PROJECT, g2_gl_program_unif(program, "uMatrixProject"));

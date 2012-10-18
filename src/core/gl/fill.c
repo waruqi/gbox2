@@ -382,9 +382,6 @@ static __tb_inline__ tb_bool_t g2_gl_fill_context_init(g2_gl_fill_t* fill)
 	// enter vertex state
 	g2_gl_fill_enter_vertex_state(fill);
 
-	// enter color state
-	g2_gl_fill_enter_color_state(fill);
-
 	// apply solid if no shader
 	if (!fill->shader) g2_gl_fill_apply_solid(fill);
 	
@@ -626,6 +623,9 @@ static __tb_inline__ tb_void_t g2_gl_fill_style_draw_shader_linear(g2_gl_fill_t*
 #else
 static __tb_inline__ tb_void_t g2_gl_fill_style_draw_shader_linear(g2_gl_fill_t* fill, g2_gl_rect_t const* bounds)
 {
+	// enter color state
+	g2_gl_fill_enter_color_state(fill);
+
 	// apply blend
 	g2_gl_fill_apply_blend(fill, g2_style_alpha(fill->style) != 0xff);
 
@@ -668,6 +668,9 @@ static __tb_inline__ tb_void_t g2_gl_fill_style_draw_shader_linear(g2_gl_fill_t*
 
 	// draw
 	g2_glDrawArrays(G2_GL_TRIANGLE_STRIP, 0, 4);
+
+	// leave color state
+	g2_gl_fill_leave_color_state(fill);
 }
 #endif
 static __tb_inline__ tb_void_t g2_gl_fill_style_draw_shader_radial(g2_gl_fill_t* fill, g2_gl_rect_t const* bounds)
