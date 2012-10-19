@@ -156,7 +156,7 @@
 #define g2_div(x, y) 			((x) / (y))
 #define g2_imul(x, y) 			((x) * (tb_float_t)(y))
 #define g2_idiv(x, y) 			((x) / (tb_float_t)(y))
-#define g2_invert(x) 			(1. / (x))
+#define g2_invert(x) 			(1.0f / (x))
 #define g2_sqre(x) 				((x) * (x))
 #define g2_sqrt(x) 				tb_sqrtf(x)
 #define g2_sin(x) 				tb_sinf(x)

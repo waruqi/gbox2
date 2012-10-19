@@ -29,7 +29,7 @@
  * types
  */
 #ifdef G2_CONFIG_FLOAT_FIXED
-typedef g2_float_t 		g2_invdet_t;
+typedef tb_hong_t 		g2_invdet_t;
 #else
 typedef tb_double_t 	g2_invdet_t;
 #endif
@@ -39,18 +39,22 @@ typedef tb_double_t 	g2_invdet_t;
  */
 
 #ifdef G2_CONFIG_FLOAT_FIXED
-static __tb_inline__ g2_float_t g2_matrix_mul(g2_float_t a, g2_float_t b, g2_float_t c, g2_float_t d)
+static __tb_inline__ tb_hong_t g2_matrix_mul_add(g2_float_t a, g2_float_t b, g2_float_t c, g2_float_t d)
 {
 	return (g2_float_t)(((tb_hong_t)a * b + (tb_hong_t)c * d) >> 16);
 }
-static __tb_inline__ g2_float_t g2_matrix_det(g2_float_t sx, g2_float_t sy, g2_float_t kx, g2_float_t ky)
+static __tb_inline__ tb_hong_t g2_matrix_mul_sub(g2_float_t a, g2_float_t b, g2_float_t c, g2_float_t d)
+{
+	return (g2_float_t)(((tb_hong_t)a * b - (tb_hong_t)c * d) >> 16);
+}
+static __tb_inline__ tb_hong_t g2_matrix_det(g2_float_t sx, g2_float_t sy, g2_float_t kx, g2_float_t ky)
 {
 	tb_hong_t det = (tb_hong_t)sx * sy - (tb_hong_t)kx * ky;
 	if (!det) return 0;
-	return (g2_float_t)(((tb_hong_t)1 << 32) / det);
+	return ((tb_hong_t)1 << 48) / det;
 }
 #else
-static __tb_inline__ g2_float_t g2_matrix_mul(g2_float_t a, g2_float_t b, g2_float_t c, g2_float_t d)
+static __tb_inline__ g2_float_t g2_matrix_mul_add(g2_float_t a, g2_float_t b, g2_float_t c, g2_float_t d)
 {
 	return (g2_float_t)((tb_double_t)a * b + (tb_double_t)c * d);
 }
@@ -132,7 +136,7 @@ tb_bool_t g2_matrix_invert(g2_matrix_t* matrix)
 	if (g2_matrix_identity(matrix)) return TB_TRUE;
 
 	// no rotate?
-	g2_matrix_t mx;
+	g2_matrix_t mx = *matrix;
 	if (g2_ez(matrix->kx) && g2_ez(matrix->ky))
 	{
 		// invert it if sx != 1.0
@@ -170,8 +174,8 @@ tb_bool_t g2_matrix_invert(g2_matrix_t* matrix)
 		mx.sy = tb_fixed_mul(matrix->sx, det);
 		mx.kx = tb_fixed_mul(-matrix->kx, det);
 		mx.ky = tb_fixed_mul(-matrix->ky, det);
-		mx.tx = (tb_fixed_t)((((tb_hong_t)matrix->kx * matrix->ty - (tb_hong_t)matrix->sy * matrix->tx) * det) >> 16);
-		mx.ty = (tb_fixed_t)((((tb_hong_t)matrix->ky * matrix->tx - (tb_hong_t)matrix->sx * matrix->ty) * det) >> 16);
+		mx.tx = g2_mul(g2_matrix_mul_sub(matrix->kx, matrix->ty, matrix->sy, matrix->tx), det);
+		mx.ty = g2_mul(g2_matrix_mul_sub(matrix->ky, matrix->tx, matrix->sx, matrix->ty), det);
 #else
 		mx.sx = (tb_float_t)(matrix->sy * det);
 		mx.sy = (tb_float_t)(matrix->sx * det);
@@ -294,8 +298,8 @@ tb_bool_t g2_matrix_translate(g2_matrix_t* matrix, g2_float_t dx, g2_float_t dy)
 	return g2_matrix_multiply(matrix, &mx);
 #else
 	// translate
-	matrix->tx = g2_matrix_mul(matrix->sx, dx, matrix->kx, dy) + matrix->tx;
-	matrix->ty = g2_matrix_mul(matrix->ky, dx, matrix->sy, dy) + matrix->ty;
+	matrix->tx = g2_matrix_mul_add(matrix->sx, dx, matrix->kx, dy) + matrix->tx;
+	matrix->ty = g2_matrix_mul_add(matrix->ky, dx, matrix->sy, dy) + matrix->ty;
 
 	// ok
 	return TB_TRUE;
@@ -396,14 +400,14 @@ tb_bool_t g2_matrix_multiply(g2_matrix_t* matrix, g2_matrix_t const* mx)
 	 * @note path * (A * B * C) != ((path * A) * B) * C
 	 */
 	g2_matrix_t mt;
-	mt.sx = g2_matrix_mul(matrix->sx, mx->sx, matrix->kx, mx->ky);
-	mt.ky = g2_matrix_mul(matrix->ky, mx->sx, matrix->sy, mx->ky);
+	mt.sx = g2_matrix_mul_add(matrix->sx, mx->sx, matrix->kx, mx->ky);
+	mt.ky = g2_matrix_mul_add(matrix->ky, mx->sx, matrix->sy, mx->ky);
 
-	mt.kx = g2_matrix_mul(matrix->sx, mx->kx, matrix->kx, mx->sy);
-	mt.sy = g2_matrix_mul(matrix->ky, mx->kx, matrix->sy, mx->sy);
+	mt.kx = g2_matrix_mul_add(matrix->sx, mx->kx, matrix->kx, mx->sy);
+	mt.sy = g2_matrix_mul_add(matrix->ky, mx->kx, matrix->sy, mx->sy);
 
-	mt.tx = g2_matrix_mul(matrix->sx, mx->tx, matrix->kx, mx->ty) + matrix->tx;
-	mt.ty = g2_matrix_mul(matrix->ky, mx->tx, matrix->sy, mx->ty) + matrix->ty;
+	mt.tx = g2_matrix_mul_add(matrix->sx, mx->tx, matrix->kx, mx->ty) + matrix->tx;
+	mt.ty = g2_matrix_mul_add(matrix->ky, mx->tx, matrix->sy, mx->ty) + matrix->ty;
 
 	// ok
 	*matrix = mt;

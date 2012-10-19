@@ -154,12 +154,14 @@ static tb_void_t g2_demo_render()
 			if (g_bm)
 			{
 				g2_matrix_init_translate(&mx, -g2_long_to_float(100), -g2_long_to_float(100));
+//				g2_matrix_rotate(&mx, g2_long_to_float(45));
 				g2_matrix_scale(&mx, g2_long_to_float(200) / bw, g2_long_to_float(200) / bh);
 				g2_shader_matrix_set(g_mhader[g_shaderi], &mx);
 			}
 			else
 			{
 				g2_matrix_init_translate(&mx, 0, 0);
+//				g2_matrix_rotate(&mx, g2_long_to_float(45));
 				g2_matrix_scale(&mx, g2_long_to_float(cw) / bw, g2_long_to_float(ch) / bh);
 				g2_shader_matrix_set(g_shader[g_shaderi], &mx);
 			}

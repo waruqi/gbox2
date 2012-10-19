@@ -64,6 +64,7 @@ static __tb_inline__ g2_gl_shader_t* g2_gl_shader_init(tb_handle_t context, tb_s
 
 	// init matrix
 	g2_matrix_clear(&shader->matrix);
+	g2_matrix_clear(&shader->matrix_ivt);
 
 	// ok
 	return shader;
@@ -501,8 +502,20 @@ tb_void_t g2_shader_matrix_set(tb_handle_t shader, g2_matrix_t const* matrix)
 	g2_gl_shader_t* gshader = (g2_gl_shader_t*)shader;
 	tb_assert_and_check_return(gshader);
 
-	if (matrix) gshader->matrix = *matrix;
-	else g2_matrix_clear(&gshader->matrix);
+	if (matrix) 
+	{
+		// the matrix
+		gshader->matrix = *matrix;
+
+		// the inverted matrix
+		gshader->matrix_ivt = gshader->matrix;
+		g2_matrix_invert(&gshader->matrix_ivt);
+	}
+	else
+	{
+		g2_matrix_clear(&gshader->matrix);
+		g2_matrix_clear(&gshader->matrix_ivt);
+	}
 }
 
 tb_size_t g2_shader_ref(tb_handle_t shader)

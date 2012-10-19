@@ -207,14 +207,14 @@ static tb_void_t g2_demo_shape_exit()
 static tb_void_t g2_demo_shape_render()
 {
 	// clip
-	g2_clip_path(g_painter, G2_CLIP_MODE_REPLACE, g_path[g_pti]);
+//	g2_clip_path(g_painter, G2_CLIP_MODE_REPLACE, g_path[g_pti]);
 
 	// save
 	g2_save(g_painter, G2_SAVE_MODE_MATRIX);
 	g2_matrix_set(g_painter, TB_NULL);
 
 	// clip
-	g2_clip2i_rect(g_painter, G2_CLIP_MODE_INTERSECT, 10, 10, g2_bitmap_width(g_surface) - 20, g2_bitmap_height(g_surface) - 20);
+//	g2_clip2i_rect(g_painter, G2_CLIP_MODE_INTERSECT, 10, 10, g2_bitmap_width(g_surface) - 20, g2_bitmap_height(g_surface) - 20);
 
 	// set shader matrix
 	tb_handle_t shader = g2_style_shader(g_style);
