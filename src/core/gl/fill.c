@@ -557,6 +557,35 @@ static __tb_inline__ tb_void_t g2_gl_fill_style_draw_shader_radial(g2_gl_fill_t*
 	// apply texcoords
 	g2_gl_fill_apply_texcoords(fill);
 
+#if 1
+	// init fragment vertices
+	tb_float_t x = g2_float_to_tb(fill->shader->u.radial.cp.c.x);
+	tb_float_t y = g2_float_to_tb(fill->shader->u.radial.cp.c.y);
+	tb_float_t r = g2_float_to_tb(fill->shader->u.radial.cp.r);
+	fill->vertices[0] = x;
+	fill->vertices[1] = y;
+	fill->vertices[2] = x + r;
+	fill->vertices[3] = y + 10.0;
+	fill->vertices[4] = x + r;
+	fill->vertices[5] = y - 10.0;
+	fill->vertices[6] = x;
+	fill->vertices[7] = y;
+
+	// init fragment bounds
+	g2_gl_rect_t fbounds;
+	g2_gl_rect_init(&fbounds, fill->vertices[0], fill->vertices[1]);
+	g2_gl_rect_done(&fbounds, fill->vertices[2], fill->vertices[3]);
+	g2_gl_rect_done(&fbounds, fill->vertices[4], fill->vertices[5]);
+	
+	// apply vertices
+	g2_gl_fill_apply_vertices(fill);
+
+	// apply texture matrix
+	g2_gl_fill_apply_texture_matrix(fill, &fbounds);
+
+	// draw
+	g2_glDrawArrays(G2_GL_TRIANGLE_STRIP, 0, 4);
+#else
 	// init vertices
 	fill->vertices[0] = bounds->x1;
 	fill->vertices[1] = bounds->y1;
@@ -575,6 +604,8 @@ static __tb_inline__ tb_void_t g2_gl_fill_style_draw_shader_radial(g2_gl_fill_t*
 
 	// draw
 	g2_glDrawArrays(G2_GL_TRIANGLE_STRIP, 0, 4);
+
+#endif
 
 	// leave texture matrix
 	g2_gl_fill_leave_texture_matrix(fill);
