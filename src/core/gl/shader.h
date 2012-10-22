@@ -75,8 +75,14 @@ typedef struct __g2_gl_shader_t
 	// the matrix
 	g2_matrix_t 			matrix;
 
-	// the inverted matrix
-	g2_matrix_t 			matrix_ivt;
+	// the matrix for gl
+	tb_float_t 				matrix_gl[16];
+
+	// the shader width
+	tb_size_t 				width;
+
+	// the shader height
+	tb_size_t 				height;
 
 	// the union
 	union 

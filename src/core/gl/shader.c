@@ -40,7 +40,7 @@
  * gl interfaces
  */
 
-static __tb_inline__ g2_gl_shader_t* g2_gl_shader_init(tb_handle_t context, tb_size_t type, tb_size_t wrap)
+static __tb_inline__ g2_gl_shader_t* g2_gl_shader_init(tb_handle_t context, tb_size_t type, tb_size_t width, tb_size_t height, tb_size_t wrap)
 {
 	// check
 	g2_gl_context_t* gcontext = (g2_gl_context_t*)context;
@@ -60,11 +60,15 @@ static __tb_inline__ g2_gl_shader_t* g2_gl_shader_init(tb_handle_t context, tb_s
 	shader->refn 		= 1;
 	shader->texture 	= texture;
 	shader->context 	= context;
+	shader->width 		= width;
+	shader->height 		= height;
 	shader->flag 		= G2_GL_SHADER_FLAG_NONE;
 
 	// init matrix
 	g2_matrix_clear(&shader->matrix);
-	g2_matrix_clear(&shader->matrix_ivt);
+
+	// init matrix for gl
+	g2_gl_matrix_init(shader->matrix_gl);
 
 	// ok
 	return shader;
@@ -304,13 +308,13 @@ tb_handle_t g2_shader_init_linear(tb_handle_t context, g2_point_t const* pb, g2_
 	tb_assert_and_check_return_val(context && pb && pe && gradient && gradient->color && gradient->count && wrap, TB_NULL);
 
 	// init shader
-	g2_gl_shader_t* shader = g2_gl_shader_init(context, G2_GL_SHADER_TYPE_LINEAR, wrap);
+	g2_gl_shader_t* shader = g2_gl_shader_init(context, G2_GL_SHADER_TYPE_LINEAR, G2_GL_SHADER_GRAD_TEXCOORD_SIZE, G2_GL_SHADER_GRAD_TEXCOORD_SIZE, wrap);
 	tb_assert_and_check_return_val(shader && shader->texture, TB_NULL);
 
 	// init linear
 	shader->u.linear.pb = *pb;
 	shader->u.linear.pe = *pe;
-	
+
 	// make gradient
 	tb_bool_t 		alpha = TB_FALSE;
 	tb_byte_t 		data[G2_GL_SHADER_GRAD_TEXCOORD_SIZE << 2];
@@ -328,6 +332,9 @@ tb_handle_t g2_shader_init_linear(tb_handle_t context, g2_point_t const* pb, g2_
 	// make data
 	g2_glTexImage2D(G2_GL_TEXTURE_2D, 0, G2_GL_RGBA, G2_GL_SHADER_GRAD_TEXCOORD_SIZE, 1, 0, G2_GL_RGBA, G2_GL_UNSIGNED_BYTE, data);
 
+	// init matrix
+	g2_shader_matrix_set(shader, TB_NULL);
+	
 	// ok
 	return shader;
 
@@ -341,7 +348,7 @@ tb_handle_t g2_shader_init_radial(tb_handle_t context, g2_circle_t const* cp, g2
 	tb_assert_and_check_return_val(context && cp && gradient && gradient->color && gradient->count && wrap, TB_NULL);
 
 	// init shader
-	g2_gl_shader_t* shader = g2_gl_shader_init(context, G2_GL_SHADER_TYPE_RADIAL, wrap);
+	g2_gl_shader_t* shader = g2_gl_shader_init(context, G2_GL_SHADER_TYPE_RADIAL, G2_GL_SHADER_GRAD_TEXCOORD_SIZE, G2_GL_SHADER_GRAD_TEXCOORD_SIZE, wrap);
 	tb_assert_and_check_return_val(shader && shader->texture, TB_NULL);
 
 	// init radial
@@ -364,6 +371,9 @@ tb_handle_t g2_shader_init_radial(tb_handle_t context, g2_circle_t const* cp, g2
 	// make data
 	g2_glTexImage2D(G2_GL_TEXTURE_2D, 0, G2_GL_RGBA, G2_GL_SHADER_GRAD_TEXCOORD_SIZE, 1, 0, G2_GL_RGBA, G2_GL_UNSIGNED_BYTE, data);
 
+	// init matrix
+	g2_shader_matrix_set(shader, TB_NULL);
+	
 	// ok
 	return shader;
 
@@ -377,7 +387,7 @@ tb_handle_t g2_shader_init_radial2(tb_handle_t context, g2_circle_t const* cb, g
 	tb_assert_and_check_return_val(context && cb && ce && gradient && gradient->color && gradient->count && wrap, TB_NULL);
 
 	// init shader
-	g2_gl_shader_t* shader = g2_gl_shader_init(context, G2_GL_SHADER_TYPE_RADIAL2, wrap);
+	g2_gl_shader_t* shader = g2_gl_shader_init(context, G2_GL_SHADER_TYPE_RADIAL2, G2_GL_SHADER_GRAD_TEXCOORD_SIZE, G2_GL_SHADER_GRAD_TEXCOORD_SIZE, wrap);
 	tb_assert_and_check_return_val(shader && shader->texture, TB_NULL);
 
 	// init radial2
@@ -401,6 +411,9 @@ tb_handle_t g2_shader_init_radial2(tb_handle_t context, g2_circle_t const* cb, g
 	// make data
 	g2_glTexImage2D(G2_GL_TEXTURE_2D, 0, G2_GL_RGBA, G2_GL_SHADER_GRAD_TEXCOORD_SIZE, 1, 0, G2_GL_RGBA, G2_GL_UNSIGNED_BYTE, data);
 
+	// init matrix
+	g2_shader_matrix_set(shader, TB_NULL);
+	
 	// ok
 	return shader;
 
@@ -436,7 +449,7 @@ tb_handle_t g2_shader_init_bitmap(tb_handle_t context, tb_handle_t bitmap, tb_si
 									|| 	(pixfmt == (G2_PIXFMT_RGBA5551 | G2_PIXFMT_LENDIAN)), TB_NULL);
 
 	// init shader
-	g2_gl_shader_t* shader = g2_gl_shader_init(context, G2_GL_SHADER_TYPE_BITMAP, wrap);
+	g2_gl_shader_t* shader = g2_gl_shader_init(context, G2_GL_SHADER_TYPE_BITMAP, width, height, wrap);
 	tb_assert_and_check_return_val(shader && shader->texture, TB_NULL);
 
 	// init width & height
@@ -476,6 +489,9 @@ tb_handle_t g2_shader_init_bitmap(tb_handle_t context, tb_handle_t bitmap, tb_si
 		break;
 	}
 
+	// init matrix
+	g2_shader_matrix_set(shader, TB_NULL);
+	
 	// ok
 	return shader;
 }
@@ -502,19 +518,64 @@ tb_void_t g2_shader_matrix_set(tb_handle_t shader, g2_matrix_t const* matrix)
 	g2_gl_shader_t* gshader = (g2_gl_shader_t*)shader;
 	tb_assert_and_check_return(gshader);
 
-	if (matrix) 
-	{
-		// the matrix
-		gshader->matrix = *matrix;
+	// update matrix
+	if (matrix) gshader->matrix = *matrix;
+	else g2_matrix_clear(&gshader->matrix);
 
-		// the inverted matrix
-		gshader->matrix_ivt = gshader->matrix;
-		g2_matrix_invert(&gshader->matrix_ivt);
-	}
-	else
+	// update matrix for gl
+	switch (gshader->type)
 	{
-		g2_matrix_clear(&gshader->matrix);
-		g2_matrix_clear(&gshader->matrix_ivt);
+	case G2_GL_SHADER_TYPE_BITMAP:
+		{
+			// init
+			g2_matrix_t mx = gshader->matrix;
+			tb_float_t 	sw = gshader->u.bitmap.width;
+			tb_float_t 	sh = gshader->u.bitmap.height;
+
+			// matrix: global => camera for gl
+			if (g2_matrix_invert(&mx))
+			{
+				mx.tx /= sw;
+				mx.ty /= sh;
+
+				// g2 matrix => gl matrix
+				g2_gl_matrix_from(gshader->matrix_gl, &mx);
+			}
+		}
+		break;
+	case G2_GL_SHADER_TYPE_LINEAR:
+		{
+			// init
+			g2_matrix_t mx = gshader->matrix;
+			g2_point_t 	pb = gshader->u.linear.pb;
+			g2_point_t 	pe = gshader->u.linear.pe;
+			tb_float_t 	ux = g2_float_to_tb(pe.x - pb.x);
+			tb_float_t 	uy = g2_float_to_tb(pe.y - pb.y);
+			tb_float_t 	un = tb_sqrtf(ux * ux + uy * uy);
+			tb_float_t 	sw = G2_GL_SHADER_GRAD_TEXCOORD_SIZE;
+			tb_float_t 	sh = G2_GL_SHADER_GRAD_TEXCOORD_SIZE;
+
+			// apply the linear matrix
+			g2_matrix_translate(&mx, pb.x, pb.y);
+			g2_matrix_scale(&mx, tb_float_to_g2(un / 1024), tb_float_to_g2(un / 1024));
+			g2_matrix_sincos(&mx, tb_float_to_g2(uy / un), tb_float_to_g2(ux / un));
+			
+			// matrix: global => camera for gl
+			if (g2_matrix_invert(&mx))
+			{
+				mx.tx /= sw;
+				mx.ty /= sh;
+
+				// g2 matrix => gl matrix
+				g2_gl_matrix_from(gshader->matrix_gl, &mx);
+			}
+		}
+		break;
+	case G2_GL_SHADER_TYPE_RADIAL:
+	case G2_GL_SHADER_TYPE_RADIAL2:
+		break;
+	default:
+		break;
 	}
 }
 

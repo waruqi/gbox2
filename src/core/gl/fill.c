@@ -102,24 +102,6 @@ static __tb_inline__ tb_void_t g2_gl_fill_matrix_leave(g2_gl_fill_t* fill)
 		g2_glPopMatrix();
 	}
 }
-static __tb_inline__ tb_void_t g2_gl_fill_matrix_enter_texture(g2_gl_fill_t* fill, tb_float_t const* matrix)
-{
-	if (fill->context->version < 0x20)
-	{
-		g2_glMatrixMode(G2_GL_TEXTURE);
-		g2_glPushMatrix();
-		g2_glMultMatrixf(matrix);
-	}
-	else g2_glUniformMatrix4fv(g2_gl_program_location(fill->program, G2_GL_PROGRAM_LOCATION_MATRIX_TEXCOORD), 1, G2_GL_FALSE, matrix);
-}
-static __tb_inline__ tb_void_t g2_gl_fill_matrix_leave_texture(g2_gl_fill_t* fill)
-{
-	if (fill->context->version < 0x20)
-	{
-		g2_glPopMatrix();
-		g2_glMatrixMode(G2_GL_MODELVIEW);
-	}
-}
 static __tb_inline__ tb_void_t g2_gl_fill_stencil_init(g2_gl_fill_t* fill)
 {
     g2_glDisable(G2_GL_BLEND);
@@ -356,6 +338,65 @@ static __tb_inline__ tb_void_t g2_gl_fill_leave_texture_state(g2_gl_fill_t* fill
 	// disable texture
 	g2_glDisable(G2_GL_TEXTURE_2D);
 }
+static __tb_inline__ tb_void_t g2_gl_fill_enter_texture_matrix(g2_gl_fill_t* fill)
+{
+	// apply matrix
+	if (fill->context->version < 0x20)
+	{
+		// enter the texture matrix mode
+		g2_glMatrixMode(G2_GL_TEXTURE);
+		g2_glPushMatrix();
+	}
+}
+static __tb_inline__ tb_void_t g2_gl_fill_apply_texture_matrix(g2_gl_fill_t* fill, g2_gl_rect_t const* bounds)
+{
+	// check
+	tb_assert_and_check_return(fill->shader);
+
+	// init
+	tb_float_t bx = bounds->x1;
+	tb_float_t by = bounds->y1;
+	tb_float_t bw = bounds->x2 - bounds->x1 + 1;
+	tb_float_t bh = bounds->y2 - bounds->y1 + 1;
+	tb_float_t sw = fill->shader->width;
+	tb_float_t sh = fill->shader->height;
+
+	// apply matrix
+	if (fill->context->version < 0x20)
+	{
+		// apply the texture matrix
+		g2_glMultMatrixf(fill->shader->matrix_gl);
+
+		// disable auto scale in the bounds
+		g2_glScalef(bw / sw, bh / sh, 1.0f);
+
+		// move viewport to global
+		g2_glTranslatef(bx / bw, by / bh, 0.0f);
+	}
+	else 
+	{
+		// init matrix
+		g2_gl_matrix_copy(fill->matrix, fill->shader->matrix_gl);
+
+		// disable auto scale in the bounds
+		g2_gl_matrix_scale(fill->matrix, bw / sw, bh / sh);
+
+		// move viewport to global
+		g2_gl_matrix_translate(fill->matrix, bx / bw, by / bh);
+
+		// apply the texture matrix
+		g2_glUniformMatrix4fv(g2_gl_program_location(fill->program, G2_GL_PROGRAM_LOCATION_MATRIX_TEXCOORD), 1, G2_GL_FALSE, fill->matrix);
+	}
+}
+static __tb_inline__ tb_void_t g2_gl_fill_leave_texture_matrix(g2_gl_fill_t* fill)
+{
+	if (fill->context->version < 0x20)
+	{
+		// leave the texture matrix mode
+		g2_glPopMatrix();
+		g2_glMatrixMode(G2_GL_MODELVIEW);
+	}
+}
 static __tb_inline__ tb_bool_t g2_gl_fill_context_init(g2_gl_fill_t* fill)
 {
 	// has fill?
@@ -410,43 +451,8 @@ static __tb_inline__ tb_void_t g2_gl_fill_style_draw_shader_bitmap(g2_gl_fill_t*
 	// enter texture state
 	g2_gl_fill_enter_texture_state(fill);
 
-	// init
-	tb_float_t bx = bounds->x1;
-	tb_float_t by = bounds->y1;
-	tb_float_t bw = bounds->x2 - bounds->x1 + 1;
-	tb_float_t bh = bounds->y2 - bounds->y1 + 1;
-	tb_float_t sw = fill->shader->u.bitmap.width;
-	tb_float_t sh = fill->shader->u.bitmap.height;
-
-	// matrix: global => camera for gl
-	g2_matrix_t matrix = fill->shader->matrix_ivt;
-	matrix.tx /= sw;
-	matrix.ty /= sh;
-
-	// disable auto scale in the bounds
-	g2_matrix_scale(&matrix, tb_float_to_g2(bw / sw), tb_float_to_g2(bh / sh));
-
-	// move viewport to global
-	g2_matrix_translate(&matrix, tb_float_to_g2(bx / bw), tb_float_to_g2(by / bh));
-
-	// g2 matrix => gl matrix
-	g2_gl_matrix_from(fill->matrix, &matrix);
-
-	// enter matrix
-	g2_gl_fill_matrix_enter_texture(fill, fill->matrix);
-
-	// init vertices
-	fill->vertices[0] = bounds->x1;
-	fill->vertices[1] = bounds->y1;
-	fill->vertices[2] = bounds->x2;
-	fill->vertices[3] = bounds->y1;
-	fill->vertices[4] = bounds->x1;
-	fill->vertices[5] = bounds->y2;
-	fill->vertices[6] = bounds->x2;
-	fill->vertices[7] = bounds->y2;
-	
-	// apply vertices
-	g2_gl_fill_apply_vertices(fill);
+	// enter texture matrix
+	g2_gl_fill_enter_texture_matrix(fill);
 
 	// init texcoords
 	fill->texcoords[0] = 0.0f;
@@ -461,11 +467,27 @@ static __tb_inline__ tb_void_t g2_gl_fill_style_draw_shader_bitmap(g2_gl_fill_t*
 	// apply texcoords
 	g2_gl_fill_apply_texcoords(fill);
 
+	// init vertices
+	fill->vertices[0] = bounds->x1;
+	fill->vertices[1] = bounds->y1;
+	fill->vertices[2] = bounds->x2;
+	fill->vertices[3] = bounds->y1;
+	fill->vertices[4] = bounds->x1;
+	fill->vertices[5] = bounds->y2;
+	fill->vertices[6] = bounds->x2;
+	fill->vertices[7] = bounds->y2;
+	
+	// apply vertices
+	g2_gl_fill_apply_vertices(fill);
+
+	// apply texture matrix
+	g2_gl_fill_apply_texture_matrix(fill, bounds);
+
 	// draw
 	g2_glDrawArrays(G2_GL_TRIANGLE_STRIP, 0, 4);
 
-	// leave matrix
-	g2_gl_fill_matrix_leave_texture(fill);
+	// leave texture matrix
+	g2_gl_fill_leave_texture_matrix(fill);
 
 	// leave texture state
 	g2_gl_fill_leave_texture_state(fill);
@@ -475,54 +497,8 @@ static __tb_inline__ tb_void_t g2_gl_fill_style_draw_shader_linear(g2_gl_fill_t*
 	// enter texture state
 	g2_gl_fill_enter_texture_state(fill);
 
-	// init
-	g2_point_t pb = fill->shader->u.linear.pb;
-	g2_point_t pe = fill->shader->u.linear.pe;
-	tb_float_t ux = g2_float_to_tb(pe.x - pb.x);
-	tb_float_t uy = g2_float_to_tb(pe.y - pb.y);
-	tb_float_t un = tb_sqrtf(ux * ux + uy * uy);
-	tb_float_t bx = bounds->x1;
-	tb_float_t by = bounds->y1;
-	tb_float_t bw = bounds->x2 - bounds->x1 + 1;
-	tb_float_t bh = bounds->y2 - bounds->y1 + 1;
-	tb_float_t sw = 1024;
-	tb_float_t sh = 1024;
-
-	// init the linear matrix
-	g2_matrix_t matrix = fill->shader->matrix;
-	g2_matrix_translate(&matrix, pb.x, pb.y);
-	g2_matrix_scale(&matrix, tb_float_to_g2(un / 1024), tb_float_to_g2(un / 1024));
-	g2_matrix_sincos(&matrix, tb_float_to_g2(uy / un), tb_float_to_g2(ux / un));
-	
-	// matrix: global => camera for gl
-	g2_matrix_invert(&matrix);
-	matrix.tx /= sw;
-	matrix.ty /= sh;
-		
-	// disable auto scale in the bounds
-	g2_matrix_scale(&matrix, tb_float_to_g2(bw / sw), tb_float_to_g2(bh / sh));
-
-	// move viewport to global
-	g2_matrix_translate(&matrix, tb_float_to_g2(bx / bw), tb_float_to_g2(by / bh));
-
-	// g2 matrix => gl matrix
-	g2_gl_matrix_from(fill->matrix, &matrix);
-
-	// enter matrix
-	g2_gl_fill_matrix_enter_texture(fill, fill->matrix);
-
-	// init vertices
-	fill->vertices[0] = bounds->x1;
-	fill->vertices[1] = bounds->y1;
-	fill->vertices[2] = bounds->x2;
-	fill->vertices[3] = bounds->y1;
-	fill->vertices[4] = bounds->x1;
-	fill->vertices[5] = bounds->y2;
-	fill->vertices[6] = bounds->x2;
-	fill->vertices[7] = bounds->y2;
-	
-	// apply vertices
-	g2_gl_fill_apply_vertices(fill);
+	// enter texture matrix
+	g2_gl_fill_enter_texture_matrix(fill);
 
 	// init texcoords
 	fill->texcoords[0] = 0.0f;
@@ -537,11 +513,27 @@ static __tb_inline__ tb_void_t g2_gl_fill_style_draw_shader_linear(g2_gl_fill_t*
 	// apply texcoords
 	g2_gl_fill_apply_texcoords(fill);
 
+	// init vertices
+	fill->vertices[0] = bounds->x1;
+	fill->vertices[1] = bounds->y1;
+	fill->vertices[2] = bounds->x2;
+	fill->vertices[3] = bounds->y1;
+	fill->vertices[4] = bounds->x1;
+	fill->vertices[5] = bounds->y2;
+	fill->vertices[6] = bounds->x2;
+	fill->vertices[7] = bounds->y2;
+	
+	// apply vertices
+	g2_gl_fill_apply_vertices(fill);
+
+	// apply texture matrix
+	g2_gl_fill_apply_texture_matrix(fill, bounds);
+
 	// draw
 	g2_glDrawArrays(G2_GL_TRIANGLE_STRIP, 0, 4);
 
-	// leave matrix
-	g2_gl_fill_matrix_leave_texture(fill);
+	// leave texture matrix
+	g2_gl_fill_leave_texture_matrix(fill);
 
 	// leave texture state
 	g2_gl_fill_leave_texture_state(fill);

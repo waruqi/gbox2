@@ -50,6 +50,10 @@ static __tb_inline__ tb_void_t g2_gl_matrix_init(tb_float_t* gmatrix)
 	gmatrix[14] = 0.0f;
 	gmatrix[15] = 1.0f;
 }
+static __tb_inline__ tb_void_t g2_gl_matrix_copy(tb_float_t* gmatrix, tb_float_t const* gmatrix2)
+{
+	tb_memcpy(gmatrix, gmatrix2, sizeof(tb_float_t) << 4);
+}
 static __tb_inline__ tb_void_t g2_gl_matrix_from(tb_float_t* gmatrix, g2_matrix_t const* matrix)
 {
 	g2_gl_matrix_init(gmatrix);
@@ -69,5 +73,17 @@ static __tb_inline__ tb_void_t g2_gl_matrix_ortho(tb_float_t* gmatrix, tb_float_
     gmatrix[12] = -(right + left) / (right - left);  
     gmatrix[13] = -(top + bottom) / (top - bottom);  
     gmatrix[14] = -(farp + nearp) / (farp - nearp); 
+}
+static __tb_inline__ tb_void_t g2_gl_matrix_scale(tb_float_t* gmatrix, tb_float_t sx, tb_float_t sy)
+{
+	gmatrix[0] *= sx;
+	gmatrix[1] *= sx;
+	gmatrix[4] *= sy;
+	gmatrix[5] *= sy;
+}
+static __tb_inline__ tb_void_t g2_gl_matrix_translate(tb_float_t* gmatrix, tb_float_t dx, tb_float_t dy)
+{
+	gmatrix[12] += gmatrix[0] * dx + gmatrix[4] * dy;
+	gmatrix[13] += gmatrix[1] * dx + gmatrix[5] * dy;
 }
 #endif
