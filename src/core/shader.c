@@ -87,44 +87,4 @@ tb_handle_t g2_shader_init2i_radial(tb_handle_t context, tb_long_t x0, tb_long_t
 
 	return g2_shader_init_radial(context, &c, gradient, mode);
 }
-tb_handle_t g2_shader_init2_radial2(tb_handle_t context, g2_float_t xb, g2_float_t yb, g2_float_t rb, g2_float_t xe, g2_float_t ye, g2_float_t re, g2_gradient_t const* gradient, tb_size_t mode)
-{
-	g2_circle_t c1, c2;
-
-	c1.c.x 	= xb;
-	c1.c.y 	= yb;
-	c1.r 	= rb;
-
-	c2.c.x 	= xe;
-	c2.c.y 	= ye;
-	c2.r 	= re;
-
-	return g2_shader_init_radial2(context, &c1, &c2, gradient, mode);
-}
-tb_handle_t g2_shader_initi_radial2(tb_handle_t context, g2_icircle_t const* cb, g2_icircle_t const* ce, g2_gradient_t const* gradient, tb_size_t mode)
-{
-	g2_circle_t c1, c2;
-
-	c1.c 	= g2_ipoint_to_point(&cb->c);
-	c1.r 	= g2_long_to_float(cb->r);
-
-	c2.c 	= g2_ipoint_to_point(&ce->c);
-	c2.r 	= g2_long_to_float(ce->r);
-
-	return g2_shader_init_radial2(context, &c1, &c2, gradient, mode);
-}
-tb_handle_t g2_shader_init2i_radial2(tb_handle_t context, tb_long_t xb, tb_long_t yb, tb_size_t rb, tb_long_t xe, tb_long_t ye, tb_size_t re, g2_gradient_t const* gradient, tb_size_t mode)
-{
-	g2_circle_t c1, c2;
-
-	c1.c.x 	= g2_long_to_float(xb);
-	c1.c.y 	= g2_long_to_float(yb);
-	c1.r 	= g2_long_to_float(rb);
-
-	c2.c.x 	= g2_long_to_float(xe);
-	c2.c.y 	= g2_long_to_float(ye);
-	c2.r 	= g2_long_to_float(re);
-
-	return g2_shader_init_radial2(context, &c1, &c2, gradient, mode);
-}
 

@@ -38,8 +38,7 @@ typedef enum __g2_gl_shader_type_t
 	G2_GL_SHADER_TYPE_NONE 				= 0
 ,	G2_GL_SHADER_TYPE_LINEAR 			= 1
 ,	G2_GL_SHADER_TYPE_RADIAL 			= 2
-,	G2_GL_SHADER_TYPE_RADIAL2 			= 3
-,	G2_GL_SHADER_TYPE_BITMAP 			= 4
+,	G2_GL_SHADER_TYPE_BITMAP 			= 3
 
 }g2_gl_shader_type_t;
 
@@ -111,13 +110,6 @@ typedef struct __g2_gl_shader_t
 
 		} 					radial;
 
-		// the radial2 info
-		struct
-		{
-			g2_circle_t 	cb;
-			g2_circle_t 	ce;
-
-		} 					radial2;
 	}u;
 
 }g2_gl_shader_t;

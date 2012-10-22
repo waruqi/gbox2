@@ -11,8 +11,8 @@ static tb_size_t 	g_shaderi 	= 0;
 static tb_handle_t 	g_bitmap 	= TB_NULL;
 static tb_size_t 	g_cap[] 	= {G2_STYLE_CAP_BUTT, G2_STYLE_CAP_SQUARE, G2_STYLE_CAP_ROUND};
 static tb_size_t 	g_join[] 	= {G2_STYLE_JOIN_MITER, G2_STYLE_JOIN_BEVEL, G2_STYLE_JOIN_ROUND};
-static tb_handle_t 	g_shader[5] = {TB_NULL};
-static tb_handle_t 	g_mhader[5] = {TB_NULL};
+static tb_handle_t 	g_shader[4] = {TB_NULL};
+static tb_handle_t 	g_mhader[4] = {TB_NULL};
 
 /* ////////////////////////////////////////////////////////////////////////
  * interfaces
@@ -39,7 +39,7 @@ static tb_void_t g2_demo_wheelup(tb_int_t x, tb_int_t y)
 }
 static tb_void_t g2_demo_lclickdown(tb_int_t x, tb_int_t y)
 {	
-		g_shaderi = (g_shaderi + 1) % (g_bitmap? 5 : 4);
+		g_shaderi = (g_shaderi + 1) % (g_bitmap? 4 : 3);
 }
 static tb_void_t g2_demo_lclickup(tb_int_t x, tb_int_t y)
 {
@@ -64,7 +64,7 @@ static tb_void_t g2_demo_key(tb_int_t key)
 		break;
 	case 'f':
 		{
-			g_shaderi = (g_shaderi + 1) % (g_bitmap? 5 : 4);
+			g_shaderi = (g_shaderi + 1) % (g_bitmap? 4 : 3);
 		}
 		break;
 	case 's':
@@ -104,13 +104,10 @@ static tb_bool_t g2_demo_init(tb_int_t argc, tb_char_t const** argv)
 	g_shader[2]	= g2_shader_init2i_radial(g_context, g_x0, g_y0, 100, &grad, G2_SHADER_WRAP_CLAMP);
 	g_mhader[2]	= g2_shader_init2i_radial(g_context, 0, 0, 50, &grad, G2_SHADER_WRAP_CLAMP);
 
-	g_shader[3]	= g2_shader_init2i_radial2(g_context, g_x0, g_y0, 100, g_x0, g_y0, 200, &grad, G2_SHADER_WRAP_CLAMP);
-	g_mhader[3]	= g2_shader_init2i_radial2(g_context, 0, 0, 50, 0, 0, 100, &grad, G2_SHADER_WRAP_CLAMP);
-
 	if (g_bitmap)
 	{
-		g_shader[4]	= g2_shader_init_bitmap(g_context, g_bitmap, G2_SHADER_WRAP_CLAMP);
-		g_mhader[4]	= g2_shader_init_bitmap(g_context, g_bitmap, G2_SHADER_WRAP_CLAMP);
+		g_shader[3]	= g2_shader_init_bitmap(g_context, g_bitmap, G2_SHADER_WRAP_CLAMP);
+		g_mhader[3]	= g2_shader_init_bitmap(g_context, g_bitmap, G2_SHADER_WRAP_CLAMP);
 	}
 
 	// ok
@@ -123,7 +120,7 @@ static tb_void_t g2_demo_exit()
 
 	// exit shader
 	tb_size_t i = 0;
-	for (i = 0; i < 5; i++)
+	for (i = 0; i < 4; i++)
 	{
 		if (g_shader[i]) g2_shader_exit(g_shader[i]);
 		if (g_mhader[i]) g2_shader_exit(g_mhader[i]);
@@ -144,7 +141,7 @@ static tb_void_t g2_demo_render()
 		g2_style_mode_set(g_style, G2_STYLE_MODE_FILL);
 		g2_style_color_set(g_style, G2_COLOR_RED);
 		g2_style_shader_set(g_style, g_bm? g_mhader[g_shaderi] : g_shader[g_shaderi]);
-		if (g_shaderi == 4) 
+		if (g_shaderi == 3) 
 		{
 			g2_matrix_t mx;
 			tb_size_t bw 	= g2_bitmap_width(g_bitmap);

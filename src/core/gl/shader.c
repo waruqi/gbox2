@@ -381,46 +381,6 @@ fail:
 	if (shader) g2_gl_shader_exit(shader);
 	return TB_NULL;
 }
-tb_handle_t g2_shader_init_radial2(tb_handle_t context, g2_circle_t const* cb, g2_circle_t const* ce, g2_gradient_t const* gradient, tb_size_t wrap)
-{
-	// check
-	tb_assert_and_check_return_val(context && cb && ce && gradient && gradient->color && gradient->count && wrap, TB_NULL);
-
-	// init shader
-	g2_gl_shader_t* shader = g2_gl_shader_init(context, G2_GL_SHADER_TYPE_RADIAL2, G2_GL_SHADER_GRAD_TEXCOORD_SIZE, G2_GL_SHADER_GRAD_TEXCOORD_SIZE, wrap);
-	tb_assert_and_check_return_val(shader && shader->texture, TB_NULL);
-
-	// init radial2
-	shader->u.radial2.cb = *cb;
-	shader->u.radial2.ce = *ce;
-
-	// make gradient
-	tb_bool_t 		alpha = TB_FALSE;
-	tb_byte_t 		data[G2_GL_SHADER_GRAD_TEXCOORD_SIZE << 2];
-	if (!g2_shader_make_gradient(shader, gradient, data, tb_arrayn(data), &alpha)) goto fail;
-
-	// alpha?
-	if (alpha) shader->flag |= G2_GL_SHADER_FLAG_ALPHA;
-
-	// make texture
-	g2_glBindTexture(G2_GL_TEXTURE_2D, *shader->texture);
-
-	// init line alignment
-	g2_glPixelStorei(G2_GL_UNPACK_ALIGNMENT, 4);
-	
-	// make data
-	g2_glTexImage2D(G2_GL_TEXTURE_2D, 0, G2_GL_RGBA, G2_GL_SHADER_GRAD_TEXCOORD_SIZE, 1, 0, G2_GL_RGBA, G2_GL_UNSIGNED_BYTE, data);
-
-	// init matrix
-	g2_shader_matrix_set(shader, TB_NULL);
-	
-	// ok
-	return shader;
-
-fail:
-	if (shader) g2_gl_shader_exit(shader);
-	return TB_NULL;
-}
 tb_handle_t g2_shader_init_bitmap(tb_handle_t context, tb_handle_t bitmap, tb_size_t wrap)
 {
 	// check
@@ -529,8 +489,8 @@ tb_void_t g2_shader_matrix_set(tb_handle_t shader, g2_matrix_t const* matrix)
 		{
 			// init
 			g2_matrix_t mx = gshader->matrix;
-			tb_float_t 	sw = gshader->u.bitmap.width;
-			tb_float_t 	sh = gshader->u.bitmap.height;
+			tb_float_t 	sw = gshader->width;
+			tb_float_t 	sh = gshader->height;
 
 			// matrix: global => camera for gl
 			if (g2_matrix_invert(&mx))
@@ -552,12 +512,12 @@ tb_void_t g2_shader_matrix_set(tb_handle_t shader, g2_matrix_t const* matrix)
 			tb_float_t 	ux = g2_float_to_tb(pe.x - pb.x);
 			tb_float_t 	uy = g2_float_to_tb(pe.y - pb.y);
 			tb_float_t 	un = tb_sqrtf(ux * ux + uy * uy);
-			tb_float_t 	sw = G2_GL_SHADER_GRAD_TEXCOORD_SIZE;
-			tb_float_t 	sh = G2_GL_SHADER_GRAD_TEXCOORD_SIZE;
+			tb_float_t 	sw = gshader->width;
+			tb_float_t 	sh = gshader->height;
 
 			// apply the linear matrix
 			g2_matrix_translate(&mx, pb.x, pb.y);
-			g2_matrix_scale(&mx, tb_float_to_g2(un / 1024), tb_float_to_g2(un / 1024));
+			g2_matrix_scale(&mx, tb_float_to_g2(un / sw), tb_float_to_g2(un / sh));
 			g2_matrix_sincos(&mx, tb_float_to_g2(uy / un), tb_float_to_g2(ux / un));
 			
 			// matrix: global => camera for gl
@@ -572,7 +532,6 @@ tb_void_t g2_shader_matrix_set(tb_handle_t shader, g2_matrix_t const* matrix)
 		}
 		break;
 	case G2_GL_SHADER_TYPE_RADIAL:
-	case G2_GL_SHADER_TYPE_RADIAL2:
 		break;
 	default:
 		break;

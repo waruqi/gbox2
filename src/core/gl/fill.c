@@ -175,7 +175,6 @@ static __tb_inline__ tb_void_t g2_gl_fill_apply_wrap(g2_gl_fill_t* fill)
 		break;
 	case G2_GL_SHADER_TYPE_LINEAR:
 	case G2_GL_SHADER_TYPE_RADIAL:
-	case G2_GL_SHADER_TYPE_RADIAL2:
 		g2_glTexParameteri(G2_GL_TEXTURE_2D, G2_GL_TEXTURE_WRAP_S, wrap[fill->shader->wrap]);
 		g2_glTexParameteri(G2_GL_TEXTURE_2D, G2_GL_TEXTURE_WRAP_T, G2_GL_CLAMP_TO_EDGE);
 		break;
@@ -230,7 +229,6 @@ static __tb_inline__ tb_bool_t g2_gl_fill_apply_program(g2_gl_fill_t* fill)
 				break;
 			case G2_GL_SHADER_TYPE_LINEAR:
 			case G2_GL_SHADER_TYPE_RADIAL:
-			case G2_GL_SHADER_TYPE_RADIAL2:
 				type = G2_GL_PROGRAM_TYPE_BITMAP;
 				break;
 			default:
@@ -540,11 +538,49 @@ static __tb_inline__ tb_void_t g2_gl_fill_style_draw_shader_linear(g2_gl_fill_t*
 }
 static __tb_inline__ tb_void_t g2_gl_fill_style_draw_shader_radial(g2_gl_fill_t* fill, g2_gl_rect_t const* bounds)
 {
-	tb_trace_noimpl();
-}
-static __tb_inline__ tb_void_t g2_gl_fill_style_draw_shader_radial2(g2_gl_fill_t* fill, g2_gl_rect_t const* bounds)
-{
-	tb_trace_noimpl();
+	// enter texture state
+	g2_gl_fill_enter_texture_state(fill);
+
+	// enter texture matrix
+	g2_gl_fill_enter_texture_matrix(fill);
+
+	// init texcoords
+	fill->texcoords[0] = 0.0f;
+	fill->texcoords[1] = 0.0f;
+	fill->texcoords[2] = 1.0f;
+	fill->texcoords[3] = 0.0f;
+	fill->texcoords[4] = 0.0f;
+	fill->texcoords[5] = 1.0f;
+	fill->texcoords[6] = 1.0f;
+	fill->texcoords[7] = 1.0f;
+
+	// apply texcoords
+	g2_gl_fill_apply_texcoords(fill);
+
+	// init vertices
+	fill->vertices[0] = bounds->x1;
+	fill->vertices[1] = bounds->y1;
+	fill->vertices[2] = bounds->x2;
+	fill->vertices[3] = bounds->y1;
+	fill->vertices[4] = bounds->x1;
+	fill->vertices[5] = bounds->y2;
+	fill->vertices[6] = bounds->x2;
+	fill->vertices[7] = bounds->y2;
+	
+	// apply vertices
+	g2_gl_fill_apply_vertices(fill);
+
+	// apply texture matrix
+	g2_gl_fill_apply_texture_matrix(fill, bounds);
+
+	// draw
+	g2_glDrawArrays(G2_GL_TRIANGLE_STRIP, 0, 4);
+
+	// leave texture matrix
+	g2_gl_fill_leave_texture_matrix(fill);
+
+	// leave texture state
+	g2_gl_fill_leave_texture_state(fill);
 }
 static __tb_inline__ tb_void_t g2_gl_fill_style_draw_shader(g2_gl_fill_t* fill, g2_gl_rect_t const* bounds)
 {
@@ -560,8 +596,6 @@ static __tb_inline__ tb_void_t g2_gl_fill_style_draw_shader(g2_gl_fill_t* fill, 
 	case G2_GL_SHADER_TYPE_RADIAL:
 		g2_gl_fill_style_draw_shader_radial(fill, bounds);
 		break;
-	case G2_GL_SHADER_TYPE_RADIAL2:
-		g2_gl_fill_style_draw_shader_radial2(fill, bounds);
 		break;
 	default:
 		break;

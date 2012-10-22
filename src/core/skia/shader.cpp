@@ -67,20 +67,6 @@ static tb_handle_t g2_skia_shader_init_radial(tb_handle_t context, g2_circle_t c
 	SkPoint pt = SkPoint::Make(cp->c.x, cp->c.y);
 	return SkGradientShader::CreateRadial(pt, cp->r, reinterpret_cast<SkColor*>(gradient->color), gradient->radio, gradient->count, static_cast<SkShader::TileMode>(wrap - 2));
 }
-static tb_handle_t g2_skia_shader_init_radial2(tb_handle_t context, g2_circle_t const* cb, g2_circle_t const* ce, g2_gradient_t const* gradient, tb_size_t wrap)
-{
-	// check
-	tb_assert_and_check_return_val(cb && ce && gradient && gradient->color && gradient->count, TB_NULL);
-
-	// the border wrap is not supported for skia
-	if (wrap == G2_SHADER_WRAP_BORDER) wrap = G2_SHADER_WRAP_CLAMP;
-	tb_assert_and_check_return_val(wrap > 1, TB_NULL);
-
-	// init shader
-	SkPoint p1 = SkPoint::Make(cb->c.x, cb->c.y);
-	SkPoint p2 = SkPoint::Make(ce->c.x, ce->c.y);
-	return SkGradientShader::CreateTwoPointRadial(p1, cb->r, p2, ce->r, reinterpret_cast<SkColor*>(gradient->color), gradient->radio, gradient->count, static_cast<SkShader::TileMode>(wrap - 2));
-}
 static tb_handle_t g2_skia_shader_init_bitmap(tb_handle_t context, tb_handle_t bitmap, tb_size_t wrap)
 {
 	// check
@@ -160,10 +146,6 @@ extern "C"
 	tb_handle_t g2_shader_init_radial(tb_handle_t context, g2_circle_t const* cp, g2_gradient_t const* gradient, tb_size_t wrap)
 	{
 		return g2_skia_shader_init_radial(context, cp, gradient, wrap);
-	}
-	tb_handle_t g2_shader_init_radial2(tb_handle_t context, g2_circle_t const* cb, g2_circle_t const* ce, g2_gradient_t const* gradient, tb_size_t wrap)
-	{
-		return g2_skia_shader_init_radial2(context, cb, ce, gradient, wrap);
 	}
 	tb_handle_t g2_shader_init_bitmap(tb_handle_t context, tb_handle_t bitmap, tb_size_t wrap)
 	{
