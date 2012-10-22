@@ -249,8 +249,8 @@ tb_bool_t g2_matrix_scale(g2_matrix_t* matrix, g2_float_t sx, g2_float_t sy)
 #else
 
 	matrix->sx = g2_mul(matrix->sx, sx);
-	matrix->kx = g2_mul(matrix->kx, sx);
-	matrix->ky = g2_mul(matrix->ky, sy);
+	matrix->ky = g2_mul(matrix->ky, sx);
+	matrix->kx = g2_mul(matrix->kx, sy);
 	matrix->sy = g2_mul(matrix->sy, sy);
 
 	return TB_TRUE;
