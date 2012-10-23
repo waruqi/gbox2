@@ -536,14 +536,14 @@ tb_void_t g2_shader_matrix_set(tb_handle_t shader, g2_matrix_t const* matrix)
 			// init
 			g2_matrix_t mx = gshader->matrix;
 			g2_point_t 	pb = gshader->u.radial.cp.c;
-			g2_point_t 	pe = g2_point_make(pb.x + gshader->u.radial.cp.r, pb.y);
+			g2_point_t 	pe = g2_point_make(pb.x, pb.y - gshader->u.radial.cp.r);
 			tb_float_t 	ux = g2_float_to_tb(pe.x - pb.x);
 			tb_float_t 	uy = g2_float_to_tb(pe.y - pb.y);
 			tb_float_t 	un = tb_sqrtf(ux * ux + uy * uy);
 			tb_float_t 	sw = gshader->width;
 			tb_float_t 	sh = gshader->height;
 
-			// apply the linear matrix
+			// apply the linear matrix for the radial fragment
 			g2_matrix_translate(&mx, pb.x, pb.y);
 			g2_matrix_scale(&mx, tb_float_to_g2(un / sw), tb_float_to_g2(un / sh));
 			g2_matrix_sincos(&mx, tb_float_to_g2(uy / un), tb_float_to_g2(ux / un));
