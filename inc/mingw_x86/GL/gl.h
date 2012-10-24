@@ -1504,6 +1504,7 @@ typedef void (APIENTRY * PFNGLDRAWRANGEELEMENTSWINPROC) (GLenum mode, GLuint sta
 /* WIN_swap_hint */
 typedef void (APIENTRY * PFNGLADDSWAPHINTRECTWINPROC)  (GLint x, GLint y, GLsizei width, GLsizei height);
 
+#if 0
 /* EXT_paletted_texture */
 typedef void (APIENTRY * PFNGLCOLORTABLEEXTPROC)
     (GLenum target, GLenum internalFormat, GLsizei width, GLenum format,
@@ -1517,6 +1518,7 @@ typedef void (APIENTRY * PFNGLGETCOLORTABLEPARAMETERIVEXTPROC)
     (GLenum target, GLenum pname, GLint *params);
 typedef void (APIENTRY * PFNGLGETCOLORTABLEPARAMETERFVEXTPROC)
     (GLenum target, GLenum pname, GLfloat *params);
+#endif
 
 #ifdef __cplusplus
 }

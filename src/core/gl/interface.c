@@ -119,7 +119,7 @@ static g2_GLvoid_t G2_GL_APICALL g2_gl_wraper_glOrthof(g2_GLfloat_t left, g2_GLf
 tb_bool_t g2_gl_interface_check(tb_byte_t version)
 {
 	// check interfaces for common
-	G2_GL_INTERFACE_CHECK 	(glActiveTexture);
+//	G2_GL_INTERFACE_CHECK 	(glActiveTexture);
 //	G2_GL_INTERFACE_CHECK 	(glAlphaFunc);
 	G2_GL_INTERFACE_CHECK 	(glBindTexture);
 	G2_GL_INTERFACE_CHECK 	(glBlendFunc);

@@ -1536,7 +1536,7 @@ png_ascii_from_fp(png_structp png_ptr, png_charp ascii, png_size_t size,
           * from base 2 to base 10 (multiply by log10(2) -
           * 0.3010, but 77/256 is 0.3008, so exp_b10 needs to
           * be increased.  Note that the arithmetic shift
-          * performs a floor() unlike C arithmetic - using a
+          * performs a tb_floor() unlike C arithmetic - using a
           * C multiply would break the following for negative
           * exponents.
           */
@@ -1602,7 +1602,7 @@ png_ascii_from_fp(png_structp png_ptr, png_charp ascii, png_size_t size,
 
                fp *= 10.0;
 
-               /* Use modf here, not floor and subtract, so that
+               /* Use modf here, not tb_floor and subtract, so that
                 * the separation is done in one step.  At the end
                 * of the loop don't break the number into parts so
                 * that the final digit is rounded.
@@ -1612,7 +1612,7 @@ png_ascii_from_fp(png_structp png_ptr, png_charp ascii, png_size_t size,
 
                else
                {
-                  d = floor(fp + .5);
+                  d = tb_floor(fp + .5);
 
                   if (d > 9.0)
                   {
@@ -1894,7 +1894,7 @@ png_ascii_from_fixed(png_structp png_ptr, png_charp ascii, png_size_t size,
 png_fixed_point
 png_fixed(png_structp png_ptr, double fp, png_const_charp text)
 {
-   double r = floor(100000 * fp + .5);
+   double r = tb_floor(100000 * fp + .5);
 
    if (r > 2147483647. || r < -2147483648.)
       png_fixed_error(png_ptr, text);
@@ -1929,7 +1929,7 @@ png_muldiv(png_fixed_point_p res, png_fixed_point a, png_int_32 times,
          double r = a;
          r *= times;
          r /= divisor;
-         r = floor(r+.5);
+         r = tb_floor(r+.5);
 
          /* A png_fixed_point is a 32-bit integer. */
          if (r <= 2147483647. && r >= -2147483648.)
@@ -2050,7 +2050,7 @@ png_fixed_point
 png_reciprocal(png_fixed_point a)
 {
 #ifdef PNG_FLOATING_ARITHMETIC_SUPPORTED
-   double r = floor(1E10/a+.5);
+   double r = tb_floor(1E10/a+.5);
 
    if (r <= 2147483647. && r >= -2147483648.)
       return (png_fixed_point)r;
@@ -2072,7 +2072,7 @@ png_product2(png_fixed_point a, png_fixed_point b)
 #ifdef PNG_FLOATING_ARITHMETIC_SUPPORTED
    double r = a * 1E-5;
    r *= b;
-   r = floor(r+.5);
+   r = tb_floor(r+.5);
 
    if (r <= 2147483647. && r >= -2147483648.)
       return (png_fixed_point)r;
@@ -2094,7 +2094,7 @@ png_reciprocal2(png_fixed_point a, png_fixed_point b)
 #ifdef PNG_FLOATING_ARITHMETIC_SUPPORTED
    double r = 1E15/a;
    r /= b;
-   r = floor(r+.5);
+   r = tb_floor(r+.5);
 
    if (r <= 2147483647. && r >= -2147483648.)
       return (png_fixed_point)r;
@@ -2457,7 +2457,7 @@ png_gamma_8bit_correct(unsigned int value, png_fixed_point gamma_val)
    if (value > 0 && value < 255)
    {
 #     ifdef PNG_FLOATING_ARITHMETIC_SUPPORTED
-         double r = floor(255*pow(value/255.,gamma_val*.00001)+.5);
+         double r = tb_floor(255*tb_pow(value/255.,gamma_val*.00001)+.5);
          return (png_byte)r;
 #     else
          png_int_32 lg2 = png_log8bit(value);
@@ -2480,7 +2480,7 @@ png_gamma_16bit_correct(unsigned int value, png_fixed_point gamma_val)
    if (value > 0 && value < 65535)
    {
 #     ifdef PNG_FLOATING_ARITHMETIC_SUPPORTED
-         double r = floor(65535*pow(value/65535.,gamma_val*.00001)+.5);
+         double r = tb_floor(65535*tb_pow(value/65535.,gamma_val*.00001)+.5);
          return (png_uint_16)r;
 #     else
          png_int_32 lg2 = png_log16bit(value);
@@ -2555,7 +2555,7 @@ png_build_16bit_table(png_structp png_ptr, png_uint_16pp *ptable,
       if (png_gamma_significant(gamma_val))
       {
          /* The old code would overflow at the end and this would cause the
-          * 'pow' function to return a result >1, resulting in an
+          * 'tb_pow' function to return a result >1, resulting in an
           * arithmetic error.  This code follows the spec exactly; ig is
           * the recovered input sample, it always has 8-16 bits.
           *
@@ -2568,7 +2568,7 @@ png_build_16bit_table(png_structp png_ptr, png_uint_16pp *ptable,
             png_uint_32 ig = (j << (8-shift)) + i;
 #           ifdef PNG_FLOATING_ARITHMETIC_SUPPORTED
                /* Inline the 'max' scaling operation: */
-               double d = floor(65535*pow(ig/(double)max, gamma_val*.00001)+.5);
+               double d = tb_floor(65535*tb_pow(ig/(double)max, gamma_val*.00001)+.5);
                sub_table[j] = (png_uint_16)d;
 #           else
                if (shift)
@@ -2620,7 +2620,7 @@ png_build_16to8_table(png_structp png_ptr, png_uint_16pp *ptable,
           256 * png_sizeof(png_uint_16));
 
    /* 'gamma_val' is set to the reciprocal of the value calculated above, so
-    * pow(out,g) is an *input* value.  'last' is the last input value set.
+    * tb_pow(out,g) is an *input* value.  'last' is the last input value set.
     *
     * In the loop 'i' is used to find output values.  Since the output is
     * 8-bit there are only 256 possible values.  The tables are set up to
@@ -2798,7 +2798,7 @@ png_build_gamma_table(png_structp png_ptr, int bit_depth)
       *   ov = table[(iv & 0xff) >> gamma_shift][iv >> 8]
       *
       * Where 'iv' is the input color value and 'ov' is the output value -
-      * pow(iv, gamma).
+      * tb_pow(iv, gamma).
       *
       * Thus the gamma table consists of up to 256 256-entry tables.  The table
       * is selected by the (8-gamma_shift) most significant of the low 8 bits of
