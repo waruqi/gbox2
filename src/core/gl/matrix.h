@@ -31,24 +31,71 @@
 /* ///////////////////////////////////////////////////////////////////////
  * inlines
  */
-static __tb_inline__ tb_void_t g2_gl_matrix_init(tb_float_t* gmatrix)
+static __tb_inline__ tb_void_t g2_gl_matrix_init(tb_float_t* gmatrix, tb_float_t sx, tb_float_t kx, tb_float_t ky, tb_float_t sy, tb_float_t tx, tb_float_t ty)
 {
-	gmatrix[0] 	= 1.0f;
-	gmatrix[1] 	= 0.0f;
+	gmatrix[0] 	= sx;
+	gmatrix[1] 	= ky;
 	gmatrix[2] 	= 0.0f;
 	gmatrix[3] 	= 0.0f;
-	gmatrix[4] 	= 0.0f;
-	gmatrix[5] 	= 1.0f;
+	gmatrix[4] 	= kx;
+	gmatrix[5] 	= sy;
 	gmatrix[6] 	= 0.0f; 
 	gmatrix[7] 	= 0.0f;       
 	gmatrix[8] 	= 0.0f;
 	gmatrix[9] 	= 0.0f; 
 	gmatrix[10] = 1.0f; 
 	gmatrix[11] = 0.0f; 
-	gmatrix[12] = 0.0f; 
-	gmatrix[13] = 0.0f; 
+	gmatrix[12] = tx; 
+	gmatrix[13] = ty; 
 	gmatrix[14] = 0.0f;
 	gmatrix[15] = 1.0f;
+}
+static __tb_inline__ tb_void_t g2_gl_matrix_init_sincos(tb_float_t* gmatrix, tb_float_t sin, tb_float_t cos)
+{
+	g2_gl_matrix_init(gmatrix, cos, -sin, sin, cos, 0.0f, 0.0f);	
+}
+static __tb_inline__ tb_void_t g2_gl_matrix_init_sincosp(tb_float_t* gmatrix, tb_float_t sin, tb_float_t cos, tb_float_t px, tb_float_t py)
+{
+    tb_float_t const one_cos = 1.0f - cos;
+	g2_gl_matrix_init(gmatrix, cos, -sin, sin, cos, sin * py + one_cos * px, -sin * px + one_cos * py);	
+}
+static __tb_inline__ tb_void_t g2_gl_matrix_init_rotate(tb_float_t* gmatrix, tb_float_t degrees)
+{
+	tb_float_t s;
+	tb_float_t c;
+	tb_sincosf((degrees * TB_PI) / 180., &s, &c);
+	g2_gl_matrix_init_sincos(gmatrix, s, c);
+}
+static __tb_inline__ tb_void_t g2_gl_matrix_init_rotatep(tb_float_t* gmatrix, tb_float_t degrees, tb_float_t px, tb_float_t py)
+{
+	tb_float_t s;
+	tb_float_t c;
+	tb_sincosf((degrees * TB_PI) / 180., &s, &c);
+	g2_gl_matrix_init_sincosp(gmatrix, s, c, px, py);
+}
+static __tb_inline__ tb_void_t g2_gl_matrix_init_skew(tb_float_t* gmatrix, tb_float_t kx, tb_float_t ky)
+{
+	g2_gl_matrix_init(gmatrix, 1.0f, kx, ky, 1.0f, 0.0f, 0.0f);
+}
+static __tb_inline__ tb_void_t g2_gl_matrix_init_skewp(tb_float_t* gmatrix, tb_float_t kx, tb_float_t ky, tb_float_t px, tb_float_t py)
+{
+	g2_gl_matrix_init(gmatrix, 1.0f, kx, ky, 1.0f, -kx * py, -ky * px);
+}
+static __tb_inline__ tb_void_t g2_gl_matrix_init_scale(tb_float_t* gmatrix, tb_float_t sx, tb_float_t sy)
+{
+	g2_gl_matrix_init(gmatrix, sx, 0.0f, 0.0f, sy, 0.0f, 0.0f);
+}
+static __tb_inline__ tb_void_t g2_gl_matrix_init_scalep(tb_float_t* gmatrix, tb_float_t sx, tb_float_t sy, tb_float_t px, tb_float_t py)
+{
+	g2_gl_matrix_init(gmatrix, sx, 0.0f, 0.0f, sy, px - sx * px, py - sy * py);
+}
+static __tb_inline__ tb_void_t g2_gl_matrix_init_translate(tb_float_t* gmatrix, tb_float_t tx, tb_float_t ty)
+{
+	g2_gl_matrix_init(gmatrix, 1.0f, 0.0f, 0.0f, 1.0f, tx, ty);
+}
+static __tb_inline__ tb_void_t g2_gl_matrix_clear(tb_float_t* gmatrix)
+{
+	g2_gl_matrix_init(gmatrix, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f);
 }
 static __tb_inline__ tb_void_t g2_gl_matrix_copy(tb_float_t* gmatrix, tb_float_t const* gmatrix2)
 {
@@ -56,17 +103,11 @@ static __tb_inline__ tb_void_t g2_gl_matrix_copy(tb_float_t* gmatrix, tb_float_t
 }
 static __tb_inline__ tb_void_t g2_gl_matrix_from(tb_float_t* gmatrix, g2_matrix_t const* matrix)
 {
-	g2_gl_matrix_init(gmatrix);
-	gmatrix[0] 	= g2_float_to_tb(matrix->sx);
-	gmatrix[1] 	= g2_float_to_tb(matrix->ky);
-	gmatrix[4] 	= g2_float_to_tb(matrix->kx);
-	gmatrix[5] 	= g2_float_to_tb(matrix->sy);
-	gmatrix[12] = g2_float_to_tb(matrix->tx); 
-	gmatrix[13] = g2_float_to_tb(matrix->ty);
+	g2_gl_matrix_init(gmatrix, g2_float_to_tb(matrix->sx), g2_float_to_tb(matrix->kx), g2_float_to_tb(matrix->ky), g2_float_to_tb(matrix->sy), g2_float_to_tb(matrix->tx), g2_float_to_tb(matrix->ty));
 }
 static __tb_inline__ tb_void_t g2_gl_matrix_ortho(tb_float_t* gmatrix, tb_float_t left, tb_float_t right, tb_float_t bottom, tb_float_t top, tb_float_t nearp, tb_float_t farp)
 {
-	g2_gl_matrix_init(gmatrix);
+	g2_gl_matrix_clear(gmatrix);
 	gmatrix[0] 	= 2.0f / (right - left);
 	gmatrix[5] 	= 2.0f / (top - bottom);
     gmatrix[10] = -2.0f / (farp - nearp);  
@@ -81,7 +122,7 @@ static __tb_inline__ tb_void_t g2_gl_matrix_scale(tb_float_t* gmatrix, tb_float_
 	gmatrix[4] *= sy;
 	gmatrix[5] *= sy;
 }
-static __tb_inline__ tb_void_t g2_gl_matrix_translate(tb_float_t* gmatrix, tb_float_t dx, tb_float_t dy)
+static __tb_inline__ tb_void_t tb_float_translate(tb_float_t* gmatrix, tb_float_t dx, tb_float_t dy)
 {
 	gmatrix[12] += gmatrix[0] * dx + gmatrix[4] * dy;
 	gmatrix[13] += gmatrix[1] * dx + gmatrix[5] * dy;

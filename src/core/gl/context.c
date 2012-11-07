@@ -324,10 +324,14 @@ tb_handle_t g2_context_init_gl(tb_size_t pixfmt, tb_size_t width, tb_size_t heig
 	// init matrix
 	if (gcontext->version < 0x20)
 	{
+		// init the projection matrix
 		g2_glMatrixMode(G2_GL_PROJECTION);
 		g2_glLoadIdentity();
 		g2_glOrthof(0.0f, (tb_float_t)width, (tb_float_t)height, 0.0f, -1.0f, 1.0f);
+
+		// init the model matrix
 		g2_glMatrixMode(G2_GL_MODELVIEW);
+		g2_glLoadIdentity();
 	}
 	else g2_gl_matrix_ortho(gcontext->matrix, 0.0f, (tb_float_t)width, (tb_float_t)height, 0.0f, -1.0f, 1.0f);
 
@@ -416,10 +420,14 @@ tb_handle_t g2_context_resize(tb_handle_t context, tb_size_t width, tb_size_t he
 	// update matrix	
 	if (gcontext->version < 0x20)
 	{
+		// init the projection matrix
 		g2_glMatrixMode(G2_GL_PROJECTION);
 		g2_glLoadIdentity();
 		g2_glOrthof(0.0f, (tb_float_t)width, (tb_float_t)height, 0.0f, -1.0f, 1.0f);
+
+		// init the model matrix
 		g2_glMatrixMode(G2_GL_MODELVIEW);
+		g2_glLoadIdentity();
 	}
 	else g2_gl_matrix_ortho(gcontext->matrix, 0.0f, (tb_float_t)width, (tb_float_t)height, 0.0f, -1.0f, 1.0f);
 

@@ -74,8 +74,8 @@ typedef struct __g2_gl_fill_t
 	// the texcoords, 4[points] x 2[xy]
 	tb_float_t 			texcoords[8];
 
-	// the colors, 4[points] x 4[rgba]
-	tb_float_t 			colors[16];
+	// the vertex matrix
+	tb_float_t 			vmatrix[16];
 
 	// the matrix
 	tb_float_t 			matrix[16];
@@ -85,24 +85,6 @@ typedef struct __g2_gl_fill_t
 /* ///////////////////////////////////////////////////////////////////////
  * implementation
  */
-static __tb_inline__ tb_void_t g2_gl_fill_matrix_enter(g2_gl_fill_t* fill, tb_float_t const* matrix)
-{
-	if (fill->context->version < 0x20)
-	{
-		g2_glMatrixMode(G2_GL_MODELVIEW);
-		g2_glPushMatrix();
-		g2_glMultMatrixf(matrix);
-	}
-	else g2_glUniformMatrix4fv(g2_gl_program_location(fill->program, G2_GL_PROGRAM_LOCATION_MATRIX_MODEL), 1, G2_GL_FALSE, matrix);
-}
-static __tb_inline__ tb_void_t g2_gl_fill_matrix_leave(g2_gl_fill_t* fill)
-{
-	if (fill->context->version < 0x20)
-	{
-		g2_glMatrixMode(G2_GL_MODELVIEW);
-		g2_glPopMatrix();
-	}
-}
 static __tb_inline__ tb_void_t g2_gl_fill_stencil_init(g2_gl_fill_t* fill)
 {
     g2_glDisable(G2_GL_BLEND);
@@ -203,11 +185,6 @@ static __tb_inline__ tb_void_t g2_gl_fill_apply_vertices(g2_gl_fill_t* fill)
 {
 	if (fill->context->version < 0x20) g2_glVertexPointer(2, G2_GL_FLOAT, 0, fill->vertices);
 	else g2_glVertexAttribPointer(g2_gl_program_location(fill->program, G2_GL_PROGRAM_LOCATION_VERTICES), 2, G2_GL_FLOAT, G2_GL_FALSE, 0, fill->vertices);
-}
-static __tb_inline__ tb_void_t g2_gl_fill_apply_colors(g2_gl_fill_t* fill)
-{
-	if (fill->context->version < 0x20) g2_glColorPointer(4, G2_GL_FLOAT, 0, fill->colors);
-	else g2_glVertexAttribPointer(g2_gl_program_location(fill->program, G2_GL_PROGRAM_LOCATION_COLORS), 4, G2_GL_FLOAT, G2_GL_FALSE, 0, fill->colors);
 }
 static __tb_inline__ tb_void_t g2_gl_fill_apply_texcoords(g2_gl_fill_t* fill)
 {
@@ -337,6 +314,31 @@ static __tb_inline__ tb_void_t g2_gl_fill_leave_texture_state(g2_gl_fill_t* fill
 	// disable texture
 	g2_glDisable(G2_GL_TEXTURE_2D);
 }
+static __tb_inline__ tb_void_t g2_gl_fill_enter_vertex_matrix(g2_gl_fill_t* fill)
+{
+	if (fill->context->version < 0x20)
+	{
+		g2_glMatrixMode(G2_GL_MODELVIEW);
+		g2_glPushMatrix();
+	}
+}
+static __tb_inline__ tb_void_t g2_gl_fill_apply_vertex_matrix(g2_gl_fill_t* fill)
+{
+	if (fill->context->version < 0x20)
+	{
+		g2_glLoadIdentity();
+		g2_glMultMatrixf(fill->vmatrix);
+	}
+	else g2_glUniformMatrix4fv(g2_gl_program_location(fill->program, G2_GL_PROGRAM_LOCATION_MATRIX_MODEL), 1, G2_GL_FALSE, fill->vmatrix);
+}
+static __tb_inline__ tb_void_t g2_gl_fill_leave_vertex_matrix(g2_gl_fill_t* fill)
+{
+	if (fill->context->version < 0x20)
+	{
+		g2_glMatrixMode(G2_GL_MODELVIEW);
+		g2_glPopMatrix();
+	}
+}
 static __tb_inline__ tb_void_t g2_gl_fill_enter_texture_matrix(g2_gl_fill_t* fill)
 {
 	// apply matrix
@@ -364,6 +366,7 @@ static __tb_inline__ tb_void_t g2_gl_fill_apply_texture_matrix(g2_gl_fill_t* fil
 	if (fill->context->version < 0x20)
 	{
 		// apply the texture matrix
+		g2_glLoadIdentity();
 		g2_glMultMatrixf(fill->shader->matrix_gl);
 
 		// disable auto scale in the bounds
@@ -572,15 +575,15 @@ static __tb_inline__ tb_void_t g2_gl_fill_style_draw_shader_radial(g2_gl_fill_t*
 	if (n2 > rm) rm = n2;
 	if (n3 > rm) rm = n3; 
 	if (n4 > rm) rm = n4; 
-	rm = tb_sqrtf(rm); 
-	if (r0 > rm) rm = r0;
-	rm += 1.0f;
+	rm = tb_sqrtf(rm) + 0.5f;
 
-	tb_print("%f %f", r0, rm);
+	tb_float_t fn = rm * 0.008726535498; // sin 0.5
 
-	fill->vertices[0] = x0 - 10.0;
+	tb_print("%f %f %f", r0, rm, fn);
+
+	fill->vertices[0] = x0 - fn;
 	fill->vertices[1] = y0 - rm;
-	fill->vertices[2] = x0 + 10.0;
+	fill->vertices[2] = x0 + fn;
 	fill->vertices[3] = y0 - rm;
 	fill->vertices[4] = x0;
 	fill->vertices[5] = y0;
@@ -597,19 +600,31 @@ static __tb_inline__ tb_void_t g2_gl_fill_style_draw_shader_radial(g2_gl_fill_t*
 	// apply texture matrix
 	g2_gl_fill_apply_texture_matrix(fill, &fbounds);
 
+	// save vetex matrix
+	tb_float_t matrix[16];
+	g2_gl_matrix_copy(matrix, fill->vmatrix);
+
 	tb_size_t i = 0;
-	for (i = 0; i < 10; i++)
+	for (i = 0; i < 361; i++)
 	{
-		g2_matrix_t matrix;
+		// apply fill matrix
+		/*g2_matrix_t matrix;
 		g2_matrix_init_rotatep(&matrix, g2_long_to_float(i), fill->shader->u.radial.cp.c.x, fill->shader->u.radial.cp.c.y);
-		g2_gl_matrix_from(fill->matrix, &matrix);
-		g2_gl_fill_matrix_enter(fill, fill->matrix);
+		g2_gl_matrix_from(fill->vmatrix, &matrix);*/
+
+		// rotate degress: i
+		//g2_gl_matrix_rotatep(fill->vmatrix, 1.0f, x0, y0);
+		
+		// apply vetex matrix
+		g2_gl_fill_apply_vertex_matrix(fill);
 
 		// draw
 		g2_glDrawArrays(G2_GL_TRIANGLE_STRIP, 0, 3);
 
-		g2_gl_fill_matrix_leave(fill);
 	}
+
+	// load vetex matrix
+	g2_gl_matrix_copy(fill->vmatrix, matrix);
 
 	// leave texture matrix
 	g2_gl_fill_leave_texture_matrix(fill);
@@ -654,14 +669,17 @@ static __tb_inline__ tb_bool_t g2_gl_fill_init(g2_gl_fill_t* fill, g2_gl_painter
 	fill->shader 	= g2_style_shader(fill->style);
 	fill->flag 		= flag;
 	fill->flag 		= (!(flag & G2_GL_FILL_FLAG_CONVEX) || (g2_style_shader(fill->style) && !(flag & G2_GL_FILL_FLAG_RECT)))? (flag | G2_GL_FILL_FLAG_STENCIL) : flag;
+	g2_gl_matrix_from(fill->vmatrix, &fill->painter->matrix);
 	tb_assert_and_check_return_val(fill->painter && fill->context && fill->style, TB_FALSE);
 
 	// init context
 	if (!g2_gl_fill_context_init(fill)) return TB_FALSE;
-	
-	// enter matrix
-	g2_gl_matrix_from(fill->matrix, &fill->painter->matrix);
-	g2_gl_fill_matrix_enter(fill, fill->matrix);
+
+	// enter vetex matrix
+	g2_gl_fill_enter_vertex_matrix(fill);
+
+	// apply vetex matrix
+	g2_gl_fill_apply_vertex_matrix(fill);
 
 	// use stencil?
 	if (fill->flag & G2_GL_FILL_FLAG_STENCIL)
@@ -687,8 +705,8 @@ static __tb_inline__ tb_void_t g2_gl_fill_draw(g2_gl_fill_t* fill, g2_gl_rect_t*
 }
 static __tb_inline__ tb_void_t g2_gl_fill_exit(g2_gl_fill_t* fill)
 {
-	// leave matrix
-	g2_gl_fill_matrix_leave(fill);
+	// leave vetex matrix
+	g2_gl_fill_leave_vertex_matrix(fill);
 
 	// exit stencil
 	if (fill->flag & G2_GL_FILL_FLAG_STENCIL) 

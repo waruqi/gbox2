@@ -68,7 +68,7 @@ static __tb_inline__ g2_gl_shader_t* g2_gl_shader_init(tb_handle_t context, tb_s
 	g2_matrix_clear(&shader->matrix);
 
 	// init matrix for gl
-	g2_gl_matrix_init(shader->matrix_gl);
+	g2_gl_matrix_clear(shader->matrix_gl);
 
 	// ok
 	return shader;

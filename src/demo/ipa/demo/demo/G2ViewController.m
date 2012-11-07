@@ -134,10 +134,10 @@ tb_void_t g2_demo_gbox2_exit()
 /* ///////////////////////////////////////////////////////////////////////
  * demo
  */
-#include "../../../svg.c"
+//#include "../../../svg.c"
 //#include "../../../arc.c"
 //#include "../../../line.c"
-//#include "../../../rect.c"
+#include "../../../rect.c"
 //#include "../../../path.c"
 //#include "../../../clip.c"
 //#include "../../../point.c"
@@ -208,8 +208,8 @@ static tb_pointer_t onRender(tb_pointer_t data)
 	tb_char_t const* argv[] =
 	{
 		TB_NULL
-//	,	[[[NSBundle mainBundle] pathForResource:@"logo" ofType:@"jpg"] UTF8String]
-	,	[[[NSBundle mainBundle] pathForResource:@"tiger" ofType:@"svg"] UTF8String]
+	,	[[[NSBundle mainBundle] pathForResource:@"logo" ofType:@"jpg"] UTF8String]
+//	,	[[[NSBundle mainBundle] pathForResource:@"tiger" ofType:@"svg"] UTF8String]
 //	,	[[[NSBundle mainBundle] pathForResource:@"tiger2" ofType:@"svg"] UTF8String]
 //	,	[[[NSBundle mainBundle] pathForResource:@"lineargradient1" ofType:@"svg"] UTF8String]
 	};
