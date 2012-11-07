@@ -22,6 +22,11 @@
  */
 
 /* ///////////////////////////////////////////////////////////////////////
+ * trace
+ */
+#define TB_TRACE_IMPL_TAG 		"view"
+
+/* ///////////////////////////////////////////////////////////////////////
  * includes
  */
 #import "G2View.h"
@@ -136,11 +141,11 @@
 	// retina?
 	if ([UIScreen instancesRespondToSelector:@selector(currentMode)] && CGSizeEqualToSize(CGSizeMake(640, 960), [[UIScreen mainScreen] currentMode].size))
 	{
+		tb_trace_impl("retina: ok");
 		self.contentScaleFactor = 2.0f;
 		glLayer.contentsScale = 2.0f;
 	}
-	tb_trace("scale: %f", glLayer.contentsScale);
-	
+
 	// init gl context
 	if (G2_VIEW_GL_VERSION >= 0x20 || !G2_VIEW_GL_VERSION)
 	{

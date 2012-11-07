@@ -298,7 +298,7 @@
 					../../../../bin/ios_arm/inc,
 				);
 				INFOPLIST_FILE = "demo/demo-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 5.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 4.1;
 				LIBRARY_SEARCH_PATHS = (
 					../../../../lib/ios_arm,
 					../../../../bin/ios_arm/lib,
@@ -331,7 +331,7 @@
 					../../../../bin/ios_arm/inc,
 				);
 				INFOPLIST_FILE = "demo/demo-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 5.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 4.1;
 				LIBRARY_SEARCH_PATHS = (
 					../../../../lib/ios_arm,
 					../../../../bin/ios_arm/lib,

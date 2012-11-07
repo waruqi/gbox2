@@ -90,8 +90,9 @@ static tb_void_t g2_demo_key(tb_int_t key);
 tb_bool_t g2_demo_gbox2_init(tb_int_t argc, tb_char_t const** argv, tb_byte_t version)
 {
 	// init width & height
-	tb_size_t width = [[UIScreen mainScreen] bounds].size.width;
-	tb_size_t height = [[UIScreen mainScreen] bounds].size.height;
+	tb_size_t width = [[UIScreen mainScreen] currentMode].size.width;
+	tb_size_t height = [[UIScreen mainScreen] currentMode].size.height;
+	tb_trace_impl("size: %lux%lu", width, height);
 	
 	// init context
 	g_context = g2_context_init_gl(G2_VIEW_PIXFMT, width, height, version);
@@ -133,10 +134,10 @@ tb_void_t g2_demo_gbox2_exit()
 /* ///////////////////////////////////////////////////////////////////////
  * demo
  */
-//#include "../../../svg.c"
+#include "../../../svg.c"
 //#include "../../../arc.c"
 //#include "../../../line.c"
-#include "../../../rect.c"
+//#include "../../../rect.c"
 //#include "../../../path.c"
 //#include "../../../clip.c"
 //#include "../../../point.c"
@@ -207,8 +208,8 @@ static tb_pointer_t onRender(tb_pointer_t data)
 	tb_char_t const* argv[] =
 	{
 		TB_NULL
-	,	[[[NSBundle mainBundle] pathForResource:@"logo" ofType:@"jpg"] UTF8String]
-//	,	[[[NSBundle mainBundle] pathForResource:@"tiger" ofType:@"svg"] UTF8String]
+//	,	[[[NSBundle mainBundle] pathForResource:@"logo" ofType:@"jpg"] UTF8String]
+	,	[[[NSBundle mainBundle] pathForResource:@"tiger" ofType:@"svg"] UTF8String]
 //	,	[[[NSBundle mainBundle] pathForResource:@"tiger2" ofType:@"svg"] UTF8String]
 //	,	[[[NSBundle mainBundle] pathForResource:@"lineargradient1" ofType:@"svg"] UTF8String]
 	};
@@ -448,12 +449,20 @@ end:
 //	tb_trace_impl("move: %f %f", pt.x, pt.y);
 	tb_check_return(!tb_isnanf(pt.x) && !tb_isnanf(pt.y));
 	
+	// init
+	CGRect screenBounds = [[UIScreen mainScreen] bounds];
+	CGSize currentSize = [[UIScreen mainScreen] currentMode].size;
+	
+	// scale position for retina
+	pt.x *= currentSize.width / screenBounds.size.width;
+	pt.y *= currentSize.height / screenBounds.size.height;
+	
+	// rotate position
 	if (	orientaion == UIInterfaceOrientationLandscapeRight
 		||	orientaion == UIInterfaceOrientationLandscapeLeft)
 	{
-		CGRect screenBounds = [[UIScreen mainScreen] bounds];
-		pt.x *= screenBounds.size.width / screenBounds.size.height;
-		pt.y *= screenBounds.size.height / screenBounds.size.width;
+		pt.x *= currentSize.width / currentSize.height;
+		pt.y *= currentSize.height / currentSize.width;
 	}
 	
 	tb_int_t x = pt.x;
