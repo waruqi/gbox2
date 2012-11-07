@@ -17,8 +17,3 @@
 #define G2_CONFIG_SIZE_T 			tb_ulong_t
 
 #endif
-// config
-#ifndef gbox2_AUTO_CONFIG_H
-#define gbox2_AUTO_CONFIG_H
-#define gbox2_CONFIG_DEBUG 1
-#endif

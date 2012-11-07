@@ -139,6 +139,7 @@
 		self.contentScaleFactor = 2.0f;
 		glLayer.contentsScale = 2.0f;
 	}
+	tb_trace("scale: %f", glLayer.contentsScale);
 	
 	// init gl context
 	if (G2_VIEW_GL_VERSION >= 0x20 || !G2_VIEW_GL_VERSION)

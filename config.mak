@@ -2,15 +2,15 @@
 IS_CONFIG = yes
 
 # architecture
-PLAT = mingw_x86
+PLAT = ios_armv7
 
 # root
-PRO_DIR = /home/ruki/projects/personal/gbox2
+PRO_DIR = /Users/ruki/projects/personal/gbox2
 PRO_NAME = gbox2
 DEBUG = y
-SDK = /home/ruki/programs/windows/cross
+SDK = /Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS6.0.sdk
 NDK = /home/ruki/programs/android-ndk-r8
-BIN = /home/ruki/programs/windows/cross/bin
+BIN = /Developer/Platforms/iPhoneOS.platform/Developer/usr/bin
 HOST = mac
 CCACHE = ccache
 DISTCC =
