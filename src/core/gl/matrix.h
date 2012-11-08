@@ -154,4 +154,12 @@ static __tb_inline__ tb_void_t g2_gl_matrix_rotatep(tb_float_t* gmatrix, tb_floa
 	g2_gl_matrix_init_rotatep(mx, degrees, px, py);
 	g2_gl_matrix_multiply(gmatrix, mx);
 }
+static __tb_inline__ tb_float_t g2_gl_matrix_apply_x(tb_float_t const* gmatrix, tb_float_t x, tb_float_t y)
+{
+	return (x * gmatrix[0]) + (y * gmatrix[4]) + gmatrix[12];
+}
+static __tb_inline__ tb_float_t g2_gl_matrix_apply_y(tb_float_t const* gmatrix, tb_float_t x, tb_float_t y)
+{
+	return (x * gmatrix[1]) + (y * gmatrix[5]) + gmatrix[13];
+}
 #endif

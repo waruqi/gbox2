@@ -77,8 +77,8 @@ typedef struct __g2_gl_fill_t
 	// the vertex matrix
 	tb_float_t 			vmatrix[16];
 
-	// the matrix
-	tb_float_t 			matrix[16];
+	// the texture matrix
+	tb_float_t 			tmatrix[16];
 
 }g2_gl_fill_t;
 
@@ -380,16 +380,16 @@ static __tb_inline__ tb_void_t g2_gl_fill_apply_texture_matrix(g2_gl_fill_t* fil
 	else 
 	{
 		// init matrix
-		g2_gl_matrix_copy(fill->matrix, fill->shader->matrix_gl);
+		g2_gl_matrix_copy(fill->tmatrix, fill->shader->matrix_gl);
 
 		// disable auto scale in the bounds
-		g2_gl_matrix_scale(fill->matrix, bw / sw, bh / sh);
+		g2_gl_matrix_scale(fill->tmatrix, bw / sw, bh / sh);
 
 		// move viewport to global
-		g2_gl_matrix_translate(fill->matrix, bx / bw, by / bh);
+		g2_gl_matrix_translate(fill->tmatrix, bx / bw, by / bh);
 
 		// apply the texture matrix
-		g2_glUniformMatrix4fv(g2_gl_program_location(fill->program, G2_GL_PROGRAM_LOCATION_MATRIX_TEXCOORD), 1, G2_GL_FALSE, fill->matrix);
+		g2_glUniformMatrix4fv(g2_gl_program_location(fill->program, G2_GL_PROGRAM_LOCATION_MATRIX_TEXCOORD), 1, G2_GL_FALSE, fill->tmatrix);
 	}
 }
 static __tb_inline__ tb_void_t g2_gl_fill_leave_texture_matrix(g2_gl_fill_t* fill)
@@ -565,9 +565,12 @@ static __tb_inline__ tb_void_t g2_gl_fill_style_draw_shader_radial(g2_gl_fill_t*
 	g2_gl_fill_apply_texcoords(fill);
 
 	// init radial variables
-	tb_float_t x0 = g2_float_to_tb(fill->shader->u.radial.cp.c.x);
-	tb_float_t y0 = g2_float_to_tb(fill->shader->u.radial.cp.c.y);
-	tb_float_t r0 = g2_float_to_tb(fill->shader->u.radial.cp.r);
+	tb_float_t smatrix[16];
+	g2_gl_matrix_from(smatrix, &fill->shader->matrix);
+	tb_float_t cx = g2_float_to_tb(fill->shader->u.radial.cp.c.x);
+	tb_float_t cy = g2_float_to_tb(fill->shader->u.radial.cp.c.y);
+	tb_float_t x0 = g2_gl_matrix_apply_x(smatrix, cx, cy);
+	tb_float_t y0 = g2_gl_matrix_apply_y(smatrix, cx, cy);
 
 	// init maximum radius 
 	tb_float_t n1 = (x0 - bounds->x1) * (x0 - bounds->x1) + (y0 - bounds->y1) * (y0 - bounds->y1);
@@ -590,12 +593,12 @@ static __tb_inline__ tb_void_t g2_gl_fill_style_draw_shader_radial(g2_gl_fill_t*
 	 *      *
 	 */
 	tb_float_t fn = rm * 0.008726535498; // rm * sin(0.5)
-	fill->vertices[0] = x0 - fn;
-	fill->vertices[1] = y0 - rm;
-	fill->vertices[2] = x0 + fn;
-	fill->vertices[3] = y0 - rm;
-	fill->vertices[4] = x0;
-	fill->vertices[5] = y0;
+	fill->vertices[0] = cx - fn;
+	fill->vertices[1] = cy - rm;
+	fill->vertices[2] = cx + fn;
+	fill->vertices[3] = cy - rm;
+	fill->vertices[4] = cx;
+	fill->vertices[5] = cy;
 
 	// init fragment bounds
 	g2_gl_rect_t fbounds;
@@ -615,7 +618,7 @@ static __tb_inline__ tb_void_t g2_gl_fill_style_draw_shader_radial(g2_gl_fill_t*
 
 	// init rotate matrix: rotate one degress
 	tb_float_t matrix1[16];
-	g2_gl_matrix_init_rotatep(matrix1, 1.0f, x0, y0);
+	g2_gl_matrix_init_rotatep(matrix1, 1.0f, cx, cy);
 
 	// rotate 361 degress for drawing all fragments
 	tb_size_t n = 361;
