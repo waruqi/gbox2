@@ -2,10 +2,10 @@
 IS_CONFIG = yes
 
 # architecture
-PLAT = ios_armv7
+PLAT = linux_x86
 
 # root
-PRO_DIR = /Users/ruki/projects/personal/gbox2
+PRO_DIR = /home/ruki/projects/personal/gbox2
 PRO_NAME = gbox2
 DEBUG = y
 SDK = /Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS6.0.sdk
