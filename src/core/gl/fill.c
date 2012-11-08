@@ -326,6 +326,7 @@ static __tb_inline__ tb_void_t g2_gl_fill_apply_vertex_matrix(g2_gl_fill_t* fill
 {
 	if (fill->context->version < 0x20)
 	{
+		g2_glMatrixMode(G2_GL_MODELVIEW);
 		g2_glLoadIdentity();
 		g2_glMultMatrixf(fill->vmatrix);
 	}
@@ -365,7 +366,8 @@ static __tb_inline__ tb_void_t g2_gl_fill_apply_texture_matrix(g2_gl_fill_t* fil
 	// apply matrix
 	if (fill->context->version < 0x20)
 	{
-		// apply the texture matrix
+		// apply the texture matrix	
+		g2_glMatrixMode(G2_GL_TEXTURE);
 		g2_glLoadIdentity();
 		g2_glMultMatrixf(fill->shader->matrix_gl);
 
