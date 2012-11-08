@@ -115,6 +115,19 @@ static __tb_inline__ tb_void_t g2_gl_matrix_ortho(tb_float_t* gmatrix, tb_float_
     gmatrix[13] = -(top + bottom) / (top - bottom);  
     gmatrix[14] = -(farp + nearp) / (farp - nearp); 
 }
+static __tb_inline__ tb_void_t g2_gl_matrix_multiply(tb_float_t* gmatrix, tb_float_t const* gmatrix2)
+{
+	tb_float_t sx = gmatrix[0] * gmatrix2[0] + gmatrix[4] * gmatrix2[1];
+	tb_float_t ky = gmatrix[1] * gmatrix2[0] + gmatrix[5] * gmatrix2[1];
+
+	tb_float_t kx = gmatrix[0] * gmatrix2[4] + gmatrix[4] * gmatrix2[5];
+	tb_float_t sy = gmatrix[1] * gmatrix2[4] + gmatrix[5] * gmatrix2[5];
+
+	tb_float_t tx = gmatrix[0] * gmatrix2[12] + gmatrix[4] * gmatrix2[13] + gmatrix[12];
+	tb_float_t ty = gmatrix[1] * gmatrix2[12] + gmatrix[5] * gmatrix2[13] + gmatrix[13];
+
+	g2_gl_matrix_init(gmatrix, sx, kx, ky, sy, tx, ty);
+}
 static __tb_inline__ tb_void_t g2_gl_matrix_scale(tb_float_t* gmatrix, tb_float_t sx, tb_float_t sy)
 {
 	gmatrix[0] *= sx;
@@ -122,9 +135,23 @@ static __tb_inline__ tb_void_t g2_gl_matrix_scale(tb_float_t* gmatrix, tb_float_
 	gmatrix[4] *= sy;
 	gmatrix[5] *= sy;
 }
-static __tb_inline__ tb_void_t tb_float_translate(tb_float_t* gmatrix, tb_float_t dx, tb_float_t dy)
+static __tb_inline__ tb_void_t g2_gl_matrix_translate(tb_float_t* gmatrix, tb_float_t dx, tb_float_t dy)
 {
 	gmatrix[12] += gmatrix[0] * dx + gmatrix[4] * dy;
 	gmatrix[13] += gmatrix[1] * dx + gmatrix[5] * dy;
+}
+static __tb_inline__ tb_void_t g2_gl_matrix_rotate(tb_float_t* gmatrix, tb_float_t degrees)
+{
+	// rotate
+	tb_float_t mx[16];
+	g2_gl_matrix_init_rotate(mx, degrees);
+	g2_gl_matrix_multiply(gmatrix, mx);
+}
+static __tb_inline__ tb_void_t g2_gl_matrix_rotatep(tb_float_t* gmatrix, tb_float_t degrees, tb_float_t px, tb_float_t py)
+{
+	// rotate
+	tb_float_t mx[16];
+	g2_gl_matrix_init_rotatep(mx, degrees, px, py);
+	g2_gl_matrix_multiply(gmatrix, mx);
 }
 #endif

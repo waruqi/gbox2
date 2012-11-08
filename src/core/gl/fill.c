@@ -562,25 +562,32 @@ static __tb_inline__ tb_void_t g2_gl_fill_style_draw_shader_radial(g2_gl_fill_t*
 	// apply texcoords
 	g2_gl_fill_apply_texcoords(fill);
 
-	// init fragment vertices
+	// init radial variables
 	tb_float_t x0 = g2_float_to_tb(fill->shader->u.radial.cp.c.x);
 	tb_float_t y0 = g2_float_to_tb(fill->shader->u.radial.cp.c.y);
 	tb_float_t r0 = g2_float_to_tb(fill->shader->u.radial.cp.r);
+
+	// init maximum radius 
 	tb_float_t n1 = (x0 - bounds->x1) * (x0 - bounds->x1) + (y0 - bounds->y1) * (y0 - bounds->y1);
 	tb_float_t n2 = (x0 - bounds->x2) * (x0 - bounds->x2) + (y0 - bounds->y1) * (y0 - bounds->y1);
 	tb_float_t n3 = (x0 - bounds->x1) * (x0 - bounds->x1) + (y0 - bounds->y2) * (y0 - bounds->y2);
 	tb_float_t n4 = (x0 - bounds->x2) * (x0 - bounds->x2) + (y0 - bounds->y2) * (y0 - bounds->y2);
+	if (n2 > n1) n1 = n2;
+	if (n3 > n1) n1 = n3; 
+	if (n4 > n1) n1 = n4; 
+	tb_float_t rm = tb_sqrtf(n1);
 
-	tb_float_t rm = n1; 
-	if (n2 > rm) rm = n2;
-	if (n3 > rm) rm = n3; 
-	if (n4 > rm) rm = n4; 
-	rm = tb_sqrtf(rm) + 0.5f;
-
-	tb_float_t fn = rm * 0.008726535498; // sin 0.5
-
-	tb_print("%f %f %f", r0, rm, fn);
-
+	/* init fragment vertices
+	 *        
+	 *        fn
+	 * *****|*****
+	 *  *   |   *
+	 *   *rm|  *
+	 *    * | *
+	 *     *|*
+	 *      *
+	 */
+	tb_float_t fn = rm * 0.008726535498; // rm * sin(0.5)
 	fill->vertices[0] = x0 - fn;
 	fill->vertices[1] = y0 - rm;
 	fill->vertices[2] = x0 + fn;
@@ -601,30 +608,30 @@ static __tb_inline__ tb_void_t g2_gl_fill_style_draw_shader_radial(g2_gl_fill_t*
 	g2_gl_fill_apply_texture_matrix(fill, &fbounds);
 
 	// save vetex matrix
-	tb_float_t matrix[16];
-	g2_gl_matrix_copy(matrix, fill->vmatrix);
+	tb_float_t matrix0[16];
+	g2_gl_matrix_copy(matrix0, fill->vmatrix);
 
-	tb_size_t i = 0;
-	for (i = 0; i < 361; i++)
+	// init rotate matrix: rotate one degress
+	tb_float_t matrix1[16];
+	g2_gl_matrix_init_rotatep(matrix1, 1.0f, x0, y0);
+
+	// rotate 361 degress for drawing all fragments
+	tb_size_t n = 361;
+	while (n--)
 	{
-		// apply fill matrix
-		/*g2_matrix_t matrix;
-		g2_matrix_init_rotatep(&matrix, g2_long_to_float(i), fill->shader->u.radial.cp.c.x, fill->shader->u.radial.cp.c.y);
-		g2_gl_matrix_from(fill->vmatrix, &matrix);*/
-
-		// rotate degress: i
-		//g2_gl_matrix_rotatep(fill->vmatrix, 1.0f, x0, y0);
+		// rotate one degress
+		g2_gl_matrix_multiply(fill->vmatrix, matrix1);
 		
 		// apply vetex matrix
 		g2_gl_fill_apply_vertex_matrix(fill);
 
-		// draw
+		// draw fragment
 		g2_glDrawArrays(G2_GL_TRIANGLE_STRIP, 0, 3);
 
 	}
 
-	// load vetex matrix
-	g2_gl_matrix_copy(fill->vmatrix, matrix);
+	// restore vetex matrix
+	g2_gl_matrix_copy(fill->vmatrix, matrix0);
 
 	// leave texture matrix
 	g2_gl_fill_leave_texture_matrix(fill);
@@ -657,7 +664,7 @@ static __tb_inline__ tb_void_t g2_gl_fill_style_draw(g2_gl_fill_t* fill, g2_gl_r
 	tb_check_return(fill->flag & (G2_GL_FILL_FLAG_RECT | G2_GL_FILL_FLAG_STENCIL));
 
 	// draw
-	if (g2_style_shader(fill->style)) g2_gl_fill_style_draw_shader(fill, bounds);
+	if (fill->shader) g2_gl_fill_style_draw_shader(fill, bounds);
 	else g2_gl_fill_style_draw_color(fill, bounds);
 }
 static __tb_inline__ tb_bool_t g2_gl_fill_init(g2_gl_fill_t* fill, g2_gl_painter_t* painter, tb_size_t flag)
@@ -668,9 +675,16 @@ static __tb_inline__ tb_bool_t g2_gl_fill_init(g2_gl_fill_t* fill, g2_gl_painter
 	fill->style 	= painter->style_usr;
 	fill->shader 	= g2_style_shader(fill->style);
 	fill->flag 		= flag;
-	fill->flag 		= (!(flag & G2_GL_FILL_FLAG_CONVEX) || (g2_style_shader(fill->style) && !(flag & G2_GL_FILL_FLAG_RECT)))? (flag | G2_GL_FILL_FLAG_STENCIL) : flag;
 	g2_gl_matrix_from(fill->vmatrix, &fill->painter->matrix);
 	tb_assert_and_check_return_val(fill->painter && fill->context && fill->style, TB_FALSE);
+
+	// use stencil?
+	if (!(flag & G2_GL_FILL_FLAG_CONVEX)) fill->flag |= G2_GL_FILL_FLAG_STENCIL;
+	else if (flag & G2_GL_FILL_FLAG_RECT)
+	{ 
+		if (fill->shader && fill->shader->type == G2_GL_SHADER_TYPE_RADIAL) fill->flag |= G2_GL_FILL_FLAG_STENCIL;
+	}
+	else if (fill->shader) fill->flag |= G2_GL_FILL_FLAG_STENCIL;
 
 	// init context
 	if (!g2_gl_fill_context_init(fill)) return TB_FALSE;
@@ -743,6 +757,38 @@ static tb_void_t g2_gl_fill_split_ellipse_func(g2_soft_split_ellipse_t* split, g
 	// add
 	tb_vector_insert_tail(vertices, data);
 }
+static tb_void_t g2_gl_fill_bounds(g2_gl_painter_t* painter, g2_gl_rect_t const* bounds)
+{
+	// init fill
+	g2_gl_fill_t fill = {0};
+	if (!g2_gl_fill_init(&fill, painter, G2_GL_FILL_FLAG_RECT | G2_GL_FILL_FLAG_CONVEX)) return ;
+
+	// use stencil?
+	if (fill.flag & G2_GL_FILL_FLAG_STENCIL)
+	{
+		// init vertices
+		fill.vertices[0] = bounds->x1;
+		fill.vertices[1] = bounds->y1;
+		fill.vertices[2] = bounds->x2;
+		fill.vertices[3] = bounds->y1;
+		fill.vertices[4] = bounds->x1;
+		fill.vertices[5] = bounds->y2;
+		fill.vertices[6] = bounds->x2;
+		fill.vertices[7] = bounds->y2;
+		
+		// apply vertices
+		g2_gl_fill_apply_vertices(&fill);
+
+		// draw
+		g2_glDrawArrays(G2_GL_TRIANGLE_STRIP, 0, 4);
+	}
+
+	// draw fill
+	g2_gl_fill_draw(&fill, bounds);
+
+	// exit fill
+	g2_gl_fill_exit(&fill);
+}
 /* ///////////////////////////////////////////////////////////////////////
  * interfaces
  */
@@ -756,15 +802,8 @@ tb_void_t g2_gl_fill_rect(g2_gl_painter_t* painter, g2_rect_t const* rect)
 	bounds.y2 = g2_float_to_tb(rect->y + rect->h - 1);
 	tb_check_return(bounds.x1 < bounds.x2 && bounds.y1 < bounds.y2);
 
-	// init fill
-	g2_gl_fill_t fill = {0};
-	if (!g2_gl_fill_init(&fill, painter, G2_GL_FILL_FLAG_RECT | G2_GL_FILL_FLAG_CONVEX)) return ;
-
-	// draw fill
-	g2_gl_fill_draw(&fill, &bounds);
-
-	// exit fill
-	g2_gl_fill_exit(&fill);
+	// fill bounds
+	g2_gl_fill_bounds(painter, &bounds);
 }
 tb_void_t g2_gl_fill_path(g2_gl_painter_t* painter, g2_gl_path_t const* path)
 {
@@ -773,20 +812,11 @@ tb_void_t g2_gl_fill_path(g2_gl_painter_t* painter, g2_gl_path_t const* path)
 	tb_assert(path->fill.size && tb_vector_size(path->fill.size));
 	tb_check_return(path->fill.rect.x1 < path->fill.rect.x2 && path->fill.rect.y1 < path->fill.rect.y2);
 	
-	// fill
-	g2_gl_fill_t fill = {0};
-
 	// like rect?
 	if (path->like == G2_GL_PATH_LIKE_RECT)
 	{
-		// init fill
-		if (!g2_gl_fill_init(&fill, painter, G2_GL_FILL_FLAG_RECT | G2_GL_FILL_FLAG_CONVEX)) return ;
-
-		// draw fill
-		g2_gl_fill_draw(&fill, &path->rect);
-
-		// exit fill
-		g2_gl_fill_exit(&fill);
+		// fill bounds
+		g2_gl_fill_bounds(painter, &path->rect);
 
 		// ok
 		return ;
@@ -802,6 +832,7 @@ tb_void_t g2_gl_fill_path(g2_gl_painter_t* painter, g2_gl_path_t const* path)
 	}
 
 	// init fill
+	g2_gl_fill_t fill = {0};
 	if (!g2_gl_fill_init(&fill, painter, path->like == G2_GL_PATH_LIKE_CONX? G2_GL_FILL_FLAG_CONVEX : G2_GL_FILL_FLAG_NONE)) return ;
 
 	// init vertices
