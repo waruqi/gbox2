@@ -128,6 +128,19 @@ static __tb_inline__ tb_void_t g2_gl_matrix_multiply(tb_float_t* gmatrix, tb_flo
 
 	g2_gl_matrix_init(gmatrix, sx, kx, ky, sy, tx, ty);
 }
+static __tb_inline__ tb_void_t g2_gl_matrix_multiply_lhs(tb_float_t* gmatrix, tb_float_t const* gmatrix2)
+{
+	tb_float_t sx = gmatrix2[0] * gmatrix[0] + gmatrix2[4] * gmatrix[1];
+	tb_float_t ky = gmatrix2[1] * gmatrix[0] + gmatrix2[5] * gmatrix[1];
+
+	tb_float_t kx = gmatrix2[0] * gmatrix[4] + gmatrix2[4] * gmatrix[5];
+	tb_float_t sy = gmatrix2[1] * gmatrix[4] + gmatrix2[5] * gmatrix[5];
+
+	tb_float_t tx = gmatrix2[0] * gmatrix[12] + gmatrix2[4] * gmatrix[13] + gmatrix2[12];
+	tb_float_t ty = gmatrix2[1] * gmatrix[12] + gmatrix2[5] * gmatrix[13] + gmatrix2[13];
+
+	g2_gl_matrix_init(gmatrix, sx, kx, ky, sy, tx, ty);
+}
 static __tb_inline__ tb_void_t g2_gl_matrix_scale(tb_float_t* gmatrix, tb_float_t sx, tb_float_t sy)
 {
 	gmatrix[0] *= sx;

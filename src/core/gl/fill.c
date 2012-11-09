@@ -621,12 +621,16 @@ static __tb_inline__ tb_void_t g2_gl_fill_style_draw_shader_radial(g2_gl_fill_t*
 	g2_gl_matrix_init_rotatep(matrix1, 1.0f, cx, cy);
 
 	// rotate 361 degress for drawing all fragments
-	tb_size_t n = 361;
-	while (n--)
+	tb_size_t i = 0;
+	for (i = 0; i < 10; i++)
 	{
 		// rotate one degress
 		g2_gl_matrix_multiply(fill->vmatrix, matrix1);
-		
+
+		//g2_gl_matrix_copy(fill->vmatrix, matrix0);
+		//g2_gl_matrix_rotatep(fill->vmatrix, (tb_float_t)i, cx, cy);
+		//g2_gl_matrix_multiply(fill->vmatrix, smatrix);
+
 		// apply vetex matrix
 		g2_gl_fill_apply_vertex_matrix(fill);
 

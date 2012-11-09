@@ -2,7 +2,7 @@
 #define G2_CONFIG_H
 
 // core
-#define G2_CONFIG_CORE_GL
+#define G2_CONFIG_CORE_GLES
 //#define G2_CONFIG_CORE_SKIA
 //#define G2_CONFIG_CORE_SOFT
 
