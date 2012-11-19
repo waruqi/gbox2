@@ -572,6 +572,12 @@ static __tb_inline__ tb_void_t g2_gl_fill_style_draw_shader_radial(g2_gl_fill_t*
 	tb_float_t x0 = g2_gl_matrix_apply_x(smatrix, cx, cy);
 	tb_float_t y0 = g2_gl_matrix_apply_y(smatrix, cx, cy);
 
+	// init scale factor
+	tb_float_t sx = tb_fabs(smatrix[0]);
+	tb_float_t sy = tb_fabs(smatrix[5]);
+	tb_float_t fs = tb_min(sx, sy);
+	if (fs < 1e-9) fs = 1e-9;
+
 	// init maximum radius 
 	tb_float_t n1 = (x0 - bounds->x1) * (x0 - bounds->x1) + (y0 - bounds->y1) * (y0 - bounds->y1);
 	tb_float_t n2 = (x0 - bounds->x2) * (x0 - bounds->x2) + (y0 - bounds->y1) * (y0 - bounds->y1);
@@ -580,7 +586,7 @@ static __tb_inline__ tb_void_t g2_gl_fill_style_draw_shader_radial(g2_gl_fill_t*
 	if (n2 > n1) n1 = n2;
 	if (n3 > n1) n1 = n3; 
 	if (n4 > n1) n1 = n4; 
-	tb_float_t rm = tb_sqrtf(n1);
+	tb_float_t rm = tb_sqrtf(n1) / fs;
 
 	/* init fragment vertices
 	 *        
@@ -624,8 +630,8 @@ static __tb_inline__ tb_void_t g2_gl_fill_style_draw_shader_radial(g2_gl_fill_t*
 	g2_gl_matrix_init_rotatep(matrix1, 1.0f, cx, cy);
 
 	// rotate 361 degress for drawing all fragments
-	tb_size_t i = 0;
-	for (i = 0; i < 361; i++)
+	tb_size_t n = 361;
+	while (n--)
 	{
 		// rotate one degress
 		g2_gl_matrix_multiply(fill->vmatrix, matrix1);
