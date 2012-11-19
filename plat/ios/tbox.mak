@@ -1,9 +1,9 @@
 # demo
 TB_CONFIG_DEMO 					= y
-TB_CONFIG_DEMO_LIBS				= z m dl pthread
+TB_CONFIG_DEMO_LIBS				= stdc++ z m dl pthread
 
 # plat
-TB_CONFIG_PLAT 					= mac
+TB_CONFIG_PLAT 					= ios
 
 # api
 TB_CONFIG_API_DNS 				= unix
@@ -24,3 +24,4 @@ TB_CONFIG_MEMORY_POOL 			= n
 
 # float
 TB_CONFIG_TYPE_FLOAT 			= y
+

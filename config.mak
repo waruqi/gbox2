@@ -2,20 +2,20 @@
 IS_CONFIG = yes
 
 # project
-PRO_DIR = /home/ruki/projects/personal/gbox2
+PRO_DIR = /Users/ruki/projects/personal/gbox2
 PRO_NAME = gbox2
 
 # debug
 DEBUG = y
 
 # platform
-PLAT = android
+PLAT = ios
 
 # architecture
-ARCH = armv6
+ARCH = armv7s
 
 # toolchain
-SDK = /home/ruki/programs/android-sdk-linux_x86
+SDK = 6.0
 NDK = /home/ruki/programs/android-ndk-r8
 BIN = /home/ruki/programs/android-ndk-r8/toolchains/arm-linux-androideabi-4.4.3/prebuilt/linux-x86/bin
 HOST = mac

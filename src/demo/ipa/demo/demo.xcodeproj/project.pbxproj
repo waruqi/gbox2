@@ -294,14 +294,14 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "demo/demo-Prefix.pch";
 				HEADER_SEARCH_PATHS = (
-					../../../../inc/ios_arm,
-					../../../../bin/ios_arm/inc,
+					../../../../inc/ios/arm,
+					../../../../bin/ios/arm/inc,
 				);
 				INFOPLIST_FILE = "demo/demo-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 4.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 5.1;
 				LIBRARY_SEARCH_PATHS = (
-					../../../../lib/ios_arm,
-					../../../../bin/ios_arm/lib,
+					../../../../lib/ios/arm,
+					../../../../bin/ios/arm/lib,
 				);
 				OTHER_CFLAGS = (
 					"-DTB_PRINT_TAG=\\\"gbox2\\\"",
@@ -327,14 +327,14 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "demo/demo-Prefix.pch";
 				HEADER_SEARCH_PATHS = (
-					../../../../inc/ios_arm,
-					../../../../bin/ios_arm/inc,
+					../../../../inc/ios/arm,
+					../../../../bin/ios/arm/inc,
 				);
 				INFOPLIST_FILE = "demo/demo-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 4.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 5.1;
 				LIBRARY_SEARCH_PATHS = (
-					../../../../lib/ios_arm,
-					../../../../bin/ios_arm/lib,
+					../../../../lib/ios/arm,
+					../../../../bin/ios/arm/lib,
 				);
 				OTHER_CFLAGS = "-DTB_PRINT_TAG=\\\"gbox2\\\"";
 				OTHER_LDFLAGS = (
