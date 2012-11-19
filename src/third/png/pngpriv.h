@@ -559,7 +559,7 @@ typedef PNG_CONST png_uint_16p FAR * png_const_uint_16pp;
  * can handle at once.  This type need be no larger than 16 bits (so maximum of
  * 65535), this define allows us to discover how big it is, but limited by the
  * maximuum for png_size_t.  The value can be overriden in a library build
- * (pngusr.h, or set it in CPPFLAGS) and it works to set it to a considerably
+ * (pngusr.h, or set it in CXFLAGS) and it works to set it to a considerably
  * lower value (e.g. 255 works).  A lower value may help memory usage (slightly)
  * and may even improve performance on some systems (and degrade it on others.)
  */

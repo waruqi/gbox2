@@ -14,17 +14,6 @@ NAMES 					= \
 						ellipse \
 						triangle
 
-ifeq ($(TB_CONFIG_PLAT),linux_x86)
-demo_LIBS 				= glut GLU GL z m dl pthread
-endif
-
-ifeq ($(TB_CONFIG_PLAT),linux_x64)
-demo_LIBS 				= glut GLU GL z m dl pthread
-endif
-
-ifeq ($(TB_CONFIG_PLAT),mingw_x86)
-demo_LIBS 				= glut gl gdi usp10 ole winmm ws2_32 gcc
-endif
 
 ifeq ($(TB_CONFIG_PLAT),mac_x64)
 demo_LIBS 				= z m dl pthread
@@ -36,11 +25,11 @@ define MAKE_MODULES
 $(1)_TYPE 				= BIN
 $(1)_C_FILES 			+= $(1) $(demo_C_FILES)
 $(1)_OBJ_FILES 			+= $(demo_OBJ_FILES)
-$(1)_LIBS 				+= gbox2 tbox $(demo_LIBS)
+$(1)_LIBS 				+= gbox2 tbox $(G2_CONFIG_DEMO_LIBS)
 $(1)_LIB_DIR 			+= ../.. $(demo_LIB_DIR)
 $(1)_INC_DIR 			+= ../.. $(demo_INC_DIR)
-$(1)_CPPFLAGS 			+= -DTB_PRINT_TAG=\"gbox2\" $(demo_CPPFLAGS)
-$(1)_CPPFLAGS-$(DEBUG) 	+= -DTB_TRACE_ENABLE -DTB_ASSERT_ENABLE $(demo_CPPFLAGS-y)
+$(1)_CXFLAGS 			+= -DTB_PRINT_TAG=\"gbox2\" $(demo_CXFLAGS)
+$(1)_CXFLAGS-$(DEBUG) 	+= -DTB_TRACE_ENABLE -DTB_ASSERT_ENABLE $(demo_CXFLAGS-y)
 $(1)_LDFLAGS 			+= $(demo_LDFLAGS)
 endef
 $(foreach name, $(NAMES), $(eval $(call MAKE_MODULES,$(name))))

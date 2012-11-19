@@ -1,25 +1,33 @@
 # config
 IS_CONFIG = yes
 
-# architecture
-PLAT = mac_x64
-
-# root
-PRO_DIR = /Users/ruki/projects/personal/gbox2
+# project
+PRO_DIR = /home/ruki/projects/personal/gbox2
 PRO_NAME = gbox2
+
+# debug
 DEBUG = y
-SDK = /Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS6.0.sdk
+
+# platform
+PLAT = android
+
+# architecture
+ARCH = armv6
+
+# toolchain
+SDK = /home/ruki/programs/android-sdk-linux_x86
 NDK = /home/ruki/programs/android-ndk-r8
-BIN = /Developer/Platforms/iPhoneOS.platform/Developer/usr/bin
+BIN = /home/ruki/programs/android-ndk-r8/toolchains/arm-linux-androideabi-4.4.3/prebuilt/linux-x86/bin
 HOST = mac
 CCACHE = ccache
 DISTCC =
 
 # export
-export PLAT
 export PRO_DIR
 export PRO_NAME
 export DEBUG
+export PLAT
+export ARCH
 export SDK
 export NDK
 export BIN

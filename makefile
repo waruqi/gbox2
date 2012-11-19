@@ -12,6 +12,7 @@ include config.mak
 a : all
 f : config
 i : install
+p : prefix
 c : clean
 u : update
 o : output
@@ -39,14 +40,29 @@ install : .null
 	@echo install $(PRO_NAME)
 	-@$(RMDIR) $(BIN_DIR)
 	-@$(MKDIR) $(BIN_DIR)
-	-@$(RMDIR) $(BIN_DIR)/inc
-	-@$(RMDIR) $(BIN_DIR)/lib
-	-@$(RMDIR) $(BIN_DIR)/obj
 	-@$(MKDIR) $(BIN_DIR)/inc
 	-@$(MKDIR) $(BIN_DIR)/lib
 	-@$(MKDIR) $(BIN_DIR)/obj
 	@$(MAKE) --no-print-directory -C $(SRC_DIR)
 	@$(MAKE) --no-print-directory -C $(SRC_DIR) install
+
+# make prefix
+prefix : .null
+	-@$(RMDIR) $(PRE_DIR)/inc/$(PLAT)/$(ARCH)/$(PRO_NAME)
+	-@$(RM) $(PRE_DIR)/lib/$(PLAT)/$(ARCH)/$(LIB_PREFIX)$(PRO_NAME)$(LIB_SUFFIX)
+	-@$(MKDIR) $(PRE_DIR)
+	-@$(MKDIR) $(PRE_DIR)/inc
+	-@$(MKDIR) $(PRE_DIR)/inc/$(PLAT)
+	-@$(MKDIR) $(PRE_DIR)/inc/$(PLAT)/$(ARCH)
+	-@$(MKDIR) $(PRE_DIR)/lib
+	-@$(MKDIR) $(PRE_DIR)/lib/$(PLAT)
+	-@$(MKDIR) $(PRE_DIR)/lib/$(PLAT)/$(ARCH)
+	-@$(CP) -r $(BIN_DIR)/inc/$(PRO_NAME) $(PRE_DIR)/inc/$(PLAT)/$(ARCH)/
+	-@$(CP) $(BIN_DIR)/lib/$(LIB_PREFIX)$(PRO_NAME)$(LIB_SUFFIX) $(PRE_DIR)/lib/$(PLAT)/$(ARCH)/
+
+# make lipo
+lipo : .null
+	./tool/lipo $(PRO_NAME) $(DEBUG) $(SDK) $(ARCH1) $(ARCH2)
 
 # make clean
 clean : .null
@@ -61,6 +77,7 @@ update : .null
 	@$(MAKE) --no-print-directory -C $(SRC_DIR) update
 	@$(MAKE) --no-print-directory -C $(SRC_DIR)
 	@$(MAKE) --no-print-directory -C $(SRC_DIR) install
+	@$(MAKE) --no-print-directory prefix
 
 # make output
 output : .null
@@ -99,7 +116,12 @@ endif
 
 # platform
 ifeq ($(PLAT),)
-PLAT := linux_x86
+PLAT := linux
+endif
+
+# architecture
+ifeq ($(ARCH),)
+ARCH := x86
 endif
 
 # linux, cygwin, mac
@@ -151,13 +173,20 @@ config :
 	@echo "# config"                      				> config.mak
 	@echo "IS_CONFIG = yes" 							>> config.mak
 	@echo ""                              				>> config.mak
-	@echo "# architecture"                				>> config.mak
-	@echo "PLAT =" $(PLAT) 								>> config.mak
-	@echo ""                              				>> config.mak
-	@echo "# root"                						>> config.mak
+	@echo "# project"              						>> config.mak
 	@echo "PRO_DIR =" $(PRO_DIR) 						>> config.mak
 	@echo "PRO_NAME =" $(PRO_NAME) 						>> config.mak
+	@echo ""                              				>> config.mak
+	@echo "# debug"              						>> config.mak
 	@echo "DEBUG =" $(DEBUG) 							>> config.mak
+	@echo ""                              				>> config.mak
+	@echo "# platform"      	          				>> config.mak
+	@echo "PLAT =" $(PLAT) 								>> config.mak
+	@echo ""                              				>> config.mak
+	@echo "# architecture"                				>> config.mak
+	@echo "ARCH =" $(ARCH) 								>> config.mak
+	@echo ""                              				>> config.mak
+	@echo "# toolchain"            						>> config.mak
 	@echo "SDK =" $(SDK) 								>> config.mak
 	@echo "NDK =" $(NDK) 								>> config.mak
 	@echo "BIN =" $(BIN) 								>> config.mak
@@ -166,10 +195,11 @@ config :
 	@echo "DISTCC =" $(DISTCC) 							>> config.mak
 	@echo ""                              				>> config.mak
 	@echo "# export"									>> config.mak
-	@echo "export PLAT"					 				>> config.mak
 	@echo "export PRO_DIR" 		 						>> config.mak
 	@echo "export PRO_NAME" 		 					>> config.mak
 	@echo "export DEBUG" 			 					>> config.mak
+	@echo "export PLAT"					 				>> config.mak
+	@echo "export ARCH"					 				>> config.mak
 	@echo "export SDK" 				 					>> config.mak
 	@echo "export NDK" 				 					>> config.mak
 	@echo "export BIN" 				 					>> config.mak

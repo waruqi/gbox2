@@ -15,15 +15,20 @@ DLL_SUFFIX 			= .so
 
 ASM_SUFFIX 			= .S
 
+# prefix
+ifeq ($(BIN),)
+PRE 				= i686-w64-mingw32-
+else
+PRE 				= $(BIN)/i686-w64-mingw32-
+endif
+
 # tool
-PRE 				= 
 CC 					= $(PRE)gcc
-#CC 				= $(PRE)icc
 AR 					= $(PRE)ar
 STRIP 				= $(PRE)strip
 RANLIB 				= $(PRE)ranlib
 LD 					= $(PRE)g++
-AS					= yasm
+AS					= 
 RM 					= rm -f
 RMDIR 				= rm -rf
 CP 					= cp
@@ -32,20 +37,27 @@ MKDIR 				= mkdir -p
 MAKE 				= make
 PWD 				= pwd
 
-# cppflags: c/c++ files
+# arch flags
+ifeq ($(ARCH),x86)
+ARCH_CXFLAGS 		= -march=i686
+endif
+
+# cxflags: .c/.cc/.cpp files
 CXFLAGS_RELEASE 	= -O3 -DNDEBUG -freg-struct-return -fno-bounds-check
 CXFLAGS_DEBUG 		= -g
-CXFLAGS 			= -c -Wall -mssse3 -m64
+CXFLAGS 			= -c -Wall -mssse3 $(ARCH_CXFLAGS) -D__tb_arch_$(ARCH)__
 CXFLAGS-I 			= -I
 CXFLAGS-o 			= -o
 
-# cflags: c files
+# cflags: .c files
 CFLAGS_RELEASE 		= 
 CFLAGS_DEBUG 		= 
 CFLAGS 				= \
 					-std=c99 \
 					-fomit-frame-pointer \
 					-D_GNU_SOURCE=1 -D_REENTRANT \
+					-DGL_NO_STDCALL -D_M_IX86 \
+					-DFREEGLUT_STATIC \
 					-Wno-parentheses \
 					-Wno-switch -Wno-format-zero-length -Wdisabled-optimization \
 					-Wpointer-arith -Wredundant-decls -Wno-pointer-sign -Wwrite-strings \
@@ -53,17 +65,17 @@ CFLAGS 				= \
 					-Wstrict-prototypes -fno-math-errno -fno-signed-zeros -fno-tree-vectorize \
 					-Werror=implicit-function-declaration 
 
-# cxxflags: c++ files
-CCFLAGS_RELEASE 	= -fno-rtti
+# ccflags: .cc/.cpp files
+CCFLAGS_RELEASE 	=
 CCFLAGS_DEBUG 		= 
 CCFLAGS 			= \
 					-D_ISOC99_SOURCE -D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE \
 					-D_POSIX_C_SOURCE=200112 -D_XOPEN_SOURCE=600
 
 # ldflags
-LDFLAGS_RELEASE 	= 
+LDFLAGS_RELEASE 	=
 LDFLAGS_DEBUG 		= 
-LDFLAGS 			= 
+LDFLAGS 			= -static
 LDFLAGS-L 			= -L
 LDFLAGS-l 			= -l
 LDFLAGS-o 			= -o
@@ -71,7 +83,7 @@ LDFLAGS-o 			= -o
 # asflags
 ASFLAGS_RELEASE 	= 
 ASFLAGS_DEBUG 		= 
-ASFLAGS 			= -f elf -m amd64
+ASFLAGS 			= -f elf 
 ASFLAGS-I 			= -I
 ASFLAGS-o 			= -o
 
@@ -82,6 +94,6 @@ ARFLAGS 			= -cr
 SHFLAGS 			= -shared -Wl,-soname
 
 # include sub-config
-include 			$(PLAT_DIR)/config.mak
+include 		$(PLAT_DIR)/config.mak
 
 

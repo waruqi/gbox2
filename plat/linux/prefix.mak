@@ -18,7 +18,6 @@ ASM_SUFFIX 			= .S
 # tool
 PRE 				= 
 CC 					= $(PRE)gcc
-#CC 				= $(PRE)icc
 AR 					= $(PRE)ar
 STRIP 				= $(PRE)strip
 RANLIB 				= $(PRE)ranlib
@@ -32,14 +31,24 @@ MKDIR 				= mkdir -p
 MAKE 				= make
 PWD 				= pwd
 
-# cppflags: c/c++ files
+# arch flags
+ifeq ($(ARCH),x86)
+ARCH_CXFLAGS 		= -march=i686
+endif
+
+ifeq ($(ARCH),x64)
+ARCH_CXFLAGS 		= -m64
+ARCH_ASFLAGS 		= -m amd64
+endif
+
+# cxflags: .c/.cc/.cpp files
 CXFLAGS_RELEASE 	= -O3 -DNDEBUG -freg-struct-return -fno-bounds-check
 CXFLAGS_DEBUG 		= -g
-CXFLAGS 			= -c -Wall -mssse3 -m64
+CXFLAGS 			= -c -Wall -mssse3 $(ARCH_CXFLAGS) -D__tb_arch_$(ARCH)__
 CXFLAGS-I 			= -I
 CXFLAGS-o 			= -o
 
-# cflags: c files
+# cflags: .c files
 CFLAGS_RELEASE 		= 
 CFLAGS_DEBUG 		= 
 CFLAGS 				= \
@@ -53,7 +62,7 @@ CFLAGS 				= \
 					-Wstrict-prototypes -fno-math-errno -fno-signed-zeros -fno-tree-vectorize \
 					-Werror=implicit-function-declaration 
 
-# cxxflags: c++ files
+# ccflags: .cc/.cpp files
 CCFLAGS_RELEASE 	= -fno-rtti
 CCFLAGS_DEBUG 		= 
 CCFLAGS 			= \
@@ -61,7 +70,7 @@ CCFLAGS 			= \
 					-D_POSIX_C_SOURCE=200112 -D_XOPEN_SOURCE=600
 
 # ldflags
-LDFLAGS_RELEASE 	= 
+LDFLAGS_RELEASE 	=
 LDFLAGS_DEBUG 		= 
 LDFLAGS 			= 
 LDFLAGS-L 			= -L
@@ -71,7 +80,7 @@ LDFLAGS-o 			= -o
 # asflags
 ASFLAGS_RELEASE 	= 
 ASFLAGS_DEBUG 		= 
-ASFLAGS 			= -f elf -m amd64
+ASFLAGS 			= -f elf $(ARCH_ASFLAGS)
 ASFLAGS-I 			= -I
 ASFLAGS-o 			= -o
 

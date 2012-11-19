@@ -1,14 +1,18 @@
 #!/bin/bash
 
-make config PLAT=ios_armv6 DEBUG=$1 SDK="/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS$2.sdk" BIN='/Developer/Platforms/iPhoneOS.platform/Developer/usr/bin'
-make clean;make;make install
+make config PLAT=ios ARCH=$4 DEBUG=$2 SDK=$3
+make clean; make ; make install; make prefix
 
-make config PLAT=ios_armv7 DEBUG=$1 SDK="/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS$2.sdk" BIN='/Developer/Platforms/iPhoneOS.platform/Developer/usr/bin'
-make clean;make;make install
+make config PLAT=ios ARCH=$5 DEBUG=$2 SDK=$3
+make clean; make ; make install; make prefix 
 
-rm -rf ./bin/ios_arm
-mkdir ./bin/ios_arm
-mkdir ./bin/ios_arm/inc
-mkdir ./bin/ios_arm/lib
-cp -r ./bin/ios_armv7/inc/gbox2 ./bin/ios_arm/inc/gbox2
-xcrun -sdk iphoneos lipo -create -arch armv6 bin/ios_armv6/lib/libgbox2.a -arch armv7 bin/ios_armv7/lib/libgbox2.a -output bin/ios_arm/lib/libgbox2.a
+rm -rf ./bin/ios/arm/inc
+rm -rf ./bin/ios/arm/lib
+mkdir -p ./bin/ios/arm/lib
+mkdir -p ./bin/ios/arm/inc
+
+cp -r ./bin/ios/$5/inc/$1 ./bin/ios/arm/inc/
+xcrun -sdk iphoneos lipo -create -arch $4 ./bin/ios/$4/lib/lib$1.a -arch $5 ./bin/ios/$5/lib/lib$1.a -output ./bin/ios/arm/lib/lib$1.a
+make prefix ARCH=arm
+
+

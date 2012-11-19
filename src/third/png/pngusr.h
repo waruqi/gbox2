@@ -12,7 +12,7 @@
 #ifndef MINPRDPNGCONF_H
 #define MINPRDPNGCONF_H
 
-/* To include pngusr.h set -DPNG_USER_CONFIG in CPPFLAGS */
+/* To include pngusr.h set -DPNG_USER_CONFIG in CXFLAGS */
 
 /* List options to turn off features of the build that do not
  * affect the API (so are not recorded in pnglibconf.h)

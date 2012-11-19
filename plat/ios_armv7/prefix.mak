@@ -38,19 +38,19 @@ MAKE 			= make
 PWD 			= pwd
 
 # cppflags: c/c++ files
-CPPFLAGS_RELEASE 	= \
+CXFLAGS_RELEASE 	= \
 	-O3 -DNDEBUG \
 	-fomit-frame-pointer -freg-struct-return -fno-bounds-check \
 	-fvisibility=hidden
 
-CPPFLAGS_DEBUG 	= -g 
-CPPFLAGS 		= -arch armv7 -c -Wall  \
+CXFLAGS_DEBUG 	= -g 
+CXFLAGS 		= -arch armv7 -c -Wall  \
 				  -mthumb -mcpu=cortex-a8 -miphoneos-version-min=5.0 \
 				  -fmessage-length=0  -Wreturn-type -Wunused-variable \
 				  -pipe -Wno-trigraphs -fpascal-strings \
 				  --sysroot=$(SDK)
-CPPFLAGS-I 		= -I
-CPPFLAGS-o 		= -o
+CXFLAGS-I 		= -I
+CXFLAGS-o 		= -o
 
 # cflags: c files
 CFLAGS_RELEASE 	= 
@@ -58,9 +58,9 @@ CFLAGS_DEBUG 	=
 CFLAGS 			= -std=gnu99
 
 # cxxflags: c++ files
-CXXFLAGS_RELEASE = -fno-rtti
-CXXFLAGS_DEBUG 	= 
-CXXFLAGS 		= 
+CCFLAGS_RELEASE = -fno-rtti
+CCFLAGS_DEBUG 	= 
+CCFLAGS 		= 
 
 # ldflags
 LDFLAGS_RELEASE =
