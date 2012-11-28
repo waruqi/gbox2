@@ -37,6 +37,7 @@ gbox2_C_FILES 			+= \
 						core/bitmap \
 						core/shader \
 						core/matrix \
+						core/clipper \
 						core/painter \
 						core/image/decoder/bmp \
 						core/image/decoder/jpg \
@@ -387,7 +388,7 @@ skia_CPP_FILES 			= \
 						ports/SkXMLParser_empty \
 						utils/SkOSFile
 
-ifeq ($(TB_CONFIG_PLAT),mingw_x86)
+ifeq ($(PLAT),mingw)
 skia_CPP_FILES 			+= ports/SkFontHost_win
 skia_CPP_FILES 			+= ports/SkThread_win
 skia_CPP_FILES 			+= utils/SkBase64
@@ -398,13 +399,13 @@ skia_CPP_FILES 			+= ports/SkFontHost_FreeType
 skia_CPP_FILES 			+= ports/SkThread_pthread
 endif
 
-ifeq ($(TB_CONFIG_PLAT),mingw_x86)
+ifeq ($(PLAT),mingw)
 skia_CPP_FILES 			+= \
 						opts/SkBitmapProcState_opts_none \
 						opts/SkBlitRow_opts_none \
 						opts/SkUtils_opts_none
 else
-ifeq ($(TB_CONFIG_ARCH),x86)
+ifeq ($(ARCH),x86)
 skia_CPP_FILES 			+= \
 						opts/opts_check_SSE2 \
 						opts/SkBitmapProcState_opts_SSE2 \
@@ -414,7 +415,7 @@ skia_CPP_FILES 			+= \
 						opts/SkUtils_opts_SSE2
 endif
 	
-ifeq ($(TB_CONFIG_ARCH),x64)
+ifeq ($(ARCH),x64)
 skia_CPP_FILES 			+= \
 						opts/opts_check_SSE2 \
 						opts/SkBitmapProcState_opts_SSE2 \
@@ -424,7 +425,7 @@ skia_CPP_FILES 			+= \
 						opts/SkUtils_opts_SSE2
 endif
 	
-ifeq ($(TB_CONFIG_ARCH),arm)
+ifeq ($(G2_CONFIG_ARM),arm)
 skia_CPP_FILES 			+= \
 						opts/opts_check_arm \
 						opts/SkBitmapProcState_opts_arm \

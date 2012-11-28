@@ -19,8 +19,8 @@ static tb_void_t g2_demo_shape_exit()
 }
 static tb_void_t g2_demo_shape_render()
 {
-	if (g_bm) g2_draw2i_triangle(g_painter, -100, 100, 0, -100, 100, 100);
-	else g2_draw2i_triangle(g_painter, g_x0 - g_dx, g_y0 + g_dy, g_x0, g_y0 - g_dy, g_x0 + g_dx, g_y0 + g_dy);
+	if (g_bm) g2_draw_itriangle2(g_painter, -100, 100, 0, -100, 100, 100);
+	else g2_draw_itriangle2(g_painter, g_x0 - g_dx, g_y0 + g_dy, g_x0, g_y0 - g_dy, g_x0 + g_dx, g_y0 + g_dy);
 }
 static tb_void_t g2_demo_shape_key(tb_int_t key)
 {

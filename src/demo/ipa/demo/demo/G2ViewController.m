@@ -233,7 +233,7 @@ static tb_pointer_t onRender(tb_pointer_t data)
 		if (![cl.render lock]) goto end;
 		
 		// clear
-		g2_clear(g_painter, G2_COLOR_BLACK);
+		g2_draw_clear(g_painter, G2_COLOR_BLACK);
 		
 		// matrix
 		if (g_bm)

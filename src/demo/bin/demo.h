@@ -135,7 +135,7 @@ static tb_void_t g2_demo_gl_display()
 	tb_check_return(g_painter);
 
 	// clear
-	g2_clear(g_painter, G2_COLOR_BLACK);
+	g2_draw_clear(g_painter, G2_COLOR_BLACK);
 
 	// matrix
 	if (g_bm)

@@ -8,6 +8,10 @@ G2_CONFIG_DEMO 						= n
 # demo
 G2_CONFIG_DEMO_TYPE 				= bin
 
+# arm
+G2_CONFIG_ARM 						= y
+G2_CONFIG_ARM_NEON 					= y
+
 # core
 G2_CONFIG_CORE_GLES					= y
 G2_CONFIG_CORE_SKIA 				= n

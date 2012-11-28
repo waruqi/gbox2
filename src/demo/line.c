@@ -19,12 +19,12 @@ static tb_void_t g2_demo_shape_exit()
 }
 static tb_void_t g2_demo_shape_render()
 {
-	if (g_bm) g2_draw2i_line(g_painter, -100, -100, 100, 100);
+	if (g_bm) g2_draw_iline2(g_painter, -100, -100, 100, 100);
 	else 
 	{
 		tb_long_t dx = (g_x - g_x0) << 1;
 		tb_long_t dy = (g_y - g_y0) << 1;
-		g2_draw2i_line(g_painter, g_x0 - dx, g_y0 - dy, g_x0 + dx, g_y0 + dy);
+		g2_draw_iline2(g_painter, g_x0 - dx, g_y0 - dy, g_x0 + dx, g_y0 + dy);
 	}
 }
 static tb_void_t g2_demo_shape_key(tb_int_t key)

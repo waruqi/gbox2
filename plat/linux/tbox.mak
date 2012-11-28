@@ -1,9 +1,9 @@
 # demo
 TB_CONFIG_DEMO 					= y
-TB_CONFIG_DEMO_LIBS				= z m dl pthread
+TB_CONFIG_DEMO_LIBS 			= z m dl pthread
 
 # plat
-TB_CONFIG_PLAT 					= mac
+TB_CONFIG_PLAT 					= linux
 
 # api
 TB_CONFIG_API_DNS 				= unix
@@ -20,7 +20,7 @@ TB_CONFIG_API_ASIO 				= unix
 TB_CONFIG_THIRD_ZLIB 			= y
 
 # memory
-TB_CONFIG_MEMORY_POOL 			= n
+TB_CONFIG_MEMORY_POOL 			= y
 
 # float
 TB_CONFIG_TYPE_FLOAT 			= y

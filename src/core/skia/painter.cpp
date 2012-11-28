@@ -441,7 +441,7 @@ extern "C"
 	{
 		return g2_skia_clip_rect(painter, mode, rect);
 	}
-	tb_void_t g2_clear(tb_handle_t painter, g2_color_t color)
+	tb_void_t g2_draw_clear(tb_handle_t painter, g2_color_t color)
 	{
 		g2_skia_clear(painter, color);
 	}

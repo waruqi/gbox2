@@ -238,7 +238,7 @@ tb_bool_t g2_clip_rect(tb_handle_t painter, tb_size_t mode, g2_rect_t const* rec
 	tb_trace_noimpl();
 	return TB_NULL;
 }
-tb_void_t g2_clear(tb_handle_t painter, g2_color_t color)
+tb_void_t g2_draw_clear(tb_handle_t painter, g2_color_t color)
 {
 	// clear
 	g2_glClearColor((tb_float_t)color.r / 0xff, (tb_float_t)color.g / 0xff, (tb_float_t)color.b / 0xff, (tb_float_t)color.a / 0xff);

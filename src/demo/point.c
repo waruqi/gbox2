@@ -19,8 +19,8 @@ static tb_void_t g2_demo_shape_exit()
 }
 static tb_void_t g2_demo_shape_render()
 {
-	if (g_bm) g2_draw2i_point(g_painter, 0, 0);
-	else g2_draw2i_point(g_painter, g_x, g_y);
+	if (g_bm) g2_draw_ipoint2(g_painter, 0, 0);
+	else g2_draw_ipoint2(g_painter, g_x, g_y);
 }
 static tb_void_t g2_demo_shape_key(tb_int_t key)
 {
