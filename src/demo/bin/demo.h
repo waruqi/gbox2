@@ -138,11 +138,7 @@ static tb_void_t g2_demo_gl_display()
 	g2_draw_clear(g_painter, G2_COLOR_BLACK);
 
 	// matrix
-	if (g_bm)
-	{
-		g2_save(g_painter, G2_SAVE_MODE_MATRIX);
-		g2_matrix_set(g_painter, &g_mx);
-	}
+	if (g_bm) g2_matrix_copy(g2_matrix_save(g_painter), &g_mx);
 
 	// start clock
 	g_rt = tb_uclock();
@@ -154,7 +150,7 @@ static tb_void_t g2_demo_gl_display()
 	g_rt = tb_uclock() - g_rt;
 
 	// load 
-	if (g_bm) g2_load(g_painter);
+	if (g_bm) g2_matrix_load(g_painter);
 
 	// draw
 #if defined(G2_CONFIG_CORE_SKIA) || defined(G2_CONFIG_CORE_SOFT)
@@ -221,7 +217,7 @@ static tb_void_t g2_demo_gl_reshape(tb_int_t w, tb_int_t h)
 	g2_matrix_init_translate(&g_mx, g2_long_to_float(g_x0), g2_long_to_float(g_y0));	
 
 	// resize context
-	g2_context_set(g_painter, g2_context_resize(g_context, w, h));
+	g2_context_resize(g2_context(g_painter), w, h);
 
 	// resize
 	g2_demo_size(w, h);

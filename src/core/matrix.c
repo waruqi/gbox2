@@ -130,6 +130,12 @@ tb_void_t g2_matrix_clear(g2_matrix_t* matrix)
 {
 	g2_matrix_init(matrix, G2_ONE, 0, 0, G2_ONE, 0, 0);
 }
+tb_void_t g2_matrix_copy(g2_matrix_t* matrix, g2_matrix_t const* mx)
+{
+	tb_assert_and_check_return(matrix);
+	if (mx) *matrix = *mx;
+	else g2_matrix_clear(matrix);
+}
 tb_bool_t g2_matrix_invert(g2_matrix_t* matrix)
 {
 	// identity?

@@ -35,33 +35,6 @@ extern "C" {
 #include "matrix.h"
 
 /* ///////////////////////////////////////////////////////////////////////
- * types
- */
-
-// the clip mode type
-typedef enum __g2_clip_mode_t
-{
-	G2_CLIP_MODE_NONE 			= 0x0000
-,	G2_CLIP_MODE_SUBTRACT 		= 0x0001
-,	G2_CLIP_MODE_INTERSECT 		= 0x0002
-,	G2_CLIP_MODE_UNION 			= 0x0003
-,	G2_CLIP_MODE_REPLACE 		= 0x0004
-
-,	G2_CLIP_MODE_ANTI_ALIAS 	= 0x0100
-
-}g2_clip_mode_t;
-
-// the save mode type
-typedef enum __g2_save_mode_t
-{
-	G2_SAVE_MODE_NONE 			= 0x0
-,	G2_SAVE_MODE_MATRIX 		= 0x1
-,	G2_SAVE_MODE_CLIP 			= 0x2
-,	G2_SAVE_MODE_MATRIX_CLIP 	= 0x3
-
-}g2_save_mode_t;
-
-/* ///////////////////////////////////////////////////////////////////////
  * init & exit
  */
 
@@ -72,17 +45,7 @@ tb_handle_t 		g2_init(tb_handle_t context);
 tb_void_t 			g2_exit(tb_handle_t painter);
 
 /* ///////////////////////////////////////////////////////////////////////
- * save & load
- */
-
-// save
-tb_size_t 			g2_save(tb_handle_t painter, tb_size_t mode);
-
-// load
-tb_void_t 			g2_load(tb_handle_t painter);
-
-/* ///////////////////////////////////////////////////////////////////////
- * accessors
+ * accessors & modifiors
  */
 
 // pixfmt
@@ -90,47 +53,21 @@ tb_size_t 			g2_pixfmt(tb_handle_t painter);
 
 // context
 tb_handle_t 		g2_context(tb_handle_t painter);
-tb_void_t 			g2_context_set(tb_handle_t painter, tb_handle_t context);
 
 // style
 tb_handle_t 		g2_style(tb_handle_t painter);
-tb_void_t 			g2_style_set(tb_handle_t painter, tb_handle_t style);
-
-/* ///////////////////////////////////////////////////////////////////////
- * matrix
- */
+tb_handle_t 		g2_style_save(tb_handle_t painter);
+tb_void_t 			g2_style_load(tb_handle_t painter);
 
 // matrix
-g2_matrix_t const* 	g2_matrix(tb_handle_t painter);
-tb_void_t 			g2_matrix_set(tb_handle_t painter, g2_matrix_t const* matrix);
+g2_matrix_t* 		g2_matrix(tb_handle_t painter);
+g2_matrix_t* 		g2_matrix_save(tb_handle_t painter);
+tb_void_t 			g2_matrix_load(tb_handle_t painter);
 
-// rotate
-tb_bool_t 			g2_rotate(tb_handle_t painter, 		g2_float_t degrees);
-
-// skew
-tb_bool_t 			g2_skew(tb_handle_t painter, 		g2_float_t kx, g2_float_t ky);
-
-// scale
-tb_bool_t 			g2_scale(tb_handle_t painter, 		g2_float_t sx, g2_float_t sy);
-
-// translate
-tb_bool_t 			g2_translate(tb_handle_t painter, 	g2_float_t dx, g2_float_t dy);
-
-// multiply
-tb_bool_t 			g2_multiply(tb_handle_t painter, 	g2_matrix_t const* matrix);
-
-/* ///////////////////////////////////////////////////////////////////////
- * clipper
- */
-
-// clip
-tb_bool_t 			g2_clip_path(tb_handle_t painter, 	tb_size_t mode, tb_handle_t path);
-
-tb_bool_t 			g2_clip_rect(tb_handle_t painter, 	tb_size_t mode, g2_rect_t const* rect);
-tb_bool_t 			g2_clip2_rect(tb_handle_t painter, 	tb_size_t mode, g2_float_t x, g2_float_t y, g2_float_t w, g2_float_t h);
-
-tb_bool_t 			g2_clipi_rect(tb_handle_t painter, 	tb_size_t mode, g2_irect_t const* rect);
-tb_bool_t 			g2_clip2i_rect(tb_handle_t painter, tb_size_t mode, tb_long_t x, tb_long_t y, tb_size_t w, tb_size_t h);
+// clipper
+tb_handle_t 		g2_clipper(tb_handle_t painter);
+tb_handle_t 		g2_clipper_save(tb_handle_t painter);
+tb_void_t 			g2_clipper_load(tb_handle_t painter);
 
 /* ///////////////////////////////////////////////////////////////////////
  * drawer

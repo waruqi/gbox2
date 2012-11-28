@@ -35,15 +35,11 @@
 // the clipper mode enum
 typedef enum __g2_clipper_mode_e
 {
-	G2_CLIPPER_MODE_NONE 		= 0x0000
-,	G2_CLIPPER_MODE_SUBTRACT 	= 0x0001
-,	G2_CLIPPER_MODE_INTERSECT 	= 0x0002
-,	G2_CLIPPER_MODE_UNION 		= 0x0003
-,	G2_CLIPPER_MODE_REPLACE 	= 0x0004
-,	G2_CLIPPER_MODE_MASK 		= 0x00ff
-
-,	G2_CLIPPER_FLAG_ANTI_ALIAS 	= 0x0100
-,	G2_CLIPPER_FLAG_MASK 		= 0xff00
+	G2_CLIPPER_MODE_NONE 		= 0x00
+,	G2_CLIPPER_MODE_SUBTRACT 	= 0x01
+,	G2_CLIPPER_MODE_INTERSECT 	= 0x02
+,	G2_CLIPPER_MODE_UNION 		= 0x03
+,	G2_CLIPPER_MODE_REPLACE 	= 0x04
 
 }g2_clipper_mode_e;
 
@@ -52,6 +48,9 @@ typedef enum __g2_clipper_item_e
 {
 	G2_CLIPPER_ITEM_RECT 		= 0
 , 	G2_CLIPPER_ITEM_PATH 		= 1
+, 	G2_CLIPPER_ITEM_CIRCLE 		= 2
+, 	G2_CLIPPER_ITEM_ELLIPSE 	= 3
+, 	G2_CLIPPER_ITEM_TRIANGLE 	= 4
 
 }g2_clipper_item_e;
 
@@ -72,6 +71,15 @@ typedef struct __g2_clipper_item_t
 		
 		// path
 		tb_handle_t 	path;
+			
+		// circle
+		g2_circle_t 	circle;
+
+		// ellipse
+		g2_ellipse_t 	ellipse;
+
+		// triangle
+		g2_triangle_t 	triangle;
 
 	}u;
 
@@ -89,14 +97,38 @@ tb_void_t 			g2_clipper_exit(tb_handle_t clipper);
 tb_void_t 			g2_clipper_clear(tb_handle_t clipper);
 
 // path
-tb_void_t 			g2_clipper_path(tb_handle_t clipper, 	tb_size_t mode, tb_handle_t path);
+tb_void_t 			g2_clipper_path(tb_handle_t clipper, 			tb_size_t mode, tb_handle_t path);
+
+// triangle
+tb_void_t 			g2_clipper_triangle(tb_handle_t clipper, 		tb_size_t mode, g2_triangle_t const* triangle);
+tb_void_t 			g2_clipper_triangle2(tb_handle_t clipper, 		tb_size_t mode, g2_float_t x0, g2_float_t y0, g2_float_t x1, g2_float_t y1, g2_float_t x2, g2_float_t y2);
+
+// itriangle
+tb_void_t 			g2_clipper_itriangle(tb_handle_t clipper, 		tb_size_t mode, g2_itriangle_t const* triangle);
+tb_void_t 			g2_clipper_itriangle2(tb_handle_t clipper, 		tb_size_t mode, tb_long_t x0, tb_long_t y0, tb_long_t x1, tb_long_t y1, tb_long_t x2, tb_long_t y2);
 
 // rect
-tb_void_t 			g2_clipper_rect(tb_handle_t clipper, 	tb_size_t mode, g2_rect_t const* rect);
-tb_void_t 			g2_clipper_rect2(tb_handle_t clipper, 	tb_size_t mode, g2_float_t x, g2_float_t y, g2_float_t w, g2_float_t h);
+tb_void_t 			g2_clipper_rect(tb_handle_t clipper, 			tb_size_t mode, g2_rect_t const* rect);
+tb_void_t 			g2_clipper_rect2(tb_handle_t clipper, 			tb_size_t mode, g2_float_t x, g2_float_t y, g2_float_t w, g2_float_t h);
 
 // irect
-tb_void_t 			g2_clipper_irect(tb_handle_t clipper, 	tb_size_t mode, g2_irect_t const* rect);
-tb_void_t 			g2_clipper_irect2(tb_handle_t clipper, 	tb_size_t mode, tb_long_t x, tb_long_t y, tb_size_t w, tb_size_t h);
+tb_void_t 			g2_clipper_irect(tb_handle_t clipper, 			tb_size_t mode, g2_irect_t const* rect);
+tb_void_t 			g2_clipper_irect2(tb_handle_t clipper, 			tb_size_t mode, tb_long_t x, tb_long_t y, tb_size_t w, tb_size_t h);
+
+// circle
+tb_void_t 			g2_clipper_circle(tb_handle_t clipper, 			tb_size_t mode, g2_circle_t const* circle);
+tb_void_t 			g2_clipper_circle2(tb_handle_t clipper, 		tb_size_t mode, g2_float_t x0, g2_float_t y0, g2_float_t r);
+
+// icircle
+tb_void_t 			g2_clipper_icircle(tb_handle_t clipper, 		tb_size_t mode, g2_icircle_t const* circle);
+tb_void_t 			g2_clipper_icircle2(tb_handle_t clipper, 		tb_size_t mode, tb_long_t x0, tb_long_t y0, tb_size_t r);
+
+// ellipse
+tb_void_t 			g2_clipper_ellipse(tb_handle_t clipper, 		tb_size_t mode, g2_ellipse_t const* ellipse);
+tb_void_t 			g2_clipper_ellipse2(tb_handle_t clipper, 		tb_size_t mode, g2_float_t x0, g2_float_t y0, g2_float_t rx, g2_float_t ry);
+
+// iellipse
+tb_void_t 			g2_clipper_iellipse(tb_handle_t clipper, 		tb_size_t mode, g2_iellipse_t const* ellipse);
+tb_void_t 			g2_clipper_iellipse2(tb_handle_t clipper, 		tb_size_t mode, tb_long_t x0, tb_long_t y0, tb_size_t rx, tb_size_t ry);
 
 #endif

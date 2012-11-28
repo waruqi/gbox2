@@ -113,6 +113,9 @@ tb_void_t 		g2_style_exit(tb_handle_t style);
 // clear
 tb_void_t 		g2_style_clear(tb_handle_t style);
 
+// copy
+tb_void_t 		g2_style_copy(tb_handle_t style, tb_handle_t copy);
+
 // mode
 tb_size_t 		g2_style_mode(tb_handle_t style);
 tb_void_t 		g2_style_mode_set(tb_handle_t style, tb_size_t mode);

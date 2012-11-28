@@ -63,6 +63,15 @@ static tb_void_t g2_skia_style_clear(tb_handle_t style)
 	if (g2_quality() > G2_QUALITY_LOW) sstyle->setFlags(sstyle->getFlags() | flag);
 	else sstyle->setFlags(sstyle->getFlags() & ~flag);
 }
+static tb_void_t g2_skia_style_copy(tb_handle_t style, tb_handle_t copy)
+{
+	SkPaint* sstyle = static_cast<SkPaint*>(style);
+	SkPaint* scopy 	= static_cast<SkPaint*>(copy);
+	tb_assert_and_check_return(sstyle && scopy);
+
+	// copy
+	*sstyle = *scopy;
+}
 static tb_size_t g2_skia_style_mode(tb_handle_t style)
 {
 	SkPaint* sstyle = static_cast<SkPaint*>(style);
@@ -194,6 +203,10 @@ extern "C"
 	tb_void_t g2_style_clear(tb_handle_t style)
 	{
 		g2_skia_style_clear(style);
+	}
+	tb_void_t g2_style_copy(tb_handle_t style, tb_handle_t copy)
+	{
+		g2_skia_style_copy(style, copy);
 	}
 	tb_size_t g2_style_mode(tb_handle_t style)
 	{

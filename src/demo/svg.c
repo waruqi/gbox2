@@ -86,22 +86,24 @@ static tb_void_t g2_demo_render()
 	if (g_bm) rect = g2_rect_imake(-100, -100, 200, 200);
 	else rect = g2_rect_imake(g_x0 - g_dx, g_y0 - g_dy, g_dx << 1, g_dy << 1);
 
-	// save 
-	g2_save(g_painter, G2_SAVE_MODE_MATRIX);
+	// save matrix
+	g2_matrix_t* matrix = g2_matrix_save(g_painter);
 
 	// trasform
-	g2_translate(g_painter, rect.x, rect.y);
-	g2_scale(g_painter, g2_div(rect.w, w), g2_div(rect.h, h));
+	g2_matrix_translate(matrix, rect.x, rect.y);
+	g2_matrix_scale(matrix, g2_div(rect.w, w), g2_div(rect.h, h));
 
 	// draw
 	g2_svg_element_draw(g_svg, g_painter);
 	
-	// load
-	g2_load(g_painter);
+	// load matrix
+	g2_matrix_load(g_painter);
 
 	// bounds
-	g2_style_clear(g2_style(g_painter));
-	g2_style_mode_set(g2_style(g_painter), G2_STYLE_MODE_STOK);
-	g2_style_color_set(g2_style(g_painter), G2_COLOR_GREEN);
+	tb_handle_t style = g2_style_save(g_painter);
+	g2_style_clear(style);
+	g2_style_mode_set(style, G2_STYLE_MODE_STOK);
+	g2_style_color_set(style, G2_COLOR_GREEN);
 	g2_draw_rect(g_painter, &rect);
+	g2_style_load(g_painter);
 }
