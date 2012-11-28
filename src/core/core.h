@@ -38,6 +38,7 @@ extern "C" {
 #include "bitmap.h"
 #include "context.h"
 #include "painter.h"
+#include "clipper.h"
 
 /* ///////////////////////////////////////////////////////////////////////
  * interfaces

@@ -128,6 +128,7 @@ INC_FILES 				= \
 						core/matrix.h \
 						core/context.h \
 						core/painter.h \
+						core/clipper.h \
 						core/gl/interface.h
 	
 	

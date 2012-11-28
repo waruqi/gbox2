@@ -48,9 +48,32 @@ tb_void_t g2_clipper_exit(tb_handle_t clipper)
 {
 	if (clipper) tb_vector_exit((tb_vector_t*)clipper);
 }
+
+// clear
 tb_void_t g2_clipper_clear(tb_handle_t clipper)
 {
 	if (clipper) tb_vector_clear((tb_vector_t*)clipper);
+}
+
+// copy
+tb_void_t g2_clipper_copy(tb_handle_t clipper, tb_handle_t copy)
+{
+	tb_assert_and_check_return(clipper && copy);
+	tb_vector_copy(clipper, copy);
+}
+
+// size
+tb_size_t g2_clipper_size(tb_handle_t clipper)
+{
+	tb_assert_and_check_return_val(clipper, 0);
+	return tb_vector_size(clipper);
+}
+
+// item
+g2_clipper_item_t const* g2_clipper_item(tb_handle_t clipper, tb_size_t item)
+{
+	tb_assert_and_check_return_val(clipper, TB_NULL);
+	return (g2_clipper_item_t const*)tb_iterator_item(clipper, item);
 }
 
 // path

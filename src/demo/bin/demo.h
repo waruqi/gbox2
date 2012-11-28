@@ -138,7 +138,7 @@ static tb_void_t g2_demo_gl_display()
 	g2_draw_clear(g_painter, G2_COLOR_BLACK);
 
 	// matrix
-	if (g_bm) g2_matrix_copy(g2_matrix_save(g_painter), &g_mx);
+	if (g_bm) g2_matrix_copy(g2_save_matrix(g_painter), &g_mx);
 
 	// start clock
 	g_rt = tb_uclock();
@@ -150,7 +150,7 @@ static tb_void_t g2_demo_gl_display()
 	g_rt = tb_uclock() - g_rt;
 
 	// load 
-	if (g_bm) g2_matrix_load(g_painter);
+	if (g_bm) g2_load_matrix(g_painter);
 
 	// draw
 #if defined(G2_CONFIG_CORE_SKIA) || defined(G2_CONFIG_CORE_SOFT)
@@ -161,7 +161,7 @@ static tb_void_t g2_demo_gl_display()
 		tb_size_t pixfmt 	= g2_bitmap_pixfmt(g_surface);
 
 		glPixelZoom(1.0, -1.0);
-		glRasterPos2i(0, height - 1);
+		glRasterPos2f(0.0f, height - 0.1f);
 		switch (G2_PIXFMT(pixfmt))
 		{
 		case G2_PIXFMT_RGB565:

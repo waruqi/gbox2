@@ -45,7 +45,7 @@ tb_handle_t 		g2_init(tb_handle_t context);
 tb_void_t 			g2_exit(tb_handle_t painter);
 
 /* ///////////////////////////////////////////////////////////////////////
- * accessors & modifiors
+ * accessors
  */
 
 // pixfmt
@@ -56,18 +56,28 @@ tb_handle_t 		g2_context(tb_handle_t painter);
 
 // style
 tb_handle_t 		g2_style(tb_handle_t painter);
-tb_handle_t 		g2_style_save(tb_handle_t painter);
-tb_void_t 			g2_style_load(tb_handle_t painter);
 
 // matrix
 g2_matrix_t* 		g2_matrix(tb_handle_t painter);
-g2_matrix_t* 		g2_matrix_save(tb_handle_t painter);
-tb_void_t 			g2_matrix_load(tb_handle_t painter);
 
 // clipper
 tb_handle_t 		g2_clipper(tb_handle_t painter);
-tb_handle_t 		g2_clipper_save(tb_handle_t painter);
-tb_void_t 			g2_clipper_load(tb_handle_t painter);
+
+/* ///////////////////////////////////////////////////////////////////////
+ * save & load
+ */
+
+// style
+tb_handle_t 		g2_save_style(tb_handle_t painter);
+tb_void_t 			g2_load_style(tb_handle_t painter);
+
+// matrix
+g2_matrix_t* 		g2_save_matrix(tb_handle_t painter);
+tb_void_t 			g2_load_matrix(tb_handle_t painter);
+
+// clipper
+tb_handle_t 		g2_save_clipper(tb_handle_t painter);
+tb_void_t 			g2_load_clipper(tb_handle_t painter);
 
 /* ///////////////////////////////////////////////////////////////////////
  * drawer

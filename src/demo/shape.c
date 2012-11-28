@@ -132,7 +132,7 @@ static tb_void_t g2_demo_render()
 	if (g_mode & G2_STYLE_MODE_FILL)
 	{
 		// save style
-		tb_handle_t style = g2_style_save(g_painter);
+		tb_handle_t style = g2_save_style(g_painter);
 
 		// init style
 		g2_style_clear(style);
@@ -168,13 +168,13 @@ static tb_void_t g2_demo_render()
 		g2_demo_shape_render();
 
 		// load style
-		g2_style_load(g_painter);
+		g2_load_style(g_painter);
 	}
 
 	if (g_mode & G2_STYLE_MODE_STOK)
 	{
 		// save style
-		tb_handle_t style = g2_style_save(g_painter);
+		tb_handle_t style = g2_save_style(g_painter);
 
 		// init style
 		g2_style_clear(style);
@@ -189,6 +189,6 @@ static tb_void_t g2_demo_render()
 		g2_demo_shape_render();
 
 		// load style
-		g2_style_load(g_painter);
+		g2_load_style(g_painter);
 	}
 }

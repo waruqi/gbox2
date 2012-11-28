@@ -31,6 +31,7 @@
 #include "../bitmap.h"
 #include "../context.h"
 #include "../painter.h"
+#include "../clipper.h"
 #include "../../gbox2.h"
 #include "../../third/skia/skia.h"
 #include "color.h"

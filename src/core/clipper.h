@@ -23,6 +23,11 @@
 #ifndef G2_CORE_CLIPPER_H
 #define G2_CORE_CLIPPER_H
 
+// c plus plus
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /* ///////////////////////////////////////////////////////////////////////
  * includes
  */
@@ -90,45 +95,59 @@ typedef struct __g2_clipper_item_t
  */
 
 // init & exit
-tb_handle_t 		g2_clipper_init();
-tb_void_t 			g2_clipper_exit(tb_handle_t clipper);
+tb_handle_t 				g2_clipper_init();
+tb_void_t 					g2_clipper_exit(tb_handle_t clipper);
+
+// size
+tb_size_t 					g2_clipper_size(tb_handle_t clipper);
+
+// item
+g2_clipper_item_t const* 	g2_clipper_item(tb_handle_t clipper, tb_size_t item);
 
 // clear
-tb_void_t 			g2_clipper_clear(tb_handle_t clipper);
+tb_void_t 					g2_clipper_clear(tb_handle_t clipper);
+
+// copy
+tb_void_t 					g2_clipper_copy(tb_handle_t clipper, tb_handle_t copy);
 
 // path
-tb_void_t 			g2_clipper_path(tb_handle_t clipper, 			tb_size_t mode, tb_handle_t path);
+tb_void_t 					g2_clipper_path(tb_handle_t clipper, 			tb_size_t mode, tb_handle_t path);
 
 // triangle
-tb_void_t 			g2_clipper_triangle(tb_handle_t clipper, 		tb_size_t mode, g2_triangle_t const* triangle);
-tb_void_t 			g2_clipper_triangle2(tb_handle_t clipper, 		tb_size_t mode, g2_float_t x0, g2_float_t y0, g2_float_t x1, g2_float_t y1, g2_float_t x2, g2_float_t y2);
+tb_void_t 					g2_clipper_triangle(tb_handle_t clipper, 		tb_size_t mode, g2_triangle_t const* triangle);
+tb_void_t 					g2_clipper_triangle2(tb_handle_t clipper, 		tb_size_t mode, g2_float_t x0, g2_float_t y0, g2_float_t x1, g2_float_t y1, g2_float_t x2, g2_float_t y2);
 
 // itriangle
-tb_void_t 			g2_clipper_itriangle(tb_handle_t clipper, 		tb_size_t mode, g2_itriangle_t const* triangle);
-tb_void_t 			g2_clipper_itriangle2(tb_handle_t clipper, 		tb_size_t mode, tb_long_t x0, tb_long_t y0, tb_long_t x1, tb_long_t y1, tb_long_t x2, tb_long_t y2);
+tb_void_t 					g2_clipper_itriangle(tb_handle_t clipper, 		tb_size_t mode, g2_itriangle_t const* triangle);
+tb_void_t 					g2_clipper_itriangle2(tb_handle_t clipper, 		tb_size_t mode, tb_long_t x0, tb_long_t y0, tb_long_t x1, tb_long_t y1, tb_long_t x2, tb_long_t y2);
 
 // rect
-tb_void_t 			g2_clipper_rect(tb_handle_t clipper, 			tb_size_t mode, g2_rect_t const* rect);
-tb_void_t 			g2_clipper_rect2(tb_handle_t clipper, 			tb_size_t mode, g2_float_t x, g2_float_t y, g2_float_t w, g2_float_t h);
+tb_void_t 					g2_clipper_rect(tb_handle_t clipper, 			tb_size_t mode, g2_rect_t const* rect);
+tb_void_t 					g2_clipper_rect2(tb_handle_t clipper, 			tb_size_t mode, g2_float_t x, g2_float_t y, g2_float_t w, g2_float_t h);
 
 // irect
-tb_void_t 			g2_clipper_irect(tb_handle_t clipper, 			tb_size_t mode, g2_irect_t const* rect);
-tb_void_t 			g2_clipper_irect2(tb_handle_t clipper, 			tb_size_t mode, tb_long_t x, tb_long_t y, tb_size_t w, tb_size_t h);
+tb_void_t 					g2_clipper_irect(tb_handle_t clipper, 			tb_size_t mode, g2_irect_t const* rect);
+tb_void_t 					g2_clipper_irect2(tb_handle_t clipper, 			tb_size_t mode, tb_long_t x, tb_long_t y, tb_size_t w, tb_size_t h);
 
 // circle
-tb_void_t 			g2_clipper_circle(tb_handle_t clipper, 			tb_size_t mode, g2_circle_t const* circle);
-tb_void_t 			g2_clipper_circle2(tb_handle_t clipper, 		tb_size_t mode, g2_float_t x0, g2_float_t y0, g2_float_t r);
+tb_void_t 					g2_clipper_circle(tb_handle_t clipper, 			tb_size_t mode, g2_circle_t const* circle);
+tb_void_t 					g2_clipper_circle2(tb_handle_t clipper, 		tb_size_t mode, g2_float_t x0, g2_float_t y0, g2_float_t r);
 
 // icircle
-tb_void_t 			g2_clipper_icircle(tb_handle_t clipper, 		tb_size_t mode, g2_icircle_t const* circle);
-tb_void_t 			g2_clipper_icircle2(tb_handle_t clipper, 		tb_size_t mode, tb_long_t x0, tb_long_t y0, tb_size_t r);
+tb_void_t 					g2_clipper_icircle(tb_handle_t clipper, 		tb_size_t mode, g2_icircle_t const* circle);
+tb_void_t 					g2_clipper_icircle2(tb_handle_t clipper, 		tb_size_t mode, tb_long_t x0, tb_long_t y0, tb_size_t r);
 
 // ellipse
-tb_void_t 			g2_clipper_ellipse(tb_handle_t clipper, 		tb_size_t mode, g2_ellipse_t const* ellipse);
-tb_void_t 			g2_clipper_ellipse2(tb_handle_t clipper, 		tb_size_t mode, g2_float_t x0, g2_float_t y0, g2_float_t rx, g2_float_t ry);
+tb_void_t 					g2_clipper_ellipse(tb_handle_t clipper, 		tb_size_t mode, g2_ellipse_t const* ellipse);
+tb_void_t 					g2_clipper_ellipse2(tb_handle_t clipper, 		tb_size_t mode, g2_float_t x0, g2_float_t y0, g2_float_t rx, g2_float_t ry);
 
 // iellipse
-tb_void_t 			g2_clipper_iellipse(tb_handle_t clipper, 		tb_size_t mode, g2_iellipse_t const* ellipse);
-tb_void_t 			g2_clipper_iellipse2(tb_handle_t clipper, 		tb_size_t mode, tb_long_t x0, tb_long_t y0, tb_size_t rx, tb_size_t ry);
+tb_void_t 					g2_clipper_iellipse(tb_handle_t clipper, 		tb_size_t mode, g2_iellipse_t const* ellipse);
+tb_void_t 					g2_clipper_iellipse2(tb_handle_t clipper, 		tb_size_t mode, tb_long_t x0, tb_long_t y0, tb_size_t rx, tb_size_t ry);
+
+// c plus plus
+#ifdef __cplusplus
+}
+#endif
 
 #endif
