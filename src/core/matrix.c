@@ -83,14 +83,14 @@ tb_void_t g2_matrix_init_rotate(g2_matrix_t* matrix, g2_float_t degrees)
 {
 	g2_float_t s;
 	g2_float_t c;
-	g2_sincos(g2_degree_to_radian(degrees), &s, &c);
+	g2_sos(g2_degree_to_radian(degrees), &s, &c);
 	g2_matrix_init_sincos(matrix, s, c);
 }
 tb_void_t g2_matrix_init_rotatep(g2_matrix_t* matrix, g2_float_t degrees, g2_float_t px, g2_float_t py)
 {
 	g2_float_t s;
 	g2_float_t c;
-	g2_sincos(g2_degree_to_radian(degrees), &s, &c);
+	g2_sos(g2_degree_to_radian(degrees), &s, &c);
 	g2_matrix_init_sincosp(matrix, s, c, px, py);
 }
 tb_void_t g2_matrix_init_sincos(g2_matrix_t* matrix, g2_float_t sin, g2_float_t cos)

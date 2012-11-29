@@ -32,6 +32,7 @@ extern "C" {
  * includes
  */
 #include "prefix.h"
+#include "matrix.h"
 
 /* ///////////////////////////////////////////////////////////////////////
  * types
@@ -88,6 +89,9 @@ typedef struct __g2_clipper_item_t
 
 	}u;
 
+	// the clip matrix
+	g2_matrix_t 		matrix;
+
 }g2_clipper_item_t;
 
 /* ///////////////////////////////////////////////////////////////////////
@@ -109,6 +113,9 @@ tb_void_t 					g2_clipper_clear(tb_handle_t clipper);
 
 // copy
 tb_void_t 					g2_clipper_copy(tb_handle_t clipper, tb_handle_t copy);
+
+// matrix
+tb_void_t 					g2_clipper_matrix(tb_handle_t clipper, 			g2_matrix_t const* matrix);
 
 // path
 tb_void_t 					g2_clipper_path(tb_handle_t clipper, 			tb_size_t mode, tb_handle_t path);

@@ -40,10 +40,10 @@ static __tb_inline__ tb_bool_t g2_svg_painter_transform_enter(g2_svg_painter_t* 
 	if (!g2_matrix_identity(matrix)) 
 	{
 		// save
-		g2_save_matrix(painter->painter);
+		g2_save(painter->painter);
 
 		// apply
-		g2_matrix_multiply(g2_matrix(painter->painter), matrix);
+		g2_multiply(painter->painter, matrix);
 
 		// ok
 		return TB_TRUE;
@@ -58,7 +58,7 @@ static __tb_inline__ tb_void_t g2_svg_painter_transform_leave(g2_svg_painter_t* 
 	tb_assert_and_check_return(painter && painter->painter);
 
 	// load
-	g2_load_matrix(painter->painter);
+	g2_load(painter->painter);
 }
 #endif
 

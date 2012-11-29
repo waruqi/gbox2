@@ -67,6 +67,10 @@ tb_handle_t 		g2_clipper(tb_handle_t painter);
  * save & load
  */
 
+// matrix
+g2_matrix_t* 		g2_save(tb_handle_t painter);
+tb_void_t 			g2_load(tb_handle_t painter);
+
 // style
 tb_handle_t 		g2_save_style(tb_handle_t painter);
 tb_void_t 			g2_load_style(tb_handle_t painter);
@@ -78,6 +82,139 @@ tb_void_t 			g2_load_matrix(tb_handle_t painter);
 // clipper
 tb_handle_t 		g2_save_clipper(tb_handle_t painter);
 tb_void_t 			g2_load_clipper(tb_handle_t painter);
+
+/* ///////////////////////////////////////////////////////////////////////
+ * clear
+ */
+
+// drawer
+tb_void_t 			g2_clear(tb_handle_t painter, g2_color_t color);
+
+// style
+tb_void_t 			g2_clear_style(tb_handle_t painter);
+
+// matrix
+tb_void_t 			g2_clear_matrix(tb_handle_t painter);
+
+// clipper
+tb_void_t 			g2_clear_clipper(tb_handle_t painter);
+
+/* ///////////////////////////////////////////////////////////////////////
+ * style
+ */
+
+// mode
+tb_void_t 			g2_mode(tb_handle_t painter, 			tb_size_t mode);
+
+// flag
+tb_void_t 			g2_flag(tb_handle_t painter, 			tb_size_t flag);
+
+// color
+tb_void_t 			g2_color(tb_handle_t painter, 			g2_color_t color);
+
+// alpha
+tb_void_t 			g2_alpha(tb_handle_t painter, 			tb_byte_t alpha);
+
+// width
+tb_void_t 			g2_width(tb_handle_t painter, 			g2_float_t width);
+
+// cap
+tb_void_t 			g2_cap(tb_handle_t painter, 			tb_size_t cap);
+
+// join
+tb_void_t 			g2_join(tb_handle_t painter, 			tb_size_t join);
+
+// shader
+tb_void_t 			g2_shader(tb_handle_t painter, 			tb_handle_t shader);
+
+/* ///////////////////////////////////////////////////////////////////////
+ * matrix
+ */
+
+// save
+g2_matrix_t* 		g2_save(tb_handle_t painter);
+
+// load
+tb_void_t 			g2_load(tb_handle_t painter);
+
+// rotate
+tb_bool_t 			g2_rotate(tb_handle_t painter, 			g2_float_t degrees);
+tb_bool_t 			g2_rotate_lhs(tb_handle_t painter, 		g2_float_t degrees);
+
+// rotatep
+tb_bool_t 			g2_rotatep(tb_handle_t painter, 		g2_float_t degrees, g2_float_t px, g2_float_t py);
+tb_bool_t 			g2_rotatep_lhs(tb_handle_t painter, 	g2_float_t degrees, g2_float_t px, g2_float_t py);
+
+// scale
+tb_bool_t 			g2_scale(tb_handle_t painter, 			g2_float_t sx, g2_float_t sy);
+tb_bool_t 			g2_scale_lhs(tb_handle_t painter, 		g2_float_t sx, g2_float_t sy);
+
+// scalep
+tb_bool_t 			g2_scalep(tb_handle_t painter, 			g2_float_t sx, g2_float_t sy, g2_float_t px, g2_float_t py);
+tb_bool_t 			g2_scalep_lhs(tb_handle_t painter, 		g2_float_t sx, g2_float_t sy, g2_float_t px, g2_float_t py);
+
+// skew
+tb_bool_t 			g2_skew(tb_handle_t painter, 			g2_float_t kx, g2_float_t ky);
+tb_bool_t 			g2_skew_lhs(tb_handle_t painter, 		g2_float_t kx, g2_float_t ky);
+
+// skewp
+tb_bool_t 			g2_skewp(tb_handle_t painter, 			g2_float_t kx, g2_float_t ky, g2_float_t px, g2_float_t py);
+tb_bool_t 			g2_skewp_lhs(tb_handle_t painter, 		g2_float_t kx, g2_float_t ky, g2_float_t px, g2_float_t py);
+
+// sincos
+tb_bool_t 			g2_sincos(tb_handle_t painter, 			g2_float_t sin, g2_float_t cos);
+tb_bool_t 			g2_sincos_lhs(tb_handle_t painter, 		g2_float_t sin, g2_float_t cos);
+
+// sincosp
+tb_bool_t 			g2_sincosp(tb_handle_t painter, 		g2_float_t sin, g2_float_t cos, g2_float_t px, g2_float_t py);
+tb_bool_t 			g2_sincosp_lhs(tb_handle_t painter, 	g2_float_t sin, g2_float_t cos, g2_float_t px, g2_float_t py);
+
+// translate
+tb_bool_t 			g2_translate(tb_handle_t painter, 		g2_float_t dx, g2_float_t dy);
+tb_bool_t 			g2_translate_lhs(tb_handle_t painter, 	g2_float_t dx, g2_float_t dy);
+
+// multiply
+tb_bool_t 			g2_multiply(tb_handle_t painter, 		g2_matrix_t const* matrix);
+tb_bool_t 			g2_multiply_lhs(tb_handle_t painter, 	g2_matrix_t const* matrix);
+
+/* ///////////////////////////////////////////////////////////////////////
+ * clipper
+ */
+
+// path
+tb_void_t 			g2_clip_path(tb_handle_t painter, 			tb_size_t mode, tb_handle_t path);
+
+// triangle
+tb_void_t 			g2_clip_triangle(tb_handle_t painter, 		tb_size_t mode, g2_triangle_t const* triangle);
+tb_void_t 			g2_clip_triangle2(tb_handle_t painter, 		tb_size_t mode, g2_float_t x0, g2_float_t y0, g2_float_t x1, g2_float_t y1, g2_float_t x2, g2_float_t y2);
+
+// itriangle
+tb_void_t 			g2_clip_itriangle(tb_handle_t painter, 		tb_size_t mode, g2_itriangle_t const* triangle);
+tb_void_t 			g2_clip_itriangle2(tb_handle_t painter, 	tb_size_t mode, tb_long_t x0, tb_long_t y0, tb_long_t x1, tb_long_t y1, tb_long_t x2, tb_long_t y2);
+
+// rect
+tb_void_t 			g2_clip_rect(tb_handle_t painter, 			tb_size_t mode, g2_rect_t const* rect);
+tb_void_t 			g2_clip_rect2(tb_handle_t painter, 			tb_size_t mode, g2_float_t x, g2_float_t y, g2_float_t w, g2_float_t h);
+
+// irect
+tb_void_t 			g2_clip_irect(tb_handle_t painter, 			tb_size_t mode, g2_irect_t const* rect);
+tb_void_t 			g2_clip_irect2(tb_handle_t painter, 		tb_size_t mode, tb_long_t x, tb_long_t y, tb_size_t w, tb_size_t h);
+
+// circle
+tb_void_t 			g2_clip_circle(tb_handle_t painter, 		tb_size_t mode, g2_circle_t const* circle);
+tb_void_t 			g2_clip_circle2(tb_handle_t painter, 		tb_size_t mode, g2_float_t x0, g2_float_t y0, g2_float_t r);
+
+// icircle
+tb_void_t 			g2_clip_icircle(tb_handle_t painter, 		tb_size_t mode, g2_icircle_t const* circle);
+tb_void_t 			g2_clip_icircle2(tb_handle_t painter, 		tb_size_t mode, tb_long_t x0, tb_long_t y0, tb_size_t r);
+
+// ellipse
+tb_void_t 			g2_clip_ellipse(tb_handle_t painter, 		tb_size_t mode, g2_ellipse_t const* ellipse);
+tb_void_t 			g2_clip_ellipse2(tb_handle_t painter, 		tb_size_t mode, g2_float_t x0, g2_float_t y0, g2_float_t rx, g2_float_t ry);
+
+// iellipse
+tb_void_t 			g2_clip_iellipse(tb_handle_t painter, 		tb_size_t mode, g2_iellipse_t const* ellipse);
+tb_void_t 			g2_clip_iellipse2(tb_handle_t painter, 		tb_size_t mode, tb_long_t x0, tb_long_t y0, tb_size_t rx, tb_size_t ry);
 
 /* ///////////////////////////////////////////////////////////////////////
  * drawer

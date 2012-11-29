@@ -36,86 +36,165 @@
 #endif
 
 /* ///////////////////////////////////////////////////////////////////////
+ * types
+ */
+
+// the clipper type
+typedef struct __g2_clipper_t
+{
+	// the clip list
+	tb_vector_t* 			list;
+
+	// the clip matrix
+	g2_matrix_t 			matrix;
+
+}g2_clipper_t;
+
+/* ///////////////////////////////////////////////////////////////////////
  * implementation
  */
 
 tb_handle_t g2_clipper_init()
 {
+	// alloc
+	g2_clipper_t* clipper = tb_malloc0(sizeof(g2_clipper_t));
+	tb_assert_and_check_return_val(clipper, TB_NULL);
+
+	// init list
+	clipper->list = tb_vector_init(G2_CLIPPER_GROW_SIZE, tb_item_func_ifm(sizeof(g2_clipper_item_t), TB_NULL, TB_NULL));
+	tb_assert_and_check_goto(clipper->list, fail);
+
+	// init matrix
+	g2_matrix_clear(&clipper->matrix);
+
 	// ok
-	return (tb_handle_t)tb_vector_init(G2_CLIPPER_GROW_SIZE, tb_item_func_ifm(sizeof(g2_clipper_item_t), TB_NULL, TB_NULL));
+	return clipper;
+
+fail:
+	if (clipper) g2_clipper_exit(clipper);
+	return TB_NULL;
 }
 tb_void_t g2_clipper_exit(tb_handle_t clipper)
 {
-	if (clipper) tb_vector_exit((tb_vector_t*)clipper);
+	g2_clipper_t* gclipper = (g2_clipper_t*)clipper;
+	tb_assert_and_check_return(gclipper);
+
+	// exit list
+	if (gclipper->list) tb_vector_exit(gclipper->list);
+
+	// exit it
+	tb_free(gclipper);
 }
 
 // clear
 tb_void_t g2_clipper_clear(tb_handle_t clipper)
 {
-	if (clipper) tb_vector_clear((tb_vector_t*)clipper);
+	g2_clipper_t* gclipper = (g2_clipper_t*)clipper;
+	tb_assert_and_check_return(gclipper);
+
+	// clear list
+	if (gclipper->list) tb_vector_clear(gclipper->list);
+
+	// clear matrix
+	g2_matrix_clear(&gclipper->matrix);
 }
 
 // copy
 tb_void_t g2_clipper_copy(tb_handle_t clipper, tb_handle_t copy)
 {
-	tb_assert_and_check_return(clipper && copy);
-	tb_vector_copy(clipper, copy);
+	g2_clipper_t* gclipper = (g2_clipper_t*)clipper;
+	g2_clipper_t* gcopy = (g2_clipper_t*)copy;
+	tb_assert_and_check_return(gclipper && gclipper->list && gcopy && gcopy->list);
+
+	// copy list
+	tb_vector_copy(gclipper->list, gcopy->list);
+
+	// copy matrix
+	gclipper->matrix = gcopy->matrix;
 }
 
 // size
 tb_size_t g2_clipper_size(tb_handle_t clipper)
 {
-	tb_assert_and_check_return_val(clipper, 0);
-	return tb_vector_size(clipper);
+	g2_clipper_t* gclipper = (g2_clipper_t*)clipper;
+	tb_assert_and_check_return_val(gclipper && gclipper->list, 0);
+	return tb_vector_size(gclipper->list);
 }
 
 // item
 g2_clipper_item_t const* g2_clipper_item(tb_handle_t clipper, tb_size_t item)
 {
-	tb_assert_and_check_return_val(clipper, TB_NULL);
-	return (g2_clipper_item_t const*)tb_iterator_item(clipper, item);
+	g2_clipper_t* gclipper = (g2_clipper_t*)clipper;
+	tb_assert_and_check_return_val(gclipper && gclipper->list, TB_NULL);
+	return (g2_clipper_item_t const*)tb_iterator_item(gclipper->list, item);
+}
+
+// matrix
+tb_void_t g2_clipper_matrix(tb_handle_t clipper, g2_matrix_t const* matrix)
+{
+	g2_clipper_t* gclipper = (g2_clipper_t*)clipper;
+	tb_assert_and_check_return(gclipper);
+
+	if (matrix) gclipper->matrix = *matrix;
+	else g2_matrix_clear(&gclipper->matrix);
 }
 
 // path
 tb_void_t g2_clipper_path(tb_handle_t clipper, tb_size_t mode, tb_handle_t path)
 {
 	// check
-	tb_vector_t* vclipper = (tb_vector_t*)clipper;
-	tb_assert_and_check_return(vclipper && mode && path);
+	g2_clipper_t* gclipper = (g2_clipper_t*)clipper;
+	tb_assert_and_check_return(gclipper && gclipper->list && mode && path);
 
+	// the first item is union? ignore it
+	if (mode == G2_CLIPPER_MODE_UNION && !tb_vector_size(gclipper->list))
+		return ;
+
+	// op: replace? clear it first
+	if (mode == G2_CLIPPER_MODE_REPLACE)
+		tb_vector_clear(gclipper->list);
+	// the first item is intersect? replace it
+	else if (mode == G2_CLIPPER_MODE_INTERSECT && !tb_vector_size(gclipper->list))
+		mode = G2_CLIPPER_MODE_REPLACE;
+	
 	// init item	
 	g2_clipper_item_t item;
 	item.mode = mode;
 	item.type = G2_CLIPPER_ITEM_PATH;
 	item.u.path = path;
-
-	// op: replace? clear it first
-	if (mode == G2_CLIPPER_MODE_REPLACE)
-		tb_vector_clear(vclipper);
+	item.matrix = gclipper->matrix;
 	
 	// add item
-	tb_vector_insert_tail(vclipper, &item);
+	tb_vector_insert_tail(gclipper->list, &item);
 }
 
 // rect
 tb_void_t g2_clipper_rect(tb_handle_t clipper, tb_size_t mode, g2_rect_t const* rect)
 {
 	// check
-	tb_vector_t* vclipper = (tb_vector_t*)clipper;
-	tb_assert_and_check_return(vclipper && mode && rect);
+	g2_clipper_t* gclipper = (g2_clipper_t*)clipper;
+	tb_assert_and_check_return(gclipper && gclipper->list && mode && rect);
 
+	// the first item is union? ignore it
+	if (mode == G2_CLIPPER_MODE_UNION && !tb_vector_size(gclipper->list))
+		return ;
+
+	// op: replace? clear it first
+	if (mode == G2_CLIPPER_MODE_REPLACE)
+		tb_vector_clear(gclipper->list);
+	// the first item is intersect? replace it
+	else if (mode == G2_CLIPPER_MODE_INTERSECT && !tb_vector_size(gclipper->list))
+		mode = G2_CLIPPER_MODE_REPLACE;
+	
 	// init item	
 	g2_clipper_item_t item;
 	item.mode = mode;
 	item.type = G2_CLIPPER_ITEM_RECT;
 	item.u.rect = *rect;
+	item.matrix = gclipper->matrix;
 
-	// op: replace? clear it first
-	if (mode == G2_CLIPPER_MODE_REPLACE)
-		tb_vector_clear(vclipper);
-	
 	// add item
-	tb_vector_insert_tail(vclipper, &item);
+	tb_vector_insert_tail(gclipper->list, &item);
 }
 tb_void_t g2_clipper_rect2(tb_handle_t clipper, tb_size_t mode, g2_float_t x, g2_float_t y, g2_float_t w, g2_float_t h)
 {
@@ -149,21 +228,29 @@ tb_void_t g2_clipper_irect2(tb_handle_t clipper, tb_size_t mode, tb_long_t x, tb
 tb_void_t g2_clipper_triangle(tb_handle_t clipper, tb_size_t mode, g2_triangle_t const* triangle)
 {
 	// check
-	tb_vector_t* vclipper = (tb_vector_t*)clipper;
-	tb_assert_and_check_return(vclipper && mode && triangle);
+	g2_clipper_t* gclipper = (g2_clipper_t*)clipper;
+	tb_assert_and_check_return(gclipper && gclipper->list && mode && triangle);
 
+	// the first item is union? ignore it
+	if (mode == G2_CLIPPER_MODE_UNION && !tb_vector_size(gclipper->list))
+		return ;
+
+	// op: replace? clear it first
+	if (mode == G2_CLIPPER_MODE_REPLACE)
+		tb_vector_clear(gclipper->list);
+	// the first item is intersect? replace it
+	else if (mode == G2_CLIPPER_MODE_INTERSECT && !tb_vector_size(gclipper->list))
+		mode = G2_CLIPPER_MODE_REPLACE;
+	
 	// init item	
 	g2_clipper_item_t item;
 	item.mode = mode;
 	item.type = G2_CLIPPER_ITEM_TRIANGLE;
 	item.u.triangle = *triangle;
+	item.matrix = gclipper->matrix;
 
-	// op: replace? clear it first
-	if (mode == G2_CLIPPER_MODE_REPLACE)
-		tb_vector_clear(vclipper);
-	
 	// add item
-	tb_vector_insert_tail(vclipper, &item);
+	tb_vector_insert_tail(gclipper->list, &item);
 }
 tb_void_t g2_clipper_triangle2(tb_handle_t clipper, tb_size_t mode, g2_float_t x0, g2_float_t y0, g2_float_t x1, g2_float_t y1, g2_float_t x2, g2_float_t y2)
 {
@@ -201,21 +288,29 @@ tb_void_t g2_clipper_itriangle2(tb_handle_t clipper, tb_size_t mode, tb_long_t x
 tb_void_t g2_clipper_circle(tb_handle_t clipper, tb_size_t mode, g2_circle_t const* circle)
 {
 	// check
-	tb_vector_t* vclipper = (tb_vector_t*)clipper;
-	tb_assert_and_check_return(vclipper && mode && circle);
+	g2_clipper_t* gclipper = (g2_clipper_t*)clipper;
+	tb_assert_and_check_return(gclipper && gclipper->list && mode && circle);
 
+	// the first item is union? ignore it
+	if (mode == G2_CLIPPER_MODE_UNION && !tb_vector_size(gclipper->list))
+		return ;
+
+	// op: replace? clear it first
+	if (mode == G2_CLIPPER_MODE_REPLACE)
+		tb_vector_clear(gclipper->list);
+	// the first item is intersect? replace it
+	else if (mode == G2_CLIPPER_MODE_INTERSECT && !tb_vector_size(gclipper->list))
+		mode = G2_CLIPPER_MODE_REPLACE;
+	
 	// init item	
 	g2_clipper_item_t item;
 	item.mode = mode;
 	item.type = G2_CLIPPER_ITEM_CIRCLE;
 	item.u.circle = *circle;
+	item.matrix = gclipper->matrix;
 
-	// op: replace? clear it first
-	if (mode == G2_CLIPPER_MODE_REPLACE)
-		tb_vector_clear(vclipper);
-	
 	// add item
-	tb_vector_insert_tail(vclipper, &item);
+	tb_vector_insert_tail(gclipper->list, &item);
 }
 tb_void_t g2_clipper_circle2(tb_handle_t clipper, tb_size_t mode, g2_float_t x0, g2_float_t y0, g2_float_t r)
 {
@@ -247,21 +342,29 @@ tb_void_t g2_clipper_icircle2(tb_handle_t clipper, tb_size_t mode, tb_long_t x0,
 tb_void_t g2_clipper_ellipse(tb_handle_t clipper, tb_size_t mode, g2_ellipse_t const* ellipse)
 {
 	// check
-	tb_vector_t* vclipper = (tb_vector_t*)clipper;
-	tb_assert_and_check_return(vclipper && mode && ellipse);
+	g2_clipper_t* gclipper = (g2_clipper_t*)clipper;
+	tb_assert_and_check_return(gclipper && gclipper->list && mode && ellipse);
 
+	// the first item is union? ignore it
+	if (mode == G2_CLIPPER_MODE_UNION && !tb_vector_size(gclipper->list))
+		return ;
+
+	// op: replace? clear it first
+	if (mode == G2_CLIPPER_MODE_REPLACE)
+		tb_vector_clear(gclipper->list);
+	// the first item is intersect? replace it
+	else if (mode == G2_CLIPPER_MODE_INTERSECT && !tb_vector_size(gclipper->list))
+		mode = G2_CLIPPER_MODE_REPLACE;
+	
 	// init item	
 	g2_clipper_item_t item;
 	item.mode = mode;
 	item.type = G2_CLIPPER_ITEM_ELLIPSE;
 	item.u.ellipse = *ellipse;
+	item.matrix = gclipper->matrix;
 
-	// op: replace? clear it first
-	if (mode == G2_CLIPPER_MODE_REPLACE)
-		tb_vector_clear(vclipper);
-	
 	// add item
-	tb_vector_insert_tail(vclipper, &item);
+	tb_vector_insert_tail(gclipper->list, &item);
 }
 tb_void_t g2_clipper_ellipse2(tb_handle_t clipper, tb_size_t mode, g2_float_t x0, g2_float_t y0, g2_float_t rx, g2_float_t ry)
 {

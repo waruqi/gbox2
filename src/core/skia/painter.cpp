@@ -124,7 +124,6 @@ static __tb_inline__ tb_void_t g2_skia_clipper_apply(g2_skia_painter_t* spainter
 		g2_clipper_item_t const* item = g2_clipper_item(clipper, i);
 		if (item)
 		{
-			tb_print("%x %x", item->mode, item->type);
 			// mode
 			SkRegion::Op op = SkRegion::kIntersect_Op;
 			switch (item->mode)
@@ -145,14 +144,24 @@ static __tb_inline__ tb_void_t g2_skia_clipper_apply(g2_skia_painter_t* spainter
 				tb_assert(0);
 				break;
 			}
-	
+
+			// apply matrix
+			SkMatrix mx;
+			g2_matrix_t const* matrix = &item->matrix;
+			mx.setAll( 	matrix->sx, matrix->kx, matrix->tx
+					, 	matrix->ky, matrix->sy, matrix->ty
+					, 	0, 0, kMatrix22Elem);
+			spainter->canvas->setMatrix(mx);
+
 			// clip
 			switch (item->type)
 			{
 			case G2_CLIPPER_ITEM_RECT:
-				spainter->canvas->clipRect(SkRect::MakeXYWH(item->u.rect.x, item->u.rect.y, item->u.rect.w, item->u.rect.h), op, anti)? TB_TRUE : TB_FALSE;
+				spainter->canvas->clipRect(SkRect::MakeXYWH(item->u.rect.x, item->u.rect.y, item->u.rect.w, item->u.rect.h), op, anti);
+				break;
 			case G2_CLIPPER_ITEM_PATH:
-				spainter->canvas->clipPath(*static_cast<const G2SkiaPath*>(item->u.path), op, anti)? TB_TRUE : TB_FALSE;
+				spainter->canvas->clipPath(*static_cast<const G2SkiaPath*>(item->u.path), op, anti);
+				break;
 			default:
 				break;
 			}
@@ -507,11 +516,11 @@ static __tb_inline__ tb_void_t g2_skia_draw_path(tb_handle_t painter, tb_handle_
 	// apply context
 	g2_skia_context_apply(spainter);
 
-	// apply matrix
-	g2_skia_matrix_apply(spainter);
-
 	// apply clipper
 	g2_skia_clipper_apply(spainter);
+
+	// apply matrix
+	g2_skia_matrix_apply(spainter);
 
 	// draw
 	spainter->canvas->drawPath(*((G2SkiaPath const*)path), *spainter->style);
@@ -524,11 +533,11 @@ static __tb_inline__ tb_void_t g2_skia_draw_arc(tb_handle_t painter, g2_arc_t co
 	// apply context
 	g2_skia_context_apply(spainter);
 
-	// apply matrix
-	g2_skia_matrix_apply(spainter);
-
 	// apply clipper
 	g2_skia_clipper_apply(spainter);
+
+	// apply matrix
+	g2_skia_matrix_apply(spainter);
 
 	// draw
 	spainter->canvas->drawArc(SkRect::MakeXYWH(arc->c0.x - arc->rx, arc->c0.y - arc->ry, SkScalarMul(arc->rx, SkIntToScalar(2)), SkScalarMul(arc->ry, SkIntToScalar(2))), arc->ab, arc->an, false, *spainter->style);
@@ -541,11 +550,11 @@ static __tb_inline__ tb_void_t g2_skia_draw_rect(tb_handle_t painter, g2_rect_t 
 	// apply context
 	g2_skia_context_apply(spainter);
 
-	// apply matrix
-	g2_skia_matrix_apply(spainter);
-
 	// apply clipper
 	g2_skia_clipper_apply(spainter);
+
+	// apply matrix
+	g2_skia_matrix_apply(spainter);
 
 	// draw
 	spainter->canvas->drawRect(SkRect::MakeXYWH(rect->x, rect->y, rect->w, rect->h), *spainter->style);
@@ -558,11 +567,11 @@ static __tb_inline__ tb_void_t g2_skia_draw_line(tb_handle_t painter, g2_line_t 
 	// apply context
 	g2_skia_context_apply(spainter);
 
-	// apply matrix
-	g2_skia_matrix_apply(spainter);
-
 	// apply clipper
 	g2_skia_clipper_apply(spainter);
+
+	// apply matrix
+	g2_skia_matrix_apply(spainter);
 
 	// draw
 	spainter->canvas->drawLine(line->p0.x, line->p0.y, line->p1.x, line->p1.y, *spainter->style);
@@ -575,11 +584,11 @@ static __tb_inline__ tb_void_t g2_skia_draw_point(tb_handle_t painter, g2_point_
 	// apply context
 	g2_skia_context_apply(spainter);
 
-	// apply matrix
-	g2_skia_matrix_apply(spainter);
-
 	// apply clipper
 	g2_skia_clipper_apply(spainter);
+
+	// apply matrix
+	g2_skia_matrix_apply(spainter);
 
 	// draw
 	spainter->canvas->drawPoint(point->x, point->y, *spainter->style);
@@ -592,11 +601,11 @@ static __tb_inline__ tb_void_t g2_skia_draw_circle(tb_handle_t painter, g2_circl
 	// apply context
 	g2_skia_context_apply(spainter);
 
-	// apply matrix
-	g2_skia_matrix_apply(spainter);
-
 	// apply clipper
 	g2_skia_clipper_apply(spainter);
+
+	// apply matrix
+	g2_skia_matrix_apply(spainter);
 
 	// draw
 	spainter->canvas->drawCircle(circle->c.x, circle->c.y, circle->r, *spainter->style);
@@ -609,11 +618,11 @@ static __tb_inline__ tb_void_t g2_skia_draw_ellipse(tb_handle_t painter, g2_elli
 	// apply context
 	g2_skia_context_apply(spainter);
 
-	// apply matrix
-	g2_skia_matrix_apply(spainter);
-
 	// apply clipper
 	g2_skia_clipper_apply(spainter);
+
+	// apply matrix
+	g2_skia_matrix_apply(spainter);
 
 	// draw
 	spainter->canvas->drawOval(SkRect::MakeXYWH(ellipse->c0.x - ellipse->rx, ellipse->c0.y - ellipse->ry, SkScalarMul(ellipse->rx, SkIntToScalar(2)), SkScalarMul(ellipse->ry, SkIntToScalar(2))), *spainter->style);
@@ -626,11 +635,11 @@ static __tb_inline__ tb_void_t g2_skia_draw_triangle(tb_handle_t painter, g2_tri
 	// apply context
 	g2_skia_context_apply(spainter);
 
-	// apply matrix
-	g2_skia_matrix_apply(spainter);
-
 	// apply clipper
 	g2_skia_clipper_apply(spainter);
+
+	// apply matrix
+	g2_skia_matrix_apply(spainter);
 
 	// draw
 	G2SkiaPath path;

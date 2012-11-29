@@ -131,14 +131,11 @@ static tb_void_t g2_demo_render()
 	// render 
 	if (g_mode & G2_STYLE_MODE_FILL)
 	{
-		// save style
-		tb_handle_t style = g2_save_style(g_painter);
-
 		// init style
-		g2_style_clear(style);
-		g2_style_mode_set(style, G2_STYLE_MODE_FILL);
-		g2_style_color_set(style, G2_COLOR_RED);
-		g2_style_shader_set(style, g_bm? g_mhader[g_shaderi] : g_shader[g_shaderi]);
+		g2_clear_style(g_painter);
+		g2_mode(g_painter, G2_STYLE_MODE_FILL);
+		g2_color(g_painter, G2_COLOR_RED);
+		g2_shader(g_painter, g_bm? g_mhader[g_shaderi] : g_shader[g_shaderi]);
 
 		// init matrix
 		if (g_shaderi == 3) 
@@ -166,29 +163,19 @@ static tb_void_t g2_demo_render()
 
 		// render
 		g2_demo_shape_render();
-
-		// load style
-		g2_load_style(g_painter);
 	}
 
 	if (g_mode & G2_STYLE_MODE_STOK)
 	{
-		// save style
-		tb_handle_t style = g2_save_style(g_painter);
-
 		// init style
-		g2_style_clear(style);
-		g2_style_mode_set(style, G2_STYLE_MODE_STOK);
-		g2_style_color_set(style, G2_COLOR_BLUE);
-
-		g2_style_width_set(style, g2_long_to_float(g_penw));
-		g2_style_cap_set(style, g_cap[g_capi]);
-		g2_style_join_set(style, g_join[g_joini]);
+		g2_clear_style(g_painter);
+		g2_mode(g_painter, G2_STYLE_MODE_STOK);
+		g2_color(g_painter, G2_COLOR_BLUE);
+		g2_width(g_painter, g2_long_to_float(g_penw));
+		g2_cap(g_painter, g_cap[g_capi]);
+		g2_join(g_painter, g_join[g_joini]);
 
 		// render
 		g2_demo_shape_render();
-
-		// load style
-		g2_load_style(g_painter);
 	}
 }
