@@ -242,14 +242,6 @@ tb_void_t 			g2_draw_line2(tb_handle_t painter, 			g2_float_t x0, g2_float_t y0,
 tb_void_t 			g2_draw_iline(tb_handle_t painter, 			g2_iline_t const* line);
 tb_void_t 			g2_draw_iline2(tb_handle_t painter, 		tb_long_t x0, tb_long_t y0, tb_long_t x1, tb_long_t y1);
 
-// triangle
-tb_void_t 			g2_draw_triangle(tb_handle_t painter, 		g2_triangle_t const* triangle);
-tb_void_t 			g2_draw_triangle2(tb_handle_t painter, 		g2_float_t x0, g2_float_t y0, g2_float_t x1, g2_float_t y1, g2_float_t x2, g2_float_t y2);
-
-// itriangle
-tb_void_t 			g2_draw_itriangle(tb_handle_t painter, 		g2_itriangle_t const* triangle);
-tb_void_t 			g2_draw_itriangle2(tb_handle_t painter, 	tb_long_t x0, tb_long_t y0, tb_long_t x1, tb_long_t y1, tb_long_t x2, tb_long_t y2);
-
 // arc
 tb_void_t 			g2_draw_arc(tb_handle_t painter, 			g2_arc_t const* arc);
 tb_void_t 			g2_draw_arc2(tb_handle_t painter, 			g2_float_t x0, g2_float_t y0, g2_float_t rx, g2_float_t ry, g2_float_t ab, g2_float_t an);
@@ -257,6 +249,14 @@ tb_void_t 			g2_draw_arc2(tb_handle_t painter, 			g2_float_t x0, g2_float_t y0, 
 // iarc
 tb_void_t 			g2_draw_iarc(tb_handle_t painter, 			g2_iarc_t const* arc);
 tb_void_t 			g2_draw_iarc2(tb_handle_t painter, 			tb_long_t x0, tb_long_t y0, tb_size_t rx, tb_size_t ry, tb_size_t ab, tb_size_t an);
+
+// triangle
+tb_void_t 			g2_draw_triangle(tb_handle_t painter, 		g2_triangle_t const* triangle);
+tb_void_t 			g2_draw_triangle2(tb_handle_t painter, 		g2_float_t x0, g2_float_t y0, g2_float_t x1, g2_float_t y1, g2_float_t x2, g2_float_t y2);
+
+// itriangle
+tb_void_t 			g2_draw_itriangle(tb_handle_t painter, 		g2_itriangle_t const* triangle);
+tb_void_t 			g2_draw_itriangle2(tb_handle_t painter, 	tb_long_t x0, tb_long_t y0, tb_long_t x1, tb_long_t y1, tb_long_t x2, tb_long_t y2);
 
 // rect
 tb_void_t 			g2_draw_rect(tb_handle_t painter, 			g2_rect_t const* rect);

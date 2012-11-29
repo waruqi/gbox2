@@ -625,7 +625,7 @@ static __tb_inline__ tb_void_t g2_skia_draw_ellipse(tb_handle_t painter, g2_elli
 	g2_skia_matrix_apply(spainter);
 
 	// draw
-	spainter->canvas->drawOval(SkRect::MakeXYWH(ellipse->c0.x - ellipse->rx, ellipse->c0.y - ellipse->ry, SkScalarMul(ellipse->rx, SkIntToScalar(2)), SkScalarMul(ellipse->ry, SkIntToScalar(2))), *spainter->style);
+	spainter->canvas->drawOval(SkRect::MakeXYWH(ellipse->c0.x - ellipse->rx, ellipse->c0.y - ellipse->ry, ellipse->rx + ellipse->rx, ellipse->ry + ellipse->ry), *spainter->style);
 }
 static __tb_inline__ tb_void_t g2_skia_draw_triangle(tb_handle_t painter, g2_triangle_t const* triangle)
 {
