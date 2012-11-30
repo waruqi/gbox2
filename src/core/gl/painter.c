@@ -37,13 +37,73 @@
 # 	define G2_GL_VERTICES_GROW 				(512)
 #endif
 
-// the mcstack grow
+// matrix
 #ifdef TB_CONFIG_BINARY_SMALL
-# 	define G2_GL_MCSTACK_GROW 				(32)
+# 	define G2_GL_MATRIX_STACK_GROW 			(32)
+# 	define G2_GL_MATRIX_CACHE_SIZE 			(4)
 #else
-# 	define G2_GL_MCSTACK_GROW 				(64)
+# 	define G2_GL_MATRIX_STACK_GROW 			(64)
+# 	define G2_GL_MATRIX_CACHE_SIZE 			(8)
 #endif
 
+// style
+#ifdef TB_CONFIG_BINARY_SMALL
+# 	define G2_GL_STYLE_STACK_GROW 			(32)
+# 	define G2_GL_STYLE_CACHE_SIZE 			(4)
+#else
+# 	define G2_GL_STYLE_STACK_GROW 			(64)
+# 	define G2_GL_STYLE_CACHE_SIZE 			(8)
+#endif
+
+// clipper
+#ifdef TB_CONFIG_BINARY_SMALL
+# 	define G2_GL_CLIPPER_STACK_GROW 		(32)
+# 	define G2_GL_CLIPPER_CACHE_SIZE 		(4)
+# 	define G2_GL_CLIPPER_HASH_SIZE 			(8)
+#else
+# 	define G2_GL_CLIPPER_STACK_GROW 		(64)
+# 	define G2_GL_CLIPPER_CACHE_SIZE 		(8)
+# 	define G2_GL_CLIPPER_HASH_SIZE 			(16)
+#endif
+#define G2_GL_CLIPPER_HASH_ITEM_MAXN 		(G2_GL_CLIPPER_HASH_SIZE * G2_GL_CLIPPER_HASH_SIZE)
+
+/* ///////////////////////////////////////////////////////////////////////
+ * helper
+ */
+static tb_bool_t g2_gl_style_stack_item_free(tb_stack_t* stack, tb_pointer_t* item, tb_bool_t* bdel, tb_pointer_t data)
+{
+	tb_assert_and_check_return_val(stack && bdel, TB_FALSE);
+
+	// free style item
+	if (item) 
+	{
+		tb_handle_t style = (tb_handle_t)*item;
+		if (style) g2_style_exit(style);
+		*item = TB_NULL;
+	}
+
+	// ok
+	return TB_TRUE;
+}
+static tb_bool_t g2_gl_clipper_stack_item_free(tb_stack_t* stack, tb_pointer_t* item, tb_bool_t* bdel, tb_pointer_t data)
+{
+	tb_assert_and_check_return_val(stack && bdel, TB_FALSE);
+
+	// free clipper item
+	if (item) 
+	{
+		tb_handle_t clipper = (tb_handle_t)*item;
+		if (clipper) g2_clipper_exit(clipper);
+		*item = TB_NULL;
+	}
+
+	// ok
+	return TB_TRUE;
+}
+static tb_void_t g2_gl_clipper_hash_item_free(tb_item_func_t* func, tb_pointer_t item)
+{
+	if (item) g2_path_exit(item);
+}
 /* ///////////////////////////////////////////////////////////////////////
  * implementation
  */
@@ -52,17 +112,16 @@ tb_handle_t g2_init(tb_handle_t context)
 	// check
 	tb_assert_and_check_return_val(context, TB_NULL);
 
+	// init variables
+	tb_size_t 		i = 0;
+	tb_item_func_t 	clipper_hash_item_func = tb_item_func_ptr();
+
 	// alloc
 	g2_gl_painter_t* gpainter = tb_malloc0(sizeof(g2_gl_painter_t));
 	tb_assert_and_check_return_val(gpainter, TB_NULL);
 
 	// init context
 	gpainter->context = (g2_gl_context_t*)context;
-
-	// init style
-	gpainter->style_def = g2_style_init();
-	gpainter->style_usr = gpainter->style_def;
-	tb_assert_and_check_goto(gpainter->style_def, fail);
 
 	// init vertices
 	gpainter->vertices = tb_vector_init(G2_GL_VERTICES_GROW, tb_item_func_ifm(sizeof(tb_float_t) << 1, TB_NULL, TB_NULL));
@@ -71,9 +130,56 @@ tb_handle_t g2_init(tb_handle_t context)
 	// init matrix
 	g2_matrix_clear(&gpainter->matrix);
 
-	// init stack
-	gpainter->mcstack = tb_stack_init(G2_GL_MCSTACK_GROW, tb_item_func_ifm(sizeof(g2_gl_mcitem_t), TB_NULL, TB_NULL));
-	tb_assert_and_check_goto(gpainter->mcstack, fail);
+	// init matrix stack
+	gpainter->matrix_stack = tb_stack_init(G2_GL_MATRIX_STACK_GROW, tb_item_func_ifm(sizeof(g2_matrix_t), TB_NULL, TB_NULL));
+	tb_assert_and_check_goto(gpainter->matrix_stack, fail);
+
+	// init style
+	gpainter->style = g2_style_init();
+	tb_assert_and_check_goto(gpainter->style, fail);
+
+	// init style stack
+	gpainter->style_stack = tb_stack_init(G2_GL_STYLE_STACK_GROW, tb_item_func_ptr());
+	tb_assert_and_check_goto(gpainter->style_stack, fail);
+
+	// init style cache
+	gpainter->style_cache = tb_stack_init(G2_GL_STYLE_CACHE_SIZE, tb_item_func_ptr());
+	tb_assert_and_check_goto(gpainter->style_cache, fail);
+	for (i = 0; i < G2_GL_STYLE_CACHE_SIZE; i++)
+	{
+		// init
+		tb_handle_t style = g2_style_init();
+		tb_assert_and_check_goto(style, fail);
+
+		// put
+		tb_stack_put(gpainter->style_cache, style);
+	}
+
+	// init clipper
+	gpainter->clipper = g2_clipper_init();
+	tb_assert_and_check_goto(gpainter->clipper, fail);
+
+	// init clipper hash
+	clipper_hash_item_func.free = g2_gl_clipper_hash_item_free;
+	gpainter->clipper_hash = tb_hash_init(G2_GL_CLIPPER_HASH_SIZE, tb_item_func_ifm(sizeof(g2_shape_t), TB_NULL, TB_NULL), clipper_hash_item_func);
+	tb_assert_and_check_goto(gpainter->clipper_hash, fail);
+
+	// init clipper stack
+	gpainter->clipper_stack = tb_stack_init(G2_GL_CLIPPER_STACK_GROW, tb_item_func_ptr());
+	tb_assert_and_check_goto(gpainter->clipper_stack, fail);
+
+	// init clipper cache
+	gpainter->clipper_cache = tb_stack_init(G2_GL_CLIPPER_CACHE_SIZE, tb_item_func_ptr());
+	tb_assert_and_check_goto(gpainter->clipper_cache, fail);
+	for (i = 0; i < G2_GL_CLIPPER_CACHE_SIZE; i++)
+	{
+		// init
+		tb_handle_t clipper = g2_clipper_init();
+		tb_assert_and_check_goto(clipper, fail);
+
+		// put
+		tb_stack_put(gpainter->clipper_cache, clipper);
+	}
 
 	// ok
 	return gpainter;
@@ -90,8 +196,53 @@ tb_void_t g2_exit(tb_handle_t painter)
 		// exit vertices
 		if (gpainter->vertices) tb_vector_exit(gpainter->vertices);
 
-		// exit mcstack
-		if (gpainter->mcstack) tb_stack_exit(gpainter->mcstack);
+		// exit matrix stack
+		if (gpainter->matrix_stack) tb_stack_exit(gpainter->matrix_stack);
+		gpainter->matrix_stack = TB_NULL;
+
+		// exit style
+		if (gpainter->style) g2_style_exit(gpainter->style);
+		gpainter->style = TB_NULL;
+
+		// exit style cache
+		if (gpainter->style_cache) 
+		{
+			tb_stack_walk(gpainter->style_cache, g2_gl_style_stack_item_free, TB_NULL);
+			tb_stack_exit(gpainter->style_cache);
+		}
+		gpainter->style_cache = TB_NULL;
+		
+		// exit style stack
+		if (gpainter->style_stack) 
+		{
+			tb_stack_walk(gpainter->style_stack, g2_gl_style_stack_item_free, TB_NULL);
+			tb_stack_exit(gpainter->style_stack);
+		}
+		gpainter->style_stack = TB_NULL;
+
+		// exit clipper
+		if (gpainter->clipper) g2_style_exit(gpainter->clipper);
+		gpainter->clipper = TB_NULL;
+
+		// exit clipper hash
+		if (gpainter->clipper_hash) tb_hash_exit(gpainter->clipper_hash);
+		gpainter->clipper_hash = TB_NULL;
+
+		// exit clipper cache
+		if (gpainter->clipper_cache) 
+		{
+			tb_stack_walk(gpainter->clipper_cache, g2_gl_clipper_stack_item_free, TB_NULL);
+			tb_stack_exit(gpainter->clipper_cache);
+		}
+		gpainter->clipper_cache = TB_NULL;
+		
+		// exit clipper stack
+		if (gpainter->clipper_stack) 
+		{
+			tb_stack_walk(gpainter->clipper_stack, g2_gl_clipper_stack_item_free, TB_NULL);
+			tb_stack_exit(gpainter->clipper_stack);
+		}
+		gpainter->clipper_stack = TB_NULL;
 
 		// free it
 		tb_free(gpainter);
@@ -104,52 +255,6 @@ tb_size_t g2_pixfmt(tb_handle_t painter)
 
 	return g2_bitmap_pixfmt(g2_context_surface(gpainter->context));
 }
-tb_size_t g2_save(tb_handle_t painter, tb_size_t mode)
-{	
-	g2_gl_painter_t* gpainter = (g2_gl_painter_t*)painter;
-	tb_assert_and_check_return_val(gpainter && gpainter->mcstack, 0);
-
-	// no mode?
-	tb_assert_and_check_return_val(mode, tb_stack_size(gpainter->mcstack));
-
-	// init item
-	g2_gl_mcitem_t item = {0}; 
-	item.mode = mode;
-
-	// save matrix
-	if (mode & G2_SAVE_MODE_MATRIX)
-		item.matrix = gpainter->matrix;
-
-	// save clipper
-	if (mode & G2_SAVE_MODE_CLIP)
-		tb_trace_noimpl();
-
-	// put item
-	tb_stack_put(gpainter->mcstack, &item);
-
-	// ok
-	return tb_stack_size(gpainter->mcstack);
-}
-tb_void_t g2_load(tb_handle_t painter)
-{
-	g2_gl_painter_t* gpainter = (g2_gl_painter_t*)painter;
-	tb_assert_and_check_return(gpainter && gpainter->mcstack);
-
-	// init item
-	g2_gl_mcitem_t* item = tb_stack_top(gpainter->mcstack);
-	tb_assert_and_check_return(item);
-
-	// load matrix
-	if (item->mode & G2_SAVE_MODE_MATRIX)
-		gpainter->matrix = item->matrix;
-
-	// load clipper
-	if (item->mode & G2_SAVE_MODE_CLIP)
-		tb_trace_noimpl();
-
-	// pop item
-	tb_stack_pop(gpainter->mcstack);
-}
 tb_handle_t g2_context(tb_handle_t painter)
 {
 	g2_gl_painter_t* gpainter = (g2_gl_painter_t*)painter;
@@ -157,86 +262,150 @@ tb_handle_t g2_context(tb_handle_t painter)
 
 	return (tb_handle_t)gpainter->context;
 }
-tb_void_t g2_context_set(tb_handle_t painter, tb_handle_t context)
-{
-	g2_gl_painter_t* gpainter = (g2_gl_painter_t*)painter;
-	tb_assert_and_check_return(gpainter && context);
-
-	gpainter->context = (g2_gl_context_t*)context;
-}
 tb_handle_t g2_style(tb_handle_t painter)
 {
 	g2_gl_painter_t* gpainter = (g2_gl_painter_t*)painter;
 	tb_assert_and_check_return_val(gpainter, TB_NULL);
 
-	return gpainter->style_usr;
+	return gpainter->style;
 }
-tb_void_t g2_style_set(tb_handle_t painter, tb_handle_t style)
+tb_handle_t g2_save_style(tb_handle_t painter)
 {
 	g2_gl_painter_t* gpainter = (g2_gl_painter_t*)painter;
-	tb_assert_and_check_return(gpainter);
+	tb_assert_and_check_return_val(gpainter && gpainter->style_cache && gpainter->style_stack, TB_NULL);
 
-	gpainter->style_usr = style? style : gpainter->style_def;
+	// init a new style from cache first
+	tb_handle_t style = TB_NULL;
+	if (tb_stack_size(gpainter->style_cache))
+	{
+		// get
+		style = (tb_handle_t)tb_stack_top(gpainter->style_cache);
+		tb_assert_and_check_return_val(gpainter->style_cache, TB_NULL);
+
+		// pop
+		tb_stack_pop(gpainter->style_cache);
+	}
+	// init a new style
+	else style = g2_style_init();
+	tb_assert_and_check_return_val(style, TB_NULL);
+
+	// save the old style
+	tb_stack_put(gpainter->style_stack, gpainter->style);
+
+	// copy the new style
+	g2_style_copy(style, gpainter->style);
+	gpainter->style = style;
+
+	// ok
+	return gpainter->style;
 }
-g2_matrix_t const* g2_matrix(tb_handle_t painter)
+tb_void_t g2_load_style(tb_handle_t painter)
+{
+	g2_gl_painter_t* gpainter = (g2_gl_painter_t*)painter;
+	tb_assert_and_check_return(gpainter && gpainter->style_cache && gpainter->style_stack);
+
+	// load the top style
+	tb_handle_t style = (tb_handle_t)tb_stack_top(gpainter->style_stack);
+	tb_assert_and_check_return(style);
+	tb_stack_pop(gpainter->style_stack);
+
+	// free style to cache first
+	if (gpainter->style && tb_stack_size(gpainter->style_cache) < G2_GL_STYLE_CACHE_SIZE)
+		tb_stack_put(gpainter->style_cache, gpainter->style);
+	// free style
+	else g2_style_exit(gpainter->style);
+
+	// copy the top style
+	gpainter->style = style;
+}
+g2_matrix_t* g2_matrix(tb_handle_t painter)
 {
 	g2_gl_painter_t* gpainter = (g2_gl_painter_t*)painter;
 	tb_assert_and_check_return_val(gpainter, TB_NULL);
 
 	return &gpainter->matrix;
 }
-tb_bool_t g2_rotate(tb_handle_t painter, g2_float_t degrees)
+g2_matrix_t* g2_save_matrix(tb_handle_t painter)
 {
 	g2_gl_painter_t* gpainter = (g2_gl_painter_t*)painter;
-	tb_assert_and_check_return_val(gpainter, TB_FALSE);
+	tb_assert_and_check_return_val(gpainter && gpainter->matrix_stack, TB_NULL);
 
-	return g2_matrix_rotate(&gpainter->matrix, degrees);
+	// save matrix
+	tb_stack_put(gpainter->matrix_stack, &gpainter->matrix);
+
+	// ok
+	return &gpainter->matrix;
 }
-tb_bool_t g2_skew(tb_handle_t painter, g2_float_t kx, g2_float_t ky)
+tb_void_t g2_load_matrix(tb_handle_t painter)
 {
 	g2_gl_painter_t* gpainter = (g2_gl_painter_t*)painter;
-	tb_assert_and_check_return_val(gpainter, TB_FALSE);
+	tb_assert_and_check_return(gpainter && gpainter->matrix_stack);
 
-	return g2_matrix_skew(&gpainter->matrix, kx, ky);
+	// init matrix
+	g2_matrix_t const* matrix = (g2_matrix_t const*)tb_stack_top(gpainter->matrix_stack);
+	tb_assert_and_check_return(matrix);
+
+	// load matrix
+	gpainter->matrix = *matrix;
+
+	// pop it
+	tb_stack_pop(gpainter->matrix_stack);
 }
-tb_bool_t g2_scale(tb_handle_t painter, g2_float_t sx, g2_float_t sy)
+tb_handle_t g2_clipper(tb_handle_t painter)
 {
 	g2_gl_painter_t* gpainter = (g2_gl_painter_t*)painter;
-	tb_assert_and_check_return_val(gpainter, TB_FALSE);
+	tb_assert_and_check_return_val(gpainter, TB_NULL);
 
-	return g2_matrix_scale(&gpainter->matrix, sx, sy);
+	return gpainter->clipper;
 }
-tb_bool_t g2_translate(tb_handle_t painter, g2_float_t dx, g2_float_t dy)
+tb_handle_t g2_save_clipper(tb_handle_t painter)
 {
 	g2_gl_painter_t* gpainter = (g2_gl_painter_t*)painter;
-	tb_assert_and_check_return_val(gpainter, TB_FALSE);
+	tb_assert_and_check_return_val(gpainter && gpainter->clipper_cache && gpainter->clipper_stack, TB_NULL);
 
-	return g2_matrix_translate(&gpainter->matrix, dx, dy);
+	// init a new clipper from cache first
+	tb_handle_t clipper = TB_NULL;
+	if (tb_stack_size(gpainter->clipper_cache))
+	{
+		// get
+		clipper = (tb_handle_t)tb_stack_top(gpainter->clipper_cache);
+		tb_assert_and_check_return_val(gpainter->clipper_cache, TB_NULL);
+
+		// pop
+		tb_stack_pop(gpainter->clipper_cache);
+	}
+	// init a new clipper
+	else clipper = g2_clipper_init();
+	tb_assert_and_check_return_val(clipper, TB_NULL);
+
+	// save the old clipper
+	tb_stack_put(gpainter->clipper_stack, gpainter->clipper);
+
+	// copy the new clipper
+	g2_clipper_copy(clipper, gpainter->clipper);
+	gpainter->clipper = clipper;
+
+	// ok
+	return gpainter->clipper;
 }
-tb_bool_t g2_multiply(tb_handle_t painter, g2_matrix_t const* matrix)
+tb_void_t g2_load_clipper(tb_handle_t painter)
 {
 	g2_gl_painter_t* gpainter = (g2_gl_painter_t*)painter;
-	tb_assert_and_check_return_val(gpainter && matrix, TB_FALSE);
+	tb_assert_and_check_return(gpainter && gpainter->clipper_cache && gpainter->clipper_stack);
 
-	return g2_matrix_multiply(&gpainter->matrix, matrix);
-}
-tb_void_t g2_matrix_set(tb_handle_t painter, g2_matrix_t const* matrix)
-{
-	g2_gl_painter_t* gpainter = (g2_gl_painter_t*)painter;
-	tb_assert_and_check_return(gpainter);
+	// load the top clipper
+	tb_handle_t clipper = (tb_handle_t)tb_stack_top(gpainter->clipper_stack);
+	tb_assert_and_check_return(clipper);
+	tb_stack_pop(gpainter->clipper_stack);
 
-	if (matrix) gpainter->matrix = *matrix;
-	else g2_matrix_clear(&gpainter->matrix);
-}
-tb_bool_t g2_clip_path(tb_handle_t painter, tb_size_t mode, tb_handle_t path)
-{
-	tb_trace_noimpl();
-	return TB_NULL;
-}
-tb_bool_t g2_clip_rect(tb_handle_t painter, tb_size_t mode, g2_rect_t const* rect)
-{
-	tb_trace_noimpl();
-	return TB_NULL;
+	// free clipper to cache first
+	if (gpainter->clipper && tb_stack_size(gpainter->clipper_cache) < G2_GL_CLIPPER_CACHE_SIZE)
+		tb_stack_put(gpainter->clipper_cache, gpainter->clipper);
+	// free clipper
+	else g2_clipper_exit(gpainter->clipper);
+
+	// copy the top clipper
+	gpainter->clipper = clipper;
 }
 tb_void_t g2_draw_clear(tb_handle_t painter, g2_color_t color)
 {
@@ -247,7 +416,7 @@ tb_void_t g2_draw_clear(tb_handle_t painter, g2_color_t color)
 tb_void_t g2_draw_path(tb_handle_t painter, tb_handle_t path)
 {
 	g2_gl_painter_t* gpainter = (g2_gl_painter_t*)painter;
-	tb_assert_and_check_return(gpainter && gpainter->style_usr && path);
+	tb_assert_and_check_return(gpainter && gpainter->style && path);
 
 	// like
 	g2_gl_path_make_like((g2_gl_path_t*)path);
@@ -263,7 +432,7 @@ tb_void_t g2_draw_arc(tb_handle_t painter, g2_arc_t const* arc)
 tb_void_t g2_draw_rect(tb_handle_t painter, g2_rect_t const* rect)
 {
 	g2_gl_painter_t* gpainter = (g2_gl_painter_t*)painter;
-	tb_assert_and_check_return(gpainter && gpainter->style_usr && rect);
+	tb_assert_and_check_return(gpainter && gpainter->style && rect);
 
 	// fill
 	g2_gl_fill_rect(gpainter, rect);
@@ -279,7 +448,7 @@ tb_void_t g2_draw_point(tb_handle_t painter, g2_point_t const* point)
 tb_void_t g2_draw_circle(tb_handle_t painter, g2_circle_t const* circle)
 {
 	g2_gl_painter_t* gpainter = (g2_gl_painter_t*)painter;
-	tb_assert_and_check_return(gpainter && gpainter->style_usr && circle);
+	tb_assert_and_check_return(gpainter && gpainter->style && circle);
 
 	// fill
 	g2_gl_fill_circle(gpainter, circle);
@@ -287,7 +456,7 @@ tb_void_t g2_draw_circle(tb_handle_t painter, g2_circle_t const* circle)
 tb_void_t g2_draw_ellipse(tb_handle_t painter, g2_ellipse_t const* ellipse)
 {
 	g2_gl_painter_t* gpainter = (g2_gl_painter_t*)painter;
-	tb_assert_and_check_return(gpainter && gpainter->style_usr && ellipse);
+	tb_assert_and_check_return(gpainter && gpainter->style && ellipse);
 
 	// fill
 	g2_gl_fill_ellipse(gpainter, ellipse);
@@ -295,7 +464,7 @@ tb_void_t g2_draw_ellipse(tb_handle_t painter, g2_ellipse_t const* ellipse)
 tb_void_t g2_draw_triangle(tb_handle_t painter, g2_triangle_t const* triangle)
 {
 	g2_gl_painter_t* gpainter = (g2_gl_painter_t*)painter;
-	tb_assert_and_check_return(gpainter && gpainter->style_usr && triangle);
+	tb_assert_and_check_return(gpainter && gpainter->style && triangle);
 
 	// fill
 	g2_gl_fill_triangle(gpainter, triangle);

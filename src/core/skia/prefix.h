@@ -27,6 +27,7 @@
  * includes
  */
 #include "../prefix.h"
+#include "../path.h"
 #include "../matrix.h"
 #include "../bitmap.h"
 #include "../context.h"

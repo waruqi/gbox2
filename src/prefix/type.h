@@ -39,14 +39,14 @@
  * types
  */
 
-// the quality type
-typedef enum __g2_quality_t
+// the quality enum
+typedef enum __g2_quality_e
 {
 	G2_QUALITY_LOW 	= 0
 ,	G2_QUALITY_MID 	= 1
 ,	G2_QUALITY_TOP 	= 2
 
-}g2_quality_t;
+}g2_quality_e;
 
 // the float type
 #ifdef G2_CONFIG_FLOAT_FIXED
@@ -223,6 +223,59 @@ typedef struct __g2_gradient_t
 	tb_size_t 			count;
 
 }g2_gradient_t;
+
+// the shape type enum
+typedef enum __g2_shape_type_e
+{
+	G2_shape_TYPE_NONE 			= 0
+, 	G2_shape_TYPE_ARC 			= 1
+, 	G2_shape_TYPE_PATH 			= 2
+, 	G2_shape_TYPE_LINE 			= 3
+, 	G2_shape_TYPE_RECT 			= 4
+, 	G2_shape_TYPE_POINT 		= 5
+, 	G2_shape_TYPE_CIRCLE 		= 6
+, 	G2_shape_TYPE_ELLIPSE 		= 7
+, 	G2_shape_TYPE_TRIANGLE 		= 8
+
+}g2_shape_type_e;
+
+// the shape type
+typedef struct __g2_shape_t
+{
+	// the type
+	tb_size_t 			type;
+
+	// the shape
+	union
+	{
+		// the arc
+		g2_arc_t 		arc;
+
+		// the path
+		tb_handle_t 	path;
+
+		// the line
+		g2_line_t 		line;
+
+		// the rect
+		g2_rect_t 		rect;
+
+		// the point
+		g2_point_t 		point;
+
+		// the circle
+		g2_circle_t 	circle;
+	
+		// the ellipse
+		g2_ellipse_t 	ellipse;
+
+		// the triangle
+		g2_triangle_t 	triangle;
+
+	}u;
+
+}g2_shape_t;
+
 
 /* ////////////////////////////////////////////////////////////////////////
  * inline

@@ -686,7 +686,7 @@ static __tb_inline__ tb_bool_t g2_gl_fill_init(g2_gl_fill_t* fill, g2_gl_painter
 	// init fill
 	fill->painter 	= painter;
 	fill->context 	= painter->context;
-	fill->style 	= painter->style_usr;
+	fill->style 	= painter->style;
 	fill->shader 	= g2_style_shader(fill->style);
 	fill->flag 		= flag;
 	g2_gl_matrix_from(fill->vmatrix, &fill->painter->matrix);

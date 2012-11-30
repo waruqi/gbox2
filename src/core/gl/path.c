@@ -556,6 +556,98 @@ tb_bool_t g2_path_null(tb_handle_t path)
 
 	return tb_vector_size(gpath->data)? TB_FALSE : TB_TRUE;
 }
+tb_bool_t g2_path_itor_init(tb_handle_t path)
+{
+	g2_gl_path_t* gpath = (g2_gl_path_t*)path;
+	tb_assert_and_check_return_val(gpath && gpath->code && gpath->data, TB_FALSE);
+
+	// check
+	tb_assert_and_check_return_val(tb_iterator_mode(gpath->code) & TB_ITERATOR_MODE_RACCESS, TB_FALSE);
+	tb_assert_and_check_return_val(tb_iterator_mode(gpath->data) & TB_ITERATOR_MODE_RACCESS, TB_FALSE);
+
+	// init itor
+	gpath->itor.code = tb_iterator_head(gpath->code);
+	gpath->itor.data = tb_iterator_head(gpath->data);
+
+	// ok
+	return TB_TRUE;
+}
+tb_size_t g2_path_itor_next(tb_handle_t path, g2_point_t pt[3])
+{
+	g2_gl_path_t* gpath = (g2_gl_path_t*)path;
+	tb_assert_and_check_return_val(gpath && gpath->code && gpath->data && pt, G2_PATH_CODE_NONE);
+
+	// tail?
+	tb_check_return_val(gpath->itor.code != tb_iterator_tail(gpath->code), G2_PATH_CODE_NONE);
+
+	// code
+	tb_size_t code = (tb_size_t)tb_iterator_item(gpath->code, gpath->itor.code);
+
+	// step
+	tb_size_t step = g2_gl_path_code_step(code);
+
+	// data
+	if (step)
+	{
+		// check
+		tb_assert(gpath->itor.data + step <= tb_iterator_tail(gpath->data));
+
+		// data
+		tb_float_t const* data = (tb_float_t const*)tb_iterator_item(gpath->data, gpath->itor.data);
+
+		// check
+		tb_assert(data);
+
+		// copy
+		if (data) 
+		{
+#ifdef G2_CONFIG_FLOAT_FIXED
+			switch (step)
+			{
+			case 1:
+				pt[0].x = tb_float_to_g2(data[0]);
+				pt[0].y = tb_float_to_g2(data[1]);
+				break;
+			case 2:
+				pt[0].x = tb_float_to_g2(data[0]);
+				pt[0].y = tb_float_to_g2(data[1]);
+				pt[1].x = tb_float_to_g2(data[2]);
+				pt[1].y = tb_float_to_g2(data[3]);
+				break;
+			case 3:
+				pt[0].x = tb_float_to_g2(data[0]);
+				pt[0].y = tb_float_to_g2(data[1]);
+				pt[1].x = tb_float_to_g2(data[2]);
+				pt[1].y = tb_float_to_g2(data[3]);
+				pt[2].x = tb_float_to_g2(data[4]);
+				pt[2].y = tb_float_to_g2(data[5]);
+				break;
+			default:
+				break;
+			}
+#else
+			if (step) tb_memcpy(pt, data, step * sizeof(tb_float_t) << 1);
+#endif
+		}
+	}
+
+	// next code
+	gpath->itor.code++;
+
+	// next data
+	gpath->itor.data += step;
+
+	// ok
+	return code;
+}
+tb_void_t g2_path_itor_exit(tb_handle_t path)
+{
+	g2_gl_path_t* gpath = (g2_gl_path_t*)path;
+	tb_assert_and_check_return(gpath);
+
+	gpath->itor.code = tb_iterator_tail(gpath->code);
+	gpath->itor.data = tb_iterator_tail(gpath->data);
+}
 tb_bool_t g2_path_last_pt(tb_handle_t path, g2_point_t* pt)
 {
 	g2_gl_path_t* gpath = (g2_gl_path_t*)path;
@@ -732,96 +824,31 @@ tb_void_t g2_path_arc_to(tb_handle_t path, g2_arc_t const* arc)
 {
 	tb_trace_noimpl();
 }
-tb_bool_t g2_path_itor_init(tb_handle_t path)
+tb_void_t g2_path_add_path(tb_handle_t path, tb_handle_t path2)
 {
-	g2_gl_path_t* gpath = (g2_gl_path_t*)path;
-	tb_assert_and_check_return_val(gpath && gpath->code && gpath->data, TB_FALSE);
-
-	// check
-	tb_assert_and_check_return_val(tb_iterator_mode(gpath->code) & TB_ITERATOR_MODE_RACCESS, TB_FALSE);
-	tb_assert_and_check_return_val(tb_iterator_mode(gpath->data) & TB_ITERATOR_MODE_RACCESS, TB_FALSE);
-
-	// init itor
-	gpath->itor.code = tb_iterator_head(gpath->code);
-	gpath->itor.data = tb_iterator_head(gpath->data);
-
-	// ok
-	return TB_TRUE;
+	tb_trace_noimpl();
 }
-tb_size_t g2_path_itor_next(tb_handle_t path, g2_point_t pt[3])
+tb_void_t g2_path_add_line(tb_handle_t path, g2_line_t const* line)
 {
-	g2_gl_path_t* gpath = (g2_gl_path_t*)path;
-	tb_assert_and_check_return_val(gpath && gpath->code && gpath->data && pt, G2_PATH_CODE_NONE);
-
-	// tail?
-	tb_check_return_val(gpath->itor.code != tb_iterator_tail(gpath->code), G2_PATH_CODE_NONE);
-
-	// code
-	tb_size_t code = (tb_size_t)tb_iterator_item(gpath->code, gpath->itor.code);
-
-	// step
-	tb_size_t step = g2_gl_path_code_step(code);
-
-	// data
-	if (step)
-	{
-		// check
-		tb_assert(gpath->itor.data + step <= tb_iterator_tail(gpath->data));
-
-		// data
-		tb_float_t const* data = (tb_float_t const*)tb_iterator_item(gpath->data, gpath->itor.data);
-
-		// check
-		tb_assert(data);
-
-		// copy
-		if (data) 
-		{
-#ifdef G2_CONFIG_FLOAT_FIXED
-			switch (step)
-			{
-			case 1:
-				pt[0].x = tb_float_to_g2(data[0]);
-				pt[0].y = tb_float_to_g2(data[1]);
-				break;
-			case 2:
-				pt[0].x = tb_float_to_g2(data[0]);
-				pt[0].y = tb_float_to_g2(data[1]);
-				pt[1].x = tb_float_to_g2(data[2]);
-				pt[1].y = tb_float_to_g2(data[3]);
-				break;
-			case 3:
-				pt[0].x = tb_float_to_g2(data[0]);
-				pt[0].y = tb_float_to_g2(data[1]);
-				pt[1].x = tb_float_to_g2(data[2]);
-				pt[1].y = tb_float_to_g2(data[3]);
-				pt[2].x = tb_float_to_g2(data[4]);
-				pt[2].y = tb_float_to_g2(data[5]);
-				break;
-			default:
-				break;
-			}
-#else
-			if (step) tb_memcpy(pt, data, step * sizeof(tb_float_t) << 1);
-#endif
-		}
-	}
-
-	// next code
-	gpath->itor.code++;
-
-	// next data
-	gpath->itor.data += step;
-
-	// ok
-	return code;
+	tb_trace_noimpl();
 }
-tb_void_t g2_path_itor_exit(tb_handle_t path)
+tb_void_t g2_path_add_arc(tb_handle_t path, g2_arc_t const* arc)
 {
-	g2_gl_path_t* gpath = (g2_gl_path_t*)path;
-	tb_assert_and_check_return(gpath);
-
-	gpath->itor.code = tb_iterator_tail(gpath->code);
-	gpath->itor.data = tb_iterator_tail(gpath->data);
+	tb_trace_noimpl();
 }
-
+tb_void_t g2_path_add_triangle(tb_handle_t path, g2_triangle_t const* triangle)
+{
+	tb_trace_noimpl();
+}
+tb_void_t g2_path_add_rect(tb_handle_t path, g2_rect_t const* rect)
+{
+	tb_trace_noimpl();
+}
+tb_void_t g2_path_add_circle(tb_handle_t path, g2_circle_t const* circle)
+{
+	tb_trace_noimpl();
+}
+tb_void_t g2_path_add_ellipse(tb_handle_t path, g2_ellipse_t const* ellipse)
+{
+	tb_trace_noimpl();
+}

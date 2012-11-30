@@ -218,6 +218,9 @@ static tb_void_t g2_demo_shape_render()
 
 	// clip
 	g2_clip_irect2(g_painter, G2_CLIPPER_MODE_INTERSECT, 10, 10, g2_bitmap_width(g_surface) - 20, g2_bitmap_height(g_surface) - 20);
+	g2_clip_icircle2(g_painter, G2_CLIPPER_MODE_INTERSECT, g_x0, g_y0, 200);
+	g2_clip_iellipse2(g_painter, G2_CLIPPER_MODE_UNION, g_x0, g_y0, 300, 100);
+	g2_clip_icircle2(g_painter, G2_CLIPPER_MODE_SUBTRACT, g_x0, g_y0, 10);
 
 	// set shader matrix
 	tb_handle_t shader = g2_style_shader(g2_style(g_painter));

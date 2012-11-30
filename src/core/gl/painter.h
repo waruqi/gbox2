@@ -32,38 +32,29 @@
  * types
  */
 
-// the gl110 matrix and clip item type for stack
-typedef struct __g2_gl_mcitem_t
-{
-	// the mode
-	tb_size_t 					mode;
-
-	// the matrix
-	g2_matrix_t 				matrix;
-
-	// the clipper
-	tb_handle_t 				clipper;
-
-}g2_gl_mcitem_t;
-
 // the gl painter type
 typedef struct __g2_gl_painter_t
 {
 	// the context
 	g2_gl_context_t* 			context;
 
-	// the matrix
-	g2_matrix_t 				matrix;
-
-	// the style
-	tb_handle_t 				style_def;
-	tb_handle_t 				style_usr;
-
 	// the vertices, vector<tb_float_t[2]>
 	tb_vector_t* 				vertices;
 
-	// the matrix and clipper stack
-	tb_stack_t* 				mcstack;
+	// the matrix
+	g2_matrix_t 				matrix;
+	tb_stack_t* 				matrix_stack;
+
+	// the style
+	tb_handle_t 				style;
+	tb_stack_t* 				style_stack;
+	tb_stack_t* 				style_cache;
+
+	// the clipper
+	tb_handle_t 				clipper;
+	tb_hash_t* 					clipper_hash;
+	tb_stack_t* 				clipper_stack;
+	tb_stack_t* 				clipper_cache;
 
 }g2_gl_painter_t;
 

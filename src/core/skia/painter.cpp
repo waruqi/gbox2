@@ -31,26 +31,49 @@
  * macros
  */
 
+// matrix
 #ifdef SK_SCALAR_IS_FLOAT
 # 	define kMatrix22Elem 					SK_Scalar1
 #else
 # 	define kMatrix22Elem 					SK_Fract1
 #endif
 
+// matrix
 #ifdef TB_CONFIG_BINARY_SMALL
-# 	define G2_SKIA_STACK_GROW 				(32)
-# 	define G2_SKIA_CACHE_SIZE 				(4)
+# 	define G2_SKIA_MATRIX_STACK_GROW 		(32)
+# 	define G2_SKIA_MATRIX_CACHE_SIZE 		(4)
 #else
-# 	define G2_SKIA_STACK_GROW 				(64)
-# 	define G2_SKIA_CACHE_SIZE 				(8)
+# 	define G2_SKIA_MATRIX_STACK_GROW 		(64)
+# 	define G2_SKIA_MATRIX_CACHE_SIZE 		(8)
 #endif
+
+// style
+#ifdef TB_CONFIG_BINARY_SMALL
+# 	define G2_SKIA_STYLE_STACK_GROW 		(32)
+# 	define G2_SKIA_STYLE_CACHE_SIZE 		(4)
+#else
+# 	define G2_SKIA_STYLE_STACK_GROW 		(64)
+# 	define G2_SKIA_STYLE_CACHE_SIZE 		(8)
+#endif
+
+// clipper
+#ifdef TB_CONFIG_BINARY_SMALL
+# 	define G2_SKIA_CLIPPER_STACK_GROW 		(32)
+# 	define G2_SKIA_CLIPPER_CACHE_SIZE 		(4)
+# 	define G2_SKIA_CLIPPER_HASH_SIZE 		(8)
+#else
+# 	define G2_SKIA_CLIPPER_STACK_GROW 		(64)
+# 	define G2_SKIA_CLIPPER_CACHE_SIZE 		(8)
+# 	define G2_SKIA_CLIPPER_HASH_SIZE 		(16)
+#endif
+#define G2_SKIA_CLIPPER_HASH_ITEM_MAXN 		(G2_SKIA_CLIPPER_HASH_SIZE * G2_SKIA_CLIPPER_HASH_SIZE)
 
 
 /* ///////////////////////////////////////////////////////////////////////
  * types
  */
 
-// the painter type
+// the skia painter type
 typedef struct __g2_skia_painter_t
 {
 	// the context
@@ -73,6 +96,7 @@ typedef struct __g2_skia_painter_t
 
 	// the clipper
 	tb_handle_t 		clipper;
+	tb_hash_t* 			clipper_hash;
 	tb_stack_t* 		clipper_stack;
 	tb_stack_t* 		clipper_cache;
 
@@ -109,7 +133,7 @@ static __tb_inline__ tb_void_t g2_skia_clipper_apply(g2_skia_painter_t* spainter
 	tb_handle_t clipper = spainter->clipper;
 
 	// no clipper item?
-	tb_size_t size = g2_clipper_size(clipper);
+	tb_size_t 	size = g2_clipper_size(clipper);
 	tb_check_return(size);
 
 	// anti-aliasing?
@@ -162,6 +186,90 @@ static __tb_inline__ tb_void_t g2_skia_clipper_apply(g2_skia_painter_t* spainter
 			case G2_CLIPPER_ITEM_PATH:
 				spainter->canvas->clipPath(*static_cast<const G2SkiaPath*>(item->u.path), op, anti);
 				break;
+			case G2_CLIPPER_ITEM_CIRCLE:
+				{
+					// init shape
+					g2_shape_t shape = {0};
+					shape.type = G2_shape_TYPE_CIRCLE;
+					shape.u.circle = item->u.circle;
+
+					// get path from hash first
+					tb_handle_t path = tb_hash_get(spainter->clipper_hash, &shape);
+					if (!path)
+					{
+						// init path
+						path = g2_path_init();
+						tb_assert_and_check_break(path);
+
+						// add circle to path
+						g2_path_add_circle(path, &item->u.circle);
+
+						// clear hash if full
+						if (tb_hash_size(spainter->clipper_hash) >= G2_SKIA_CLIPPER_HASH_ITEM_MAXN)
+							tb_hash_clear(spainter->clipper_hash);
+
+						// add path to hash
+						tb_hash_set(spainter->clipper_hash, &shape, path);
+					}
+					spainter->canvas->clipPath(*static_cast<G2SkiaPath const*>(path), op, anti);
+				}
+				break;
+			case G2_CLIPPER_ITEM_ELLIPSE:
+				{
+					// init shape
+					g2_shape_t shape = {0};
+					shape.type = G2_shape_TYPE_ELLIPSE;
+					shape.u.ellipse = item->u.ellipse;
+
+					// get path from hash first
+					tb_handle_t path = tb_hash_get(spainter->clipper_hash, &shape);
+					if (!path)
+					{
+						// init path
+						path = g2_path_init();
+						tb_assert_and_check_break(path);
+
+						// add ellipse to path
+						g2_path_add_ellipse(path, &item->u.ellipse);
+
+						// clear hash if full
+						if (tb_hash_size(spainter->clipper_hash) >= G2_SKIA_CLIPPER_HASH_ITEM_MAXN)
+							tb_hash_clear(spainter->clipper_hash);
+
+						// add path to hash
+						tb_hash_set(spainter->clipper_hash, &shape, path);
+					}
+					spainter->canvas->clipPath(*static_cast<G2SkiaPath const*>(path), op, anti);
+				}
+				break;
+			case G2_CLIPPER_ITEM_TRIANGLE:
+				{
+					// init shape
+					g2_shape_t shape = {0};
+					shape.type = G2_shape_TYPE_TRIANGLE;
+					shape.u.triangle = item->u.triangle;
+
+					// get path from hash first
+					tb_handle_t path = tb_hash_get(spainter->clipper_hash, &shape);
+					if (!path)
+					{
+						// init path
+						path = g2_path_init();
+						tb_assert_and_check_break(path);
+
+						// add triangle to path
+						g2_path_add_triangle(path, &item->u.triangle);
+
+						// clear hash if full
+						if (tb_hash_size(spainter->clipper_hash) >= G2_SKIA_CLIPPER_HASH_ITEM_MAXN)
+							tb_hash_clear(spainter->clipper_hash);
+
+						// add path to hash
+						tb_hash_set(spainter->clipper_hash, &shape, path);
+					}
+					spainter->canvas->clipPath(*static_cast<G2SkiaPath const*>(path), op, anti);
+				}
+				break;
 			default:
 				break;
 			}
@@ -197,6 +305,10 @@ static tb_bool_t g2_skia_clipper_stack_item_free(tb_stack_t* stack, tb_pointer_t
 
 	// ok
 	return TB_TRUE;
+}
+static tb_void_t g2_skia_clipper_hash_item_free(tb_item_func_t* func, tb_pointer_t item)
+{
+	if (item) g2_path_exit(item);
 }
 /* ///////////////////////////////////////////////////////////////////////
  * implementation
@@ -234,6 +346,10 @@ static __tb_inline__ tb_void_t g2_skia_exit(tb_handle_t painter)
 	if (spainter->clipper) g2_style_exit(spainter->clipper);
 	spainter->clipper = TB_NULL;
 
+	// exit clipper hash
+	if (spainter->clipper_hash) tb_hash_exit(spainter->clipper_hash);
+	spainter->clipper_hash = TB_NULL;
+
 	// exit clipper cache
 	if (spainter->clipper_cache) 
 	{
@@ -263,7 +379,8 @@ static __tb_inline__ tb_handle_t g2_skia_init(tb_handle_t context)
 	tb_assert_and_check_return_val(context, TB_NULL);
 
 	// init variables
-	tb_size_t i = 0;
+	tb_size_t 		i = 0;
+	tb_item_func_t 	clipper_hash_item_func = tb_item_func_ptr();
 
 	// init surface
 	SkBitmap const* surface = static_cast<SkBitmap const*>(g2_context_surface(context));
@@ -286,7 +403,7 @@ static __tb_inline__ tb_handle_t g2_skia_init(tb_handle_t context)
 	g2_matrix_clear(&spainter->matrix);
 
 	// init matrix stack
-	spainter->matrix_stack = tb_stack_init(G2_SKIA_STACK_GROW, tb_item_func_ifm(sizeof(g2_matrix_t), TB_NULL, TB_NULL));
+	spainter->matrix_stack = tb_stack_init(G2_SKIA_MATRIX_STACK_GROW, tb_item_func_ifm(sizeof(g2_matrix_t), TB_NULL, TB_NULL));
 	tb_assert_and_check_goto(spainter->matrix_stack, fail);
 
 	// init style
@@ -294,13 +411,13 @@ static __tb_inline__ tb_handle_t g2_skia_init(tb_handle_t context)
 	tb_assert_and_check_goto(spainter->style, fail);
 
 	// init style stack
-	spainter->style_stack = tb_stack_init(G2_SKIA_STACK_GROW, tb_item_func_ptr());
+	spainter->style_stack = tb_stack_init(G2_SKIA_STYLE_STACK_GROW, tb_item_func_ptr());
 	tb_assert_and_check_goto(spainter->style_stack, fail);
 
 	// init style cache
-	spainter->style_cache = tb_stack_init(G2_SKIA_CACHE_SIZE, tb_item_func_ptr());
+	spainter->style_cache = tb_stack_init(G2_SKIA_STYLE_CACHE_SIZE, tb_item_func_ptr());
 	tb_assert_and_check_goto(spainter->style_cache, fail);
-	for (i = 0; i < G2_SKIA_CACHE_SIZE; i++)
+	for (i = 0; i < G2_SKIA_STYLE_CACHE_SIZE; i++)
 	{
 		// init
 		tb_handle_t style = g2_style_init();
@@ -314,14 +431,19 @@ static __tb_inline__ tb_handle_t g2_skia_init(tb_handle_t context)
 	spainter->clipper = g2_clipper_init();
 	tb_assert_and_check_goto(spainter->clipper, fail);
 
+	// init clipper hash
+	clipper_hash_item_func.free = g2_skia_clipper_hash_item_free;
+	spainter->clipper_hash = tb_hash_init(G2_SKIA_CLIPPER_HASH_SIZE, tb_item_func_ifm(sizeof(g2_shape_t), TB_NULL, TB_NULL), clipper_hash_item_func);
+	tb_assert_and_check_goto(spainter->clipper_hash, fail);
+
 	// init clipper stack
-	spainter->clipper_stack = tb_stack_init(G2_SKIA_STACK_GROW, tb_item_func_ptr());
+	spainter->clipper_stack = tb_stack_init(G2_SKIA_CLIPPER_STACK_GROW, tb_item_func_ptr());
 	tb_assert_and_check_goto(spainter->clipper_stack, fail);
 
 	// init clipper cache
-	spainter->clipper_cache = tb_stack_init(G2_SKIA_CACHE_SIZE, tb_item_func_ptr());
+	spainter->clipper_cache = tb_stack_init(G2_SKIA_CLIPPER_CACHE_SIZE, tb_item_func_ptr());
 	tb_assert_and_check_goto(spainter->clipper_cache, fail);
-	for (i = 0; i < G2_SKIA_CACHE_SIZE; i++)
+	for (i = 0; i < G2_SKIA_CLIPPER_CACHE_SIZE; i++)
 	{
 		// init
 		tb_handle_t clipper = g2_clipper_init();
@@ -433,7 +555,7 @@ static __tb_inline__ tb_void_t g2_skia_load_style(tb_handle_t painter)
 	tb_stack_pop(spainter->style_stack);
 
 	// free style to cache first
-	if (spainter->style && tb_stack_size(spainter->style_cache) < G2_SKIA_CACHE_SIZE)
+	if (spainter->style && tb_stack_size(spainter->style_cache) < G2_SKIA_STYLE_CACHE_SIZE)
 		tb_stack_put(spainter->style_cache, spainter->style);
 	// free style
 	else g2_style_exit(spainter->style);
@@ -489,7 +611,7 @@ static __tb_inline__ tb_void_t g2_skia_load_clipper(tb_handle_t painter)
 	tb_stack_pop(spainter->clipper_stack);
 
 	// free clipper to cache first
-	if (spainter->clipper && tb_stack_size(spainter->clipper_cache) < G2_SKIA_CACHE_SIZE)
+	if (spainter->clipper && tb_stack_size(spainter->clipper_cache) < G2_SKIA_CLIPPER_CACHE_SIZE)
 		tb_stack_put(spainter->clipper_cache, spainter->clipper);
 	// free clipper
 	else g2_clipper_exit(spainter->clipper);

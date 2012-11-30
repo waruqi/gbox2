@@ -73,6 +73,21 @@ tb_void_t g2_style_clear(tb_handle_t style)
 	if (gstyle->shader) g2_shader_dec(gstyle->shader);
 	gstyle->shader = TB_NULL;
 }
+tb_void_t g2_style_copy(tb_handle_t style, tb_handle_t copy)
+{
+	g2_style_t* gstyle = (g2_style_t*)style;
+	g2_style_t* gcopy = (g2_style_t*)style;
+	tb_assert_and_check_return(gstyle && gcopy);
+
+	// refn++
+	if (gcopy->shader) g2_shader_inc(gcopy->shader);
+
+	// refn--
+	if (gstyle->shader) g2_shader_dec(gstyle->shader);
+
+	// copy
+	tb_memcpy(gstyle, copy, sizeof(g2_style_t));
+}
 tb_size_t g2_style_mode(tb_handle_t style)
 {
 	g2_style_t* gstyle = (g2_style_t*)style;
