@@ -227,15 +227,15 @@ typedef struct __g2_gradient_t
 // the shape type enum
 typedef enum __g2_shape_type_e
 {
-	G2_shape_TYPE_NONE 			= 0
-, 	G2_shape_TYPE_ARC 			= 1
-, 	G2_shape_TYPE_PATH 			= 2
-, 	G2_shape_TYPE_LINE 			= 3
-, 	G2_shape_TYPE_RECT 			= 4
-, 	G2_shape_TYPE_POINT 		= 5
-, 	G2_shape_TYPE_CIRCLE 		= 6
-, 	G2_shape_TYPE_ELLIPSE 		= 7
-, 	G2_shape_TYPE_TRIANGLE 		= 8
+ 	G2_SHAPE_TYPE_NONE 			= 0
+, 	G2_SHAPE_TYPE_ARC 			= 1
+, 	G2_SHAPE_TYPE_PATH 			= 2
+, 	G2_SHAPE_TYPE_LINE 			= 3
+, 	G2_SHAPE_TYPE_RECT 			= 4
+, 	G2_SHAPE_TYPE_POINT 		= 5
+, 	G2_SHAPE_TYPE_CIRCLE 		= 6
+, 	G2_SHAPE_TYPE_ELLIPSE 		= 7
+, 	G2_SHAPE_TYPE_TRIANGLE 		= 8
 
 }g2_shape_type_e;
 

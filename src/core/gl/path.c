@@ -121,6 +121,41 @@ static tb_void_t g2_gl_path_fill_split_cube_func(g2_soft_split_cube_t* split, g2
 	tb_vector_insert_tail(path->fill.data, data);
 	tb_vector_replace_last(path->fill.size, tb_vector_last(path->fill.size) + 1);
 }
+
+/* ///////////////////////////////////////////////////////////////////////
+ * add
+ */
+static tb_void_t g2_gl_path_add_split_circle_func(g2_soft_split_circle_t* split, g2_point_t const* pt)
+{
+	// data
+	tb_handle_t* data = (tb_handle_t*)split->data;
+	tb_assert_return(data && data[0]);
+
+	// line-to?
+	if (!data[1]) g2_path_line_to(data[0], pt);
+	// move-to?
+	else 
+	{
+		g2_path_move_to(data[0], pt);
+		data[1] = TB_NULL;
+	}
+}
+static tb_void_t g2_gl_path_add_split_ellipse_func(g2_soft_split_ellipse_t* split, g2_point_t const* pt)
+{
+	// data
+	tb_handle_t* data = (tb_handle_t*)split->data;
+	tb_assert_return(data && data[0]);
+
+	// line-to?
+	if (!data[1]) g2_path_line_to(data[0], pt);
+	// move-to?
+	else 
+	{
+		g2_path_move_to(data[0], pt);
+		data[1] = TB_NULL;
+	}
+}
+
 /* ///////////////////////////////////////////////////////////////////////
  * maker
  */
@@ -826,11 +861,46 @@ tb_void_t g2_path_arc_to(tb_handle_t path, g2_arc_t const* arc)
 }
 tb_void_t g2_path_add_path(tb_handle_t path, tb_handle_t path2)
 {
-	tb_trace_noimpl();
+	tb_assert_and_check_return(path && path2);
+
+	// path
+	if (g2_path_itor_init(path))
+	{
+		// walk
+		g2_point_t 	pt[3];
+		tb_size_t 	co = G2_PATH_CODE_NONE;
+		while (co = g2_path_itor_next(path, pt))
+		{
+			switch (co)
+			{
+			case G2_PATH_CODE_MOVE:
+				g2_path_move_to(path2, &pt[0]);
+				break;
+			case G2_PATH_CODE_LINE:
+				g2_path_line_to(path2, &pt[0]);
+				break;
+			case G2_PATH_CODE_QUAD:
+				g2_path_quad_to(path2, &pt[0], &pt[1]);
+				break;
+			case G2_PATH_CODE_CUBE:
+				g2_path_cube_to(path2, &pt[0], &pt[1], &pt[2]);
+				break;
+			case G2_PATH_CODE_CLOS:
+				g2_path_close(path2);
+				break;
+			default:
+				break;
+			}
+		}
+		g2_path_itor_exit(path);
+	}
 }
 tb_void_t g2_path_add_line(tb_handle_t path, g2_line_t const* line)
 {
-	tb_trace_noimpl();
+	tb_assert_and_check_return(path && line);
+	
+	g2_path_move_to(path, &line->p0);
+	g2_path_line_to(path, &line->p1);
 }
 tb_void_t g2_path_add_arc(tb_handle_t path, g2_arc_t const* arc)
 {
@@ -838,17 +908,58 @@ tb_void_t g2_path_add_arc(tb_handle_t path, g2_arc_t const* arc)
 }
 tb_void_t g2_path_add_triangle(tb_handle_t path, g2_triangle_t const* triangle)
 {
-	tb_trace_noimpl();
+	tb_assert_and_check_return(path && triangle);
+	
+	g2_path_move_to(path, &triangle->p0);
+	g2_path_line_to(path, &triangle->p1);
+	g2_path_line_to(path, &triangle->p2);
+	g2_path_close(path);
 }
 tb_void_t g2_path_add_rect(tb_handle_t path, g2_rect_t const* rect)
 {
-	tb_trace_noimpl();
+	tb_assert_and_check_return(path && rect);
+	
+	g2_path_move2_to(path, rect->x, rect->y);
+	g2_path_line2_to(path, rect->x + rect->w - G2_ONE, rect->y);
+	g2_path_line2_to(path, rect->x + rect->w - G2_ONE, rect->y + rect->h - G2_ONE);
+	g2_path_line2_to(path, rect->x, rect->y + rect->h - G2_ONE);
+	g2_path_close(path);
 }
 tb_void_t g2_path_add_circle(tb_handle_t path, g2_circle_t const* circle)
 {
-	tb_trace_noimpl();
+	g2_gl_path_t* gpath = (g2_gl_path_t*)path;
+	tb_assert_and_check_return(path && circle);
+
+	// init
+	tb_handle_t data[2] = {path, path};
+
+	// split
+	g2_soft_split_circle_t split;
+	g2_soft_split_circle_init(&split, g2_gl_path_add_split_circle_func, data);
+	g2_soft_split_circle_done(&split, circle);
+
+	// close
+	g2_path_close(path);
+
+	// like: convex
+	if (!g2_path_null(path)) gpath->like = G2_GL_PATH_LIKE_CONX;
 }
 tb_void_t g2_path_add_ellipse(tb_handle_t path, g2_ellipse_t const* ellipse)
 {
-	tb_trace_noimpl();
+	g2_gl_path_t* gpath = (g2_gl_path_t*)path;
+	tb_assert_and_check_return(path && ellipse);
+
+	// init
+	tb_handle_t data[2] = {path, path};
+
+	// split
+	g2_soft_split_ellipse_t split;
+	g2_soft_split_ellipse_init(&split, g2_gl_path_add_split_ellipse_func, data);
+	g2_soft_split_ellipse_done(&split, ellipse);
+
+	// close
+	g2_path_close(path);
+	
+	// like: convex
+	if (!g2_path_null(path)) gpath->like = G2_GL_PATH_LIKE_CONX;
 }

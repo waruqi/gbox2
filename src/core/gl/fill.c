@@ -31,7 +31,6 @@
  */
 #include "fill.h"
 #include "shader.h"
-#include "../soft/split/split.h"
 
 /* ///////////////////////////////////////////////////////////////////////
  * types
@@ -743,34 +742,6 @@ static __tb_inline__ tb_void_t g2_gl_fill_exit(g2_gl_fill_t* fill)
 	// exit fill style
 	g2_gl_fill_context_exit(fill);
 }
-static tb_void_t g2_gl_fill_split_circle_func(g2_soft_split_circle_t* split, g2_point_t const* pt)
-{
-	// vertices
-	tb_vector_t* vertices = (tb_vector_t*)split->data;
-	tb_assert_return(vertices);
-
-	// data
-	tb_float_t data[2];
-	data[0] = g2_float_to_tb(pt->x);
-	data[1] = g2_float_to_tb(pt->y);
-
-	// add
-	tb_vector_insert_tail(vertices, data);
-}
-static tb_void_t g2_gl_fill_split_ellipse_func(g2_soft_split_ellipse_t* split, g2_point_t const* pt)
-{
-	// vertices
-	tb_vector_t* vertices = (tb_vector_t*)split->data;
-	tb_assert_return(vertices);
-
-	// data
-	tb_float_t data[2];
-	data[0] = g2_float_to_tb(pt->x);
-	data[1] = g2_float_to_tb(pt->y);
-
-	// add
-	tb_vector_insert_tail(vertices, data);
-}
 static tb_void_t g2_gl_fill_bounds(g2_gl_painter_t* painter, g2_gl_rect_t const* bounds)
 {
 	// init fill
@@ -868,84 +839,6 @@ tb_void_t g2_gl_fill_path(g2_gl_painter_t* painter, g2_gl_path_t const* path)
 
 	// draw fill
 	g2_gl_fill_draw(&fill, &path->fill.rect);
-
-	// exit fill
-	g2_gl_fill_exit(&fill);
-}
-tb_void_t g2_gl_fill_circle(g2_gl_painter_t* painter, g2_circle_t const* circle)
-{
-	// init bounds
-	g2_gl_rect_t bounds;
-	bounds.x1 = g2_float_to_tb(circle->c.x - circle->r);
-	bounds.y1 = g2_float_to_tb(circle->c.y - circle->r);
-	bounds.x2 = g2_float_to_tb(circle->c.x + circle->r - G2_ONE);
-	bounds.y2 = g2_float_to_tb(circle->c.y + circle->r - G2_ONE);
-	tb_check_return(bounds.x1 < bounds.x2 && bounds.y1 < bounds.y2);
-	
-	// init vertices
-	tb_assert_and_check_return(painter->vertices);
-	tb_vector_clear(painter->vertices);
-
-	// split circle, FIXME: cache it
-	g2_soft_split_circle_t split;
-	g2_soft_split_circle_init(&split, g2_gl_fill_split_circle_func, painter->vertices);
-	g2_soft_split_circle_done(&split, circle);
-
-	// data & size
-	tb_float_t* data = tb_vector_data(painter->vertices);
-	tb_size_t 	size = tb_vector_size(painter->vertices);
-	tb_assert_and_check_return(data && size > 2);
-
-	// init fill
-	g2_gl_fill_t fill = {0};
-	if (!g2_gl_fill_init(&fill, painter, G2_GL_FILL_FLAG_CONVEX)) return ;
-
-	// draw vertices
-	if (fill.context->version < 0x20) g2_glVertexPointer(2, G2_GL_FLOAT, 0, data);
-	else g2_glVertexAttribPointer(g2_gl_program_location(fill.program, G2_GL_PROGRAM_LOCATION_VERTICES), 2, G2_GL_FLOAT, G2_GL_FALSE, 0, data);
-	g2_glDrawArrays(G2_GL_TRIANGLE_FAN, 0, (g2_GLint_t)size);
-
-	// draw fill
-	g2_gl_fill_draw(&fill, &bounds);
-
-	// exit fill
-	g2_gl_fill_exit(&fill);
-}
-tb_void_t g2_gl_fill_ellipse(g2_gl_painter_t* painter, g2_ellipse_t const* ellipse)
-{
-	// init bounds
-	g2_gl_rect_t bounds;
-	bounds.x1 = g2_float_to_tb(ellipse->c0.x - ellipse->rx);
-	bounds.y1 = g2_float_to_tb(ellipse->c0.y - ellipse->ry);
-	bounds.x2 = g2_float_to_tb(ellipse->c0.x + ellipse->rx - G2_ONE);
-	bounds.y2 = g2_float_to_tb(ellipse->c0.y + ellipse->ry - G2_ONE);
-	tb_check_return(bounds.x1 < bounds.x2 && bounds.y1 < bounds.y2);
-	
-	// init vertices
-	tb_assert_and_check_return(painter->vertices);
-	tb_vector_clear(painter->vertices);
-
-	// split ellipse, FIXME: cache it
-	g2_soft_split_ellipse_t split;
-	g2_soft_split_ellipse_init(&split, g2_gl_fill_split_ellipse_func, painter->vertices);
-	g2_soft_split_ellipse_done(&split, ellipse);
-
-	// data & size
-	tb_float_t* data = tb_vector_data(painter->vertices);
-	tb_size_t 	size = tb_vector_size(painter->vertices);
-	tb_assert_and_check_return(data && size > 2);
-
-	// init fill
-	g2_gl_fill_t fill = {0};
-	if (!g2_gl_fill_init(&fill, painter, G2_GL_FILL_FLAG_CONVEX)) return ;
-
-	// draw vertices
-	if (fill.context->version < 0x20) g2_glVertexPointer(2, G2_GL_FLOAT, 0, data);
-	else g2_glVertexAttribPointer(g2_gl_program_location(fill.program, G2_GL_PROGRAM_LOCATION_VERTICES), 2, G2_GL_FLOAT, G2_GL_FALSE, 0, data);
-	g2_glDrawArrays(G2_GL_TRIANGLE_FAN, 0, (g2_GLint_t)size);
-
-	// draw fill
-	g2_gl_fill_draw(&fill, &bounds);
 
 	// exit fill
 	g2_gl_fill_exit(&fill);

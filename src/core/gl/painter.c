@@ -59,13 +59,18 @@
 #ifdef TB_CONFIG_BINARY_SMALL
 # 	define G2_GL_CLIPPER_STACK_GROW 		(32)
 # 	define G2_GL_CLIPPER_CACHE_SIZE 		(4)
-# 	define G2_GL_CLIPPER_HASH_SIZE 			(8)
 #else
 # 	define G2_GL_CLIPPER_STACK_GROW 		(64)
 # 	define G2_GL_CLIPPER_CACHE_SIZE 		(8)
-# 	define G2_GL_CLIPPER_HASH_SIZE 			(16)
 #endif
-#define G2_GL_CLIPPER_HASH_ITEM_MAXN 		(G2_GL_CLIPPER_HASH_SIZE * G2_GL_CLIPPER_HASH_SIZE)
+
+// pcache
+#ifdef TB_CONFIG_BINARY_SMALL
+# 	define G2_GL_PCACHE_SIZE 				(8)
+#else
+# 	define G2_GL_PCACHE_SIZE 				(16)
+#endif
+#define G2_GL_PCACHE_ITEM_MAXN 				(G2_GL_PCACHE_SIZE * G2_GL_PCACHE_SIZE)
 
 /* ///////////////////////////////////////////////////////////////////////
  * helper
@@ -100,7 +105,7 @@ static tb_bool_t g2_gl_clipper_stack_item_free(tb_stack_t* stack, tb_pointer_t* 
 	// ok
 	return TB_TRUE;
 }
-static tb_void_t g2_gl_clipper_hash_item_free(tb_item_func_t* func, tb_pointer_t item)
+static tb_void_t g2_gl_pcache_item_free(tb_item_func_t* func, tb_pointer_t item)
 {
 	if (item) g2_path_exit(item);
 }
@@ -114,7 +119,7 @@ tb_handle_t g2_init(tb_handle_t context)
 
 	// init variables
 	tb_size_t 		i = 0;
-	tb_item_func_t 	clipper_hash_item_func = tb_item_func_ptr();
+	tb_item_func_t 	pcache_item_func = tb_item_func_ptr();
 
 	// alloc
 	g2_gl_painter_t* gpainter = tb_malloc0(sizeof(g2_gl_painter_t));
@@ -122,10 +127,6 @@ tb_handle_t g2_init(tb_handle_t context)
 
 	// init context
 	gpainter->context = (g2_gl_context_t*)context;
-
-	// init vertices
-	gpainter->vertices = tb_vector_init(G2_GL_VERTICES_GROW, tb_item_func_ifm(sizeof(tb_float_t) << 1, TB_NULL, TB_NULL));
-	tb_assert_and_check_goto(gpainter->vertices, fail);
 
 	// init matrix
 	g2_matrix_clear(&gpainter->matrix);
@@ -159,11 +160,6 @@ tb_handle_t g2_init(tb_handle_t context)
 	gpainter->clipper = g2_clipper_init();
 	tb_assert_and_check_goto(gpainter->clipper, fail);
 
-	// init clipper hash
-	clipper_hash_item_func.free = g2_gl_clipper_hash_item_free;
-	gpainter->clipper_hash = tb_hash_init(G2_GL_CLIPPER_HASH_SIZE, tb_item_func_ifm(sizeof(g2_shape_t), TB_NULL, TB_NULL), clipper_hash_item_func);
-	tb_assert_and_check_goto(gpainter->clipper_hash, fail);
-
 	// init clipper stack
 	gpainter->clipper_stack = tb_stack_init(G2_GL_CLIPPER_STACK_GROW, tb_item_func_ptr());
 	tb_assert_and_check_goto(gpainter->clipper_stack, fail);
@@ -181,6 +177,11 @@ tb_handle_t g2_init(tb_handle_t context)
 		tb_stack_put(gpainter->clipper_cache, clipper);
 	}
 
+	// init path cache
+	pcache_item_func.free = g2_gl_pcache_item_free;
+	gpainter->pcache = tb_hash_init(G2_GL_PCACHE_SIZE, tb_item_func_ifm(sizeof(g2_shape_t), TB_NULL, TB_NULL), pcache_item_func);
+	tb_assert_and_check_goto(gpainter->pcache, fail);
+
 	// ok
 	return gpainter;
 
@@ -193,9 +194,6 @@ tb_void_t g2_exit(tb_handle_t painter)
 	g2_gl_painter_t* gpainter = (g2_gl_painter_t*)painter;
 	if (gpainter)
 	{
-		// exit vertices
-		if (gpainter->vertices) tb_vector_exit(gpainter->vertices);
-
 		// exit matrix stack
 		if (gpainter->matrix_stack) tb_stack_exit(gpainter->matrix_stack);
 		gpainter->matrix_stack = TB_NULL;
@@ -224,10 +222,6 @@ tb_void_t g2_exit(tb_handle_t painter)
 		if (gpainter->clipper) g2_style_exit(gpainter->clipper);
 		gpainter->clipper = TB_NULL;
 
-		// exit clipper hash
-		if (gpainter->clipper_hash) tb_hash_exit(gpainter->clipper_hash);
-		gpainter->clipper_hash = TB_NULL;
-
 		// exit clipper cache
 		if (gpainter->clipper_cache) 
 		{
@@ -243,6 +237,10 @@ tb_void_t g2_exit(tb_handle_t painter)
 			tb_stack_exit(gpainter->clipper_stack);
 		}
 		gpainter->clipper_stack = TB_NULL;
+
+		// exit path cache
+		if (gpainter->pcache) tb_hash_exit(gpainter->pcache);
+		gpainter->pcache = TB_NULL;
 
 		// free it
 		tb_free(gpainter);
@@ -450,16 +448,76 @@ tb_void_t g2_draw_circle(tb_handle_t painter, g2_circle_t const* circle)
 	g2_gl_painter_t* gpainter = (g2_gl_painter_t*)painter;
 	tb_assert_and_check_return(gpainter && gpainter->style && circle);
 
-	// fill
-	g2_gl_fill_circle(gpainter, circle);
+	// init shape
+	g2_shape_t shape = {0};
+	shape.type = G2_SHAPE_TYPE_CIRCLE;
+	shape.u.circle = *circle;
+
+	// get path from pcache first
+	tb_handle_t path = tb_hash_get(gpainter->pcache, &shape);
+	if (!path)
+	{
+		// init path
+		path = g2_path_init();
+		tb_assert_and_check_return(path);
+
+//		g2_circle_t c = *circle;
+//		c.r <<= 1;
+
+		// add circle to path
+		g2_path_add_circle(path, circle);
+
+		// clear pcache if full, FIXME: malloc crash
+		if (tb_hash_size(gpainter->pcache) >= G2_GL_PCACHE_ITEM_MAXN)
+			tb_hash_clear(gpainter->pcache);
+
+		// add path to pcache
+		tb_hash_set(gpainter->pcache, &shape, path);
+	}
+		
+	// save matrix
+//	g2_save(painter);
+
+	// scale
+//	g2_scalep(painter, G2_ONE + G2_ONE, G2_ONE, circle->c.x, circle->c.y);
+
+	// draw path
+//	g2_draw_path(painter, path);
+
+	// load matrix
+	g2_load(painter);
 }
 tb_void_t g2_draw_ellipse(tb_handle_t painter, g2_ellipse_t const* ellipse)
 {
 	g2_gl_painter_t* gpainter = (g2_gl_painter_t*)painter;
 	tb_assert_and_check_return(gpainter && gpainter->style && ellipse);
 
-	// fill
-	g2_gl_fill_ellipse(gpainter, ellipse);
+	// init shape
+	g2_shape_t shape = {0};
+	shape.type = G2_SHAPE_TYPE_ELLIPSE;
+	shape.u.ellipse = *ellipse;
+
+	// get path from hash first
+	tb_handle_t path = tb_hash_get(gpainter->pcache, &shape);
+	if (!path)
+	{
+		// init path
+		path = g2_path_init();
+		tb_assert_and_check_return(path);
+
+		// add ellipse to path
+		g2_path_add_ellipse(path, ellipse);
+
+		// clear pcache if full, FIXME: malloc crash
+		if (tb_hash_size(gpainter->pcache) >= G2_GL_PCACHE_ITEM_MAXN)
+			tb_hash_clear(gpainter->pcache);
+
+		// add path to pcache
+		tb_hash_set(gpainter->pcache, &shape, path);
+	}
+	
+	// draw path
+	g2_draw_path(painter, path);
 }
 tb_void_t g2_draw_triangle(tb_handle_t painter, g2_triangle_t const* triangle)
 {

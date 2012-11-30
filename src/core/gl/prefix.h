@@ -27,8 +27,8 @@
  * includes
  */
 #include "../prefix.h"
-#include "../style.h"
 #include "../path.h"
+#include "../style.h"
 #include "../bitmap.h"
 #include "../shader.h"
 #include "../matrix.h"

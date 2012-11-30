@@ -190,7 +190,7 @@ static __tb_inline__ tb_void_t g2_skia_clipper_apply(g2_skia_painter_t* spainter
 				{
 					// init shape
 					g2_shape_t shape = {0};
-					shape.type = G2_shape_TYPE_CIRCLE;
+					shape.type = G2_SHAPE_TYPE_CIRCLE;
 					shape.u.circle = item->u.circle;
 
 					// get path from hash first
@@ -218,7 +218,7 @@ static __tb_inline__ tb_void_t g2_skia_clipper_apply(g2_skia_painter_t* spainter
 				{
 					// init shape
 					g2_shape_t shape = {0};
-					shape.type = G2_shape_TYPE_ELLIPSE;
+					shape.type = G2_SHAPE_TYPE_ELLIPSE;
 					shape.u.ellipse = item->u.ellipse;
 
 					// get path from hash first
@@ -246,7 +246,7 @@ static __tb_inline__ tb_void_t g2_skia_clipper_apply(g2_skia_painter_t* spainter
 				{
 					// init shape
 					g2_shape_t shape = {0};
-					shape.type = G2_shape_TYPE_TRIANGLE;
+					shape.type = G2_SHAPE_TYPE_TRIANGLE;
 					shape.u.triangle = item->u.triangle;
 
 					// get path from hash first

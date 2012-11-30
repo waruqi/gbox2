@@ -38,9 +38,6 @@ typedef struct __g2_gl_painter_t
 	// the context
 	g2_gl_context_t* 			context;
 
-	// the vertices, vector<tb_float_t[2]>
-	tb_vector_t* 				vertices;
-
 	// the matrix
 	g2_matrix_t 				matrix;
 	tb_stack_t* 				matrix_stack;
@@ -52,9 +49,11 @@ typedef struct __g2_gl_painter_t
 
 	// the clipper
 	tb_handle_t 				clipper;
-	tb_hash_t* 					clipper_hash;
 	tb_stack_t* 				clipper_stack;
 	tb_stack_t* 				clipper_cache;
+
+	// the path cache: shape => path
+	tb_hash_t* 					pcache;
 
 }g2_gl_painter_t;
 
