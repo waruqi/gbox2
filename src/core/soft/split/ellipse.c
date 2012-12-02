@@ -90,8 +90,8 @@ tb_void_t g2_soft_split_ellipse_done(g2_soft_split_ellipse_t* split, g2_ellipse_
 	tb_int64_t 	rxf = (tb_int64_t)g2_float_to_fixed(ellipse->rx);
 	tb_int64_t 	ryf = (tb_int64_t)g2_float_to_fixed(ellipse->ry);
 	tb_int64_t 	pi = (tb_int64_t)TB_FIXED_PI;
-	tb_size_t 	xn = rxi <= 90? (rxi >> 2) + 6 : (rxi >> 4) + 23;
-	tb_size_t 	yn = ryi <= 90? (ryi >> 2) + 6 : (ryi >> 4) + 23;
+	tb_size_t 	xn = rxi <= 90? ((rxi << 2) / 3 + 16): ((rxi / 3) + 92);
+	tb_size_t 	yn = ryi <= 90? ((ryi << 2) / 3 + 16): ((ryi / 3) + 92);
 	tb_size_t 	n = (xn + yn) >> 1;
 	tb_int64_t 	a = TB_FIXED_ONE - (((pi * pi) / (n * n)) >> 15);
 	tb_int64_t 	b = (pi << 1) / n - (((pi * pi * pi) / (3 * n * n * n)) >> 30);

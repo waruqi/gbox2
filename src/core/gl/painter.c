@@ -461,9 +461,6 @@ tb_void_t g2_draw_circle(tb_handle_t painter, g2_circle_t const* circle)
 		path = g2_path_init();
 		tb_assert_and_check_return(path);
 
-//		g2_circle_t c = *circle;
-//		c.r <<= 1;
-
 		// add circle to path
 		g2_path_add_circle(path, circle);
 
@@ -474,18 +471,9 @@ tb_void_t g2_draw_circle(tb_handle_t painter, g2_circle_t const* circle)
 		// add path to pcache
 		tb_hash_set(gpainter->pcache, &shape, path);
 	}
-		
-	// save matrix
-//	g2_save(painter);
-
-	// scale
-//	g2_scalep(painter, G2_ONE + G2_ONE, G2_ONE, circle->c.x, circle->c.y);
-
+	
 	// draw path
-//	g2_draw_path(painter, path);
-
-	// load matrix
-	g2_load(painter);
+	g2_draw_path(painter, path);
 }
 tb_void_t g2_draw_ellipse(tb_handle_t painter, g2_ellipse_t const* ellipse)
 {
