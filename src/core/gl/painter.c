@@ -64,13 +64,14 @@
 # 	define G2_GL_CLIPPER_CACHE_SIZE 		(8)
 #endif
 
-// pcache
+// path
 #ifdef TB_CONFIG_BINARY_SMALL
-# 	define G2_GL_PCACHE_SIZE 				(8)
+# 	define G2_GL_PATH_CACHE_SIZE 				(32)
 #else
-# 	define G2_GL_PCACHE_SIZE 				(16)
+# 	define G2_GL_PATH_CACHE_SIZE 				(64)
 #endif
-#define G2_GL_PCACHE_ITEM_MAXN 				(G2_GL_PCACHE_SIZE * G2_GL_PCACHE_SIZE)
+#define G2_GL_PATH_HASH_SIZE 					(8)
+#define G2_GL_PATH_HASH_ITEM_MAXN 				(G2_GL_PATH_CACHE_SIZE)
 
 /* ///////////////////////////////////////////////////////////////////////
  * helper
@@ -105,9 +106,42 @@ static tb_bool_t g2_gl_clipper_stack_item_free(tb_stack_t* stack, tb_pointer_t* 
 	// ok
 	return TB_TRUE;
 }
-static tb_void_t g2_gl_pcache_item_free(tb_item_func_t* func, tb_pointer_t item)
+static tb_bool_t g2_gl_path_stack_item_free(tb_stack_t* stack, tb_pointer_t* item, tb_bool_t* bdel, tb_pointer_t data)
 {
-	if (item) g2_path_exit(item);
+	tb_assert_and_check_return_val(stack && bdel, TB_FALSE);
+
+	// free path item
+	if (item) 
+	{
+		tb_handle_t path = (tb_handle_t)*item;
+		if (path) g2_path_exit(path);
+		*item = TB_NULL;
+	}
+
+	// ok
+	return TB_TRUE;
+}
+static tb_void_t g2_gl_path_hash_item_free(tb_item_func_t* func, tb_pointer_t item)
+{
+	tb_assert_and_check_return(func && func->priv && item);
+
+	tb_stack_t* cache = (tb_stack_t*)func->priv;
+	tb_handle_t path = *((tb_handle_t const*)item);
+	
+	if (path)
+	{
+		// check
+		tb_assert_and_check_return(tb_stack_size(cache) < G2_GL_PATH_CACHE_SIZE);
+
+		// free path to cache
+		tb_stack_put(cache, path);
+	
+		// clear path
+		g2_path_clear(path);
+
+		// clear
+		*((tb_handle_t*)item) = TB_NULL;
+	}
 }
 /* ///////////////////////////////////////////////////////////////////////
  * implementation
@@ -178,9 +212,23 @@ tb_handle_t g2_init(tb_handle_t context)
 	}
 
 	// init path cache
-	pcache_item_func.free = g2_gl_pcache_item_free;
-	gpainter->pcache = tb_hash_init(G2_GL_PCACHE_SIZE, tb_item_func_ifm(sizeof(g2_shape_t), TB_NULL, TB_NULL), pcache_item_func);
-	tb_assert_and_check_goto(gpainter->pcache, fail);
+	gpainter->path_cache = tb_stack_init(G2_GL_PATH_CACHE_SIZE, tb_item_func_ptr());
+	tb_assert_and_check_goto(gpainter->path_cache, fail);
+	for (i = 0; i < G2_GL_PATH_CACHE_SIZE; i++)
+	{
+		// init
+		tb_handle_t path = g2_path_init();
+		tb_assert_and_check_goto(path, fail);
+
+		// put
+		tb_stack_put(gpainter->path_cache, path);
+	}
+
+	// init path hash
+	pcache_item_func.free = g2_gl_path_hash_item_free;
+	pcache_item_func.priv = gpainter->path_cache;
+	gpainter->path_hash = tb_hash_init(G2_GL_PATH_HASH_SIZE, tb_item_func_ifm(sizeof(g2_shape_t), TB_NULL, TB_NULL), pcache_item_func);
+	tb_assert_and_check_goto(gpainter->path_hash, fail);
 
 	// ok
 	return gpainter;
@@ -238,10 +286,18 @@ tb_void_t g2_exit(tb_handle_t painter)
 		}
 		gpainter->clipper_stack = TB_NULL;
 
-		// exit path cache
-		if (gpainter->pcache) tb_hash_exit(gpainter->pcache);
-		gpainter->pcache = TB_NULL;
+		// exit path hash
+		if (gpainter->path_hash) tb_hash_exit(gpainter->path_hash);
+		gpainter->path_hash = TB_NULL;
 
+		// exit path cache
+		if (gpainter->path_cache) 
+		{
+			tb_stack_walk(gpainter->path_cache, g2_gl_path_stack_item_free, TB_NULL);
+			tb_stack_exit(gpainter->path_cache);
+		}
+		gpainter->path_cache = TB_NULL;
+		
 		// free it
 		tb_free(gpainter);
 	}
@@ -446,30 +502,34 @@ tb_void_t g2_draw_point(tb_handle_t painter, g2_point_t const* point)
 tb_void_t g2_draw_circle(tb_handle_t painter, g2_circle_t const* circle)
 {
 	g2_gl_painter_t* gpainter = (g2_gl_painter_t*)painter;
-	tb_assert_and_check_return(gpainter && gpainter->style && circle);
+	tb_assert_and_check_return(gpainter && gpainter->style && gpainter->path_cache && gpainter->path_hash && circle);
 
 	// init shape
 	g2_shape_t shape = {0};
 	shape.type = G2_SHAPE_TYPE_CIRCLE;
 	shape.u.circle = *circle;
 
-	// get path from pcache first
-	tb_handle_t path = tb_hash_get(gpainter->pcache, &shape);
+	// get path from path hash first
+	tb_handle_t path = tb_hash_get(gpainter->path_hash, &shape);
 	if (!path)
 	{
-		// init path
-		path = g2_path_init();
+		// clear path hash if full
+		if (tb_hash_size(gpainter->path_hash) >= G2_GL_PATH_HASH_ITEM_MAXN)
+			tb_hash_clear(gpainter->path_hash);
+
+		// check cache
+		tb_assert_and_check_return(tb_stack_size(gpainter->path_cache));
+
+		// init path from cache
+		path = (tb_handle_t)tb_stack_top(gpainter->path_cache);
+		tb_stack_pop(gpainter->path_cache);
 		tb_assert_and_check_return(path);
 
 		// add circle to path
 		g2_path_add_circle(path, circle);
 
-		// clear pcache if full, FIXME: malloc crash
-		if (tb_hash_size(gpainter->pcache) >= G2_GL_PCACHE_ITEM_MAXN)
-			tb_hash_clear(gpainter->pcache);
-
-		// add path to pcache
-		tb_hash_set(gpainter->pcache, &shape, path);
+		// add path to path hash
+		tb_hash_set(gpainter->path_hash, &shape, path);
 	}
 	
 	// draw path
@@ -478,7 +538,7 @@ tb_void_t g2_draw_circle(tb_handle_t painter, g2_circle_t const* circle)
 tb_void_t g2_draw_ellipse(tb_handle_t painter, g2_ellipse_t const* ellipse)
 {
 	g2_gl_painter_t* gpainter = (g2_gl_painter_t*)painter;
-	tb_assert_and_check_return(gpainter && gpainter->style && ellipse);
+	tb_assert_and_check_return(gpainter && gpainter->style && gpainter->path_cache && gpainter->path_hash && ellipse);
 
 	// init shape
 	g2_shape_t shape = {0};
@@ -486,22 +546,26 @@ tb_void_t g2_draw_ellipse(tb_handle_t painter, g2_ellipse_t const* ellipse)
 	shape.u.ellipse = *ellipse;
 
 	// get path from hash first
-	tb_handle_t path = tb_hash_get(gpainter->pcache, &shape);
+	tb_handle_t path = tb_hash_get(gpainter->path_hash, &shape);
 	if (!path)
 	{
-		// init path
-		path = g2_path_init();
+		// clear path hash if full
+		if (tb_hash_size(gpainter->path_hash) >= G2_GL_PATH_HASH_ITEM_MAXN)
+			tb_hash_clear(gpainter->path_hash);
+
+		// check cache
+		tb_assert_and_check_return(tb_stack_size(gpainter->path_cache));
+
+		// init path from cache
+		path = (tb_handle_t)tb_stack_top(gpainter->path_cache);
+		tb_stack_pop(gpainter->path_cache);
 		tb_assert_and_check_return(path);
 
 		// add ellipse to path
 		g2_path_add_ellipse(path, ellipse);
 
-		// clear pcache if full, FIXME: malloc crash
-		if (tb_hash_size(gpainter->pcache) >= G2_GL_PCACHE_ITEM_MAXN)
-			tb_hash_clear(gpainter->pcache);
-
-		// add path to pcache
-		tb_hash_set(gpainter->pcache, &shape, path);
+		// add path to path hash
+		tb_hash_set(gpainter->path_hash, &shape, path);
 	}
 	
 	// draw path

@@ -429,6 +429,17 @@ static tb_void_t g2_demo_gbox2_exit()
 	// exit context
 	if (g_context) g2_context_exit(g_context);
 }
+static tb_void_t g2_demo_loop_exit()
+{
+	// exit demo
+	g2_demo_exit();
+
+	// exit gbox2
+	g2_demo_gbox2_exit();
+
+	// exit tbox
+	tb_exit();
+}
 /* ////////////////////////////////////////////////////////////////////////
  * main
  */
@@ -438,7 +449,7 @@ tb_int_t main(tb_int_t argc, tb_char_t** argv)
 	if (!tb_init(malloc(50 * 1024 * 1024), 50 * 1024 * 1024)) return 0;
 
 	// init exit
-	atexit(g2_demo_exit);
+	atexit(g2_demo_loop_exit);
 
 	// init gl
 	if (!g2_demo_gl_init(argc, argv)) return 0;
@@ -451,15 +462,6 @@ tb_int_t main(tb_int_t argc, tb_char_t** argv)
 
 	// loop 
 	glutMainLoop();
-
-	// exit demo
-	g2_demo_exit();
-
-	// exit gbox2
-	g2_demo_gbox2_exit();
-
-	// exit tbox
-	tb_exit();
 	return 0;
 }
 

@@ -62,10 +62,6 @@ tb_void_t g2_soft_split_circle_init(g2_soft_split_circle_t* split, g2_soft_split
  *         r * cos(q)        d
  *
  * q = 2 * pi / n;
- * 
- * if (q < 1)
- * cos(q) ~= 1 - q * q / 2
- * sin(q) ~= q - q * q * q / 6
  *
  * d = r * (1 - cos(q)) ~= r * q * q / 2 < e
  *
@@ -83,7 +79,11 @@ tb_void_t g2_soft_split_circle_init(g2_soft_split_circle_t* split, g2_soft_split
  * r = 1:
  * xx = x * cos(q) - y * sin(q)
  * yy = x * sin(q) + y * cos(q)
- *
+ * 
+ * if (q < 1)
+ * cos(q) ~= 1 - q * q / 2
+ * sin(q) ~= q - q * q * q / 6
+ 
  * </pre>
  */
 tb_void_t g2_soft_split_circle_done(g2_soft_split_circle_t* split, g2_circle_t const* circle)
@@ -95,7 +95,7 @@ tb_void_t g2_soft_split_circle_done(g2_soft_split_circle_t* split, g2_circle_t c
 	tb_size_t 	ri = (tb_size_t)g2_float_to_long(circle->r);
 	tb_int64_t 	rf = (tb_int64_t)g2_float_to_fixed(circle->r);
 	tb_int64_t 	pi = (tb_int64_t)TB_FIXED_PI;
-	tb_size_t 	n =  ri <= 90? ((ri << 2) / 3 + 16): ((ri / 3) + 92);
+	tb_size_t 	n =  ri < 90? ((ri << 2) / 3 + 16): ((ri / 3) + 92);
 	tb_int64_t 	a = TB_FIXED_ONE - (((pi * pi) / (n * n)) >> 15);
 	tb_int64_t 	b = (pi << 1) / n - (((pi * pi * pi) / (3 * n * n * n)) >> 30);
 

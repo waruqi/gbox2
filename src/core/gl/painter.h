@@ -52,8 +52,9 @@ typedef struct __g2_gl_painter_t
 	tb_stack_t* 				clipper_stack;
 	tb_stack_t* 				clipper_cache;
 
-	// the path cache: shape => path
-	tb_hash_t* 					pcache;
+	// the path hash: shape => path
+	tb_hash_t* 					path_hash;
+	tb_stack_t* 				path_cache;
 
 }g2_gl_painter_t;
 

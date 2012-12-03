@@ -47,32 +47,39 @@ tb_void_t g2_soft_split_ellipse_init(g2_soft_split_ellipse_t* split, g2_soft_spl
  *
  * <pre>
  *
- *                 /
- *               /
- *             /
- *           /
- *         /
- *       /
- *     /
- *   /  q
- * /----------------------|--|
- *            r            e
+ *                       *
+ *                     * |
+ *                   *   |
+ *                 *     |
+ *           r   *       |
+ *             *         |
+ *           *           |
+ *         *             |
+ *       *               |
+ *     *                 |
+ *   *  q                |
+ * **********************|********
+ *         r * cos(q)        d
  *
  * q = 2 * pi / n;
- * (r + e) - (r + e) * cos(q/2) = 2 * e
  *
- * q <~ 1 => cos(q/2) ~= 1 - q * q / 8
- * n = 0.5 * pi * sqrt(r / e + 1) ~= 0.5 * pi * sqrt(r / e)
+ * d = r * (1 - cos(q)) ~= r * q * q / 2 < e
  *
- * if e < 0.4, n >= 2.5 * pi * sqrt(r)
- * ~=>: 
- * if (r <= 90) n ~= |r / 4| + 6
- * if (r > 90) n ~= |r / 16| + 23
- * 
+ * n > pi * sqrt(2 / e) * sqrt(r)
+ *
+ * e = 0.125: n > 4 * pi * sqrt(r)
+ *
+ * y = pi * sqrt(x):
+ * x < 90: y = (1 / 3) * x
+ * x > 90: y = (0.08) * x + 23
+ *
+ * r < 90: n > (4 / 3) * r + 16
+ * r > 90: n > (1 / 3) * r + 92
+ *
  * rx = ry = 1:
  * xx = x * cos(q) - y * sin(q)
  * yy = x * sin(q) + y * cos(q)
- *
+ * 
  * if (q < 1)
  * cos(q) ~= 1 - q * q / 2
  * sin(q) ~= q - q * q * q / 6
@@ -90,8 +97,8 @@ tb_void_t g2_soft_split_ellipse_done(g2_soft_split_ellipse_t* split, g2_ellipse_
 	tb_int64_t 	rxf = (tb_int64_t)g2_float_to_fixed(ellipse->rx);
 	tb_int64_t 	ryf = (tb_int64_t)g2_float_to_fixed(ellipse->ry);
 	tb_int64_t 	pi = (tb_int64_t)TB_FIXED_PI;
-	tb_size_t 	xn = rxi <= 90? ((rxi << 2) / 3 + 16): ((rxi / 3) + 92);
-	tb_size_t 	yn = ryi <= 90? ((ryi << 2) / 3 + 16): ((ryi / 3) + 92);
+	tb_size_t 	xn = rxi < 90? ((rxi << 2) / 3 + 16): ((rxi / 3) + 92);
+	tb_size_t 	yn = ryi < 90? ((ryi << 2) / 3 + 16): ((ryi / 3) + 92);
 	tb_size_t 	n = (xn + yn) >> 1;
 	tb_int64_t 	a = TB_FIXED_ONE - (((pi * pi) / (n * n)) >> 15);
 	tb_int64_t 	b = (pi << 1) / n - (((pi * pi * pi) / (3 * n * n * n)) >> 30);
