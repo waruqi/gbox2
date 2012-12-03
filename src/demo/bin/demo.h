@@ -327,6 +327,7 @@ static tb_void_t g2_demo_gbox2_init_gl()
 	G2_GL_INTERFACE_LOAD_S(glGetString);
 	G2_GL_INTERFACE_LOAD_S(glIsTexture);
 	G2_GL_INTERFACE_LOAD_S(glPixelStorei);
+	G2_GL_INTERFACE_LOAD_S(glScissor);
 	G2_GL_INTERFACE_LOAD_S(glStencilFunc);
 	G2_GL_INTERFACE_LOAD_S(glStencilMask);
 	G2_GL_INTERFACE_LOAD_S(glStencilOp);

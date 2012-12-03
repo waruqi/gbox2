@@ -308,7 +308,11 @@ static tb_bool_t g2_skia_clipper_stack_item_free(tb_stack_t* stack, tb_pointer_t
 }
 static tb_void_t g2_skia_clipper_hash_item_free(tb_item_func_t* func, tb_pointer_t item)
 {
-	if (item) g2_path_exit(item);
+	if (item) 
+	{
+		tb_handle_t path = *((tb_handle_t const*)item);
+		if (path) g2_path_exit(path);
+	}
 }
 /* ///////////////////////////////////////////////////////////////////////
  * implementation

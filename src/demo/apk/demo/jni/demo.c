@@ -87,6 +87,7 @@ tb_bool_t g2_demo_gl_init(tb_size_t width, tb_size_t height, tb_byte_t version)
 	G2_GL_INTERFACE_LOAD_D(g_library, glGetString);
 	G2_GL_INTERFACE_LOAD_D(g_library, glIsTexture);
 	G2_GL_INTERFACE_LOAD_D(g_library, glPixelStorei);
+	G2_GL_INTERFACE_LOAD_D(g_library, glScissor);
 	G2_GL_INTERFACE_LOAD_D(g_library, glStencilFunc);
 	G2_GL_INTERFACE_LOAD_D(g_library, glStencilMask);
 	G2_GL_INTERFACE_LOAD_D(g_library, glStencilOp);
@@ -205,11 +206,7 @@ tb_void_t g2_demo_gl_draw()
 	g2_clear(g_painter, G2_COLOR_BLACK);
 	
 	// matrix
-	if (g_bm)
-	{
-		g2_save(g_painter, G2_SAVE_MODE_MATRIX);
-		g2_matrix_set(g_painter, &g_mx);
-	}
+	if (g_bm) g2_matrix_copy(g2_save(g_painter), &g_mx);
 	
 	// start clock
 	g_rt = tb_uclock();
@@ -247,7 +244,7 @@ tb_void_t g2_demo_gl_size(tb_size_t width, tb_size_t height)
 	g2_matrix_init_translate(&g_mx, g2_long_to_float(g_x0), g2_long_to_float(g_y0));	
 
 	// resize context
-	g2_context_set(g_painter, g2_context_resize(g_context, width, height));
+	g2_context_resize(g2_context(g_painter), width, height);
 
 	// resize
 	g2_demo_size(width, height);

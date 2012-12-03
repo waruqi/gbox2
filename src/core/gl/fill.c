@@ -43,6 +43,7 @@ typedef enum __g2_gl_fill_flag_t
 ,	G2_GL_FILL_FLAG_RECT 		= 1
 ,	G2_GL_FILL_FLAG_STENCIL 	= 2
 ,	G2_GL_FILL_FLAG_CONVEX 		= 4
+,	G2_GL_FILL_FLAG_SCISSOR 	= 8
 
 }g2_gl_fill_flag_t;
 
@@ -54,6 +55,9 @@ typedef struct __g2_gl_fill_t
 
 	// the context
 	g2_gl_context_t* 	context;
+
+	// the clipper 
+	tb_handle_t 		clipper;
 
 	// the program for gl >= 2.0
 	tb_handle_t 		program;
@@ -106,6 +110,27 @@ static __tb_inline__ tb_void_t g2_gl_fill_stencil_leave(g2_gl_fill_t* fill)
 	g2_glStencilFunc(G2_GL_EQUAL, 1, 1);
 	g2_glStencilOp(G2_GL_ZERO, G2_GL_ZERO, G2_GL_ZERO);
 	g2_glColorMask(G2_GL_TRUE, G2_GL_TRUE, G2_GL_TRUE, G2_GL_TRUE);
+}
+static __tb_inline__ tb_void_t g2_gl_fill_scissor_init(g2_gl_fill_t* fill)
+{
+	// only one rect?
+	if (g2_clipper_size(fill->clipper))
+	{
+		g2_clipper_item_t const* item = (g2_clipper_item_t const*)g2_clipper_item(fill->clipper, 0);
+		if (item && item->type == G2_CLIPPER_ITEM_RECT) 
+		{
+			// enable scissor
+			fill->flag |= G2_GL_FILL_FLAG_SCISSOR;
+			g2_glEnable(G2_GL_SCISSOR_TEST);
+
+			// scissor
+			g2_glScissor(g2_float_to_tb(item->u.rect.x), g2_float_to_tb(item->u.rect.y), g2_float_to_tb(item->u.rect.w), g2_float_to_tb(item->u.rect.h));
+		}
+	}
+}
+static __tb_inline__ tb_void_t g2_gl_fill_scissor_exit(g2_gl_fill_t* fill)
+{
+	if (fill->flag & G2_GL_FILL_FLAG_SCISSOR) g2_glDisable(G2_GL_SCISSOR_TEST);
 }
 static __tb_inline__ tb_void_t g2_gl_fill_apply_antialiasing(g2_gl_fill_t* fill)
 {
@@ -687,9 +712,10 @@ static __tb_inline__ tb_bool_t g2_gl_fill_init(g2_gl_fill_t* fill, g2_gl_painter
 	fill->context 	= painter->context;
 	fill->style 	= painter->style;
 	fill->shader 	= g2_style_shader(fill->style);
+	fill->clipper 	= painter->clipper;
 	fill->flag 		= flag;
 	g2_gl_matrix_from(fill->vmatrix, &fill->painter->matrix);
-	tb_assert_and_check_return_val(fill->painter && fill->context && fill->style, TB_FALSE);
+	tb_assert_and_check_return_val(fill->painter && fill->context && fill->style && fill->clipper, TB_FALSE);
 
 	// use stencil?
 	if (!(flag & G2_GL_FILL_FLAG_CONVEX)) fill->flag |= G2_GL_FILL_FLAG_STENCIL;
@@ -718,6 +744,9 @@ static __tb_inline__ tb_bool_t g2_gl_fill_init(g2_gl_fill_t* fill, g2_gl_painter
 		g2_gl_fill_stencil_enter(fill);
 	}
 
+	// init scissor
+	g2_gl_fill_scissor_init(fill);
+
 	// ok
 	return TB_TRUE;
 }
@@ -732,6 +761,9 @@ static __tb_inline__ tb_void_t g2_gl_fill_draw(g2_gl_fill_t* fill, g2_gl_rect_t*
 }
 static __tb_inline__ tb_void_t g2_gl_fill_exit(g2_gl_fill_t* fill)
 {
+	// exit scissor
+	g2_gl_fill_scissor_exit(fill);
+
 	// leave vetex matrix
 	g2_gl_fill_leave_vertex_matrix(fill);
 
