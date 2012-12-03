@@ -2,17 +2,17 @@
 IS_CONFIG = yes
 
 # project
-PRO_DIR = /home/ruki/projects/personal/gbox2
+PRO_DIR = /Users/ruki/projects/personal/gbox2
 PRO_NAME = gbox2
 
 # debug
 DEBUG = y
 
 # platform
-PLAT = linux
+PLAT = ios
 
 # architecture
-ARCH = x86
+ARCH = armv7s
 
 # toolchain
 SDK = 6.0
