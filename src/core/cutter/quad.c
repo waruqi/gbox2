@@ -30,20 +30,20 @@
  * implementation
  */
 
-tb_void_t g2_soft_split_quad_init(g2_soft_split_quad_t* split, g2_soft_split_quad_func_t func, tb_pointer_t data)
+tb_void_t g2_cutter_quad_init(g2_cutter_quad_t* cutter, g2_cutter_quad_func_t func, tb_pointer_t data)
 {
 	// check
-	tb_assert_and_check_return(split);
+	tb_assert_and_check_return(cutter);
 
 	// clear
-	tb_memset(split, 0, sizeof(g2_soft_split_quad_t));
+	tb_memset(cutter, 0, sizeof(g2_cutter_quad_t));
 
 	// init
-	split->func = func;
-	split->data = data;
+	cutter->func = func;
+	cutter->data = data;
 }
 
-/*!split the quad bezier curve using binary segmentation
+/*!cutter the quad bezier curve using binary segmentation
  *
  * <pre>
  *            cp
@@ -68,17 +68,17 @@ tb_void_t g2_soft_split_quad_init(g2_soft_split_quad_t* split, g2_soft_split_qua
  *
  * </pre>
  */
-tb_void_t g2_soft_split_quad_done(g2_soft_split_quad_t* split, g2_point_t const* pb, g2_point_t const* cp, g2_point_t const* pe)
+tb_void_t g2_cutter_quad_done(g2_cutter_quad_t* cutter, g2_point_t const* pb, g2_point_t const* cp, g2_point_t const* pe)
 {
 	g2_float_t mx = cp->x - g2_rsh(pb->x + pe->x, 1);
 	g2_float_t my = cp->y - g2_rsh(pb->y + pe->y, 1);
 
 	// check
-	tb_assert(split->func);
+	tb_assert(cutter->func);
 
 	// ok?
 	if (g2_fabs(mx) + g2_fabs(my) <= G2_ONE)
-		split->func(split, pe);
+		cutter->func(cutter, pe);
 	else
 	{
 		g2_point_t p0, cpb, cpe;
@@ -89,8 +89,8 @@ tb_void_t g2_soft_split_quad_done(g2_soft_split_quad_t* split, g2_point_t const*
 		p0.x = g2_rsh(cpb.x + cpe.x, 1);
 		p0.y = g2_rsh(cpb.y + cpe.y, 1);
 
-		g2_soft_split_quad_done(split, pb, &cpb, &p0);
-		g2_soft_split_quad_done(split, &p0, &cpe, pe);
+		g2_cutter_quad_done(cutter, pb, &cpb, &p0);
+		g2_cutter_quad_done(cutter, &p0, &cpe, pe);
 	}
 }
 

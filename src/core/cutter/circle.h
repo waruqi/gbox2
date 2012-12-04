@@ -17,11 +17,11 @@
  * Copyright (C) 2009 - 2012, ruki All rights reserved.
  *
  * @author		ruki
- * @file		ellipse.h
+ * @file		circle.h
  *
  */
-#ifndef G2_CORE_SOFT_SPLIT_ELLIPSE_H
-#define G2_CORE_SOFT_SPLIT_ELLIPSE_H
+#ifndef G2_CORE_CUTTER_CIRCLE_H
+#define G2_CORE_CUTTER_CIRCLE_H
 
 /* ///////////////////////////////////////////////////////////////////////
  * includes
@@ -32,30 +32,30 @@
  * types
  */
 
-// the soft split ellipse func type
-struct __g2_soft_split_ellipse_t;
-typedef tb_void_t (*g2_soft_split_ellipse_func_t)(struct __g2_soft_split_ellipse_t* split, g2_point_t const* pt);
+// the soft cutter circle func type
+struct __g2_cutter_circle_t;
+typedef tb_void_t (*g2_cutter_circle_func_t)(struct __g2_cutter_circle_t* cutter, g2_point_t const* pt);
 
-// the soft split ellipse type
-typedef struct __g2_soft_split_ellipse_t
+// the soft cutter circle type
+typedef struct __g2_cutter_circle_t
 {
 	// the func
-	g2_soft_split_ellipse_func_t 	func;
+	g2_cutter_circle_func_t 	func;
 
 	// the data
 	tb_pointer_t 					data;
 
-}g2_soft_split_ellipse_t;
+}g2_cutter_circle_t;
 
 /* ///////////////////////////////////////////////////////////////////////
  * interfaces
  */
 
 // init
-tb_void_t g2_soft_split_ellipse_init(g2_soft_split_ellipse_t* split, g2_soft_split_ellipse_func_t func, tb_pointer_t data);
+tb_void_t g2_cutter_circle_init(g2_cutter_circle_t* cutter, g2_cutter_circle_func_t func, tb_pointer_t data);
 
 // done
-tb_void_t g2_soft_split_ellipse_done(g2_soft_split_ellipse_t* split, g2_ellipse_t const* ellipse);
+tb_void_t g2_cutter_circle_done(g2_cutter_circle_t* cutter, g2_circle_t const* circle);
 
 #endif
 

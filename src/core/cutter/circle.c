@@ -30,20 +30,20 @@
  * implementation
  */
 
-tb_void_t g2_soft_split_circle_init(g2_soft_split_circle_t* split, g2_soft_split_circle_func_t func, tb_pointer_t data)
+tb_void_t g2_cutter_circle_init(g2_cutter_circle_t* cutter, g2_cutter_circle_func_t func, tb_pointer_t data)
 {
 	// check
-	tb_assert_and_check_return(split);
+	tb_assert_and_check_return(cutter);
 
 	// clear
-	tb_memset(split, 0, sizeof(g2_soft_split_circle_t));
+	tb_memset(cutter, 0, sizeof(g2_cutter_circle_t));
 
 	// init
-	split->func = func;
-	split->data = data;
+	cutter->func = func;
+	cutter->data = data;
 }
 
-/*!split circle
+/*!cutter circle
  *
  * <pre>
  *
@@ -86,10 +86,10 @@ tb_void_t g2_soft_split_circle_init(g2_soft_split_circle_t* split, g2_soft_split
  
  * </pre>
  */
-tb_void_t g2_soft_split_circle_done(g2_soft_split_circle_t* split, g2_circle_t const* circle)
+tb_void_t g2_cutter_circle_done(g2_cutter_circle_t* cutter, g2_circle_t const* circle)
 {
 	// check
-	tb_assert(split->func);
+	tb_assert(cutter->func);
 
 	// init
 	tb_size_t 	ri = (tb_size_t)g2_float_to_long(circle->r);
@@ -112,7 +112,7 @@ tb_void_t g2_soft_split_circle_done(g2_soft_split_circle_t* split, g2_circle_t c
 	pb.y = g2_fixed_to_float(y0);
 
 	// done
-	split->func(split, &pb);
+	cutter->func(cutter, &pb);
 
 	// walk
 	while (n--)
@@ -124,7 +124,7 @@ tb_void_t g2_soft_split_circle_done(g2_soft_split_circle_t* split, g2_circle_t c
 		pt.y = g2_fixed_to_float(y0 - ((y2 * rf) >> 16));
 
 		// done
-		split->func(split, &pt);
+		cutter->func(cutter, &pt);
 
 		// next
 		x1 = x2;
@@ -132,7 +132,7 @@ tb_void_t g2_soft_split_circle_done(g2_soft_split_circle_t* split, g2_circle_t c
 	}
 	
 	// close 
-	split->func(split, &pb);
+	cutter->func(cutter, &pb);
 }
 
 

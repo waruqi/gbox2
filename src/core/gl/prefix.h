@@ -35,6 +35,7 @@
 #include "../painter.h"
 #include "../context.h"
 #include "../cache/cache.h"
+#include "../cutter/cutter.h"
 #include "../../gbox2.h"
 #include "type.h"
 #include "rect.h"

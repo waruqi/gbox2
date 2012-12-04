@@ -17,11 +17,11 @@
  * Copyright (C) 2009 - 2012, ruki All rights reserved.
  *
  * @author		ruki
- * @file		split.h
+ * @file		cutter.h
  *
  */
-#ifndef G2_CORE_SOFT_SPLIT_H
-#define G2_CORE_SOFT_SPLIT_H
+#ifndef G2_CORE_CUTTER_H
+#define G2_CORE_CUTTER_H
 
 /* ///////////////////////////////////////////////////////////////////////
  * includes

@@ -30,20 +30,20 @@
  * implementation
  */
 
-tb_void_t g2_soft_split_cube_init(g2_soft_split_cube_t* split, g2_soft_split_cube_func_t func, tb_pointer_t data)
+tb_void_t g2_cutter_cube_init(g2_cutter_cube_t* cutter, g2_cutter_cube_func_t func, tb_pointer_t data)
 {
 	// check
-	tb_assert_and_check_return(split);
+	tb_assert_and_check_return(cutter);
 
 	// clear
-	tb_memset(split, 0, sizeof(g2_soft_split_cube_t));
+	tb_memset(cutter, 0, sizeof(g2_cutter_cube_t));
 
 	// init
-	split->func = func;
-	split->data = data;
+	cutter->func = func;
+	cutter->data = data;
 }
 
-/*!split the cube bezier curve using binary segmentation
+/*!cutter the cube bezier curve using binary segmentation
  *
  * <pre>
  *
@@ -66,7 +66,7 @@ tb_void_t g2_soft_split_cube_init(g2_soft_split_cube_t* split, g2_soft_split_cub
  *                          
  */
 
-tb_void_t g2_soft_split_cube_done(g2_soft_split_cube_t* split, g2_point_t const* pb, g2_point_t const* cpb, g2_point_t const* cpe, g2_point_t const* pe)
+tb_void_t g2_cutter_cube_done(g2_cutter_cube_t* cutter, g2_point_t const* pb, g2_point_t const* cpb, g2_point_t const* cpe, g2_point_t const* pe)
 {
 	g2_float_t mxb = g2_lsh(cpb->x - pb->x, 1) + cpb->x - pe->x;
 	g2_float_t myb = g2_lsh(cpb->y - pb->y, 1) + cpb->y - pe->y;
@@ -82,11 +82,11 @@ tb_void_t g2_soft_split_cube_done(g2_soft_split_cube_t* split, g2_point_t const*
 	if (mye < myb) myb = mye;
 
 	// check
-	tb_assert(split->func);
+	tb_assert(cutter->func);
 
 	// ok?
 	if (mxb + myb <= G2_ONE)
-		split->func(split, pe);
+		cutter->func(cutter, pe);
 	else
 	{
 		g2_point_t cp0, cp1, cp2, pb0, pe0, p0;
@@ -109,8 +109,8 @@ tb_void_t g2_soft_split_cube_done(g2_soft_split_cube_t* split, g2_point_t const*
 		p0.x = g2_rsh(pb0.x + pe0.x, 1);
 		p0.y = g2_rsh(pb0.y + pe0.y, 1);
 
-		g2_soft_split_cube_done(split, pb, &cp1, &pb0, &p0);
-		g2_soft_split_cube_done(split, &p0, &pe0, &cp2, pe);
+		g2_cutter_cube_done(cutter, pb, &cp1, &pb0, &p0);
+		g2_cutter_cube_done(cutter, &p0, &pe0, &cp2, pe);
 
 	}
 }

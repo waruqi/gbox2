@@ -40,6 +40,10 @@ gbox2_C_FILES 			+= \
 						core/clipper \
 						core/painter \
 						core/cache/pcache \
+						core/cutter/quad \
+						core/cutter/cube \
+						core/cutter/circle \
+						core/cutter/ellipse \
 						core/image/decoder/bmp \
 						core/image/decoder/jpg \
 						core/image/decoder/png \
@@ -49,10 +53,6 @@ gbox2_C_FILES 			+= \
 gbox2_C_FILES-$(G2_CONFIG_CORE_GL) += \
 						core/soft/style \
 						core/soft/bitmap \
-						core/soft/split/quad \
-						core/soft/split/cube \
-						core/soft/split/circle \
-						core/soft/split/ellipse \
 						core/gl/path \
 						core/gl/fill \
 						core/gl/shader \
@@ -66,10 +66,6 @@ gbox2_C_FILES-$(G2_CONFIG_CORE_GL) += \
 gbox2_C_FILES-$(G2_CONFIG_CORE_GLES) += \
 						core/soft/style \
 						core/soft/bitmap \
-						core/soft/split/quad \
-						core/soft/split/cube \
-						core/soft/split/circle \
-						core/soft/split/ellipse \
 						core/gl/path \
 						core/gl/fill \
 						core/gl/shader \
@@ -92,9 +88,7 @@ gbox2_C_FILES-$(G2_CONFIG_CORE_SOFT) += \
 						core/soft/path \
 						core/soft/style \
 						core/soft/shader \
-						core/soft/bitmap \
-						core/soft/split/quad \
-						core/soft/split/cube
+						core/soft/bitmap
 
 # flags
 gbox2_CXFLAGS 			+= -DTB_PRINT_TAG=\"gbox2\"

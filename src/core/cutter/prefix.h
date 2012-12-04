@@ -17,45 +17,17 @@
  * Copyright (C) 2009 - 2012, ruki All rights reserved.
  *
  * @author		ruki
- * @file		quad.h
+ * @file		prefix.h
  *
  */
-#ifndef G2_CORE_SOFT_SPLIT_QUAD_H
-#define G2_CORE_SOFT_SPLIT_QUAD_H
+#ifndef G2_CORE_CUTTER_PREFIX_H
+#define G2_CORE_CUTTER_PREFIX_H
 
 /* ///////////////////////////////////////////////////////////////////////
  * includes
  */
-#include "prefix.h"
+#include "../prefix.h"
 
-/* ///////////////////////////////////////////////////////////////////////
- * types
- */
-
-// the soft split quad func type
-struct __g2_soft_split_quad_t;
-typedef tb_void_t (*g2_soft_split_quad_func_t)(struct __g2_soft_split_quad_t* split, g2_point_t const* pt);
-
-// the soft split quad type
-typedef struct __g2_soft_split_quad_t
-{
-	// the func
-	g2_soft_split_quad_func_t 	func;
-
-	// the data
-	tb_pointer_t 				data;
-
-}g2_soft_split_quad_t;
-
-/* ///////////////////////////////////////////////////////////////////////
- * interfaces
- */
-
-// init
-tb_void_t g2_soft_split_quad_init(g2_soft_split_quad_t* split, g2_soft_split_quad_func_t func, tb_pointer_t data);
-
-// done
-tb_void_t g2_soft_split_quad_done(g2_soft_split_quad_t* split, g2_point_t const* pb, g2_point_t const* cp, g2_point_t const* pe);
 
 #endif
 

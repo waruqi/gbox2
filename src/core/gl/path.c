@@ -31,7 +31,6 @@
  */
 #include "path.h"
 #include "rect.h"
-#include "../soft/split/split.h"
 
 /* ///////////////////////////////////////////////////////////////////////
  * macros
@@ -91,10 +90,10 @@ static __tb_inline__ tb_void_t g2_gl_path_fill_clear(g2_gl_path_t* path)
 	// clear fill rect
 	tb_memset(&path->fill.rect, 0, sizeof(g2_gl_rect_t));
 }
-static tb_void_t g2_gl_path_fill_split_quad_func(g2_soft_split_quad_t* split, g2_point_t const* pt)
+static tb_void_t g2_gl_path_fill_quad_to_func(g2_cutter_quad_t* cutter, g2_point_t const* pt)
 {
 	// path
-	g2_gl_path_t* path = (g2_gl_path_t*)split->data;
+	g2_gl_path_t* path = (g2_gl_path_t*)cutter->data;
 	tb_assert_return(path);
 
 	// data
@@ -106,10 +105,10 @@ static tb_void_t g2_gl_path_fill_split_quad_func(g2_soft_split_quad_t* split, g2
 	tb_vector_insert_tail(path->fill.data, data);
 	tb_vector_replace_last(path->fill.size, tb_vector_last(path->fill.size) + 1);
 }
-static tb_void_t g2_gl_path_fill_split_cube_func(g2_soft_split_cube_t* split, g2_point_t const* pt)
+static tb_void_t g2_gl_path_fill_cube_to_func(g2_cutter_cube_t* cutter, g2_point_t const* pt)
 {
 	// path
-	g2_gl_path_t* path = (g2_gl_path_t*)split->data;
+	g2_gl_path_t* path = (g2_gl_path_t*)cutter->data;
 	tb_assert_return(path);
 
 	// data
@@ -123,12 +122,12 @@ static tb_void_t g2_gl_path_fill_split_cube_func(g2_soft_split_cube_t* split, g2
 }
 
 /* ///////////////////////////////////////////////////////////////////////
- * add
+ * path
  */
-static tb_void_t g2_gl_path_add_split_circle_func(g2_soft_split_circle_t* split, g2_point_t const* pt)
+static tb_void_t g2_gl_path_add_circle_func(g2_cutter_circle_t* cutter, g2_point_t const* pt)
 {
 	// data
-	tb_handle_t* data = (tb_handle_t*)split->data;
+	tb_handle_t* data = (tb_handle_t*)cutter->data;
 	tb_assert_return(data && data[0]);
 
 	// line-to?
@@ -140,10 +139,10 @@ static tb_void_t g2_gl_path_add_split_circle_func(g2_soft_split_circle_t* split,
 		data[1] = TB_NULL;
 	}
 }
-static tb_void_t g2_gl_path_add_split_ellipse_func(g2_soft_split_ellipse_t* split, g2_point_t const* pt)
+static tb_void_t g2_gl_path_add_ellipse_func(g2_cutter_ellipse_t* cutter, g2_point_t const* pt)
 {
 	// data
-	tb_handle_t* data = (tb_handle_t*)split->data;
+	tb_handle_t* data = (tb_handle_t*)cutter->data;
 	tb_assert_return(data && data[0]);
 
 	// line-to?
@@ -354,11 +353,11 @@ tb_bool_t g2_gl_path_make_fill(g2_gl_path_t* path)
 	}
 	else tb_vector_clear(path->fill.size);
 
-	// init splitter
-	g2_soft_split_quad_t quad;
-	g2_soft_split_cube_t cube;
-	g2_soft_split_quad_init(&quad, g2_gl_path_fill_split_quad_func, path);
-	g2_soft_split_cube_init(&cube, g2_gl_path_fill_split_cube_func, path);
+	// init cutter
+	g2_cutter_quad_t quad;
+	g2_cutter_cube_t cube;
+	g2_cutter_quad_init(&quad, g2_gl_path_fill_quad_to_func, path);
+	g2_cutter_cube_init(&cube, g2_gl_path_fill_cube_to_func, path);
 
 	// walk
 	for (; code < cail && data < dail; code++)
@@ -402,7 +401,7 @@ tb_bool_t g2_gl_path_make_fill(g2_gl_path_t* path)
 				// quad
 				tb_trace_impl("quad: %f %f %f %f", data[0], data[1], data[2], data[3]);
 
-				// split
+				// cutter
 				tb_assert(last);
 				g2_point_t pb, cp, pe;
 				pb.x = last? tb_float_to_g2(last[0]) : 0;
@@ -411,7 +410,7 @@ tb_bool_t g2_gl_path_make_fill(g2_gl_path_t* path)
 				cp.y = tb_float_to_g2(data[1]);
 				pe.x = tb_float_to_g2(data[2]);
 				pe.y = tb_float_to_g2(data[3]);
-				g2_soft_split_quad_done(&quad, &pb, &cp, &pe);
+				g2_cutter_quad_done(&quad, &pb, &cp, &pe);
 
 				// last
 				last = &data[2];
@@ -425,7 +424,7 @@ tb_bool_t g2_gl_path_make_fill(g2_gl_path_t* path)
 				// cube
 				tb_trace_impl("cube: %f %f %f %f %f %f", data[0], data[1], data[2], data[3], data[4], data[5]);
 
-				// split
+				// cutter
 				tb_assert(last);
 				g2_point_t pb, cpb, cpe, pe;
 				pb.x = last? tb_float_to_g2(last[0]) : 0;
@@ -436,7 +435,7 @@ tb_bool_t g2_gl_path_make_fill(g2_gl_path_t* path)
 				cpe.y = tb_float_to_g2(data[3]);
 				pe.x = tb_float_to_g2(data[4]);
 				pe.y = tb_float_to_g2(data[5]);
-				g2_soft_split_cube_done(&cube, &pb, &cpb, &cpe, &pe);
+				g2_cutter_cube_done(&cube, &pb, &cpb, &cpe, &pe);
 
 				// last
 				last = &data[4];
@@ -940,10 +939,10 @@ tb_void_t g2_path_add_circle(tb_handle_t path, g2_circle_t const* circle)
 	// init
 	tb_handle_t data[2] = {path, path};
 
-	// split
-	g2_soft_split_circle_t split;
-	g2_soft_split_circle_init(&split, g2_gl_path_add_split_circle_func, data);
-	g2_soft_split_circle_done(&split, circle);
+	// cutter
+	g2_cutter_circle_t cutter;
+	g2_cutter_circle_init(&cutter, g2_gl_path_add_circle_func, data);
+	g2_cutter_circle_done(&cutter, circle);
 
 	// close
 	g2_path_close(path);
@@ -959,10 +958,10 @@ tb_void_t g2_path_add_ellipse(tb_handle_t path, g2_ellipse_t const* ellipse)
 	// init
 	tb_handle_t data[2] = {path, path};
 
-	// split
-	g2_soft_split_ellipse_t split;
-	g2_soft_split_ellipse_init(&split, g2_gl_path_add_split_ellipse_func, data);
-	g2_soft_split_ellipse_done(&split, ellipse);
+	// cutter
+	g2_cutter_ellipse_t cutter;
+	g2_cutter_ellipse_init(&cutter, g2_gl_path_add_ellipse_func, data);
+	g2_cutter_ellipse_done(&cutter, ellipse);
 
 	// close
 	g2_path_close(path);

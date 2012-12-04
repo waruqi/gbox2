@@ -30,20 +30,20 @@
  * implementation
  */
 
-tb_void_t g2_soft_split_ellipse_init(g2_soft_split_ellipse_t* split, g2_soft_split_ellipse_func_t func, tb_pointer_t data)
+tb_void_t g2_cutter_ellipse_init(g2_cutter_ellipse_t* cutter, g2_cutter_ellipse_func_t func, tb_pointer_t data)
 {
 	// check
-	tb_assert_and_check_return(split);
+	tb_assert_and_check_return(cutter);
 
 	// clear
-	tb_memset(split, 0, sizeof(g2_soft_split_ellipse_t));
+	tb_memset(cutter, 0, sizeof(g2_cutter_ellipse_t));
 
 	// init
-	split->func = func;
-	split->data = data;
+	cutter->func = func;
+	cutter->data = data;
 }
 
-/*!split ellipse
+/*!cutter ellipse
  *
  * <pre>
  *
@@ -86,10 +86,10 @@ tb_void_t g2_soft_split_ellipse_init(g2_soft_split_ellipse_t* split, g2_soft_spl
  *
  * </pre>
  */
-tb_void_t g2_soft_split_ellipse_done(g2_soft_split_ellipse_t* split, g2_ellipse_t const* ellipse)
+tb_void_t g2_cutter_ellipse_done(g2_cutter_ellipse_t* cutter, g2_ellipse_t const* ellipse)
 {
 	// check
-	tb_assert(split->func);
+	tb_assert(cutter->func);
 
 	// init
 	tb_size_t 	rxi = (tb_size_t)g2_float_to_long(ellipse->rx);
@@ -116,7 +116,7 @@ tb_void_t g2_soft_split_ellipse_done(g2_soft_split_ellipse_t* split, g2_ellipse_
 	pb.y = g2_fixed_to_float(y0);
 
 	// done
-	split->func(split, &pb);
+	cutter->func(cutter, &pb);
 
 	// walk
 	while (n--)
@@ -128,7 +128,7 @@ tb_void_t g2_soft_split_ellipse_done(g2_soft_split_ellipse_t* split, g2_ellipse_
 		pt.y = g2_fixed_to_float(y0 - ((y2 * ryf) >> 16));
 
 		// done
-		split->func(split, &pt);
+		cutter->func(cutter, &pt);
 
 		// next
 		x1 = x2;
@@ -136,7 +136,7 @@ tb_void_t g2_soft_split_ellipse_done(g2_soft_split_ellipse_t* split, g2_ellipse_
 	}
 	
 	// close 
-	split->func(split, &pb);
+	cutter->func(cutter, &pb);
 }
 
 
