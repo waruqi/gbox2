@@ -28,6 +28,7 @@
  */
 #include "prefix.h"
 #include "pcache.h"
+#include "cstack.h"
 
 #endif
 

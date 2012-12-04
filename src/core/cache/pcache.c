@@ -94,6 +94,9 @@ static tb_bool_t g2_pcache_stack_item_free(tb_stack_t* stack, tb_pointer_t* item
 
 tb_handle_t g2_pcache_init(tb_size_t maxn)
 {
+	// check
+	tb_assert_and_check_return_val(maxn, TB_NULL);
+
 	// alloc
 	g2_pcache_t* pcache = tb_malloc0(sizeof(g2_pcache_t));
 	tb_assert_and_check_return_val(pcache, TB_NULL);

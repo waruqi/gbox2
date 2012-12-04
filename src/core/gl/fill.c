@@ -710,9 +710,9 @@ static __tb_inline__ tb_bool_t g2_gl_fill_init(g2_gl_fill_t* fill, g2_gl_painter
 	// init fill
 	fill->painter 	= painter;
 	fill->context 	= painter->context;
-	fill->style 	= painter->style;
+	fill->style 	= g2_style(painter);
 	fill->shader 	= g2_style_shader(fill->style);
-	fill->clipper 	= painter->clipper;
+	fill->clipper 	= g2_clipper(painter);
 	fill->flag 		= flag;
 	g2_gl_matrix_from(fill->vmatrix, &fill->painter->matrix);
 	tb_assert_and_check_return_val(fill->painter && fill->context && fill->style && fill->clipper, TB_FALSE);

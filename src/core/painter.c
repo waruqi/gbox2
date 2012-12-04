@@ -528,6 +528,12 @@ tb_void_t g2_clip_iellipse2(tb_handle_t painter, tb_size_t mode, tb_long_t x0, t
  * drawer
  */
 
+// path
+tb_void_t g2_draw(tb_handle_t painter)
+{
+	g2_draw_path(painter, g2_path(painter));
+}
+
 // point
 tb_void_t g2_draw_point2(tb_handle_t painter, g2_float_t x, g2_float_t y)
 {

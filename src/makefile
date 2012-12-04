@@ -40,6 +40,7 @@ gbox2_C_FILES 			+= \
 						core/clipper \
 						core/painter \
 						core/cache/pcache \
+						core/cache/cstack \
 						core/cutter/quad \
 						core/cutter/cube \
 						core/cutter/circle \

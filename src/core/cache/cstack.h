@@ -17,40 +17,62 @@
  * Copyright (C) 2009 - 2012, ruki All rights reserved.
  *
  * @author		ruki
- * @file		painter.h
+ * @file		cstack.h
  *
  */
-#ifndef G2_CORE_GL_PAINTER_H
-#define G2_CORE_GL_PAINTER_H
+#ifndef G2_CORE_CSTACK_H
+#define G2_CORE_CSTACK_H
+
+// c plus plus
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /* ///////////////////////////////////////////////////////////////////////
  * includes
  */
-#include "context.h"
+#include "prefix.h"
 
 /* ///////////////////////////////////////////////////////////////////////
  * types
  */
 
-// the gl painter type
-typedef struct __g2_gl_painter_t
+// the cstack func type
+typedef struct __g2_cstack_func_t
 {
-	// the context
-	g2_gl_context_t* 			context;
+	// init
+	tb_handle_t (*init)();
 
-	// the matrix
-	g2_matrix_t 				matrix;
+	// exit
+	tb_void_t 	(*exit)(tb_handle_t object);
 
-	// the stack
-	tb_stack_t* 				stack_matrix;
-	tb_handle_t 				stack_path;
-	tb_handle_t 				stack_style;
-	tb_handle_t 				stack_clipper;
+	// copy
+	tb_void_t 	(*copy)(tb_handle_t object, tb_handle_t copy);
 
-	// the cache
-	tb_handle_t 				pcache;
+}g2_cstack_func_t;
 
-}g2_gl_painter_t;
+/* ///////////////////////////////////////////////////////////////////////
+ * interfaces
+ */
 
+// init
+tb_handle_t 				g2_cstack_init(tb_size_t csize, g2_cstack_func_t const* ofunc);
+
+// exit
+tb_void_t 					g2_cstack_exit(tb_handle_t cstack);
+
+// save
+tb_handle_t 				g2_cstack_save(tb_handle_t cstack);
+
+// load
+tb_void_t 					g2_cstack_load(tb_handle_t cstack);
+
+// object
+tb_handle_t 				g2_cstack_object(tb_handle_t cstack);
+
+// c plus plus
+#ifdef __cplusplus
+}
+#endif
 
 #endif
