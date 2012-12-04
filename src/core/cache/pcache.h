@@ -17,33 +17,44 @@
  * Copyright (C) 2009 - 2012, ruki All rights reserved.
  *
  * @author		ruki
- * @file		prefix.h
+ * @file		pcache.h
  *
  */
-#ifndef G2_CORE_GL_PREFIX_H
-#define G2_CORE_GL_PREFIX_H
+#ifndef G2_CORE_PCACHE_H
+#define G2_CORE_PCACHE_H
+
+// c plus plus
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /* ///////////////////////////////////////////////////////////////////////
  * includes
  */
-#include "../prefix.h"
-#include "../path.h"
-#include "../style.h"
-#include "../bitmap.h"
-#include "../shader.h"
-#include "../matrix.h"
-#include "../painter.h"
-#include "../context.h"
-#include "../cache/cache.h"
-#include "../../gbox2.h"
-#include "type.h"
-#include "rect.h"
-#include "path.h"
-#include "matrix.h"
-#include "interface.h"
-#include "extensions.h"
+#include "prefix.h"
 
+/* ///////////////////////////////////////////////////////////////////////
+ * interfaces
+ */
 
+// init
+tb_handle_t 				g2_pcache_init(tb_size_t maxn);
+
+// exit
+tb_void_t 					g2_pcache_exit(tb_handle_t pcache);
+
+// clear
+tb_void_t 					g2_pcache_clear(tb_handle_t pcache);
+
+// get
+tb_handle_t 				g2_pcache_get(tb_handle_t pcache, g2_shape_t const* shape);
+
+// add
+tb_handle_t 				g2_pcache_add(tb_handle_t pcache, g2_shape_t const* shape);
+
+// c plus plus
+#ifdef __cplusplus
+}
 #endif
 
-
+#endif

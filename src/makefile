@@ -39,6 +39,7 @@ gbox2_C_FILES 			+= \
 						core/matrix \
 						core/clipper \
 						core/painter \
+						core/cache/pcache \
 						core/image/decoder/bmp \
 						core/image/decoder/jpg \
 						core/image/decoder/png \

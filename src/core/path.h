@@ -63,6 +63,9 @@ tb_void_t 		g2_path_clear(tb_handle_t path);
 // close
 tb_void_t 		g2_path_close(tb_handle_t path);
 
+// copy
+tb_void_t 		g2_path_copy(tb_handle_t path, 				tb_handle_t copy);
+
 // null?
 tb_bool_t 		g2_path_null(tb_handle_t path);
 

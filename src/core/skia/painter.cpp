@@ -347,7 +347,7 @@ static __tb_inline__ tb_void_t g2_skia_exit(tb_handle_t painter)
 	spainter->style_stack = TB_NULL;
 
 	// exit clipper
-	if (spainter->clipper) g2_style_exit(spainter->clipper);
+	if (spainter->clipper) g2_clipper_exit(spainter->clipper);
 	spainter->clipper = TB_NULL;
 
 	// exit clipper hash

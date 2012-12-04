@@ -591,6 +591,13 @@ tb_bool_t g2_path_null(tb_handle_t path)
 
 	return tb_vector_size(gpath->data)? TB_FALSE : TB_TRUE;
 }
+tb_void_t g2_path_copy(tb_handle_t path, tb_handle_t copy)
+{
+	g2_gl_path_t* gpath = (g2_gl_path_t*)path;
+	tb_assert_and_check_return(gpath && gpath->data);
+
+	tb_trace_noimpl();
+}
 tb_bool_t g2_path_itor_init(tb_handle_t path)
 {
 	g2_gl_path_t* gpath = (g2_gl_path_t*)path;

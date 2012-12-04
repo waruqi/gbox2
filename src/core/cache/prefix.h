@@ -20,29 +20,17 @@
  * @file		prefix.h
  *
  */
-#ifndef G2_CORE_GL_PREFIX_H
-#define G2_CORE_GL_PREFIX_H
+#ifndef G2_CORE_CACHE_PREFIX_H
+#define G2_CORE_CACHE_PREFIX_H
 
 /* ///////////////////////////////////////////////////////////////////////
  * includes
  */
 #include "../prefix.h"
-#include "../path.h"
-#include "../style.h"
-#include "../bitmap.h"
-#include "../shader.h"
-#include "../matrix.h"
-#include "../painter.h"
-#include "../context.h"
-#include "../cache/cache.h"
-#include "../../gbox2.h"
-#include "type.h"
-#include "rect.h"
-#include "path.h"
-#include "matrix.h"
-#include "interface.h"
-#include "extensions.h"
 
+/* ///////////////////////////////////////////////////////////////////////
+ * types
+ */
 
 #endif
 
