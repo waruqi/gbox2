@@ -233,6 +233,12 @@ tb_bool_t g2_multiply_lhs(tb_handle_t painter, g2_matrix_t const* matrix)
  * path
  */
 
+// close
+tb_void_t g2_close(tb_handle_t painter)
+{
+	g2_path_close(g2_path(painter));
+}
+
 // move to
 tb_void_t g2_move_to(tb_handle_t painter, g2_point_t const* pt)
 {

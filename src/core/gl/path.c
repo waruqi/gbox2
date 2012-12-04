@@ -593,9 +593,36 @@ tb_bool_t g2_path_null(tb_handle_t path)
 tb_void_t g2_path_copy(tb_handle_t path, tb_handle_t copy)
 {
 	g2_gl_path_t* gpath = (g2_gl_path_t*)path;
-	tb_assert_and_check_return(gpath && gpath->data);
+	g2_gl_path_t* gcopy = (g2_gl_path_t*)copy;
+	tb_assert_and_check_return(gpath && gcopy);
 
-	tb_trace_noimpl();
+	// same? 
+	tb_check_return(gpath != gcopy);
+
+	// null? clear it
+	if (g2_path_null(copy))
+	{
+		g2_path_clear(path);
+		return ;
+	}
+
+	// check
+	tb_assert_and_check_return(gpath->code && gcopy->code);
+	tb_assert_and_check_return(gpath->data && gcopy->data);
+	tb_assert_and_check_return(gpath->size && gcopy->size);
+
+	// copy
+	gpath->flag = gcopy->flag;
+	gpath->like = gcopy->like;
+	gpath->line = gcopy->line;
+	gpath->trig = gcopy->trig;
+	gpath->itor = gcopy->itor;
+	tb_vector_copy(gpath->code, gcopy->code);
+	tb_vector_copy(gpath->data, gcopy->data);
+	tb_vector_copy(gpath->size, gcopy->size);
+	
+	// clear fill
+	g2_gl_path_fill_clear(gpath);
 }
 tb_bool_t g2_path_itor_init(tb_handle_t path)
 {

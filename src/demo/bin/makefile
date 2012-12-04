@@ -9,6 +9,7 @@ NAMES 					= \
 						line \
 						clip \
 						path \
+						save \
 						point \
 						circle \
 						ellipse \
