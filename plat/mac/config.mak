@@ -5,7 +5,7 @@
 # demo
 G2_CONFIG_DEMO 						= y
 G2_CONFIG_DEMO_LIBS 				= z m dl pthread
-G2_CONFIG_DEMO_LDFLAGS 				= -framework GLUT -framework OpenGL -framework Cocoa -framework CoreFoundation -framework VideoDecodeAcceleration -framework QuartzCore
+G2_CONFIG_DEMO_LDFLAGS 				= -framework GLUT -framework OpenGL
 
 
 # demo

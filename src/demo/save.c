@@ -46,7 +46,7 @@ static tb_void_t g2_demo_shape_render()
 	g2_color(g_painter, G2_COLOR_RED);
 	g2_clear_path(g_painter);
 	g2_translate(g_painter, g2_long_to_float(50), 0);
-//	g2_clip_irect2(g_painter, G2_CLIPPER_MODE_REPLACE, 310, 110, 80, 80);	
+	g2_clip_irect2(g_painter, G2_CLIPPER_MODE_REPLACE, 310, 110, 80, 80);	
 	g2_move2i_to(g_painter, 300, 100);
 	g2_line2i_to(g_painter, 400, 100);
 	g2_line2i_to(g_painter, 400, 200);

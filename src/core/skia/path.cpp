@@ -53,6 +53,25 @@ static __tb_inline__ tb_void_t g2_skia_path_clear(tb_handle_t path)
 
 	spath->reset();
 }
+static __tb_inline__ tb_void_t g2_skia_path_copy(tb_handle_t path, tb_handle_t copy)
+{
+	G2SkiaPath* spath = static_cast<G2SkiaPath*>(path);
+	G2SkiaPath* scopy = static_cast<G2SkiaPath*>(copy);
+	tb_assert_and_check_return(spath && scopy);
+
+	// same? 
+	tb_check_return(spath != scopy); 
+
+	// null?
+	if (scopy->isEmpty()) 
+	{
+		spath->reset();
+		return ;
+	}
+
+	// copy
+	*spath = *scopy;
+}
 static __tb_inline__ tb_void_t g2_skia_path_close(tb_handle_t path)
 {
 	G2SkiaPath* spath = static_cast<G2SkiaPath*>(path);
@@ -231,6 +250,10 @@ extern "C"
 	tb_void_t g2_path_close(tb_handle_t path)
 	{
 		g2_skia_path_close(path);
+	}
+	tb_void_t g2_path_copy(tb_handle_t path, tb_handle_t copy)
+	{
+		g2_skia_path_copy(path, copy);
 	}
 	tb_bool_t g2_path_null(tb_handle_t path)
 	{

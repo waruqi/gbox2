@@ -33,6 +33,7 @@
 #include "../context.h"
 #include "../painter.h"
 #include "../clipper.h"
+#include "../cache/cache.h"
 #include "../../gbox2.h"
 #include "../../third/skia/skia.h"
 #include "color.h"

@@ -40,34 +40,28 @@
 
 // matrix
 #ifdef TB_CONFIG_BINARY_SMALL
-# 	define G2_SKIA_MATRIX_STACK_GROW 		(32)
-# 	define G2_SKIA_MATRIX_CACHE_SIZE 		(4)
+# 	define G2_GL_MATRIX_GROW 				(32)
 #else
-# 	define G2_SKIA_MATRIX_STACK_GROW 		(64)
-# 	define G2_SKIA_MATRIX_CACHE_SIZE 		(8)
+# 	define G2_GL_MATRIX_GROW 				(64)
 #endif
 
-// style
+// cache
 #ifdef TB_CONFIG_BINARY_SMALL
-# 	define G2_SKIA_STYLE_STACK_GROW 		(32)
-# 	define G2_SKIA_STYLE_CACHE_SIZE 		(4)
+# 	define G2_GL_CACHE_PATH_SIZE 			(8)
+# 	define G2_GL_CACHE_STYLE_SIZE 			(4)
+# 	define G2_GL_CACHE_CLIPPER_SIZE 		(4)
 #else
-# 	define G2_SKIA_STYLE_STACK_GROW 		(64)
-# 	define G2_SKIA_STYLE_CACHE_SIZE 		(8)
+# 	define G2_GL_CACHE_PATH_SIZE 			(16)
+# 	define G2_GL_CACHE_STYLE_SIZE 			(8)
+# 	define G2_GL_CACHE_CLIPPER_SIZE 		(8)
 #endif
 
-// clipper
+// pcache
 #ifdef TB_CONFIG_BINARY_SMALL
-# 	define G2_SKIA_CLIPPER_STACK_GROW 		(32)
-# 	define G2_SKIA_CLIPPER_CACHE_SIZE 		(4)
-# 	define G2_SKIA_CLIPPER_HASH_SIZE 		(8)
+# 	define G2_GL_PCACHE_MAXN 				(36)
 #else
-# 	define G2_SKIA_CLIPPER_STACK_GROW 		(64)
-# 	define G2_SKIA_CLIPPER_CACHE_SIZE 		(8)
-# 	define G2_SKIA_CLIPPER_HASH_SIZE 		(16)
+# 	define G2_GL_PCACHE_MAXN 				(64)
 #endif
-#define G2_SKIA_CLIPPER_HASH_ITEM_MAXN 		(G2_SKIA_CLIPPER_HASH_SIZE * G2_SKIA_CLIPPER_HASH_SIZE)
-
 
 /* ///////////////////////////////////////////////////////////////////////
  * types
@@ -87,18 +81,15 @@ typedef struct __g2_skia_painter_t
 
 	// the matrix
 	g2_matrix_t 		matrix;
-	tb_stack_t* 		matrix_stack;
 
-	// the style
-	SkPaint* 			style;
-	tb_stack_t* 		style_stack;
-	tb_stack_t* 		style_cache;
+	// the stack
+	tb_stack_t* 		stack_matrix;
+	tb_handle_t 		stack_path;
+	tb_handle_t 		stack_style;
+	tb_handle_t 		stack_clipper;
 
-	// the clipper
-	tb_handle_t 		clipper;
-	tb_hash_t* 			clipper_hash;
-	tb_stack_t* 		clipper_stack;
-	tb_stack_t* 		clipper_cache;
+	// the cache
+	tb_handle_t 		pcache;
 
 }g2_skia_painter_t;
 
@@ -130,7 +121,7 @@ static __tb_inline__ tb_void_t g2_skia_matrix_apply(g2_skia_painter_t* spainter)
 static __tb_inline__ tb_void_t g2_skia_clipper_apply(g2_skia_painter_t* spainter)
 {
 	// clipper
-	tb_handle_t clipper = spainter->clipper;
+	tb_handle_t clipper = g2_clipper(spainter);
 
 	// no clipper item?
 	tb_size_t 	size = g2_clipper_size(clipper);
@@ -193,24 +184,18 @@ static __tb_inline__ tb_void_t g2_skia_clipper_apply(g2_skia_painter_t* spainter
 					shape.type = G2_SHAPE_TYPE_CIRCLE;
 					shape.u.circle = item->u.circle;
 
-					// get path from hash first
-					tb_handle_t path = tb_hash_get(spainter->clipper_hash, &shape);
+					// get path from pcache first
+					tb_handle_t path = g2_pcache_get(spainter->pcache, &shape);
 					if (!path)
 					{
-						// init path
-						path = g2_path_init();
-						tb_assert_and_check_break(path);
+						// init path from cache
+						path = g2_pcache_add(spainter->pcache, &shape);
+						tb_assert_and_check_return(path);
 
 						// add circle to path
 						g2_path_add_circle(path, &item->u.circle);
-
-						// clear hash if full
-						if (tb_hash_size(spainter->clipper_hash) >= G2_SKIA_CLIPPER_HASH_ITEM_MAXN)
-							tb_hash_clear(spainter->clipper_hash);
-
-						// add path to hash
-						tb_hash_set(spainter->clipper_hash, &shape, path);
 					}
+
 					spainter->canvas->clipPath(*static_cast<G2SkiaPath const*>(path), op, anti);
 				}
 				break;
@@ -221,24 +206,18 @@ static __tb_inline__ tb_void_t g2_skia_clipper_apply(g2_skia_painter_t* spainter
 					shape.type = G2_SHAPE_TYPE_ELLIPSE;
 					shape.u.ellipse = item->u.ellipse;
 
-					// get path from hash first
-					tb_handle_t path = tb_hash_get(spainter->clipper_hash, &shape);
+					// get path from pcache first
+					tb_handle_t path = g2_pcache_get(spainter->pcache, &shape);
 					if (!path)
 					{
-						// init path
-						path = g2_path_init();
-						tb_assert_and_check_break(path);
+						// init path from cache
+						path = g2_pcache_add(spainter->pcache, &shape);
+						tb_assert_and_check_return(path);
 
 						// add ellipse to path
 						g2_path_add_ellipse(path, &item->u.ellipse);
-
-						// clear hash if full
-						if (tb_hash_size(spainter->clipper_hash) >= G2_SKIA_CLIPPER_HASH_ITEM_MAXN)
-							tb_hash_clear(spainter->clipper_hash);
-
-						// add path to hash
-						tb_hash_set(spainter->clipper_hash, &shape, path);
 					}
+	
 					spainter->canvas->clipPath(*static_cast<G2SkiaPath const*>(path), op, anti);
 				}
 				break;
@@ -249,24 +228,18 @@ static __tb_inline__ tb_void_t g2_skia_clipper_apply(g2_skia_painter_t* spainter
 					shape.type = G2_SHAPE_TYPE_TRIANGLE;
 					shape.u.triangle = item->u.triangle;
 
-					// get path from hash first
-					tb_handle_t path = tb_hash_get(spainter->clipper_hash, &shape);
+					// get path from pcache first
+					tb_handle_t path = g2_pcache_get(spainter->pcache, &shape);
 					if (!path)
 					{
-						// init path
-						path = g2_path_init();
-						tb_assert_and_check_break(path);
+						// init path from cache
+						path = g2_pcache_add(spainter->pcache, &shape);
+						tb_assert_and_check_return(path);
 
 						// add triangle to path
 						g2_path_add_triangle(path, &item->u.triangle);
-
-						// clear hash if full
-						if (tb_hash_size(spainter->clipper_hash) >= G2_SKIA_CLIPPER_HASH_ITEM_MAXN)
-							tb_hash_clear(spainter->clipper_hash);
-
-						// add path to hash
-						tb_hash_set(spainter->clipper_hash, &shape, path);
 					}
+
 					spainter->canvas->clipPath(*static_cast<G2SkiaPath const*>(path), op, anti);
 				}
 				break;
@@ -275,6 +248,25 @@ static __tb_inline__ tb_void_t g2_skia_clipper_apply(g2_skia_painter_t* spainter
 			}
 		}
 	}
+}
+static __tb_inline__ tb_void_t g2_skia_state_enter(g2_skia_painter_t* spainter)
+{
+	// apply context
+	g2_skia_context_apply(spainter);
+
+	// save
+	spainter->canvas->save();
+
+	// apply clipper
+	g2_skia_clipper_apply(spainter);
+
+	// apply matrix
+	g2_skia_matrix_apply(spainter);
+}
+static __tb_inline__ tb_void_t g2_skia_state_leave(g2_skia_painter_t* spainter)
+{
+	// restore
+	spainter->canvas->restore();
 }
 static tb_bool_t g2_skia_style_stack_item_free(tb_stack_t* stack, tb_pointer_t* item, tb_bool_t* bdel, tb_pointer_t data)
 {
@@ -323,52 +315,24 @@ static __tb_inline__ tb_void_t g2_skia_exit(tb_handle_t painter)
 	tb_assert_and_check_return(spainter);
 
 	// exit matrix stack
-	if (spainter->matrix_stack) tb_stack_exit(spainter->matrix_stack);
-	spainter->matrix_stack = TB_NULL;
+	if (spainter->stack_matrix) tb_stack_exit(spainter->stack_matrix);
+	spainter->stack_matrix = TB_NULL;
 
-	// exit style
-	if (spainter->style) g2_style_exit(spainter->style);
-	spainter->style = TB_NULL;
+	// exit path stack
+	if (spainter->stack_path) g2_cstack_exit(spainter->stack_path);
+	spainter->stack_path = TB_NULL;
 
-	// exit style cache
-	if (spainter->style_cache) 
-	{
-		tb_stack_walk(spainter->style_cache, g2_skia_style_stack_item_free, TB_NULL);
-		tb_stack_exit(spainter->style_cache);
-	}
-	spainter->style_cache = TB_NULL;
-	
 	// exit style stack
-	if (spainter->style_stack) 
-	{
-		tb_stack_walk(spainter->style_stack, g2_skia_style_stack_item_free, TB_NULL);
-		tb_stack_exit(spainter->style_stack);
-	}
-	spainter->style_stack = TB_NULL;
+	if (spainter->stack_style) g2_cstack_exit(spainter->stack_style);
+	spainter->stack_style = TB_NULL;
 
-	// exit clipper
-	if (spainter->clipper) g2_clipper_exit(spainter->clipper);
-	spainter->clipper = TB_NULL;
-
-	// exit clipper hash
-	if (spainter->clipper_hash) tb_hash_exit(spainter->clipper_hash);
-	spainter->clipper_hash = TB_NULL;
-
-	// exit clipper cache
-	if (spainter->clipper_cache) 
-	{
-		tb_stack_walk(spainter->clipper_cache, g2_skia_clipper_stack_item_free, TB_NULL);
-		tb_stack_exit(spainter->clipper_cache);
-	}
-	spainter->clipper_cache = TB_NULL;
-	
 	// exit clipper stack
-	if (spainter->clipper_stack) 
-	{
-		tb_stack_walk(spainter->clipper_stack, g2_skia_clipper_stack_item_free, TB_NULL);
-		tb_stack_exit(spainter->clipper_stack);
-	}
-	spainter->clipper_stack = TB_NULL;
+	if (spainter->stack_clipper) g2_cstack_exit(spainter->stack_clipper);
+	spainter->stack_clipper = TB_NULL;
+
+	// exit pcache
+	if (spainter->pcache) g2_pcache_exit(spainter->pcache);
+	spainter->pcache = TB_NULL;
 
 	// exit canvas
 	if (spainter->canvas) delete spainter->canvas;
@@ -382,9 +346,10 @@ static __tb_inline__ tb_handle_t g2_skia_init(tb_handle_t context)
 	// check
 	tb_assert_and_check_return_val(context, TB_NULL);
 
-	// init variables
-	tb_size_t 		i = 0;
-	tb_item_func_t 	clipper_hash_item_func = tb_item_func_ptr();
+	// init func
+	g2_cstack_func_t func_path 		= {g2_path_init, 		g2_path_exit, 		g2_path_copy};
+	g2_cstack_func_t func_style 	= {g2_style_init, 		g2_style_exit, 		g2_style_copy};
+	g2_cstack_func_t func_clipper 	= {g2_clipper_init, 	g2_clipper_exit, 	g2_clipper_copy};
 
 	// init surface
 	SkBitmap const* surface = static_cast<SkBitmap const*>(g2_context_surface(context));
@@ -407,55 +372,24 @@ static __tb_inline__ tb_handle_t g2_skia_init(tb_handle_t context)
 	g2_matrix_clear(&spainter->matrix);
 
 	// init matrix stack
-	spainter->matrix_stack = tb_stack_init(G2_SKIA_MATRIX_STACK_GROW, tb_item_func_ifm(sizeof(g2_matrix_t), TB_NULL, TB_NULL));
-	tb_assert_and_check_goto(spainter->matrix_stack, fail);
-
-	// init style
-	spainter->style = static_cast<SkPaint*>(g2_style_init());
-	tb_assert_and_check_goto(spainter->style, fail);
+	spainter->stack_matrix = tb_stack_init(G2_GL_MATRIX_GROW, tb_item_func_ifm(sizeof(g2_matrix_t), TB_NULL, TB_NULL));
+	tb_assert_and_check_goto(spainter->stack_matrix, fail);
 
 	// init style stack
-	spainter->style_stack = tb_stack_init(G2_SKIA_STYLE_STACK_GROW, tb_item_func_ptr());
-	tb_assert_and_check_goto(spainter->style_stack, fail);
-
-	// init style cache
-	spainter->style_cache = tb_stack_init(G2_SKIA_STYLE_CACHE_SIZE, tb_item_func_ptr());
-	tb_assert_and_check_goto(spainter->style_cache, fail);
-	for (i = 0; i < G2_SKIA_STYLE_CACHE_SIZE; i++)
-	{
-		// init
-		tb_handle_t style = g2_style_init();
-		tb_assert_and_check_goto(style, fail);
-
-		// put
-		tb_stack_put(spainter->style_cache, style);
-	}
-
-	// init clipper
-	spainter->clipper = g2_clipper_init();
-	tb_assert_and_check_goto(spainter->clipper, fail);
-
-	// init clipper hash
-	clipper_hash_item_func.free = g2_skia_clipper_hash_item_free;
-	spainter->clipper_hash = tb_hash_init(G2_SKIA_CLIPPER_HASH_SIZE, tb_item_func_ifm(sizeof(g2_shape_t), TB_NULL, TB_NULL), clipper_hash_item_func);
-	tb_assert_and_check_goto(spainter->clipper_hash, fail);
+	spainter->stack_style = g2_cstack_init(G2_GL_CACHE_STYLE_SIZE, &func_style);
+	tb_assert_and_check_goto(spainter->stack_style, fail);
 
 	// init clipper stack
-	spainter->clipper_stack = tb_stack_init(G2_SKIA_CLIPPER_STACK_GROW, tb_item_func_ptr());
-	tb_assert_and_check_goto(spainter->clipper_stack, fail);
+	spainter->stack_clipper = g2_cstack_init(G2_GL_CACHE_CLIPPER_SIZE, &func_clipper);
+	tb_assert_and_check_goto(spainter->stack_clipper, fail);
 
-	// init clipper cache
-	spainter->clipper_cache = tb_stack_init(G2_SKIA_CLIPPER_CACHE_SIZE, tb_item_func_ptr());
-	tb_assert_and_check_goto(spainter->clipper_cache, fail);
-	for (i = 0; i < G2_SKIA_CLIPPER_CACHE_SIZE; i++)
-	{
-		// init
-		tb_handle_t clipper = g2_clipper_init();
-		tb_assert_and_check_goto(clipper, fail);
+	// init path stack
+	spainter->stack_path = g2_cstack_init(G2_GL_CACHE_PATH_SIZE, &func_path);
+	tb_assert_and_check_goto(spainter->stack_path, fail);
 
-		// put
-		tb_stack_put(spainter->clipper_cache, clipper);
-	}
+	// init pcache
+	spainter->pcache = g2_pcache_init(G2_GL_PCACHE_MAXN);
+	tb_assert_and_check_goto(spainter->pcache, fail);
 
 	// ok
 	return spainter;
@@ -478,150 +412,107 @@ static __tb_inline__ tb_handle_t g2_skia_context(tb_handle_t painter)
 
 	return spainter->context;
 }
+static __tb_inline__ tb_handle_t g2_skia_path(tb_handle_t painter)
+{
+	g2_skia_painter_t* spainter = (g2_skia_painter_t*)painter;
+	tb_assert_and_check_return_val(spainter && spainter->stack_path, TB_NULL);
+
+	return g2_cstack_object(spainter->stack_path);
+}
+static __tb_inline__ tb_handle_t g2_skia_save_path(tb_handle_t painter)
+{
+	g2_skia_painter_t* spainter = (g2_skia_painter_t*)painter;
+	tb_assert_and_check_return_val(spainter && spainter->stack_path, TB_NULL);
+
+	// save
+	return g2_cstack_save(spainter->stack_path);
+}
+static __tb_inline__ tb_void_t g2_skia_load_path(tb_handle_t painter)
+{
+	g2_skia_painter_t* spainter = (g2_skia_painter_t*)painter;
+	tb_assert_and_check_return(spainter && spainter->stack_path);
+
+	// load
+	g2_cstack_load(spainter->stack_path);
+}
 static __tb_inline__ g2_matrix_t* g2_skia_matrix(tb_handle_t painter)
 {
-	g2_skia_painter_t* spainter = static_cast<g2_skia_painter_t*>(painter);
+	g2_skia_painter_t* spainter = (g2_skia_painter_t*)painter;
 	tb_assert_and_check_return_val(spainter, TB_NULL);
 
 	return &spainter->matrix;
 }
 static __tb_inline__ g2_matrix_t* g2_skia_save_matrix(tb_handle_t painter)
 {
-	g2_skia_painter_t* spainter = static_cast<g2_skia_painter_t*>(painter);
-	tb_assert_and_check_return_val(spainter && spainter->matrix_stack, TB_NULL);
+	g2_skia_painter_t* spainter = (g2_skia_painter_t*)painter;
+	tb_assert_and_check_return_val(spainter && spainter->stack_matrix, TB_NULL);
 
 	// save matrix
-	tb_stack_put(spainter->matrix_stack, &spainter->matrix);
+	tb_stack_put(spainter->stack_matrix, &spainter->matrix);
 
 	// ok
 	return &spainter->matrix;
 }
 static __tb_inline__ tb_void_t g2_skia_load_matrix(tb_handle_t painter)
 {
-	g2_skia_painter_t* spainter = static_cast<g2_skia_painter_t*>(painter);
-	tb_assert_and_check_return(spainter && spainter->matrix_stack);
+	g2_skia_painter_t* spainter = (g2_skia_painter_t*)painter;
+	tb_assert_and_check_return(spainter && spainter->stack_matrix);
 
 	// init matrix
-	g2_matrix_t const* matrix = (g2_matrix_t const*)tb_stack_top(spainter->matrix_stack);
+	g2_matrix_t const* matrix = (g2_matrix_t const*)tb_stack_top(spainter->stack_matrix);
 	tb_assert_and_check_return(matrix);
 
 	// load matrix
 	spainter->matrix = *matrix;
 
 	// pop it
-	tb_stack_pop(spainter->matrix_stack);
+	tb_stack_pop(spainter->stack_matrix);
 }
 static __tb_inline__ tb_handle_t g2_skia_style(tb_handle_t painter)
 {
-	g2_skia_painter_t* spainter = static_cast<g2_skia_painter_t*>(painter);
-	tb_assert_and_check_return_val(spainter, TB_NULL);
+	g2_skia_painter_t* spainter = (g2_skia_painter_t*)painter;
+	tb_assert_and_check_return_val(spainter && spainter->stack_style, TB_NULL);
 
-	return spainter->style;
+	return g2_cstack_object(spainter->stack_style);
 }
 static __tb_inline__ tb_handle_t g2_skia_save_style(tb_handle_t painter)
 {
-	g2_skia_painter_t* spainter = static_cast<g2_skia_painter_t*>(painter);
-	tb_assert_and_check_return_val(spainter && spainter->style_cache && spainter->style_stack, TB_NULL);
+	g2_skia_painter_t* spainter = (g2_skia_painter_t*)painter;
+	tb_assert_and_check_return_val(spainter && spainter->stack_style, TB_NULL);
 
-	// init a new style from cache first
-	tb_handle_t style = TB_NULL;
-	if (tb_stack_size(spainter->style_cache))
-	{
-		// get
-		style = (tb_handle_t)tb_stack_top(spainter->style_cache);
-		tb_assert_and_check_return_val(spainter->style_cache, TB_NULL);
-
-		// pop
-		tb_stack_pop(spainter->style_cache);
-	}
-	// init a new style
-	else style = g2_style_init();
-	tb_assert_and_check_return_val(style, TB_NULL);
-
-	// save the old style
-	tb_stack_put(spainter->style_stack, spainter->style);
-
-	// copy the new style
-	g2_style_copy(style, spainter->style);
-	spainter->style = (SkPaint*)style;
-
-	// ok
-	return spainter->style;
+	// save
+	return g2_cstack_save(spainter->stack_style);
 }
 static __tb_inline__ tb_void_t g2_skia_load_style(tb_handle_t painter)
 {
-	g2_skia_painter_t* spainter = static_cast<g2_skia_painter_t*>(painter);
-	tb_assert_and_check_return(spainter && spainter->style_cache && spainter->style_stack);
+	g2_skia_painter_t* spainter = (g2_skia_painter_t*)painter;
+	tb_assert_and_check_return(spainter && spainter->stack_style);
 
-	// load the top style
-	tb_handle_t style = (tb_handle_t)tb_stack_top(spainter->style_stack);
-	tb_assert_and_check_return(style);
-	tb_stack_pop(spainter->style_stack);
-
-	// free style to cache first
-	if (spainter->style && tb_stack_size(spainter->style_cache) < G2_SKIA_STYLE_CACHE_SIZE)
-		tb_stack_put(spainter->style_cache, spainter->style);
-	// free style
-	else g2_style_exit(spainter->style);
-
-	// copy the top style
-	spainter->style = (SkPaint*)style;
+	// load
+	g2_cstack_load(spainter->stack_style);
 }
 static __tb_inline__ tb_handle_t g2_skia_clipper(tb_handle_t painter)
 {
-	g2_skia_painter_t* spainter = static_cast<g2_skia_painter_t*>(painter);
-	tb_assert_and_check_return_val(spainter, TB_NULL);
+	g2_skia_painter_t* spainter = (g2_skia_painter_t*)painter;
+	tb_assert_and_check_return_val(spainter && spainter->stack_clipper, TB_NULL);
 
-	return spainter->clipper;
+	return g2_cstack_object(spainter->stack_clipper);
 }
 static __tb_inline__ tb_handle_t g2_skia_save_clipper(tb_handle_t painter)
 {
-	g2_skia_painter_t* spainter = static_cast<g2_skia_painter_t*>(painter);
-	tb_assert_and_check_return_val(spainter && spainter->clipper_cache && spainter->clipper_stack, TB_NULL);
+	g2_skia_painter_t* spainter = (g2_skia_painter_t*)painter;
+	tb_assert_and_check_return_val(spainter && spainter->stack_clipper, TB_NULL);
 
-	// init a new clipper from cache first
-	tb_handle_t clipper = TB_NULL;
-	if (tb_stack_size(spainter->clipper_cache))
-	{
-		// get
-		clipper = (tb_handle_t)tb_stack_top(spainter->clipper_cache);
-		tb_assert_and_check_return_val(spainter->clipper_cache, TB_NULL);
-
-		// pop
-		tb_stack_pop(spainter->clipper_cache);
-	}
-	// init a new clipper
-	else clipper = g2_clipper_init();
-	tb_assert_and_check_return_val(clipper, TB_NULL);
-
-	// save the old clipper
-	tb_stack_put(spainter->clipper_stack, spainter->clipper);
-
-	// copy the new clipper
-	g2_clipper_copy(clipper, spainter->clipper);
-	spainter->clipper = clipper;
-
-	// ok
-	return spainter->clipper;
+	// save
+	return g2_cstack_save(spainter->stack_clipper);
 }
 static __tb_inline__ tb_void_t g2_skia_load_clipper(tb_handle_t painter)
 {
-	g2_skia_painter_t* spainter = static_cast<g2_skia_painter_t*>(painter);
-	tb_assert_and_check_return(spainter && spainter->clipper_cache && spainter->clipper_stack);
+	g2_skia_painter_t* spainter = (g2_skia_painter_t*)painter;
+	tb_assert_and_check_return(spainter && spainter->stack_clipper);
 
-	// load the top clipper
-	tb_handle_t clipper = (tb_handle_t)tb_stack_top(spainter->clipper_stack);
-	tb_assert_and_check_return(clipper);
-	tb_stack_pop(spainter->clipper_stack);
-
-	// free clipper to cache first
-	if (spainter->clipper && tb_stack_size(spainter->clipper_cache) < G2_SKIA_CLIPPER_CACHE_SIZE)
-		tb_stack_put(spainter->clipper_cache, spainter->clipper);
-	// free clipper
-	else g2_clipper_exit(spainter->clipper);
-
-	// copy the top clipper
-	spainter->clipper = clipper;
+	// load
+	g2_cstack_load(spainter->stack_clipper);
 }
 static __tb_inline__ tb_void_t g2_skia_draw_clear(tb_handle_t painter, g2_color_t color)
 {
@@ -637,135 +528,140 @@ static __tb_inline__ tb_void_t g2_skia_draw_clear(tb_handle_t painter, g2_color_
 static __tb_inline__ tb_void_t g2_skia_draw_path(tb_handle_t painter, tb_handle_t path)
 {
 	g2_skia_painter_t* spainter = static_cast<g2_skia_painter_t*>(painter);
-	tb_assert_and_check_return(spainter && spainter->canvas && spainter->style && path);
+	tb_assert_and_check_return(spainter && spainter->canvas && path);
 
-	// apply context
-	g2_skia_context_apply(spainter);
-
-	// apply clipper
-	g2_skia_clipper_apply(spainter);
-
-	// apply matrix
-	g2_skia_matrix_apply(spainter);
+	// style
+	SkPaint* style = (SkPaint*)g2_style(painter);
+	tb_assert_and_check_return(style);
+ 
+	// state: enter
+	g2_skia_state_enter(spainter);
 
 	// draw
-	spainter->canvas->drawPath(*((G2SkiaPath const*)path), *spainter->style);
+	spainter->canvas->drawPath(*((G2SkiaPath const*)path), *style);
+
+	// state: leave
+	g2_skia_state_leave(spainter);
 }
 static __tb_inline__ tb_void_t g2_skia_draw_arc(tb_handle_t painter, g2_arc_t const* arc)
 {
 	g2_skia_painter_t* spainter = static_cast<g2_skia_painter_t*>(painter);
-	tb_assert_and_check_return(spainter && spainter->canvas && spainter->style && arc);
+	tb_assert_and_check_return(spainter && spainter->canvas && arc);
 
-	// apply context
-	g2_skia_context_apply(spainter);
-
-	// apply clipper
-	g2_skia_clipper_apply(spainter);
-
-	// apply matrix
-	g2_skia_matrix_apply(spainter);
+	// style
+	SkPaint* style = (SkPaint*)g2_style(painter);
+	tb_assert_and_check_return(style);
+ 
+	// state: enter
+	g2_skia_state_enter(spainter);
 
 	// draw
-	spainter->canvas->drawArc(SkRect::MakeXYWH(arc->c0.x - arc->rx, arc->c0.y - arc->ry, SkScalarMul(arc->rx, SkIntToScalar(2)), SkScalarMul(arc->ry, SkIntToScalar(2))), arc->ab, arc->an, false, *spainter->style);
+	spainter->canvas->drawArc(SkRect::MakeXYWH(arc->c0.x - arc->rx, arc->c0.y - arc->ry, SkScalarMul(arc->rx, SkIntToScalar(2)), SkScalarMul(arc->ry, SkIntToScalar(2))), arc->ab, arc->an, false, *style);
+	
+	// state: leave
+	g2_skia_state_leave(spainter);
 }
 static __tb_inline__ tb_void_t g2_skia_draw_rect(tb_handle_t painter, g2_rect_t const* rect)
 {
 	g2_skia_painter_t* spainter = static_cast<g2_skia_painter_t*>(painter);
-	tb_assert_and_check_return(spainter && spainter->canvas && spainter->style && rect);
+	tb_assert_and_check_return(spainter && spainter->canvas && rect);
 
-	// apply context
-	g2_skia_context_apply(spainter);
-
-	// apply clipper
-	g2_skia_clipper_apply(spainter);
-
-	// apply matrix
-	g2_skia_matrix_apply(spainter);
+	// style
+	SkPaint* style = (SkPaint*)g2_style(painter);
+	tb_assert_and_check_return(style);
+ 
+	// state: enter
+	g2_skia_state_enter(spainter);
 
 	// draw
-	spainter->canvas->drawRect(SkRect::MakeXYWH(rect->x, rect->y, rect->w, rect->h), *spainter->style);
+	spainter->canvas->drawRect(SkRect::MakeXYWH(rect->x, rect->y, rect->w, rect->h), *style);
+	
+	// state: leave
+	g2_skia_state_leave(spainter);
 }
 static __tb_inline__ tb_void_t g2_skia_draw_line(tb_handle_t painter, g2_line_t const* line)
 {
 	g2_skia_painter_t* spainter = static_cast<g2_skia_painter_t*>(painter);
-	tb_assert_and_check_return(spainter && spainter->canvas && spainter->style && line);
+	tb_assert_and_check_return(spainter && spainter->canvas && line);
 
-	// apply context
-	g2_skia_context_apply(spainter);
-
-	// apply clipper
-	g2_skia_clipper_apply(spainter);
-
-	// apply matrix
-	g2_skia_matrix_apply(spainter);
+	// style
+	SkPaint* style = (SkPaint*)g2_style(painter);
+	tb_assert_and_check_return(style);
+ 
+	// state: enter
+	g2_skia_state_enter(spainter);
 
 	// draw
-	spainter->canvas->drawLine(line->p0.x, line->p0.y, line->p1.x, line->p1.y, *spainter->style);
+	spainter->canvas->drawLine(line->p0.x, line->p0.y, line->p1.x, line->p1.y, *style);
+	
+	// state: leave
+	g2_skia_state_leave(spainter);
 }
 static __tb_inline__ tb_void_t g2_skia_draw_point(tb_handle_t painter, g2_point_t const* point)
 {
 	g2_skia_painter_t* spainter = static_cast<g2_skia_painter_t*>(painter);
-	tb_assert_and_check_return(spainter && spainter->canvas && spainter->style && point);
+	tb_assert_and_check_return(spainter && spainter->canvas && point);
 
-	// apply context
-	g2_skia_context_apply(spainter);
-
-	// apply clipper
-	g2_skia_clipper_apply(spainter);
-
-	// apply matrix
-	g2_skia_matrix_apply(spainter);
+	// style
+	SkPaint* style = (SkPaint*)g2_style(painter);
+	tb_assert_and_check_return(style);
+ 
+	// state: enter
+	g2_skia_state_enter(spainter);
 
 	// draw
-	spainter->canvas->drawPoint(point->x, point->y, *spainter->style);
+	spainter->canvas->drawPoint(point->x, point->y, *style);
+	
+	// state: leave
+	g2_skia_state_leave(spainter);
 }
 static __tb_inline__ tb_void_t g2_skia_draw_circle(tb_handle_t painter, g2_circle_t const* circle)
 {
 	g2_skia_painter_t* spainter = static_cast<g2_skia_painter_t*>(painter);
-	tb_assert_and_check_return(spainter && spainter->canvas && spainter->style && circle);
+	tb_assert_and_check_return(spainter && spainter->canvas && circle);
 
-	// apply context
-	g2_skia_context_apply(spainter);
-
-	// apply clipper
-	g2_skia_clipper_apply(spainter);
-
-	// apply matrix
-	g2_skia_matrix_apply(spainter);
+	// style
+	SkPaint* style = (SkPaint*)g2_style(painter);
+	tb_assert_and_check_return(style);
+ 
+	// state: enter
+	g2_skia_state_enter(spainter);
 
 	// draw
-	spainter->canvas->drawCircle(circle->c.x, circle->c.y, circle->r, *spainter->style);
+	spainter->canvas->drawCircle(circle->c.x, circle->c.y, circle->r, *style);
+
+	// state: leave
+	g2_skia_state_leave(spainter);
 }
 static __tb_inline__ tb_void_t g2_skia_draw_ellipse(tb_handle_t painter, g2_ellipse_t const* ellipse)
 {
 	g2_skia_painter_t* spainter = static_cast<g2_skia_painter_t*>(painter);
-	tb_assert_and_check_return(spainter && spainter->canvas && spainter->style && ellipse);
+	tb_assert_and_check_return(spainter && spainter->canvas && ellipse);
 
-	// apply context
-	g2_skia_context_apply(spainter);
-
-	// apply clipper
-	g2_skia_clipper_apply(spainter);
-
-	// apply matrix
-	g2_skia_matrix_apply(spainter);
+	// style
+	SkPaint* style = (SkPaint*)g2_style(painter);
+	tb_assert_and_check_return(style);
+ 
+	// state: enter
+	g2_skia_state_enter(spainter);
 
 	// draw
-	spainter->canvas->drawOval(SkRect::MakeXYWH(ellipse->c0.x - ellipse->rx, ellipse->c0.y - ellipse->ry, ellipse->rx + ellipse->rx, ellipse->ry + ellipse->ry), *spainter->style);
+	spainter->canvas->drawOval(SkRect::MakeXYWH(ellipse->c0.x - ellipse->rx, ellipse->c0.y - ellipse->ry, ellipse->rx + ellipse->rx, ellipse->ry + ellipse->ry), *style);
+	
+	// state: leave
+	g2_skia_state_leave(spainter);
 }
 static __tb_inline__ tb_void_t g2_skia_draw_triangle(tb_handle_t painter, g2_triangle_t const* triangle)
 {
 	g2_skia_painter_t* spainter = static_cast<g2_skia_painter_t*>(painter);
-	tb_assert_and_check_return(spainter && spainter->canvas && spainter->style && triangle);
+	tb_assert_and_check_return(spainter && spainter->canvas && triangle);
+
+	// style
+	SkPaint* style = (SkPaint*)g2_style(painter);
+	tb_assert_and_check_return(style);
  
-	// apply context
-	g2_skia_context_apply(spainter);
-
-	// apply clipper
-	g2_skia_clipper_apply(spainter);
-
-	// apply matrix
-	g2_skia_matrix_apply(spainter);
+	// state: enter
+	g2_skia_state_enter(spainter);
 
 	// draw
 	G2SkiaPath path;
@@ -774,7 +670,10 @@ static __tb_inline__ tb_void_t g2_skia_draw_triangle(tb_handle_t painter, g2_tri
 	path.lineTo(triangle->p1.x, triangle->p1.y);
 	path.lineTo(triangle->p2.x, triangle->p2.y);
 	path.close();
-	spainter->canvas->drawPath(path, *spainter->style);
+	spainter->canvas->drawPath(path, *style);
+	
+	// state: leave
+	g2_skia_state_leave(spainter);
 }
 
 /* ///////////////////////////////////////////////////////////////////////
@@ -798,6 +697,18 @@ extern "C"
 	tb_handle_t g2_context(tb_handle_t painter)
 	{
 		return g2_skia_context(painter);
+	}
+	tb_handle_t g2_path(tb_handle_t painter)
+	{
+		return g2_skia_path(painter);
+	}
+	tb_handle_t g2_save_path(tb_handle_t painter)
+	{
+		return g2_skia_save_path(painter);
+	}
+	tb_void_t g2_load_path(tb_handle_t painter)
+	{
+		g2_skia_load_path(painter);
 	}
 	tb_handle_t g2_style(tb_handle_t painter)
 	{
