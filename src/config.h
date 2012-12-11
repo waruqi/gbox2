@@ -2,7 +2,7 @@
 #define G2_CONFIG_H
 
 // core
-#define G2_CONFIG_CORE_GL
+#define G2_CONFIG_CORE_GLES
 //#define G2_CONFIG_CORE_SKIA
 //#define G2_CONFIG_CORE_SOFT
 
@@ -20,5 +20,5 @@
 // config
 #ifndef gbox2_AUTO_CONFIG_H
 #define gbox2_AUTO_CONFIG_H
-#define gbox2_CONFIG_DEBUG 1
+#define gbox2_CONFIG_DEBUG 0
 #endif

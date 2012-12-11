@@ -6,7 +6,7 @@
 G2_CONFIG_DEMO 						= n
 
 # demo
-G2_CONFIG_DEMO_TYPE 				= bin
+G2_CONFIG_DEMO_TYPE 				= ipa
 
 # arm
 G2_CONFIG_ARM 						= y

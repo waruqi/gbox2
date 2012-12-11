@@ -119,7 +119,9 @@ ASFLAGS-o 			= -o
 ARFLAGS 			= -cr
 
 # share ldflags
-SHFLAGS 			= -dynamiclib -Wl,-single_module
+SHFLAGS 			= -arch $(ARCH) -dynamiclib  \
+					-isysroot /Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS$(SDK).sdk \
+					--sysroot=/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS$(SDK).sdk
 
 # config
 include 			$(PLAT_DIR)/config.mak

@@ -8,11 +8,18 @@ make clean; make ; make install; make prefix
 
 rm -rf ./bin/ios/arm/inc
 rm -rf ./bin/ios/arm/lib
+rm -rf ./bin/ios/arm/bin
 mkdir -p ./bin/ios/arm/lib
 mkdir -p ./bin/ios/arm/inc
+mkdir -p ./bin/ios/arm/bin
 
 cp -r ./bin/ios/$5/inc/$1 ./bin/ios/arm/inc/
 xcrun -sdk iphoneos lipo -create -arch $4 ./bin/ios/$4/lib/lib$1.a -arch $5 ./bin/ios/$5/lib/lib$1.a -output ./bin/ios/arm/lib/lib$1.a
 make prefix ARCH=arm
 
-
+cd ./src/demo/ipa/demo
+rm -rf ./build
+xcodebuild
+cd ../../../..
+xcrun -sdk iphoneos PackageApplication -v ./src/demo/ipa/demo/build/Release-iphoneos/demo.app -o `pwd`/bin/ios/arm/bin/demo.ipa
+rm -rf ./src/demo/ipa/demo/build

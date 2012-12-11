@@ -190,7 +190,7 @@
 	G2_GL_INTERFACE_LOAD_S(glTexParameterf);
 	G2_GL_INTERFACE_LOAD_S(glTexParameteri);
 	G2_GL_INTERFACE_LOAD_S(glViewport);
-
+	
 	// load interfaces for gl 1.x
 	G2_GL_INTERFACE_LOAD_S(glColor4f);
 	G2_GL_INTERFACE_LOAD_S(glColorPointer);

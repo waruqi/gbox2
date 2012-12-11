@@ -6,13 +6,13 @@ PRO_DIR = /Users/ruki/projects/personal/gbox2
 PRO_NAME = gbox2
 
 # debug
-DEBUG = y
+DEBUG = ARCH2=armv7s
 
 # platform
-PLAT = mac
+PLAT = ios
 
 # architecture
-ARCH = x64
+ARCH = armv7s
 
 # toolchain
 SDK = 6.0
