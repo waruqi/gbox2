@@ -153,7 +153,7 @@ static tb_void_t g2_svg_element_painter_load(g2_svg_painter_t* spainter, g2_svg_
 		if (!spainter->pool) spainter->pool = tb_spool_init(TB_SPOOL_GROW_SMALL, 0);
 
 		// init hash
-		if (!spainter->hash) spainter->hash = tb_hash_init(G2_SVG_ELEMENT_PAINTER_HASH_MAXN, tb_item_func_str(TB_TRUE, spainter->pool), tb_item_func_ptr());
+		if (!spainter->hash) spainter->hash = tb_hash_init(G2_SVG_ELEMENT_PAINTER_HASH_MAXN, tb_item_func_str(tb_true, spainter->pool), tb_item_func_ptr());
 	
 		// set id => element
 		if (spainter->hash) tb_hash_set(spainter->hash, tb_pstring_cstr(&element->id), element);
@@ -182,7 +182,7 @@ static tb_void_t g2_svg_element_painter_draw(g2_svg_painter_t* spainter, g2_svg_
 	if (element->fill || element->stok) 
 	{
 		// transform: enter
-		tb_bool_t enter = TB_FALSE;
+		tb_bool_t enter = tb_false;
 		if (element->transform) enter = g2_svg_painter_transform_enter(spainter, element->transform); 
 
 		// init style
@@ -225,7 +225,7 @@ static tb_void_t g2_svg_element_painter_draw(g2_svg_painter_t* spainter, g2_svg_
 	if (element->head)
 	{
 		// transform: enter
-		tb_bool_t enter = TB_FALSE;
+		tb_bool_t enter = tb_false;
 		if (element->transform) enter = g2_svg_painter_transform_enter(spainter, element->transform); 
 
 		// walk
@@ -250,7 +250,7 @@ g2_svg_element_t* g2_svg_element_init(tb_handle_t reader)
 {
 	// the element name
 	tb_char_t const* name = tb_xml_reader_element(reader);
-	tb_assert_and_check_return_val(name, TB_NULL);
+	tb_assert_and_check_return_val(name, tb_null);
 
 	// init iterator
 	tb_iterator_t 	iterator = tb_iterator_mem(g_element_entries, tb_arrayn(g_element_entries), sizeof(g2_svg_element_entry_t));
@@ -280,7 +280,7 @@ g2_svg_element_t* g2_svg_element_init_none(tb_handle_t reader)
 {
 	// alloc 
 	g2_svg_element_t* element = tb_malloc0(sizeof(g2_svg_element_t));
-	tb_assert_and_check_return_val(element, TB_NULL);
+	tb_assert_and_check_return_val(element, tb_null);
 
 	// init
 	element->type = G2_SVG_ELEMENT_TYPE_NONE;
@@ -310,7 +310,7 @@ tb_void_t g2_svg_element_draw(g2_svg_element_t* element, tb_handle_t painter)
 		g2_svg_element_painter_load(&svg->painter, element);
 
 		// load ok
-		svg->painter.load = TB_TRUE;
+		svg->painter.load = tb_true;
 	}
 	
 	// draw
@@ -323,7 +323,7 @@ tb_void_t g2_svg_element_exit(g2_svg_element_t* element)
 		// free childs
 		if (element->head)
 		{
-			g2_svg_element_t* save = TB_NULL;
+			g2_svg_element_t* save = tb_null;
 			g2_svg_element_t* next = element->head;
 			while (next)
 			{
@@ -369,7 +369,7 @@ tb_void_t g2_svg_element_remove_next(g2_svg_element_t* element)
 	g2_svg_element_t* next = element->next;
 
 	// save
-	g2_svg_element_t* save = next? next->next : TB_NULL;
+	g2_svg_element_t* save = next? next->next : tb_null;
 
 	// exit
 	if (next) g2_svg_element_exit(next);
@@ -404,7 +404,7 @@ tb_void_t g2_svg_element_append_tail(g2_svg_element_t* element, g2_svg_element_t
 
 	// init
 	child->parent = element;
-	child->next = TB_NULL;
+	child->next = tb_null;
 
 	// append
 	if (element->tail) 
@@ -420,7 +420,7 @@ tb_void_t g2_svg_element_append_tail(g2_svg_element_t* element, g2_svg_element_t
 }
 tb_char_t const* g2_svg_element_name(g2_svg_element_t const* element)
 {
-	tb_assert_and_check_return_val(element, TB_NULL);
-	return element->type < tb_arrayn(g_element_entries)? g_element_entries[element->type].name : TB_NULL;
+	tb_assert_and_check_return_val(element, tb_null);
+	return element->type < tb_arrayn(g_element_entries)? g_element_entries[element->type].name : tb_null;
 }
 

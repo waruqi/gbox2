@@ -18,16 +18,16 @@
  */
 
 // context
-static tb_handle_t 	g_context 	= TB_NULL;
+static tb_handle_t 	g_context 	= tb_null;
 
 // surface
-static tb_handle_t 	g_surface 	= TB_NULL;
+static tb_handle_t 	g_surface 	= tb_null;
 
 // painter
-static tb_handle_t 	g_painter 	= TB_NULL;
+static tb_handle_t 	g_painter 	= tb_null;
 
 // library
-static tb_handle_t 	g_library 	= TB_NULL;
+static tb_handle_t 	g_library 	= tb_null;
 
 // clock
 static tb_hong_t 	g_bt 		= 0;
@@ -43,7 +43,7 @@ static tb_long_t 	g_dy 		= 0;
 static tb_long_t 	g_x 		= 0;
 static tb_long_t 	g_y 		= 0;
 static tb_float_t 	g_an 		= 0.;
-static tb_bool_t 	g_bm 		= TB_FALSE;
+static tb_bool_t 	g_bm 		= tb_false;
 static g2_matrix_t 	g_mx;
 
 /* ////////////////////////////////////////////////////////////////////////
@@ -68,7 +68,7 @@ tb_bool_t g2_demo_gl_init(tb_size_t width, tb_size_t height, tb_byte_t version)
 {
 	// init library
 	g_library = version < 0x20? tb_dynamic_init("libGLESv1_CM.so") : tb_dynamic_init("libGLESv2.so");
-	tb_assert_and_check_return_val(g_library, TB_FALSE);
+	tb_assert_and_check_return_val(g_library, tb_false);
 
 	// load interfaces for common
 	G2_GL_INTERFACE_LOAD_D(g_library, glActiveTexture);
@@ -149,15 +149,15 @@ tb_bool_t g2_demo_gl_init(tb_size_t width, tb_size_t height, tb_byte_t version)
 
 	// init context
 	g_context = g2_context_init_gl(G2_DEMO_PIXFMT, width, height, version);
-	tb_assert_and_check_return_val(g_context, TB_FALSE);
+	tb_assert_and_check_return_val(g_context, tb_false);
 	
 	// init surface
 	g_surface = g2_context_surface(g_context);
-	tb_assert_and_check_return_val(g_surface, TB_FALSE);
+	tb_assert_and_check_return_val(g_surface, tb_false);
 	
 	// init painter
 	g_painter = g2_init(g_context);
-	tb_assert_and_check_return_val(g_painter, TB_FALSE);
+	tb_assert_and_check_return_val(g_painter, tb_false);
 	
 	// init position
 	g_x0 		= width >> 1;
@@ -173,7 +173,7 @@ tb_bool_t g2_demo_gl_init(tb_size_t width, tb_size_t height, tb_byte_t version)
 	// init args
 	tb_char_t const* argv[] =
 	{
-		TB_NULL
+		tb_null
 	,	"/mnt/sdcard/logo.jpg"
 //	,	"/mnt/sdcard/tiger.svg"
 //	,	"/mnt/sdcard/tiger2.svg"
@@ -190,15 +190,15 @@ tb_void_t g2_demo_gl_exit()
 
 	// exit painter
 	if (g_painter) g2_exit(g_painter);
-	g_painter = TB_NULL;
+	g_painter = tb_null;
 
 	// exit context
 	if (g_context) g2_context_exit(g_context);
-	g_context = TB_NULL;
+	g_context = tb_null;
 
 	// exit library
 	if (g_library) tb_dynamic_exit(g_library);
-	g_library = TB_NULL;
+	g_library = tb_null;
 }
 tb_void_t g2_demo_gl_draw()
 {	
@@ -299,7 +299,7 @@ tb_void_t g2_demo_gl_tkey(tb_size_t key)
 			g2_quality_set((g2_quality() + 1) % 3);
 			break;
 		case 'm':
-			g_bm = g_bm? TB_FALSE : TB_TRUE;
+			g_bm = g_bm? tb_false : tb_true;
 			break;
 		default:
 			break;

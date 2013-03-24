@@ -139,7 +139,7 @@ tb_void_t g2_matrix_copy(g2_matrix_t* matrix, g2_matrix_t const* mx)
 tb_bool_t g2_matrix_invert(g2_matrix_t* matrix)
 {
 	// identity?
-	if (g2_matrix_identity(matrix)) return TB_TRUE;
+	if (g2_matrix_identity(matrix)) return tb_true;
 
 	// no rotate?
 	g2_matrix_t mx = *matrix;
@@ -148,7 +148,7 @@ tb_bool_t g2_matrix_invert(g2_matrix_t* matrix)
 		// invert it if sx != 1.0
 		if (g2_n1(matrix->sx))
 		{
-			tb_assert_and_check_return_val(g2_fabs(matrix->sx) >= G2_NEAR0, TB_FALSE);
+			tb_assert_and_check_return_val(g2_fabs(matrix->sx) >= G2_NEAR0, tb_false);
 			mx.sx = g2_invert(matrix->sx);
 			mx.tx = g2_div(-matrix->tx, matrix->sx);
 		}
@@ -156,7 +156,7 @@ tb_bool_t g2_matrix_invert(g2_matrix_t* matrix)
 		// invert it if sy != 1.0
 		if (g2_n1(matrix->sy))
 		{
-			tb_assert_and_check_return_val(g2_fabs(matrix->sy) > G2_NEAR0, TB_FALSE);
+			tb_assert_and_check_return_val(g2_fabs(matrix->sy) > G2_NEAR0, tb_false);
 			mx.sy = g2_invert(matrix->sy);
 			mx.ty = g2_div(-matrix->ty, matrix->sy);
 		}
@@ -172,7 +172,7 @@ tb_bool_t g2_matrix_invert(g2_matrix_t* matrix)
 		 * (ky, sy)     (-ky, sx)
 		 */
 		g2_invdet_t det = g2_matrix_det(matrix->sx, matrix->sy, matrix->kx, matrix->ky);
-		tb_assert_and_check_return_val(det, TB_FALSE);
+		tb_assert_and_check_return_val(det, tb_false);
 
 		// invert
 #ifdef G2_CONFIG_FLOAT_FIXED
@@ -194,18 +194,18 @@ tb_bool_t g2_matrix_invert(g2_matrix_t* matrix)
 
 	// ok
 	*matrix = mx;
-	return TB_TRUE;
+	return tb_true;
 }
 tb_bool_t g2_matrix_identity(g2_matrix_t const* matrix)
 {
 	return (g2_e1(matrix->sx) && g2_e1(matrix->sy)
 		&& g2_ez(matrix->kx) && g2_ez(matrix->ky)
-		&& g2_ez(matrix->tx) && g2_ez(matrix->ty))? TB_TRUE : TB_FALSE;
+		&& g2_ez(matrix->tx) && g2_ez(matrix->ty))? tb_true : tb_false;
 }
 tb_bool_t g2_matrix_rotate(g2_matrix_t* matrix, g2_float_t degrees)
 {
 	// 0 ?
-	tb_check_return_val(g2_nz(degrees), TB_TRUE);
+	tb_check_return_val(g2_nz(degrees), tb_true);
 
 	// rotate
 	g2_matrix_t mx;
@@ -215,7 +215,7 @@ tb_bool_t g2_matrix_rotate(g2_matrix_t* matrix, g2_float_t degrees)
 tb_bool_t g2_matrix_rotate_lhs(g2_matrix_t* matrix, g2_float_t degrees)
 {
 	// 0 ?
-	tb_check_return_val(g2_nz(degrees), TB_TRUE);
+	tb_check_return_val(g2_nz(degrees), tb_true);
 
 	// rotate
 	g2_matrix_t mx;
@@ -225,7 +225,7 @@ tb_bool_t g2_matrix_rotate_lhs(g2_matrix_t* matrix, g2_float_t degrees)
 tb_bool_t g2_matrix_rotatep(g2_matrix_t* matrix, g2_float_t degrees, g2_float_t px, g2_float_t py)
 {
 	// 0 ?
-	tb_check_return_val(g2_nz(degrees), TB_TRUE);
+	tb_check_return_val(g2_nz(degrees), tb_true);
 
 	// rotate
 	g2_matrix_t mx;
@@ -235,7 +235,7 @@ tb_bool_t g2_matrix_rotatep(g2_matrix_t* matrix, g2_float_t degrees, g2_float_t 
 tb_bool_t g2_matrix_rotatep_lhs(g2_matrix_t* matrix, g2_float_t degrees, g2_float_t px, g2_float_t py)
 {
 	// 0 ?
-	tb_check_return_val(g2_nz(degrees), TB_TRUE);
+	tb_check_return_val(g2_nz(degrees), tb_true);
 
 	// rotate
 	g2_matrix_t mx;
@@ -245,7 +245,7 @@ tb_bool_t g2_matrix_rotatep_lhs(g2_matrix_t* matrix, g2_float_t degrees, g2_floa
 tb_bool_t g2_matrix_scale(g2_matrix_t* matrix, g2_float_t sx, g2_float_t sy)
 {
 	// 1/1 ?
-	tb_check_return_val(g2_n1(sx) || g2_n1(sy), TB_TRUE);
+	tb_check_return_val(g2_n1(sx) || g2_n1(sy), tb_true);
 
 #if 0
 	// scale
@@ -259,13 +259,13 @@ tb_bool_t g2_matrix_scale(g2_matrix_t* matrix, g2_float_t sx, g2_float_t sy)
 	matrix->kx = g2_mul(matrix->kx, sy);
 	matrix->sy = g2_mul(matrix->sy, sy);
 
-	return TB_TRUE;
+	return tb_true;
 #endif
 }
 tb_bool_t g2_matrix_scale_lhs(g2_matrix_t* matrix, g2_float_t sx, g2_float_t sy)
 {
 	// 1/1 ?
-	tb_check_return_val(g2_n1(sx) || g2_n1(sy), TB_TRUE);
+	tb_check_return_val(g2_n1(sx) || g2_n1(sy), tb_true);
 
 	// scale
 	g2_matrix_t mx;
@@ -275,7 +275,7 @@ tb_bool_t g2_matrix_scale_lhs(g2_matrix_t* matrix, g2_float_t sx, g2_float_t sy)
 tb_bool_t g2_matrix_scalep(g2_matrix_t* matrix, g2_float_t sx, g2_float_t sy, g2_float_t px, g2_float_t py)
 {
 	// 1/1 ?
-	tb_check_return_val(g2_n1(sx) || g2_n1(sy), TB_TRUE);
+	tb_check_return_val(g2_n1(sx) || g2_n1(sy), tb_true);
 
 	// scale
 	g2_matrix_t mx;
@@ -285,7 +285,7 @@ tb_bool_t g2_matrix_scalep(g2_matrix_t* matrix, g2_float_t sx, g2_float_t sy, g2
 tb_bool_t g2_matrix_scalep_lhs(g2_matrix_t* matrix, g2_float_t sx, g2_float_t sy, g2_float_t px, g2_float_t py)
 {
 	// 1/1 ?
-	tb_check_return_val(g2_n1(sx) || g2_n1(sy), TB_TRUE);
+	tb_check_return_val(g2_n1(sx) || g2_n1(sy), tb_true);
 
 	// scale
 	g2_matrix_t mx;
@@ -295,7 +295,7 @@ tb_bool_t g2_matrix_scalep_lhs(g2_matrix_t* matrix, g2_float_t sx, g2_float_t sy
 tb_bool_t g2_matrix_translate(g2_matrix_t* matrix, g2_float_t dx, g2_float_t dy)
 {
 	// 0, 0 ?
-	tb_check_return_val(g2_nz(dx) || g2_nz(dy), TB_TRUE);
+	tb_check_return_val(g2_nz(dx) || g2_nz(dy), tb_true);
 
 #if 0
 	// translate
@@ -308,13 +308,13 @@ tb_bool_t g2_matrix_translate(g2_matrix_t* matrix, g2_float_t dx, g2_float_t dy)
 	matrix->ty = g2_matrix_mul_add(matrix->ky, dx, matrix->sy, dy) + matrix->ty;
 
 	// ok
-	return TB_TRUE;
+	return tb_true;
 #endif
 }
 tb_bool_t g2_matrix_translate_lhs(g2_matrix_t* matrix, g2_float_t dx, g2_float_t dy)
 {
 	// 0, 0 ?
-	tb_check_return_val(g2_nz(dx) || g2_nz(dy), TB_TRUE);
+	tb_check_return_val(g2_nz(dx) || g2_nz(dy), tb_true);
 
 #if 0
 	// translate
@@ -327,7 +327,7 @@ tb_bool_t g2_matrix_translate_lhs(g2_matrix_t* matrix, g2_float_t dx, g2_float_t
 	matrix->ty += dy;
 
 	// ok
-	return TB_TRUE;
+	return tb_true;
 #endif
 }
 tb_bool_t g2_matrix_skew(g2_matrix_t* matrix, g2_float_t kx, g2_float_t ky)
@@ -389,7 +389,7 @@ tb_bool_t g2_matrix_sincosp_lhs(g2_matrix_t* matrix, g2_float_t sin, g2_float_t 
 tb_bool_t g2_matrix_multiply(g2_matrix_t* matrix, g2_matrix_t const* mx)
 {
 	// identity?
-	if (g2_matrix_identity(mx)) return TB_TRUE;
+	if (g2_matrix_identity(mx)) return tb_true;
 
 	/* multiply
 	 * 
@@ -417,12 +417,12 @@ tb_bool_t g2_matrix_multiply(g2_matrix_t* matrix, g2_matrix_t const* mx)
 
 	// ok
 	*matrix = mt;
-	return TB_TRUE;
+	return tb_true;
 }
 tb_bool_t g2_matrix_multiply_lhs(g2_matrix_t* matrix, g2_matrix_t const* mx)
 {
 	// identity?
-	if (g2_matrix_identity(mx)) return TB_TRUE;
+	if (g2_matrix_identity(mx)) return tb_true;
 	
 	// multiply
 	g2_matrix_t mt = *mx;

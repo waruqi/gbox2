@@ -16,11 +16,11 @@ JNIEXPORT jboolean JNICALL Java_com_gbox2_DemoView_demo_1init
   (JNIEnv * env, jclass this, jint width, jint height, jint version)
 {
 	// init tbox
-	static tb_bool_t init = TB_FALSE;
+	static tb_bool_t init = tb_false;
 	if (!init)
 	{
-		if (!tb_init(TB_NULL, 0)) return JNI_FALSE;
-		init = TB_TRUE;
+		if (!tb_init(tb_null, 0)) return JNI_FALSE;
+		init = tb_true;
 	}
 
 	return g2_demo_gl_init(width, height, version)? JNI_TRUE : JNI_FALSE;

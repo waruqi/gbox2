@@ -44,15 +44,15 @@ static __tb_inline__ g2_gl_shader_t* g2_gl_shader_init(tb_handle_t context, tb_s
 {
 	// check
 	g2_gl_context_t* gcontext = (g2_gl_context_t*)context;
-	tb_assert_and_check_return_val(gcontext && type, TB_NULL);
+	tb_assert_and_check_return_val(gcontext && type, tb_null);
 
 	// make texture
 	g2_GLuint_t* texture = g2_gl_context_texture_alc(context);
-	tb_assert_and_check_return_val(texture, TB_NULL);
+	tb_assert_and_check_return_val(texture, tb_null);
 
 	// make shader
 	g2_gl_shader_t* shader = g2_gl_context_shader_alc(context);
-	tb_assert_and_check_return_val(shader, TB_NULL);
+	tb_assert_and_check_return_val(shader, tb_null);
 
 	// init shader
 	shader->type 		= type;
@@ -98,7 +98,7 @@ static __tb_inline__ tb_size_t g2_shader_make_stops(g2_gradient_t const* gradien
 	if (!radio)
 	{
 		tb_size_t i = 0;
-		tb_bool_t a = TB_FALSE;
+		tb_bool_t a = tb_false;
 		tb_size_t n = tb_min(count, maxn);
 		if (n > 1)
 		{
@@ -109,7 +109,7 @@ static __tb_inline__ tb_size_t g2_shader_make_stops(g2_gradient_t const* gradien
 				stops[i].color = color[i];
 
 				// has alpha?
-				if (!a && color[i].a != 0xff) a = TB_TRUE;
+				if (!a && color[i].a != 0xff) a = tb_true;
 			}
 
 			// stopn
@@ -129,7 +129,7 @@ static __tb_inline__ tb_size_t g2_shader_make_stops(g2_gradient_t const* gradien
 			stopn = 2;
 
 			// has alpha?
-			if (color[0].a != 0xff) a = TB_TRUE;
+			if (color[0].a != 0xff) a = tb_true;
 		}
 
 		// alpha?
@@ -140,7 +140,7 @@ static __tb_inline__ tb_size_t g2_shader_make_stops(g2_gradient_t const* gradien
 	{
 		tb_size_t 	i = 0;
 		g2_float_t 	last = 0;
-		tb_bool_t 	a = TB_FALSE;
+		tb_bool_t 	a = tb_false;
 		for (i = 0; i < count && stopn < maxn; i++)
 		{
 			// check range, must be [0, 1], skip it if out of range
@@ -170,7 +170,7 @@ static __tb_inline__ tb_size_t g2_shader_make_stops(g2_gradient_t const* gradien
 			stopn++;
 
 			// has alpha?
-			if (!a && color[i].a != 0xff) a = TB_TRUE;
+			if (!a && color[i].a != 0xff) a = tb_true;
 
 			// save the last radio
 			last = radio[i];
@@ -264,7 +264,7 @@ static __tb_inline__ tb_void_t g2_shader_make_color_interpolation(tb_byte_t* pb,
 static __tb_inline__ tb_bool_t g2_shader_make_color(tb_byte_t* data, tb_size_t size, g2_gl_stop_t const* stops, tb_size_t stopn)
 {
 	// check
-	tb_assert_and_check_return_val(data && size && stops && stopn, TB_FALSE);
+	tb_assert_and_check_return_val(data && size && stops && stopn, tb_false);
 
 	// init
 	tb_size_t 	i = 0;
@@ -286,14 +286,14 @@ static __tb_inline__ tb_bool_t g2_shader_make_color(tb_byte_t* data, tb_size_t s
 	}
 
 	// ok
-	return TB_TRUE;
+	return tb_true;
 }
 static __tb_inline__ tb_bool_t g2_shader_make_gradient(g2_gl_shader_t* shader, g2_gradient_t const* gradient, tb_byte_t* data, tb_size_t size, tb_bool_t* alpha)
 {
 	// make stops
 	g2_gl_stop_t 	stops[G2_GL_SHADER_GRAD_STOP_MAXN];
 	tb_size_t 		stopn = g2_shader_make_stops(gradient, stops, G2_GL_SHADER_GRAD_STOP_MAXN, alpha);
-	tb_assert_and_check_return_val(stopn, TB_FALSE);
+	tb_assert_and_check_return_val(stopn, tb_false);
 
 	// make color
 	return g2_shader_make_color(data, size, stops, stopn);
@@ -305,18 +305,18 @@ static __tb_inline__ tb_bool_t g2_shader_make_gradient(g2_gl_shader_t* shader, g
 tb_handle_t g2_shader_init_linear(tb_handle_t context, g2_point_t const* pb, g2_point_t const* pe, g2_gradient_t const* gradient, tb_size_t wrap)
 {
 	// check
-	tb_assert_and_check_return_val(context && pb && pe && gradient && gradient->color && gradient->count && wrap, TB_NULL);
+	tb_assert_and_check_return_val(context && pb && pe && gradient && gradient->color && gradient->count && wrap, tb_null);
 
 	// init shader
 	g2_gl_shader_t* shader = g2_gl_shader_init(context, G2_GL_SHADER_TYPE_LINEAR, G2_GL_SHADER_GRAD_TEXCOORD_SIZE, G2_GL_SHADER_GRAD_TEXCOORD_SIZE, wrap);
-	tb_assert_and_check_return_val(shader && shader->texture, TB_NULL);
+	tb_assert_and_check_return_val(shader && shader->texture, tb_null);
 
 	// init linear
 	shader->u.linear.pb = *pb;
 	shader->u.linear.pe = *pe;
 
 	// make gradient
-	tb_bool_t 		alpha = TB_FALSE;
+	tb_bool_t 		alpha = tb_false;
 	tb_byte_t 		data[G2_GL_SHADER_GRAD_TEXCOORD_SIZE << 2];
 	if (!g2_shader_make_gradient(shader, gradient, data, tb_arrayn(data), &alpha)) goto fail;
 
@@ -333,29 +333,29 @@ tb_handle_t g2_shader_init_linear(tb_handle_t context, g2_point_t const* pb, g2_
 	g2_glTexImage2D(G2_GL_TEXTURE_2D, 0, G2_GL_RGBA, G2_GL_SHADER_GRAD_TEXCOORD_SIZE, 1, 0, G2_GL_RGBA, G2_GL_UNSIGNED_BYTE, data);
 
 	// init matrix
-	g2_shader_matrix_set(shader, TB_NULL);
+	g2_shader_matrix_set(shader, tb_null);
 	
 	// ok
 	return shader;
 
 fail:
 	if (shader) g2_gl_shader_exit(shader);
-	return TB_NULL;
+	return tb_null;
 }
 tb_handle_t g2_shader_init_radial(tb_handle_t context, g2_circle_t const* cp, g2_gradient_t const* gradient, tb_size_t wrap)
 {
 	// check
-	tb_assert_and_check_return_val(context && cp && gradient && gradient->color && gradient->count && wrap, TB_NULL);
+	tb_assert_and_check_return_val(context && cp && gradient && gradient->color && gradient->count && wrap, tb_null);
 
 	// init shader
 	g2_gl_shader_t* shader = g2_gl_shader_init(context, G2_GL_SHADER_TYPE_RADIAL, G2_GL_SHADER_GRAD_TEXCOORD_SIZE, G2_GL_SHADER_GRAD_TEXCOORD_SIZE, wrap);
-	tb_assert_and_check_return_val(shader && shader->texture, TB_NULL);
+	tb_assert_and_check_return_val(shader && shader->texture, tb_null);
 
 	// init radial
 	shader->u.radial.cp = *cp;
 	
 	// make gradient
-	tb_bool_t 		alpha = TB_FALSE;
+	tb_bool_t 		alpha = tb_false;
 	tb_byte_t 		data[G2_GL_SHADER_GRAD_TEXCOORD_SIZE << 2];
 	if (!g2_shader_make_gradient(shader, gradient, data, tb_arrayn(data), &alpha)) goto fail;
 
@@ -372,33 +372,33 @@ tb_handle_t g2_shader_init_radial(tb_handle_t context, g2_circle_t const* cp, g2
 	g2_glTexImage2D(G2_GL_TEXTURE_2D, 0, G2_GL_RGBA, G2_GL_SHADER_GRAD_TEXCOORD_SIZE, 1, 0, G2_GL_RGBA, G2_GL_UNSIGNED_BYTE, data);
 
 	// init matrix
-	g2_shader_matrix_set(shader, TB_NULL);
+	g2_shader_matrix_set(shader, tb_null);
 	
 	// ok
 	return shader;
 
 fail:
 	if (shader) g2_gl_shader_exit(shader);
-	return TB_NULL;
+	return tb_null;
 }
 tb_handle_t g2_shader_init_bitmap(tb_handle_t context, tb_handle_t bitmap, tb_size_t wrap)
 {
 	// check
-	tb_assert_and_check_return_val(context && bitmap && wrap, TB_NULL);
+	tb_assert_and_check_return_val(context && bitmap && wrap, tb_null);
 
 	// data & size
 	tb_pointer_t 	data = g2_bitmap_data(bitmap);
 	tb_size_t 		size = g2_bitmap_size(bitmap);
-	tb_assert_and_check_return_val(data && size, TB_NULL);
+	tb_assert_and_check_return_val(data && size, tb_null);
 
 	// width & height 
 	tb_size_t 		width = g2_bitmap_width(bitmap);
 	tb_size_t 		height = g2_bitmap_height(bitmap);
-	tb_assert_and_check_return_val(width && height, TB_NULL);
+	tb_assert_and_check_return_val(width && height, tb_null);
 
 	// lpitch
 	tb_size_t 		lpitch = g2_bitmap_lpitch(bitmap);
-	tb_assert_and_check_return_val(lpitch, TB_NULL);
+	tb_assert_and_check_return_val(lpitch, tb_null);
 
 	// pixfmt
 	tb_size_t 		pixfmt = g2_bitmap_pixfmt(bitmap);
@@ -406,11 +406,11 @@ tb_handle_t g2_shader_init_bitmap(tb_handle_t context, tb_handle_t bitmap, tb_si
 									|| 	(pixfmt == (G2_PIXFMT_RGB565 | G2_PIXFMT_LENDIAN))
 									|| 	(pixfmt == (G2_PIXFMT_RGB888 | G2_PIXFMT_BENDIAN))
 									|| 	(pixfmt == (G2_PIXFMT_RGBA4444 | G2_PIXFMT_LENDIAN))
-									|| 	(pixfmt == (G2_PIXFMT_RGBA5551 | G2_PIXFMT_LENDIAN)), TB_NULL);
+									|| 	(pixfmt == (G2_PIXFMT_RGBA5551 | G2_PIXFMT_LENDIAN)), tb_null);
 
 	// init shader
 	g2_gl_shader_t* shader = g2_gl_shader_init(context, G2_GL_SHADER_TYPE_BITMAP, width, height, wrap);
-	tb_assert_and_check_return_val(shader && shader->texture, TB_NULL);
+	tb_assert_and_check_return_val(shader && shader->texture, tb_null);
 
 	// init width & height
 	shader->u.bitmap.width 		= width;
@@ -445,12 +445,12 @@ tb_handle_t g2_shader_init_bitmap(tb_handle_t context, tb_handle_t bitmap, tb_si
 		g2_glTexImage2D(G2_GL_TEXTURE_2D, 0, G2_GL_RGBA, width, height, 0, G2_GL_RGBA, G2_GL_UNSIGNED_SHORT_5_5_5_1, data);
 		break;
 	default:
-		tb_assert_and_check_return_val(0, TB_NULL);
+		tb_assert_and_check_return_val(0, tb_null);
 		break;
 	}
 
 	// init matrix
-	g2_shader_matrix_set(shader, TB_NULL);
+	g2_shader_matrix_set(shader, tb_null);
 	
 	// ok
 	return shader;
@@ -468,7 +468,7 @@ g2_matrix_t const* g2_shader_matrix(tb_handle_t shader)
 {
 	// shader
 	g2_gl_shader_t* gshader = (g2_gl_shader_t*)shader;
-	tb_assert_and_check_return_val(gshader, TB_NULL);
+	tb_assert_and_check_return_val(gshader, tb_null);
 
 	return &gshader->matrix;
 }

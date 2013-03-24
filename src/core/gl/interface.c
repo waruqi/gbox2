@@ -29,13 +29,13 @@
  * macros
  */
 // define
-#define G2_GL_INTERFACE_DEFINE(func) 			g2_##func##_t g2_##func = TB_NULL
+#define G2_GL_INTERFACE_DEFINE(func) 			g2_##func##_t g2_##func = tb_null
 
 // check
-#define G2_GL_INTERFACE_CHECK(func) 			tb_assert_and_check_return_val(g2_##func, TB_FALSE)
+#define G2_GL_INTERFACE_CHECK(func) 			tb_assert_and_check_return_val(g2_##func, tb_false)
 
 // check & wrap
-#define G2_GL_INTERFACE_CHECKW(func, wrap) 		if (!g2_##func && g2_##wrap) g2_##func = g2_gl_wraper_##func; tb_assert_and_check_return_val(g2_##func, TB_FALSE)
+#define G2_GL_INTERFACE_CHECKW(func, wrap) 		if (!g2_##func && g2_##wrap) g2_##func = g2_gl_wraper_##func; tb_assert_and_check_return_val(g2_##func, tb_false)
 
 /* ///////////////////////////////////////////////////////////////////////
  * functions
@@ -194,5 +194,5 @@ tb_bool_t g2_gl_interface_check(tb_byte_t version)
 
 
 	// ok
-	return TB_TRUE;
+	return tb_true;
 }

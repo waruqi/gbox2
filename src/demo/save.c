@@ -12,7 +12,7 @@ static tb_bool_t g2_demo_shape_init(tb_int_t argc, tb_char_t** argv)
 	g_mode = G2_STYLE_MODE_FILL_STOK;
 
 	// ok
-	return TB_TRUE;
+	return tb_true;
 }
 static tb_void_t g2_demo_shape_exit()
 {

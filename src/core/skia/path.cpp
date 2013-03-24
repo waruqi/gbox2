@@ -33,7 +33,7 @@ static __tb_inline__ tb_handle_t g2_skia_path_init()
 {
 	// alloc
 	G2SkiaPath* spath = new G2SkiaPath();
-	tb_assert_and_check_return_val(spath, TB_NULL);
+	tb_assert_and_check_return_val(spath, tb_null);
 
 	// ok
 	return spath;
@@ -82,20 +82,20 @@ static __tb_inline__ tb_void_t g2_skia_path_close(tb_handle_t path)
 static __tb_inline__ tb_bool_t g2_skia_path_null(tb_handle_t path)
 {	
 	G2SkiaPath const* spath = static_cast<G2SkiaPath const*>(path);
-	tb_assert_and_check_return_val(spath, TB_TRUE);
+	tb_assert_and_check_return_val(spath, tb_true);
 
-	return spath->isEmpty()? TB_TRUE : TB_FALSE;
+	return spath->isEmpty()? tb_true : tb_false;
 }
 static __tb_inline__ tb_bool_t g2_skia_path_itor_init(tb_handle_t path)
 {
 	G2SkiaPath* spath = static_cast<G2SkiaPath*>(path);
-	tb_assert_and_check_return_val(spath, TB_FALSE);
+	tb_assert_and_check_return_val(spath, tb_false);
 
 	// init
 	spath->iterator().setPath(*spath, false);
 	
 	// ok
-	return TB_TRUE;
+	return tb_true;
 }
 static __tb_inline__ tb_size_t g2_skia_path_itor_next(tb_handle_t path, g2_point_t pt[3])
 {
@@ -135,9 +135,9 @@ static __tb_inline__ tb_void_t g2_skia_path_itor_exit(tb_handle_t path)
 static __tb_inline__ tb_bool_t g2_skia_path_last_pt(tb_handle_t path, g2_point_t* pt)
 {	
 	G2SkiaPath const* spath = static_cast<G2SkiaPath const*>(path);
-	tb_assert_and_check_return_val(spath && pt, TB_TRUE);
+	tb_assert_and_check_return_val(spath && pt, tb_true);
 
-	return spath->getLastPt((SkPoint*)pt)? TB_TRUE : TB_FALSE;
+	return spath->getLastPt((SkPoint*)pt)? tb_true : tb_false;
 }
 static __tb_inline__ tb_void_t g2_skia_path_move_to(tb_handle_t path, g2_point_t const* pt)
 {

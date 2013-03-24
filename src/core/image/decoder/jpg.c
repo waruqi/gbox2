@@ -87,19 +87,19 @@ static tb_void_t g2_jpg_decoder_jsrc_init_source(j_decompress_ptr jdec)
 static boolean g2_jpg_decoder_jsrc_fill_input_buffer(j_decompress_ptr jdec)
 {
 	g2_jpg_decoder_jsrc_manager_t* jsm = (g2_jpg_decoder_jsrc_manager_t*)jdec->src;
-	tb_assert_and_check_return_val(jsm && jsm->jgst, TB_FALSE);
+	tb_assert_and_check_return_val(jsm && jsm->jgst, tb_false);
 
 	// read 
 	tb_hize_t left = tb_gstream_left(jsm->jgst);
 	tb_size_t need = (tb_size_t)tb_min(left, TB_GSTREAM_BLOCK_MAXN);
-	if (!tb_gstream_bread(jsm->jgst, jsm->data, need)) return TB_FALSE;
+	if (!tb_gstream_bread(jsm->jgst, jsm->data, need)) return tb_false;
 
 	// fill
 	jsm->jsrc.next_input_byte       = jsm->data;
 	jsm->jsrc.bytes_in_buffer       = need;
 
 	// ok
-	return TB_TRUE;
+	return tb_true;
 }
 static tb_void_t g2_jpg_decoder_jsrc_skip_input_data(j_decompress_ptr jdec, tb_long_t num_bytes)
 {
@@ -119,7 +119,7 @@ static tb_void_t g2_jpg_decoder_jerr_exit(j_common_ptr jerr)
 	if (jerr)
 	{
 		g2_jpg_decoder_jerr_manager_t* jem = (g2_jpg_decoder_jerr_manager_t*)jerr->err;
-		if (jem) jem->berr = TB_TRUE;
+		if (jem) jem->berr = tb_true;
 	}
 }
 static tb_void_t g2_jpg_decoder_jsrc_init(j_decompress_ptr jdec, tb_gstream_t* jgst)
@@ -136,47 +136,47 @@ static tb_void_t g2_jpg_decoder_jsrc_init(j_decompress_ptr jdec, tb_gstream_t* j
 	jsm->jsrc.term_source 					= g2_jpg_decoder_jsrc_term_source;
 
 	// init stream
-	jsm->jsrc.next_input_byte 				= TB_NULL;
+	jsm->jsrc.next_input_byte 				= tb_null;
 	jsm->jsrc.bytes_in_buffer 				= 0;
 	jsm->jgst 								= jgst;
 }
 static tb_bool_t g2_jpg_decoder_probe(tb_gstream_t* gst)
 {
 	// need
-	tb_byte_t* p = TB_NULL;
-	if (!tb_gstream_bneed(gst, &p, 4)) return TB_FALSE;
-	tb_assert_and_check_return_val(p, TB_FALSE);
+	tb_byte_t* p = tb_null;
+	if (!tb_gstream_bneed(gst, &p, 4)) return tb_false;
+	tb_assert_and_check_return_val(p, tb_false);
 
 	// ok?
 	return ( 	p[0] == 0xff 
 			&& 	p[1] == 0xd8 
 			&& 	p[2] == 0xff 
-			&& (p[3] >= 0xe0 && p[3] <= 0xef))? TB_TRUE : TB_FALSE;
+			&& (p[3] >= 0xe0 && p[3] <= 0xef))? tb_true : tb_false;
 }
 static tb_handle_t g2_jpg_decoder_done(g2_image_decoder_t* decoder)
 {
 	// check
-	tb_assert_and_check_return_val(decoder && decoder->type == G2_IMAGE_TYPE_JPG, TB_NULL);
+	tb_assert_and_check_return_val(decoder && decoder->type == G2_IMAGE_TYPE_JPG, tb_null);
 
 	// decoder
 	g2_jpg_decoder_t* jdecoder = (g2_jpg_decoder_t*)decoder;
 
 	// the pixfmt
 	tb_size_t pixfmt 	= decoder->pixfmt;
-	tb_assert_and_check_return_val(G2_PIXFMT_OK(pixfmt), TB_NULL);
+	tb_assert_and_check_return_val(G2_PIXFMT_OK(pixfmt), tb_null);
 
 	// the pixmap
 	g2_pixmap_t* pixmap = g2_pixmap(pixfmt, 0xff);
-	tb_assert_and_check_return_val(pixmap, TB_NULL);
+	tb_assert_and_check_return_val(pixmap, tb_null);
 
 	// the width & height
 	tb_size_t width 	= decoder->width;
 	tb_size_t height 	= decoder->height;
-	tb_assert_and_check_return_val(width & height, TB_NULL);
+	tb_assert_and_check_return_val(width & height, tb_null);
 
 	// init bitmap
 	tb_handle_t bitmap = g2_bitmap_init(pixfmt, width, height, 0);
-	tb_assert_and_check_return_val(bitmap, TB_NULL);
+	tb_assert_and_check_return_val(bitmap, tb_null);
 
 	// make bitmap
 	tb_byte_t* data = g2_bitmap_make(bitmap);
@@ -230,7 +230,7 @@ static tb_handle_t g2_jpg_decoder_done(g2_image_decoder_t* decoder)
 
 fail:
 	if (bitmap) g2_bitmap_exit(bitmap);
-	return TB_NULL;
+	return tb_null;
 }
 static tb_void_t g2_jpg_decoder_free(g2_image_decoder_t* decoder)
 {
@@ -244,14 +244,14 @@ static tb_void_t g2_jpg_decoder_free(g2_image_decoder_t* decoder)
  */
 g2_image_decoder_t* g2_jpg_decoder_init(tb_size_t pixfmt, tb_gstream_t* gst)
 {
-	tb_assert_and_check_return_val(G2_PIXFMT_OK(pixfmt) && gst, TB_NULL);
+	tb_assert_and_check_return_val(G2_PIXFMT_OK(pixfmt) && gst, tb_null);
 
 	// probe it
-	if (!g2_jpg_decoder_probe(gst)) return TB_NULL;
+	if (!g2_jpg_decoder_probe(gst)) return tb_null;
 
 	// alloc decoder
 	g2_jpg_decoder_t* decoder = tb_malloc0(sizeof(g2_jpg_decoder_t));
-	tb_assert_and_check_return_val(decoder, TB_NULL);
+	tb_assert_and_check_return_val(decoder, tb_null);
 
 	// init decoder
 	decoder->base.type 		= G2_IMAGE_TYPE_JPG;
@@ -263,7 +263,7 @@ g2_image_decoder_t* g2_jpg_decoder_init(tb_size_t pixfmt, tb_gstream_t* gst)
 	// init jpeg manager
 	decoder->jdec.err = jpeg_std_error((struct jpeg_error_mgr *)&decoder->jerr);
 	decoder->jerr.jerr.error_exit = g2_jpg_decoder_jerr_exit;
-	decoder->jerr.berr = TB_FALSE;
+	decoder->jerr.berr = tb_false;
 
 	// init jpeg decoder
 	jpeg_create_decompress(&decoder->jdec);
@@ -272,7 +272,7 @@ g2_image_decoder_t* g2_jpg_decoder_init(tb_size_t pixfmt, tb_gstream_t* gst)
 	g2_jpg_decoder_jsrc_init(&decoder->jdec, gst);
 
 	// read jpeg header
-	jpeg_read_header(&decoder->jdec, TB_TRUE);
+	jpeg_read_header(&decoder->jdec, tb_true);
 	tb_assert_and_check_goto(!decoder->jerr.berr, fail);
 	tb_assert_and_check_goto(decoder->jdec.image_width && decoder->jdec.image_height, fail);
 
@@ -286,5 +286,5 @@ g2_image_decoder_t* g2_jpg_decoder_init(tb_size_t pixfmt, tb_gstream_t* gst)
 
 fail:
 	if (decoder) g2_image_decoder_exit(decoder);
-	return TB_NULL;
+	return tb_null;
 }

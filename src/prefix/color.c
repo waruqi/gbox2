@@ -76,7 +76,7 @@ static tb_long_t g2_named_color_comp(tb_iterator_t* iterator, tb_cpointer_t item
 
 g2_named_color_t const* g2_color_from_name(tb_char_t const* name)
 {
-	tb_assert_and_check_return_val(name, TB_NULL);
+	tb_assert_and_check_return_val(name, tb_null);
 
 	// init iterator
 	tb_iterator_t 	iterator = tb_iterator_mem(g_named_colors, tb_arrayn(g_named_colors), sizeof(g2_named_color_t));
@@ -86,11 +86,11 @@ g2_named_color_t const* g2_color_from_name(tb_char_t const* name)
 	tb_size_t 		itor = tb_binary_find_all(&iterator, name);
 
 	// ok?
-	return (itor != tb_iterator_tail(&iterator))? (g2_named_color_t const*)tb_iterator_item(&iterator, itor) : TB_NULL;
+	return (itor != tb_iterator_tail(&iterator))? (g2_named_color_t const*)tb_iterator_item(&iterator, itor) : tb_null;
 }
 g2_named_color_t const* g2_color_from_index(tb_size_t index)
 {
-	tb_assert_and_check_return_val(index < tb_arrayn(g_named_colors), TB_NULL);
+	tb_assert_and_check_return_val(index < tb_arrayn(g_named_colors), tb_null);
 	return g_named_colors + index;
 }
 

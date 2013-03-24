@@ -190,7 +190,7 @@ g2_svg_element_t* g2_svg_element_init_linear_gradient(tb_handle_t reader)
 {
 	// alloc 
 	g2_svg_element_linear_gradient_t* element = tb_malloc0(sizeof(g2_svg_element_linear_gradient_t));
-	tb_assert_and_check_return_val(element, TB_NULL);
+	tb_assert_and_check_return_val(element, tb_null);
 
 	// init
 	element->base.exit = g2_svg_element_linear_gradient_exit;
@@ -234,7 +234,7 @@ g2_svg_element_t* g2_svg_element_init_radial_gradient(tb_handle_t reader)
 {
 	// alloc 
 	g2_svg_element_radial_gradient_t* element = tb_malloc0(sizeof(g2_svg_element_radial_gradient_t));
-	tb_assert_and_check_return_val(element, TB_NULL);
+	tb_assert_and_check_return_val(element, tb_null);
 
 	// init
 	element->base.exit = g2_svg_element_radial_gradient_exit;

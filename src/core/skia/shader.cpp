@@ -42,11 +42,11 @@
 static tb_handle_t g2_skia_shader_init_linear(tb_handle_t context, g2_point_t const* pb, g2_point_t const* pe, g2_gradient_t const* gradient, tb_size_t wrap)
 {
 	// check
-	tb_assert_and_check_return_val(pb && pe && gradient && gradient->color && gradient->count, TB_NULL);
+	tb_assert_and_check_return_val(pb && pe && gradient && gradient->color && gradient->count, tb_null);
 
 	// the border wrap is not supported for skia
 	if (wrap == G2_SHADER_WRAP_BORDER) wrap = G2_SHADER_WRAP_CLAMP;
-	tb_assert_and_check_return_val(wrap > 1, TB_NULL);
+	tb_assert_and_check_return_val(wrap > 1, tb_null);
 
 	// init shader
 	SkPoint pts[2];
@@ -57,11 +57,11 @@ static tb_handle_t g2_skia_shader_init_linear(tb_handle_t context, g2_point_t co
 static tb_handle_t g2_skia_shader_init_radial(tb_handle_t context, g2_circle_t const* cp, g2_gradient_t const* gradient, tb_size_t wrap)
 {
 	// check
-	tb_assert_and_check_return_val(cp && gradient && gradient->color && gradient->count, TB_NULL);
+	tb_assert_and_check_return_val(cp && gradient && gradient->color && gradient->count, tb_null);
 
 	// the border wrap is not supported for skia
 	if (wrap == G2_SHADER_WRAP_BORDER) wrap = G2_SHADER_WRAP_CLAMP;
-	tb_assert_and_check_return_val(wrap > 1, TB_NULL);
+	tb_assert_and_check_return_val(wrap > 1, tb_null);
 
 	// init shader
 	SkPoint pt = SkPoint::Make(cp->c.x, cp->c.y);
@@ -70,11 +70,11 @@ static tb_handle_t g2_skia_shader_init_radial(tb_handle_t context, g2_circle_t c
 static tb_handle_t g2_skia_shader_init_bitmap(tb_handle_t context, tb_handle_t bitmap, tb_size_t wrap)
 {
 	// check
-	tb_assert_and_check_return_val(bitmap, TB_NULL);
+	tb_assert_and_check_return_val(bitmap, tb_null);
 
 	// the border wrap is not supported for skia
 	if (wrap == G2_SHADER_WRAP_BORDER) wrap = G2_SHADER_WRAP_CLAMP;
-	tb_assert_and_check_return_val(wrap > 1, TB_NULL);
+	tb_assert_and_check_return_val(wrap > 1, tb_null);
 
 	// init shader
 	return SkShader::CreateBitmapShader(*static_cast<SkBitmap const*>(bitmap), static_cast<SkShader::TileMode>(wrap - 2), static_cast<SkShader::TileMode>(wrap - 2));
@@ -89,10 +89,10 @@ static tb_void_t g2_skia_shader_exit(tb_handle_t shader)
 static g2_matrix_t const* g2_skia_shader_matrix(tb_handle_t shader)
 {
 	SkShader* sshader = static_cast<SkShader*>(shader);
-	tb_assert_and_check_return_val(sshader, TB_NULL);
+	tb_assert_and_check_return_val(sshader, tb_null);
 
 	SkMatrix mx;
-	if (!sshader->getLocalMatrix(&mx)) return TB_NULL;
+	if (!sshader->getLocalMatrix(&mx)) return tb_null;
 
 	g2_matrix_init(&sshader->matrix, mx.getScaleX(), mx.getScaleY(), mx.getSkewX(), mx.getSkewY(), mx.getTranslateX(), mx.getTranslateY());
 	return &sshader->matrix;

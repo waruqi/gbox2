@@ -32,16 +32,16 @@
 static tb_handle_t g2_skia_context_init(tb_size_t pixfmt, tb_pointer_t data, tb_size_t width, tb_size_t height, tb_size_t lpitch)
 {
 	// check
-	tb_assert_and_check_return_val(G2_PIXFMT_OK(pixfmt) && width && height, TB_NULL);
+	tb_assert_and_check_return_val(G2_PIXFMT_OK(pixfmt) && width && height, tb_null);
 
 	// check pixfmt
 	tb_assert_and_check_return_val( 	G2_PIXFMT(pixfmt) == G2_PIXFMT_ARGB8888
 									|| 	G2_PIXFMT(pixfmt) == G2_PIXFMT_ARGB4444 
-									|| 	G2_PIXFMT(pixfmt) == G2_PIXFMT_RGB565, TB_NULL);
+									|| 	G2_PIXFMT(pixfmt) == G2_PIXFMT_RGB565, tb_null);
 
 	// init 
 	tb_handle_t context = g2_bitmap_init(pixfmt, width, height, lpitch);
-	tb_assert_and_check_return_val(context, TB_NULL);
+	tb_assert_and_check_return_val(context, tb_null);
 
 	// make
 	g2_bitmap_data_set(context, data);
@@ -52,7 +52,7 @@ static tb_handle_t g2_skia_context_init(tb_size_t pixfmt, tb_pointer_t data, tb_
 
 fail:
 	if (context) g2_bitmap_exit(context);
-	return TB_NULL;
+	return tb_null;
 }
 static tb_void_t g2_skia_context_exit(tb_handle_t context)
 {

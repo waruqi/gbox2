@@ -53,11 +53,11 @@ typedef struct __g2_svg_writer_t
 tb_handle_t g2_svg_writer_init(tb_gstream_t* gst, tb_bool_t bformat)
 {
 	// check
-	tb_assert_and_check_return_val(gst, TB_NULL);
+	tb_assert_and_check_return_val(gst, tb_null);
 
 	// alloc
 	g2_svg_writer_t* writer = tb_malloc0(sizeof(g2_svg_writer_t));
-	tb_assert_and_check_return_val(writer, TB_NULL);
+	tb_assert_and_check_return_val(writer, tb_null);
 
 	// init
 	writer->wstream = gst;

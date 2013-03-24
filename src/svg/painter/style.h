@@ -71,9 +71,9 @@ static __tb_inline__ tb_bool_t g2_svg_painter_style_gradient_linear_build(g2_svg
 	}
 
 	// pb & pe
-	tb_bool_t b = TB_FALSE;
-	if (pb && (g2_nz(element->pb.x) || g2_nz(element->pb.y))) { *pb = element->pb; b = TB_TRUE; }
-	if (pe && (g2_nz(element->pe.x) || g2_nz(element->pe.y))) { *pe = element->pe; b = TB_TRUE; }
+	tb_bool_t b = tb_false;
+	if (pb && (g2_nz(element->pb.x) || g2_nz(element->pb.y))) { *pb = element->pb; b = tb_true; }
+	if (pe && (g2_nz(element->pe.x) || g2_nz(element->pe.y))) { *pe = element->pe; b = tb_true; }
 
 	// href?
 	if (!gradient->count || !b)
@@ -83,12 +83,12 @@ static __tb_inline__ tb_bool_t g2_svg_painter_style_gradient_linear_build(g2_svg
 		{
 			g2_svg_element_linear_gradient_t const* e = tb_hash_get(painter->hash, &url[1]);
 			if (e && e->base.type == G2_SVG_ELEMENT_TYPE_LINEARGRADIENT)
-				return g2_svg_painter_style_gradient_linear_build(painter, e, gradient, b? TB_NULL : pb, b? TB_NULL : pe);
+				return g2_svg_painter_style_gradient_linear_build(painter, e, gradient, b? tb_null : pb, b? tb_null : pe);
 		}
 	}
 
 	// ok?
-	return gradient->count? TB_TRUE : TB_FALSE;
+	return gradient->count? tb_true : tb_false;
 }
 static __tb_inline__ tb_bool_t g2_svg_painter_style_gradient_radial_build(g2_svg_painter_t* painter, g2_svg_element_radial_gradient_t const* element, g2_gradient_t* gradient, g2_circle_t* cp)
 {
@@ -112,8 +112,8 @@ static __tb_inline__ tb_bool_t g2_svg_painter_style_gradient_radial_build(g2_svg
 	}
 
 	// cp
-	tb_bool_t b = TB_FALSE;
-	if (cp && (g2_nz(element->cp.c.x) || g2_nz(element->cp.c.y) || g2_nz(element->cp.r))) { *cp = element->cp; b = TB_TRUE; }
+	tb_bool_t b = tb_false;
+	if (cp && (g2_nz(element->cp.c.x) || g2_nz(element->cp.c.y) || g2_nz(element->cp.r))) { *cp = element->cp; b = tb_true; }
 
 	// href?
 	if (!gradient->count || !b)
@@ -123,12 +123,12 @@ static __tb_inline__ tb_bool_t g2_svg_painter_style_gradient_radial_build(g2_svg
 		{
 			g2_svg_element_radial_gradient_t const* e = tb_hash_get(painter->hash, &url[1]);
 			if (e && e->base.type == G2_SVG_ELEMENT_TYPE_RADIALGRADIENT)
-				return g2_svg_painter_style_gradient_radial_build(painter, e, gradient, b? TB_NULL : cp);
+				return g2_svg_painter_style_gradient_radial_build(painter, e, gradient, b? tb_null : cp);
 		}
 	}
 
 	// ok?
-	return gradient->count? TB_TRUE : TB_FALSE;
+	return gradient->count? tb_true : tb_false;
 }
 static __tb_inline__ tb_bool_t g2_svg_painter_style_gradient_linear(g2_svg_painter_t* painter, g2_svg_element_linear_gradient_t const* element)
 {
@@ -138,7 +138,7 @@ static __tb_inline__ tb_bool_t g2_svg_painter_style_gradient_linear(g2_svg_paint
 	g2_color_t 			color[256];
 	g2_float_t 			radio[256];
 	g2_gradient_t 		gradient = {color, radio};
-	if (!g2_svg_painter_style_gradient_linear_build(painter, element, &gradient, &pb, &pe)) return TB_FALSE;
+	if (!g2_svg_painter_style_gradient_linear_build(painter, element, &gradient, &pb, &pe)) return tb_false;
 
 	// init mode
 	tb_size_t mode = G2_SHADER_WRAP_CLAMP;
@@ -146,12 +146,12 @@ static __tb_inline__ tb_bool_t g2_svg_painter_style_gradient_linear(g2_svg_paint
 	else if (element->spread == G2_SVG_STYLE_GRADIENT_SPREAD_REPEAT) mode = G2_SHADER_WRAP_REPEAT;
 
 	// shader?
-	tb_handle_t shader = painter->shaders? tb_hash_get(painter->shaders, element) : TB_NULL;
+	tb_handle_t shader = painter->shaders? tb_hash_get(painter->shaders, element) : tb_null;
 	if (!shader)
 	{
 		// init shader
 		shader = g2_shader_init_linear(g2_context(painter->painter), &pb, &pe, &gradient, mode);
-		tb_assert_and_check_return_val(shader, TB_FALSE);
+		tb_assert_and_check_return_val(shader, tb_false);
 
 		// init shaders
 		if (!painter->shaders) 
@@ -169,7 +169,7 @@ static __tb_inline__ tb_bool_t g2_svg_painter_style_gradient_linear(g2_svg_paint
 	g2_shader(painter->painter, shader);
 
 	// ok
-	return TB_TRUE;
+	return tb_true;
 }
 static __tb_inline__ tb_bool_t g2_svg_painter_style_gradient_radial(g2_svg_painter_t* painter, g2_svg_element_radial_gradient_t const* element)
 {	
@@ -178,7 +178,7 @@ static __tb_inline__ tb_bool_t g2_svg_painter_style_gradient_radial(g2_svg_paint
 	g2_color_t 			color[256];
 	g2_float_t 			radio[256];
 	g2_gradient_t 		gradient = {color, radio};
-	if (!g2_svg_painter_style_gradient_radial_build(painter, element, &gradient, &cp)) return TB_FALSE;
+	if (!g2_svg_painter_style_gradient_radial_build(painter, element, &gradient, &cp)) return tb_false;
 
 	// init mode
 	tb_size_t mode = G2_SHADER_WRAP_CLAMP;
@@ -186,12 +186,12 @@ static __tb_inline__ tb_bool_t g2_svg_painter_style_gradient_radial(g2_svg_paint
 	else if (element->spread == G2_SVG_STYLE_GRADIENT_SPREAD_REPEAT) mode = G2_SHADER_WRAP_REPEAT;
 
 	// shader?
-	tb_handle_t shader = painter->shaders? tb_hash_get(painter->shaders, element) : TB_NULL;
+	tb_handle_t shader = painter->shaders? tb_hash_get(painter->shaders, element) : tb_null;
 	if (!shader)
 	{
 		// init shader
 		shader = g2_shader_init_radial(g2_context(painter->painter), &cp, &gradient, mode);
-		tb_assert_and_check_return_val(shader, TB_FALSE);
+		tb_assert_and_check_return_val(shader, tb_false);
 
 		// init shaders
 		if (!painter->shaders) 
@@ -209,7 +209,7 @@ static __tb_inline__ tb_bool_t g2_svg_painter_style_gradient_radial(g2_svg_paint
 	g2_shader(painter->painter, shader);
 
 	// ok
-	return TB_TRUE;
+	return tb_true;
 }
 static __tb_inline__ tb_bool_t g2_svg_painter_style_url(g2_svg_painter_t* painter, tb_char_t const* url)
 {
@@ -218,7 +218,7 @@ static __tb_inline__ tb_bool_t g2_svg_painter_style_url(g2_svg_painter_t* painte
 	{
 		// id => element
 		g2_svg_element_t const* element = tb_hash_get(painter->hash, &url[1]);
-		tb_assert_and_check_return_val(element, TB_FALSE);
+		tb_assert_and_check_return_val(element, tb_false);
 
 		// done
 		switch (element->type)
@@ -232,12 +232,12 @@ static __tb_inline__ tb_bool_t g2_svg_painter_style_url(g2_svg_painter_t* painte
 		}
 	}
 
-	return TB_FALSE;
+	return tb_false;
 }
 static __tb_inline__ tb_bool_t g2_svg_painter_style_fill(g2_svg_painter_t* painter, g2_svg_style_t const* style)
 {
 	// no fill? next it
-	tb_check_return_val(style->mode & G2_SVG_STYLE_MODE_FILL, TB_FALSE);
+	tb_check_return_val(style->mode & G2_SVG_STYLE_MODE_FILL, tb_false);
 
 	// fill
 	g2_clear_style(painter->painter);
@@ -250,10 +250,10 @@ static __tb_inline__ tb_bool_t g2_svg_painter_style_fill(g2_svg_painter_t* paint
 		g2_color(painter->painter, style->fill.color);
 		break;
 	case G2_SVG_STYLE_PAINT_MODE_URL:
-		if (!g2_svg_painter_style_url(painter, tb_pstring_cstr(&style->fill.url))) return TB_FALSE;
+		if (!g2_svg_painter_style_url(painter, tb_pstring_cstr(&style->fill.url))) return tb_false;
 		break;
 	default:
-		return TB_FALSE;
+		return tb_false;
 	}
 
 	// opacity
@@ -263,12 +263,12 @@ static __tb_inline__ tb_bool_t g2_svg_painter_style_fill(g2_svg_painter_t* paint
 		g2_alpha(painter->painter, (tb_byte_t)g2_float_to_long(style->opacity * 0xff));
 
 	// ok
-	return TB_TRUE;
+	return tb_true;
 }
 static __tb_inline__ tb_bool_t g2_svg_painter_style_stok(g2_svg_painter_t* painter, g2_svg_style_t const* style)
 {
 	// no stroke? next it
-	tb_check_return_val(style->mode & G2_SVG_STYLE_MODE_STOK, TB_FALSE);
+	tb_check_return_val(style->mode & G2_SVG_STYLE_MODE_STOK, tb_false);
 
 	// stroke
 	g2_clear_style(painter->painter);
@@ -281,10 +281,10 @@ static __tb_inline__ tb_bool_t g2_svg_painter_style_stok(g2_svg_painter_t* paint
 		g2_color(painter->painter, style->stok.color);
 		break;
 	case G2_SVG_STYLE_PAINT_MODE_URL:
-		if (!g2_svg_painter_style_url(painter, tb_pstring_cstr(&style->stok.url))) return TB_FALSE;
+		if (!g2_svg_painter_style_url(painter, tb_pstring_cstr(&style->stok.url))) return tb_false;
 		break;
 	default:
-		return TB_FALSE;
+		return tb_false;
 	}
 
 	// width
@@ -303,12 +303,12 @@ static __tb_inline__ tb_bool_t g2_svg_painter_style_stok(g2_svg_painter_t* paint
 		g2_alpha(painter->painter, (tb_byte_t)g2_float_to_long(style->opacity * 0xff));
 
 	// ok
-	return TB_TRUE;
+	return tb_true;
 }
 static __tb_inline__ tb_bool_t g2_svg_painter_style_image(g2_svg_painter_t* painter, g2_svg_style_t const* style)
 {
 	// no fill? next it
-	tb_check_return_val(style->mode & G2_SVG_STYLE_MODE_IMAGE && style->image.bitmap, TB_FALSE);
+	tb_check_return_val(style->mode & G2_SVG_STYLE_MODE_IMAGE && style->image.bitmap, tb_false);
 
 	// image
 	g2_clear_style(painter->painter);
@@ -319,12 +319,12 @@ static __tb_inline__ tb_bool_t g2_svg_painter_style_image(g2_svg_painter_t* pain
 		g2_alpha(painter->painter, (tb_byte_t)g2_float_to_long(style->opacity * 0xff));
 
 	// shader?
-	tb_handle_t shader = painter->shaders? tb_hash_get(painter->shaders, style->image.bitmap) : TB_NULL;
+	tb_handle_t shader = painter->shaders? tb_hash_get(painter->shaders, style->image.bitmap) : tb_null;
 	if (!shader)
 	{
 		// init shader
 		shader = g2_shader_init_bitmap(g2_context(painter->painter), style->image.bitmap, G2_SHADER_WRAP_BORDER);
-		tb_assert_and_check_return_val(shader, TB_FALSE);
+		tb_assert_and_check_return_val(shader, tb_false);
 
 		// init shaders
 		if (!painter->shaders) 
@@ -371,7 +371,7 @@ static __tb_inline__ tb_bool_t g2_svg_painter_style_image(g2_svg_painter_t* pain
 	g2_shader(painter->painter, shader);
 
 	// ok
-	return TB_TRUE;
+	return tb_true;
 }
 static __tb_inline__ tb_void_t g2_svg_painter_style_walk(g2_svg_style_t* applied, g2_svg_style_t const* style)
 {

@@ -125,7 +125,7 @@ static tb_size_t 		g_ptn[] = 	{ 	sizeof(pts0) / sizeof(g2_ipoint_t)
 									, 	sizeof(pts3) / sizeof(g2_ipoint_t)
 									, 	sizeof(pts4) / sizeof(g2_ipoint_t)
 									};
-static g2_ipoint_t* 	g_cpts[] = 	{ 	TB_NULL, TB_NULL, TB_NULL, cpts3, cpts4 };
+static g2_ipoint_t* 	g_cpts[] = 	{ 	tb_null, tb_null, tb_null, cpts3, cpts4 };
 static tb_size_t 		g_cptn[] = 	{ 	0
 									, 	0
 									, 	0
@@ -194,10 +194,10 @@ static tb_bool_t g2_demo_shape_init(tb_int_t argc, tb_char_t** argv)
 	g_mode = G2_STYLE_MODE_FILL_STOK;
 
 	// init matrix
-	g_bm = TB_TRUE;
+	g_bm = tb_true;
 
 	// ok
-	return TB_TRUE;
+	return tb_true;
 }
 static tb_void_t g2_demo_shape_exit()
 {

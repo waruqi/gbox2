@@ -47,13 +47,13 @@ g2_image_decoder_t* g2_image_decoder_init(tb_size_t pixfmt, tb_gstream_t* gst)
 	// try initing it
 	tb_size_t i = 0;
 	tb_size_t n = tb_arrayn(init);
-	g2_image_decoder_t* decoder = TB_NULL;
+	g2_image_decoder_t* decoder = tb_null;
 	for (i = 0; i < n; i++)
 	{
 		if (init[i] && (decoder = init[i](pixfmt, gst))) return decoder;
 	}
 
-	return TB_NULL;
+	return tb_null;
 }
 tb_void_t g2_image_decoder_exit(g2_image_decoder_t* decoder)
 {
@@ -66,7 +66,7 @@ tb_void_t g2_image_decoder_exit(g2_image_decoder_t* decoder)
 tb_handle_t g2_image_decoder_done(g2_image_decoder_t* decoder)
 {
 	// check
-	tb_assert_and_check_return_val(decoder && decoder->done, TB_NULL);
+	tb_assert_and_check_return_val(decoder && decoder->done, tb_null);
 
 	// done
 	return decoder->done(decoder);

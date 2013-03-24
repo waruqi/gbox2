@@ -110,7 +110,7 @@ static tb_void_t g2_svg_element_path_exit(g2_svg_element_t* element)
 		
 		// exit path
 		if (path->path) g2_path_exit(path->path);
-		path->path = TB_NULL;
+		path->path = tb_null;
 	}
 }
 static tb_char_t const* g2_svg_element_path_d_xoy(g2_svg_element_path_t* element, tb_char_t const* data, tb_char_t mode)
@@ -229,10 +229,6 @@ static tb_char_t const* g2_svg_element_path_d_xy2(g2_svg_element_path_t* element
 	// done path
 	if (element->path)
 	{
-		// last point
-		g2_point_t pt = {0};
-		g2_path_last_pt(element->path, &pt);
-
 		// done
 		switch (mode)
 		{
@@ -240,7 +236,11 @@ static tb_char_t const* g2_svg_element_path_d_xy2(g2_svg_element_path_t* element
 				g2_path_quad2_to(element->path, x1, y1, x2, y2);
 				break;
 			case 'q':
-				g2_path_quad2_to(element->path, pt.x + x1, pt.y + y1, pt.x + x2, pt.y + y2);
+				{
+					g2_point_t pt = {0};
+					g2_path_last_pt(element->path, &pt);
+					g2_path_quad2_to(element->path, pt.x + x1, pt.y + y1, pt.x + x2, pt.y + y2);
+				}
 				break;
 			default:
 				tb_trace_noimpl();
@@ -283,10 +283,6 @@ static tb_char_t const* g2_svg_element_path_d_xy3(g2_svg_element_path_t* element
 	// done path
 	if (element->path)
 	{
-		// last point
-		g2_point_t pt = {0};
-		g2_path_last_pt(element->path, &pt);
-
 		// done
 		switch (mode)
 		{
@@ -294,7 +290,11 @@ static tb_char_t const* g2_svg_element_path_d_xy3(g2_svg_element_path_t* element
 				g2_path_cube2_to(element->path, x1, y1, x2, y2, x3, y3);
 				break;
 			case 'c':
-				g2_path_cube2_to(element->path, pt.x + x1, pt.y + y1, pt.x + x2, pt.y + y2, pt.x + x3, pt.y + y3);
+				{
+					g2_point_t pt = {0};
+					g2_path_last_pt(element->path, &pt);
+					g2_path_cube2_to(element->path, pt.x + x1, pt.y + y1, pt.x + x2, pt.y + y2, pt.x + x3, pt.y + y3);
+				}
 				break;
 			default:
 				tb_trace_noimpl();
@@ -438,7 +438,7 @@ g2_svg_element_t* g2_svg_element_init_path(tb_handle_t reader)
 {
 	// alloc 
 	g2_svg_element_path_t* element = tb_malloc0(sizeof(g2_svg_element_path_t));
-	tb_assert_and_check_return_val(element, TB_NULL);
+	tb_assert_and_check_return_val(element, tb_null);
 
 	// init
 	element->base.exit 		= g2_svg_element_path_exit;

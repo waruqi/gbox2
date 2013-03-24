@@ -34,7 +34,7 @@
 static __tb_inline__ tb_bool_t g2_svg_painter_transform_enter(g2_svg_painter_t* painter, g2_matrix_t const* matrix)
 {
 	// check
-	tb_assert_and_check_return_val(painter && painter->painter && matrix, TB_FALSE);
+	tb_assert_and_check_return_val(painter && painter->painter && matrix, tb_false);
 
 	// transform 
 	if (!g2_matrix_identity(matrix)) 
@@ -46,11 +46,11 @@ static __tb_inline__ tb_bool_t g2_svg_painter_transform_enter(g2_svg_painter_t* 
 		g2_multiply(painter->painter, matrix);
 
 		// ok
-		return TB_TRUE;
+		return tb_true;
 	}
 
 	// no
-	return TB_FALSE;
+	return tb_false;
 }
 static __tb_inline__ tb_void_t g2_svg_painter_transform_leave(g2_svg_painter_t* painter)
 {

@@ -45,13 +45,13 @@ tb_void_t g2_svg_reader_exit(tb_handle_t reader)
 }
 g2_svg_element_t* g2_svg_reader_load(tb_handle_t reader)
 {
-	tb_assert_and_check_return_val(reader, TB_NULL);
+	tb_assert_and_check_return_val(reader, tb_null);
 
 	// parent
-	g2_svg_element_t* 	parent = TB_NULL;
+	g2_svg_element_t* 	parent = tb_null;
 
 	// ignore?
-	tb_bool_t 			ignore = TB_FALSE;
+	tb_bool_t 			ignore = tb_false;
 	
 	// walk
 	tb_size_t e = TB_XML_READER_EVENT_NONE;
@@ -93,7 +93,7 @@ g2_svg_element_t* g2_svg_reader_load(tb_handle_t reader)
 				// metadata? ignore it
 				if (element->type == G2_SVG_ELEMENT_TYPE_METADATA) 
 				{
-					ignore = TB_TRUE;
+					ignore = tb_true;
 					tb_trace_impl("ignore: <metadata>...</metadata>");
 				}
 
@@ -127,7 +127,7 @@ g2_svg_element_t* g2_svg_reader_load(tb_handle_t reader)
 				if (ignore)
 				{
 					tb_char_t const* name = tb_xml_reader_element(reader);
-					if (name && !tb_stricmp(name, "metadata")) ignore = TB_FALSE;
+					if (name && !tb_stricmp(name, "metadata")) ignore = tb_false;
 				}
 				else
 				{
@@ -192,5 +192,5 @@ g2_svg_element_t* g2_svg_reader_load(tb_handle_t reader)
 
 fail:
 	if (parent) g2_svg_element_exit(parent);
-	return TB_NULL;
+	return tb_null;
 }

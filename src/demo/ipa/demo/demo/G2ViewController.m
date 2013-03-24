@@ -42,13 +42,13 @@
  */
 
 // context
-static tb_handle_t 	g_context 	= TB_NULL;
+static tb_handle_t 	g_context 	= tb_null;
 
 // surface
-static tb_handle_t 	g_surface 	= TB_NULL;
+static tb_handle_t 	g_surface 	= tb_null;
 
 // painter
-static tb_handle_t 	g_painter 	= TB_NULL;
+static tb_handle_t 	g_painter 	= tb_null;
 
 // clock
 static tb_hong_t 	g_bt 		= 0;
@@ -64,7 +64,7 @@ static tb_long_t 	g_dy 		= 0;
 static tb_long_t 	g_x 		= 0;
 static tb_long_t 	g_y 		= 0;
 static tb_float_t 	g_an 		= 0.;
-static tb_bool_t 	g_bm 		= TB_FALSE;
+static tb_bool_t 	g_bm 		= tb_false;
 static g2_matrix_t 	g_mx;
 
 /* ////////////////////////////////////////////////////////////////////////
@@ -96,15 +96,15 @@ tb_bool_t g2_demo_gbox2_init(tb_int_t argc, tb_char_t const** argv, tb_byte_t ve
 	
 	// init context
 	g_context = g2_context_init_gl(G2_VIEW_PIXFMT, width, height, version);
-	tb_assert_and_check_return_val(g_context, TB_FALSE);
+	tb_assert_and_check_return_val(g_context, tb_false);
 	
 	// init surface
 	g_surface = g2_context_surface(g_context);
-	tb_assert_and_check_return_val(g_surface, TB_FALSE);
+	tb_assert_and_check_return_val(g_surface, tb_false);
 	
 	// init painter
 	g_painter = g2_init(g_context);
-	tb_assert_and_check_return_val(g_painter, TB_FALSE);
+	tb_assert_and_check_return_val(g_painter, tb_false);
 	
 	// init position
 	g_x0 		= width >> 1;
@@ -118,17 +118,17 @@ tb_bool_t g2_demo_gbox2_init(tb_int_t argc, tb_char_t const** argv, tb_byte_t ve
 	g2_matrix_init_translate(&g_mx, g2_long_to_float(g_x0), g2_long_to_float(g_y0));	
 	
 	// ok
-	return TB_TRUE;
+	return tb_true;
 }
 tb_void_t g2_demo_gbox2_exit()
 {
 	// exit painter
 	if (g_painter) g2_exit(g_painter);
-	g_painter = TB_NULL;
+	g_painter = tb_null;
 
 	// exit context
 	if (g_context) g2_context_exit(g_context);
-	g_context = TB_NULL;
+	g_context = tb_null;
 }
 
 /* ///////////////////////////////////////////////////////////////////////
@@ -193,8 +193,8 @@ tb_void_t g2_demo_gbox2_exit()
 static tb_pointer_t onRender(tb_pointer_t data)
 {
 	// init
-	G2ViewController*	cl = TB_NULL;
-	NSAutoreleasePool*	pool = TB_NULL;
+	G2ViewController*	cl = tb_null;
+	NSAutoreleasePool*	pool = tb_null;
 	
 	// init controller
 	cl = (G2ViewController*)data;
@@ -207,7 +207,7 @@ static tb_pointer_t onRender(tb_pointer_t data)
 	// init args
 	tb_char_t const* argv[] =
 	{
-		TB_NULL
+		tb_null
 	,	[[[NSBundle mainBundle] pathForResource:@"logo" ofType:@"jpg"] UTF8String]
 //	,	[[[NSBundle mainBundle] pathForResource:@"tiger" ofType:@"svg"] UTF8String]
 //	,	[[[NSBundle mainBundle] pathForResource:@"tiger2" ofType:@"svg"] UTF8String]
@@ -277,8 +277,8 @@ end:
 	
 	// exit thread
 	tb_trace_impl("render: exit");
-	tb_thread_return(TB_NULL);
-	return TB_NULL;
+	tb_thread_return(tb_null);
+	return tb_null;
 }
 
 /* ///////////////////////////////////////////////////////////////////////
@@ -410,7 +410,7 @@ end:
 	{
 		// init the thread
 		self.stoped = 0;
-		thread = tb_thread_init(TB_NULL, onRender, self, 0);
+		thread = tb_thread_init(tb_null, onRender, self, 0);
 	
 		// init timer
 		timer = [NSTimer scheduledTimerWithTimeInterval:(NSTimeInterval)1 target:self selector:@selector(onInfo) userInfo:nil repeats:TRUE];
@@ -433,7 +433,7 @@ end:
 		
 		// exit it
 		tb_thread_exit(thread);
-		thread = TB_NULL;
+		thread = tb_null;
 	}
 	
 	// exit view
@@ -526,7 +526,7 @@ end:
 			g2_quality_set((g2_quality() + 1) % 3);
 			break;
 		case 'm':
-			g_bm = g_bm? TB_FALSE : TB_TRUE;
+			g_bm = g_bm? tb_false : tb_true;
 			break;
 		default:
 			break;

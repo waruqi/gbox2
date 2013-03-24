@@ -31,14 +31,14 @@
  */
 tb_handle_t g2_bitmap_init_url(tb_size_t pixfmt, tb_char_t const* url)
 {
-	tb_assert_and_check_return_val(G2_PIXFMT_OK(pixfmt) && url, TB_NULL);
+	tb_assert_and_check_return_val(G2_PIXFMT_OK(pixfmt) && url, tb_null);
 	
 	// init stream
 	tb_gstream_t* gst = tb_gstream_init_from_url(url);
-	tb_assert_and_check_return_val(gst, TB_NULL);
+	tb_assert_and_check_return_val(gst, tb_null);
 
 	// open stream
-	tb_handle_t bitmap = TB_NULL;
+	tb_handle_t bitmap = tb_null;
 	if (tb_gstream_bopen(gst))
 	{
 		// init bitmap
@@ -57,11 +57,11 @@ tb_handle_t g2_bitmap_init_url(tb_size_t pixfmt, tb_char_t const* url)
 
 tb_handle_t g2_bitmap_init_gst(tb_size_t pixfmt, tb_gstream_t* gst)
 {
-	tb_assert_and_check_return_val(G2_PIXFMT_OK(pixfmt) && gst, TB_NULL);
+	tb_assert_and_check_return_val(G2_PIXFMT_OK(pixfmt) && gst, tb_null);
 
 	// init image decoder
 	g2_image_decoder_t* decoder = g2_image_decoder_init(pixfmt, gst);
-	tb_assert_and_check_return_val(decoder, TB_NULL);
+	tb_assert_and_check_return_val(decoder, tb_null);
 
 	// done image decoder
 	tb_handle_t bitmap = g2_image_decoder_done(decoder);

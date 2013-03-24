@@ -78,7 +78,7 @@ g2_svg_element_t* g2_svg_element_init_rect(tb_handle_t reader)
 {
 	// alloc 
 	g2_svg_element_rect_t* element = tb_malloc0(sizeof(g2_svg_element_rect_t));
-	tb_assert_and_check_return_val(element, TB_NULL);
+	tb_assert_and_check_return_val(element, tb_null);
 
 	// init
 	element->base.exit 		= g2_svg_element_rect_exit;

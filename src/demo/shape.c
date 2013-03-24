@@ -6,11 +6,11 @@ static tb_size_t 	g_penw 		= 1;
 static tb_size_t 	g_capi 		= 0;
 static tb_size_t 	g_joini 	= 0;
 static tb_size_t 	g_shaderi 	= 0;
-static tb_handle_t 	g_bitmap 	= TB_NULL;
+static tb_handle_t 	g_bitmap 	= tb_null;
 static tb_size_t 	g_cap[] 	= {G2_STYLE_CAP_BUTT, G2_STYLE_CAP_SQUARE, G2_STYLE_CAP_ROUND};
 static tb_size_t 	g_join[] 	= {G2_STYLE_JOIN_MITER, G2_STYLE_JOIN_BEVEL, G2_STYLE_JOIN_ROUND};
-static tb_handle_t 	g_shader[4] = {TB_NULL};
-static tb_handle_t 	g_mhader[4] = {TB_NULL};
+static tb_handle_t 	g_shader[4] = {tb_null};
+static tb_handle_t 	g_mhader[4] = {tb_null};
 
 /* ////////////////////////////////////////////////////////////////////////
  * interfaces
@@ -88,7 +88,7 @@ static tb_bool_t g2_demo_init(tb_int_t argc, tb_char_t const** argv)
 
 	// init gradient
 	g2_color_t 		color[3] = {G2_COLOR_RED, G2_COLOR_GREEN, G2_COLOR_BLUE};
-	g2_gradient_t 	grad = {color, TB_NULL, 3};
+	g2_gradient_t 	grad = {color, tb_null, 3};
 
 	// init shader
 //	g_shader[1]	= g2_shader_init2i_linear(g_context, g_x0 - 100, 0, g_x0 + 100, 0, &grad, G2_SHADER_WRAP_CLAMP);

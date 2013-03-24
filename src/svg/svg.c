@@ -67,11 +67,11 @@ static tb_void_t g2_svg_element_svg_exit(g2_svg_element_t* element)
 
 		// exit hash
 		if (svg->painter.hash) tb_hash_exit(svg->painter.hash);
-		svg->painter.hash = TB_NULL;
+		svg->painter.hash = tb_null;
 
 		// exit pool
 		if (svg->painter.pool) tb_spool_exit(svg->painter.pool);
-		svg->painter.pool = TB_NULL;	
+		svg->painter.pool = tb_null;	
 	}
 }
 /* ///////////////////////////////////////////////////////////////////////
@@ -81,17 +81,17 @@ g2_svg_element_t* g2_svg_element_init_svg(tb_handle_t reader)
 {
 	// alloc 
 	g2_svg_element_svg_t* element = tb_malloc0(sizeof(g2_svg_element_svg_t));
-	tb_assert_and_check_return_val(element, TB_NULL);
+	tb_assert_and_check_return_val(element, tb_null);
 
 	// init
 	element->base.writ = g2_svg_element_svg_writ;
 	element->base.exit = g2_svg_element_svg_exit;
 
 	// init painter
-	element->painter.painter 	= TB_NULL;
-	element->painter.hash 		= TB_NULL;
-	element->painter.pool 		= TB_NULL;
-	element->painter.load 		= TB_FALSE;
+	element->painter.painter 	= tb_null;
+	element->painter.hash 		= tb_null;
+	element->painter.pool 		= tb_null;
+	element->painter.load 		= tb_false;
 
 	// attributes
 	tb_size_t pw = 0;

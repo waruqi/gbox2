@@ -49,9 +49,9 @@ typedef struct __g2_gif_decoder_t
 static tb_bool_t g2_gif_decoder_probe(tb_gstream_t* gst)
 {
 	// need
-	tb_byte_t* p = TB_NULL;
-	if (!tb_gstream_bneed(gst, &p, 6)) return TB_FALSE;
-	tb_assert_and_check_return_val(p, TB_FALSE);
+	tb_byte_t* p = tb_null;
+	if (!tb_gstream_bneed(gst, &p, 6)) return tb_false;
+	tb_assert_and_check_return_val(p, tb_false);
 
 	// ok?
 	return ( 	p[0] == 'G'
@@ -60,32 +60,32 @@ static tb_bool_t g2_gif_decoder_probe(tb_gstream_t* gst)
 			&& 	p[3] == '8' 
 			&& ( 	p[4] == '7'
 				|| 	p[4] == '9') 
-			&& 	p[5] == 'a')? TB_TRUE : TB_FALSE;
+			&& 	p[5] == 'a')? tb_true : tb_false;
 }
 static tb_handle_t g2_gif_decoder_done(g2_image_decoder_t* decoder)
 {
 	// check
-	tb_assert_and_check_return_val(decoder && decoder->type == G2_IMAGE_TYPE_GIF, TB_NULL);
+	tb_assert_and_check_return_val(decoder && decoder->type == G2_IMAGE_TYPE_GIF, tb_null);
 
 	// decoder
 	g2_gif_decoder_t* gdecoder = (g2_gif_decoder_t*)decoder;
 
 	// the pixfmt
 	tb_size_t pixfmt 	= decoder->pixfmt;
-	tb_assert_and_check_return_val(G2_PIXFMT_OK(pixfmt), TB_NULL);
+	tb_assert_and_check_return_val(G2_PIXFMT_OK(pixfmt), tb_null);
 
 	// the pixmap
 	g2_pixmap_t* pixmap = g2_pixmap(pixfmt, 0xff);
-	tb_assert_and_check_return_val(pixmap, TB_NULL);
+	tb_assert_and_check_return_val(pixmap, tb_null);
 
 	// the width & height
 	tb_size_t width 	= decoder->width;
 	tb_size_t height 	= decoder->height;
-	tb_assert_and_check_return_val(width & height, TB_NULL);
+	tb_assert_and_check_return_val(width & height, tb_null);
 
 	// init bitmap
 	tb_handle_t bitmap = g2_bitmap_init(pixfmt, width, height, 0);
-	tb_assert_and_check_return_val(bitmap, TB_NULL);
+	tb_assert_and_check_return_val(bitmap, tb_null);
 
 	// make bitmap
 	tb_byte_t* data = g2_bitmap_make(bitmap);
@@ -96,7 +96,7 @@ static tb_handle_t g2_gif_decoder_done(g2_image_decoder_t* decoder)
 
 fail:
 	if (bitmap) g2_bitmap_exit(bitmap);
-	return TB_NULL;
+	return tb_null;
 }
 static tb_void_t g2_gif_decoder_free(g2_image_decoder_t* decoder)
 {
@@ -108,14 +108,14 @@ static tb_void_t g2_gif_decoder_free(g2_image_decoder_t* decoder)
  */
 g2_image_decoder_t* g2_gif_decoder_init(tb_size_t pixfmt, tb_gstream_t* gst)
 {
-	tb_assert_and_check_return_val(G2_PIXFMT_OK(pixfmt) && gst, TB_NULL);
+	tb_assert_and_check_return_val(G2_PIXFMT_OK(pixfmt) && gst, tb_null);
 
 	// probe it
-	if (!g2_gif_decoder_probe(gst)) return TB_NULL;
+	if (!g2_gif_decoder_probe(gst)) return tb_null;
 
 	// alloc decoder
 	g2_gif_decoder_t* decoder = tb_malloc0(sizeof(g2_gif_decoder_t));
-	tb_assert_and_check_return_val(decoder, TB_NULL);
+	tb_assert_and_check_return_val(decoder, tb_null);
 
 	// init decoder
 	decoder->base.type 		= G2_IMAGE_TYPE_GIF;
@@ -134,5 +134,5 @@ g2_image_decoder_t* g2_gif_decoder_init(tb_size_t pixfmt, tb_gstream_t* gst)
 
 fail:
 	if (decoder) g2_image_decoder_exit(decoder);
-	return TB_NULL;
+	return tb_null;
 }

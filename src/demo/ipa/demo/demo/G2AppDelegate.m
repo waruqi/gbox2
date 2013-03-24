@@ -45,7 +45,7 @@
 	[UIApplication sharedApplication].statusBarHidden = YES;
 	
 	// init tbox
-	if (!tb_init(TB_NULL, 0)) return NO;
+	if (!tb_init(tb_null, 0)) return NO;
 	
 	// init windows
     self.window = [[[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]] autorelease];

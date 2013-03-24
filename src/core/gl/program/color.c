@@ -39,7 +39,7 @@ tb_handle_t g2_gl_program_init_color()
 {
 	// init
 	tb_handle_t program = g2_gl_program_init();
-	tb_assert_and_check_return_val(program, TB_NULL);
+	tb_assert_and_check_return_val(program, tb_null);
 
 	// init type
 	g2_gl_program_type_set(program, G2_GL_PROGRAM_TYPE_COLOR);
@@ -96,6 +96,6 @@ tb_handle_t g2_gl_program_init_color()
 	return program;
 fail:
 	if (program) g2_gl_program_exit(program);
-	return TB_NULL;
+	return tb_null;
 }
 

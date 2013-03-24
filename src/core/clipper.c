@@ -58,10 +58,10 @@ tb_handle_t g2_clipper_init()
 {
 	// alloc
 	g2_clipper_t* clipper = tb_malloc0(sizeof(g2_clipper_t));
-	tb_assert_and_check_return_val(clipper, TB_NULL);
+	tb_assert_and_check_return_val(clipper, tb_null);
 
 	// init list
-	clipper->list = tb_vector_init(G2_CLIPPER_GROW_SIZE, tb_item_func_ifm(sizeof(g2_clipper_item_t), TB_NULL, TB_NULL));
+	clipper->list = tb_vector_init(G2_CLIPPER_GROW_SIZE, tb_item_func_ifm(sizeof(g2_clipper_item_t), tb_null, tb_null));
 	tb_assert_and_check_goto(clipper->list, fail);
 
 	// init matrix
@@ -72,7 +72,7 @@ tb_handle_t g2_clipper_init()
 
 fail:
 	if (clipper) g2_clipper_exit(clipper);
-	return TB_NULL;
+	return tb_null;
 }
 tb_void_t g2_clipper_exit(tb_handle_t clipper)
 {
@@ -125,7 +125,7 @@ tb_size_t g2_clipper_size(tb_handle_t clipper)
 g2_clipper_item_t const* g2_clipper_item(tb_handle_t clipper, tb_size_t item)
 {
 	g2_clipper_t* gclipper = (g2_clipper_t*)clipper;
-	tb_assert_and_check_return_val(gclipper && gclipper->list, TB_NULL);
+	tb_assert_and_check_return_val(gclipper && gclipper->list, tb_null);
 	return (g2_clipper_item_t const*)tb_iterator_item(gclipper->list, item);
 }
 

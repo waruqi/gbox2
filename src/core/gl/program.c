@@ -77,7 +77,7 @@ static g2_GLuint_t g2_gl_program_shader(tb_char_t const* data, tb_size_t type)
 	tb_assert_and_check_return_val(shader, 0);
 
 	// init source
-	g2_glShaderSource(shader, 1, (g2_GLchar_t const**)&data, TB_NULL);
+	g2_glShaderSource(shader, 1, (g2_GLchar_t const**)&data, tb_null);
 
 	// compile shader
 	g2_glCompileShader(shader);
@@ -135,25 +135,25 @@ tb_bool_t g2_gl_program_load(tb_handle_t program, tb_char_t const* shader, tb_si
 {
 	// check
 	g2_gl_program_t* gprogram = (g2_gl_program_t*)program;
-	tb_assert_and_check_return_val(gprogram && gprogram->shadern < G2_GL_PROGRAM_SHADER_MAXN && shader && type, TB_FALSE);
+	tb_assert_and_check_return_val(gprogram && gprogram->shadern < G2_GL_PROGRAM_SHADER_MAXN && shader && type, tb_false);
 
 	// load shader
 	gprogram->shaders[gprogram->shadern] = g2_gl_program_shader(shader, type);
-	tb_assert_and_check_return_val(gprogram->shaders[gprogram->shadern], TB_FALSE);
+	tb_assert_and_check_return_val(gprogram->shaders[gprogram->shadern], tb_false);
 	gprogram->shadern++;
 
 	// ok
-	return TB_TRUE;
+	return tb_true;
 }
 tb_bool_t g2_gl_program_make(tb_handle_t program)
 {
 	// check
 	g2_gl_program_t* gprogram = (g2_gl_program_t*)program;
-	tb_assert_and_check_return_val(gprogram && !gprogram->program && gprogram->shadern, TB_FALSE);
+	tb_assert_and_check_return_val(gprogram && !gprogram->program && gprogram->shadern, tb_false);
 
 	// init program
 	gprogram->program = g2_glCreateProgram();
-	tb_assert_and_check_return_val(gprogram->program, TB_FALSE);
+	tb_assert_and_check_return_val(gprogram->program, tb_false);
 
 	// attach shaders
 	tb_size_t i = 0;
@@ -176,7 +176,7 @@ tb_bool_t g2_gl_program_make(tb_handle_t program)
 		// remove it
 		g2_glDeleteProgram(gprogram->program);
 		gprogram->program = 0;
-		return TB_FALSE;
+		return tb_false;
 	}
 
 	// exit shaders
@@ -188,13 +188,13 @@ tb_bool_t g2_gl_program_make(tb_handle_t program)
 	gprogram->shadern = 0;
 
 	// ok
-	return TB_TRUE;
+	return tb_true;
 }
 tb_void_t g2_gl_program_uses(tb_handle_t program)
 {
 	// check
 	g2_gl_program_t* gprogram = (g2_gl_program_t*)program;
-	tb_assert_and_check_return_val(gprogram && gprogram->program, TB_FALSE);
+	tb_assert_and_check_return_val(gprogram && gprogram->program, tb_false);
 
 	// use it
 	g2_glUseProgram(gprogram->program);

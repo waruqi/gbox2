@@ -119,50 +119,50 @@ typedef struct __g2_bmp_decoder_t
 static tb_bool_t g2_bmp_decoder_probe(tb_gstream_t* gst)
 {
 	// need
-	tb_byte_t* p = TB_NULL;
-	if (!tb_gstream_bneed(gst, &p, 2)) return TB_FALSE;
-	tb_assert_and_check_return_val(p, TB_FALSE);
+	tb_byte_t* p = tb_null;
+	if (!tb_gstream_bneed(gst, &p, 2)) return tb_false;
+	tb_assert_and_check_return_val(p, tb_false);
 
 	// ok?
-	return (p[0] == 'B' && p[1] == 'M')? TB_TRUE : TB_FALSE;
+	return (p[0] == 'B' && p[1] == 'M')? tb_true : tb_false;
 }
 static tb_handle_t g2_bmp_decoder_done(g2_image_decoder_t* decoder)
 {
-	tb_assert_and_check_return_val(decoder && decoder->type == G2_IMAGE_TYPE_BMP, TB_NULL);
+	tb_assert_and_check_return_val(decoder && decoder->type == G2_IMAGE_TYPE_BMP, tb_null);
 
 	// the pixfmt
 	tb_size_t pixfmt 	= decoder->pixfmt;
-	tb_assert_and_check_return_val(G2_PIXFMT_OK(pixfmt), TB_NULL);
+	tb_assert_and_check_return_val(G2_PIXFMT_OK(pixfmt), tb_null);
 
 	// the width & height
 	tb_size_t width 	= decoder->width;
 	tb_size_t height 	= decoder->height;
-	tb_assert_and_check_return_val(width & height, TB_NULL);
+	tb_assert_and_check_return_val(width & height, tb_null);
 
 	// the stream
 	tb_gstream_t* gst 	= decoder->gst;
-	tb_assert_and_check_return_val(gst, TB_NULL);
+	tb_assert_and_check_return_val(gst, tb_null);
 
 	// the file size
 	tb_hize_t filesize 	= tb_gstream_size(gst);
-	tb_assert_and_check_return_val(filesize, TB_NULL);
+	tb_assert_and_check_return_val(filesize, tb_null);
 
 	// bpp
-	if (!tb_gstream_bskip(gst, 2)) return TB_NULL;
+	if (!tb_gstream_bskip(gst, 2)) return tb_null;
 	tb_size_t bpp = tb_gstream_bread_u16_le(gst);
-	tb_assert_and_check_return_val(bpp, TB_NULL);
+	tb_assert_and_check_return_val(bpp, tb_null);
 	tb_trace_impl("size: %lux%lu, bpp: %lu", width, height, bpp);
 
 	// compression? not support 
 	tb_size_t bc = tb_gstream_bread_u32_le(gst);
-	tb_assert_and_check_return_val(bc != G2_BMP_RLE4 && bc != G2_BMP_RLE8, TB_NULL);
+	tb_assert_and_check_return_val(bc != G2_BMP_RLE4 && bc != G2_BMP_RLE8, tb_null);
 
 	// linesize & datasize
 	tb_size_t linesize = (width * bpp) >> 3;
 	tb_size_t datasize = tb_gstream_bread_u32_le(gst);
 	if (!datasize) datasize = tb_align4(linesize) * height;
 	tb_trace_impl("data: %lu bytes", datasize);
-	tb_assert_and_check_return_val(datasize && datasize < filesize, TB_NULL);
+	tb_assert_and_check_return_val(datasize && datasize < filesize, tb_null);
 
 	// has pal?
 	g2_color_t 	pals[256];
@@ -171,11 +171,11 @@ static tb_handle_t g2_bmp_decoder_done(g2_image_decoder_t* decoder)
 	{
 #if 0
 		// the palette count
-		if (!tb_gstream_bskip(gst, 8)) return TB_NULL;
+		if (!tb_gstream_bskip(gst, 8)) return tb_null;
 		paln = tb_gstream_bread_u32_le(gst);
-		if (!tb_gstream_bskip(gst, 4)) return TB_NULL;
+		if (!tb_gstream_bskip(gst, 4)) return tb_null;
 #else
-		if (!tb_gstream_bskip(gst, 16)) return TB_NULL;
+		if (!tb_gstream_bskip(gst, 16)) return tb_null;
 #endif
 		tb_trace_impl("pal: %lu", paln);
 
@@ -186,18 +186,18 @@ static tb_handle_t g2_bmp_decoder_done(g2_image_decoder_t* decoder)
 			pals[i].b = tb_gstream_bread_u8(gst);
 			pals[i].g = tb_gstream_bread_u8(gst);
 			pals[i].r = tb_gstream_bread_u8(gst);
-			if (!tb_gstream_bskip(gst, 1)) return TB_NULL;
+			if (!tb_gstream_bskip(gst, 1)) return tb_null;
 			pals[i].a = 0xff;
 		}
 	}
 
 	// the pixfmt
-	g2_pixmap_t* sp = TB_NULL;
+	g2_pixmap_t* sp = tb_null;
 	g2_pixmap_t* dp = g2_pixmap(pixfmt, 0xff);
 	if (bc == G2_BMP_BITFIELDS)
 	{
 		// the color mask
-		if (!tb_gstream_bskip(gst, 16)) return TB_NULL;
+		if (!tb_gstream_bskip(gst, 16)) return tb_null;
 		tb_size_t rm = tb_gstream_bread_u32_le(gst);
 		tb_size_t gm = tb_gstream_bread_u32_le(gst);
 		tb_size_t bm = tb_gstream_bread_u32_le(gst);
@@ -235,18 +235,18 @@ static tb_handle_t g2_bmp_decoder_done(g2_image_decoder_t* decoder)
 			break;
 		default:
 			tb_trace_impl("the bpp: %lu is not supported", bpp);
-			return TB_NULL;
+			return tb_null;
 		}
 	}
-	tb_assert_and_check_return_val(sp && dp, TB_NULL);
+	tb_assert_and_check_return_val(sp && dp, tb_null);
 	tb_trace_impl("pixfmt: %s => %s", sp->name, dp->name);
 
 	// goto the bmp data 
-	if (!tb_gstream_bseek(gst, filesize - datasize)) return TB_NULL;
+	if (!tb_gstream_bseek(gst, filesize - datasize)) return tb_null;
 
 	// init bitmap
 	tb_handle_t bitmap = g2_bitmap_init(pixfmt, width, height, 0);
-	tb_assert_and_check_return_val(bitmap, TB_NULL);
+	tb_assert_and_check_return_val(bitmap, tb_null);
 
 	// make bitmap
 	tb_byte_t* 	data = g2_bitmap_make(bitmap);
@@ -338,7 +338,7 @@ static tb_handle_t g2_bmp_decoder_done(g2_image_decoder_t* decoder)
 
 fail:
 	if (bitmap) g2_bitmap_exit(bitmap);
-	return TB_NULL;
+	return tb_null;
 }
 
 /* ///////////////////////////////////////////////////////////////////////
@@ -346,20 +346,20 @@ fail:
  */
 g2_image_decoder_t* g2_bmp_decoder_init(tb_size_t pixfmt, tb_gstream_t* gst)
 {
-	tb_assert_and_check_return_val(G2_PIXFMT_OK(pixfmt) && gst, TB_NULL);
+	tb_assert_and_check_return_val(G2_PIXFMT_OK(pixfmt) && gst, tb_null);
 
 	// probe it
-	if (!g2_bmp_decoder_probe(gst)) return TB_NULL;
+	if (!g2_bmp_decoder_probe(gst)) return tb_null;
 
 	// width & height
-	if (!tb_gstream_bskip(gst, 18)) return TB_NULL;
+	if (!tb_gstream_bskip(gst, 18)) return tb_null;
 	tb_size_t width = tb_gstream_bread_u32_le(gst);
 	tb_size_t height = tb_gstream_bread_u32_le(gst);
-	tb_assert_and_check_return_val(width && height, TB_NULL);
+	tb_assert_and_check_return_val(width && height, tb_null);
 
 	// alloc decoder
 	g2_bmp_decoder_t* decoder = tb_malloc0(sizeof(g2_bmp_decoder_t));
-	tb_assert_and_check_return_val(decoder, TB_NULL);
+	tb_assert_and_check_return_val(decoder, tb_null);
 
 	// init decoder
 	decoder->base.type 		= G2_IMAGE_TYPE_BMP;

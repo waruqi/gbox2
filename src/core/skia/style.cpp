@@ -34,7 +34,7 @@ static tb_handle_t g2_skia_style_init()
 {
 	// alloc
 	SkPaint* sstyle = new SkPaint();
-	tb_assert_and_check_return_val(sstyle, TB_NULL);
+	tb_assert_and_check_return_val(sstyle, tb_null);
 	
 	// init style
 	tb_size_t flag = SkPaint::kAntiAlias_Flag | SkPaint::kFilterBitmap_Flag;
@@ -174,7 +174,7 @@ static tb_void_t g2_skia_style_join_set(tb_handle_t style, tb_size_t join)
 static tb_handle_t g2_skia_style_shader(tb_handle_t style)
 {
 	SkPaint* sstyle = static_cast<SkPaint*>(style);
-	tb_assert_and_check_return_val(sstyle, TB_NULL);
+	tb_assert_and_check_return_val(sstyle, tb_null);
 
 	return static_cast<tb_handle_t>(sstyle->getShader());
 }

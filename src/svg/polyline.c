@@ -101,7 +101,7 @@ static tb_void_t g2_svg_element_polyline_exit(g2_svg_element_t* element)
 	
 		// exit path
 		if (polyline->path) g2_path_exit(polyline->path);
-		polyline->path = TB_NULL;
+		polyline->path = tb_null;
 	}
 }
 static tb_char_t const* g2_svg_element_polyline_point(g2_svg_element_polyline_t* element, tb_char_t const* data, tb_size_t* size)
@@ -161,7 +161,7 @@ g2_svg_element_t* g2_svg_element_init_polyline(tb_handle_t reader)
 {
 	// alloc 
 	g2_svg_element_polyline_t* element = tb_malloc0(sizeof(g2_svg_element_polyline_t));
-	tb_assert_and_check_return_val(element, TB_NULL);
+	tb_assert_and_check_return_val(element, tb_null);
 
 	// init
 	element->base.exit 		= g2_svg_element_polyline_exit;

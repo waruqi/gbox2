@@ -32,11 +32,11 @@
 static tb_handle_t g2_skia_bitmap_init(tb_size_t pixfmt, tb_size_t width, tb_size_t height, tb_size_t lpitch)
 {
 	// check
-	tb_assert_and_check_return_val(G2_PIXFMT_OK(pixfmt) && width && height, TB_NULL);
+	tb_assert_and_check_return_val(G2_PIXFMT_OK(pixfmt) && width && height, tb_null);
 
 	// alloc
 	SkBitmap* sbitmap = new SkBitmap();
-	tb_assert_and_check_return_val(sbitmap, TB_NULL);
+	tb_assert_and_check_return_val(sbitmap, tb_null);
 
 	// init config
 	sbitmap->setConfig(g2_pixfmt_to_skia(pixfmt), width, height, lpitch);
@@ -72,7 +72,7 @@ static tb_void_t g2_skia_bitmap_flag_set(tb_handle_t bitmap, tb_size_t flag)
 static tb_pointer_t g2_skia_bitmap_make(tb_handle_t bitmap)
 {
 	SkBitmap* sbitmap = static_cast<SkBitmap*>(bitmap);
-	tb_assert_and_check_return_val(sbitmap, TB_NULL);
+	tb_assert_and_check_return_val(sbitmap, tb_null);
 
 	// make data
 	if (!sbitmap->getPixels()) sbitmap->allocPixels();
@@ -90,7 +90,7 @@ static tb_size_t g2_skia_bitmap_size(tb_handle_t bitmap)
 static tb_pointer_t g2_skia_bitmap_data(tb_handle_t bitmap)
 {
 	SkBitmap* sbitmap = static_cast<SkBitmap*>(bitmap);
-	tb_assert_and_check_return_val(sbitmap, TB_NULL);
+	tb_assert_and_check_return_val(sbitmap, tb_null);
 
 	// ok
 	return sbitmap->getPixels();
@@ -133,7 +133,7 @@ static tb_size_t g2_skia_bitmap_pixfmt(tb_handle_t bitmap)
 static tb_handle_t g2_skia_bitmap_resize(tb_handle_t bitmap, tb_size_t width, tb_size_t height)
 {
 	SkBitmap* sbitmap = static_cast<SkBitmap*>(bitmap);
-	tb_assert_and_check_return_val(sbitmap && width && height, TB_NULL);
+	tb_assert_and_check_return_val(sbitmap && width && height, tb_null);
 
 	SkBitmap tmp;
 	if (sbitmap->pixelRef())

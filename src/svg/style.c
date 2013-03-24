@@ -31,7 +31,7 @@
  */
 tb_bool_t g2_svg_style_init(g2_svg_style_t* style)
 {
-	tb_assert_and_check_return_val(style, TB_FALSE);
+	tb_assert_and_check_return_val(style, tb_false);
 
 	// init
 	style->mode 			= G2_SVG_STYLE_MODE_NONE;
@@ -66,7 +66,7 @@ tb_bool_t g2_svg_style_init(g2_svg_style_t* style)
 	tb_pstring_init(&style->clippath.url);
 
 	// ok
-	return TB_TRUE;
+	return tb_true;
 }
 tb_void_t g2_svg_style_exit(g2_svg_style_t* style)
 {

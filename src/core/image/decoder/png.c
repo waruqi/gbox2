@@ -80,9 +80,9 @@ static tb_void_t g2_png_decoder_reader(png_structp png, png_bytep data, png_size
 static tb_bool_t g2_png_decoder_probe(tb_gstream_t* gst)
 {
 	// need
-	tb_byte_t* p = TB_NULL;
-	if (!tb_gstream_bneed(gst, &p, 8)) return TB_FALSE;
-	tb_assert_and_check_return_val(p, TB_FALSE);
+	tb_byte_t* p = tb_null;
+	if (!tb_gstream_bneed(gst, &p, 8)) return tb_false;
+	tb_assert_and_check_return_val(p, tb_false);
 
 	// ok?
 	return ( 	p[0] == 0x89 
@@ -92,12 +92,12 @@ static tb_bool_t g2_png_decoder_probe(tb_gstream_t* gst)
 			&& 	p[4] == 0x0d
 			&& 	p[5] == 0x0a
 			&& 	p[6] == 0x1a
-			&& 	p[7] == 0x0a)? TB_TRUE : TB_FALSE;
+			&& 	p[7] == 0x0a)? tb_true : tb_false;
 }
 static tb_handle_t g2_png_decoder_done(g2_image_decoder_t* decoder)
 {
 	// check
-	tb_assert_and_check_return_val(decoder && decoder->type == G2_IMAGE_TYPE_PNG, TB_NULL);
+	tb_assert_and_check_return_val(decoder && decoder->type == G2_IMAGE_TYPE_PNG, tb_null);
 
 	// decoder
 	g2_png_decoder_t* pdecoder = (g2_png_decoder_t*)decoder;
@@ -105,21 +105,21 @@ static tb_handle_t g2_png_decoder_done(g2_image_decoder_t* decoder)
 
 	// the pixfmt
 	tb_size_t pixfmt 	= decoder->pixfmt;
-	tb_assert_and_check_return_val(G2_PIXFMT_OK(pixfmt), TB_NULL);
+	tb_assert_and_check_return_val(G2_PIXFMT_OK(pixfmt), tb_null);
 
 	// the pixmap
 	g2_pixmap_t* dpixmap = g2_pixmap(pixfmt, 0xff);
 	g2_pixmap_t* spixmap = g2_pixmap(G2_PIXFMT_ARGB8888 | G2_PIXFMT_LENDIAN, 0xff);
-	tb_assert_and_check_return_val(dpixmap && spixmap, TB_NULL);
+	tb_assert_and_check_return_val(dpixmap && spixmap, tb_null);
 
 	// the width & height
 	tb_size_t width 	= decoder->width;
 	tb_size_t height 	= decoder->height;
-	tb_assert_and_check_return_val(width && height, TB_NULL);
+	tb_assert_and_check_return_val(width && height, tb_null);
 
 	// init bitmap
 	tb_handle_t bitmap = g2_bitmap_init(pixfmt, width, height, 0);
-	tb_assert_and_check_return_val(bitmap, TB_NULL);
+	tb_assert_and_check_return_val(bitmap, tb_null);
 
 	// make bitmap
 	tb_byte_t* data = g2_bitmap_make(bitmap);
@@ -146,9 +146,9 @@ static tb_handle_t g2_png_decoder_done(g2_image_decoder_t* decoder)
         png_set_gray_to_rgb(pdecoder->png);
 
 	// the transparent color
-	png_color_16p 	trans_c = TB_NULL;
+	png_color_16p 	trans_c = tb_null;
 	tb_int_t 		trans_n = 0;
-	png_get_tRNS(pdecoder->png, pdecoder->info, TB_NULL, &trans_n, &trans_c);
+	png_get_tRNS(pdecoder->png, pdecoder->info, tb_null, &trans_n, &trans_c);
 	tb_trace_impl("transparent: #%x%x%x, count: %d", trans_c? trans_c->red : 0, trans_c? trans_c->green : 0, trans_c? trans_c->blue : 0, trans_n);
 
 	// expand paletted or rgb images with transparency to full alpha channels
@@ -199,7 +199,7 @@ static tb_handle_t g2_png_decoder_done(g2_image_decoder_t* decoder)
 		for (j = 0; j < height; j++)
 		{
 			// read line
-			png_read_rows(pdecoder->png, &ldata, TB_NULL, 1);
+			png_read_rows(pdecoder->png, &ldata, tb_null, 1);
 
 			// last data
 			if (k == number_passes - 1)
@@ -251,7 +251,7 @@ static tb_handle_t g2_png_decoder_done(g2_image_decoder_t* decoder)
 
 fail:
 	if (bitmap) g2_bitmap_exit(bitmap);
-	return TB_NULL;
+	return tb_null;
 }
 static tb_void_t g2_png_decoder_free(g2_image_decoder_t* decoder)
 {
@@ -261,21 +261,21 @@ static tb_void_t g2_png_decoder_free(g2_image_decoder_t* decoder)
 	g2_png_decoder_t* pdecoder = (g2_png_decoder_t*)decoder;
 
 	// exit png
-	png_destroy_read_struct(&pdecoder->png, &pdecoder->info, TB_NULL);
+	png_destroy_read_struct(&pdecoder->png, &pdecoder->info, tb_null);
 }
 /* ///////////////////////////////////////////////////////////////////////
  * interfaces
  */
 g2_image_decoder_t* g2_png_decoder_init(tb_size_t pixfmt, tb_gstream_t* gst)
 {
-	tb_assert_and_check_return_val(G2_PIXFMT_OK(pixfmt) && gst, TB_NULL);
+	tb_assert_and_check_return_val(G2_PIXFMT_OK(pixfmt) && gst, tb_null);
 
 	// probe it
-	if (!g2_png_decoder_probe(gst)) return TB_NULL;
+	if (!g2_png_decoder_probe(gst)) return tb_null;
 
 	// alloc decoder
 	g2_png_decoder_t* decoder = tb_malloc0(sizeof(g2_png_decoder_t));
-	tb_assert_and_check_return_val(decoder, TB_NULL);
+	tb_assert_and_check_return_val(decoder, tb_null);
 
 	// init decoder
 	decoder->base.type 		= G2_IMAGE_TYPE_PNG;
@@ -285,7 +285,7 @@ g2_image_decoder_t* g2_png_decoder_init(tb_size_t pixfmt, tb_gstream_t* gst)
 	decoder->base.free 		= g2_png_decoder_free;
 
 	// init png
-	decoder->png = png_create_read_struct(PNG_LIBPNG_VER_STRING, TB_NULL, g2_png_decoder_error, TB_NULL);
+	decoder->png = png_create_read_struct(PNG_LIBPNG_VER_STRING, tb_null, g2_png_decoder_error, tb_null);
 	tb_assert_and_check_goto(decoder->png, fail);
 
 	// init info
@@ -301,7 +301,7 @@ g2_image_decoder_t* g2_png_decoder_init(tb_size_t pixfmt, tb_gstream_t* gst)
 	// the header info
 	png_uint_32 width = 0;
 	png_uint_32 height = 0;
-	png_get_IHDR(decoder->png, decoder->info, &width, &height, &decoder->bit_depth, &decoder->color_type, &decoder->interlace_type, TB_NULL, TB_NULL);
+	png_get_IHDR(decoder->png, decoder->info, &width, &height, &decoder->bit_depth, &decoder->color_type, &decoder->interlace_type, tb_null, tb_null);
 	tb_assert_and_check_goto(width && height, fail);
 
 	// FIXME: not support now.
@@ -317,5 +317,5 @@ g2_image_decoder_t* g2_png_decoder_init(tb_size_t pixfmt, tb_gstream_t* gst)
 
 fail:
 	if (decoder) g2_image_decoder_exit(decoder);
-	return TB_NULL;
+	return tb_null;
 }

@@ -20,7 +20,7 @@ tb_int_t main(tb_int_t argc, tb_char_t** argv)
 	{
 		// init reader & writer
 		tb_handle_t reader = g2_svg_reader_init(ist);
-		tb_handle_t writer = g2_svg_writer_init(ost, TB_TRUE);
+		tb_handle_t writer = g2_svg_writer_init(ost, tb_true);
 		if (reader && writer)
 		{
 			// load & save

@@ -70,23 +70,23 @@ static tb_void_t g2_pcache_hash_item_free(tb_item_func_t* func, tb_pointer_t ite
 		g2_path_clear(path);
 
 		// clear
-		*((tb_handle_t*)item) = TB_NULL;
+		*((tb_handle_t*)item) = tb_null;
 	}
 }
 static tb_bool_t g2_pcache_stack_item_free(tb_stack_t* stack, tb_pointer_t* item, tb_bool_t* bdel, tb_pointer_t data)
 {
-	tb_assert_and_check_return_val(stack && bdel, TB_FALSE);
+	tb_assert_and_check_return_val(stack && bdel, tb_false);
 
 	// free path item
 	if (item) 
 	{
 		tb_handle_t path = (tb_handle_t)*item;
 		if (path) g2_path_exit(path);
-		*item = TB_NULL;
+		*item = tb_null;
 	}
 
 	// ok
-	return TB_TRUE;
+	return tb_true;
 }
 /* ///////////////////////////////////////////////////////////////////////
  * implementation
@@ -95,11 +95,11 @@ static tb_bool_t g2_pcache_stack_item_free(tb_stack_t* stack, tb_pointer_t* item
 tb_handle_t g2_pcache_init(tb_size_t maxn)
 {
 	// check
-	tb_assert_and_check_return_val(maxn, TB_NULL);
+	tb_assert_and_check_return_val(maxn, tb_null);
 
 	// alloc
 	g2_pcache_t* pcache = tb_malloc0(sizeof(g2_pcache_t));
-	tb_assert_and_check_return_val(pcache, TB_NULL);
+	tb_assert_and_check_return_val(pcache, tb_null);
 
 	// init func
 	tb_item_func_t func = tb_item_func_ptr();
@@ -121,14 +121,14 @@ tb_handle_t g2_pcache_init(tb_size_t maxn)
 	}
 
 	// init path hash
-	pcache->hash = tb_hash_init(tb_int32_sqrt(pcache->maxn), tb_item_func_ifm(sizeof(g2_shape_t), TB_NULL, TB_NULL), func);
+	pcache->hash = tb_hash_init(tb_int32_sqrt(pcache->maxn), tb_item_func_ifm(sizeof(g2_shape_t), tb_null, tb_null), func);
 	tb_assert_and_check_goto(pcache->hash, fail);
 
 	// ok
 	return pcache;
 fail:
 	if (pcache) g2_pcache_exit(pcache);
-	return TB_NULL;
+	return tb_null;
 }
 tb_void_t g2_pcache_exit(tb_handle_t pcache)
 {
@@ -137,15 +137,15 @@ tb_void_t g2_pcache_exit(tb_handle_t pcache)
 	{
 		// exit hash
 		if (gpcache->hash) tb_hash_exit(gpcache->hash);
-		gpcache->hash = TB_NULL;
+		gpcache->hash = tb_null;
 
 		// exit cache
 		if (gpcache->cache) 
 		{
-			tb_stack_walk(gpcache->cache, g2_pcache_stack_item_free, TB_NULL);
+			tb_stack_walk(gpcache->cache, g2_pcache_stack_item_free, tb_null);
 			tb_stack_exit(gpcache->cache);
 		}
-		gpcache->cache = TB_NULL;
+		gpcache->cache = tb_null;
 		
 		// exit it
 		tb_free(gpcache);
@@ -161,7 +161,7 @@ tb_void_t g2_pcache_clear(tb_handle_t pcache)
 tb_handle_t g2_pcache_get(tb_handle_t pcache, g2_shape_t const* shape)
 {
 	g2_pcache_t* gpcache = (g2_pcache_t*)pcache;
-	tb_assert_and_check_return_val(gpcache && gpcache->hash && gpcache->cache && shape, TB_NULL);
+	tb_assert_and_check_return_val(gpcache && gpcache->hash && gpcache->cache && shape, tb_null);
 
 	return tb_hash_get(gpcache->hash, shape);
 }
@@ -169,7 +169,7 @@ tb_handle_t g2_pcache_get(tb_handle_t pcache, g2_shape_t const* shape)
 tb_handle_t g2_pcache_add(tb_handle_t pcache, g2_shape_t const* shape)
 {
 	g2_pcache_t* gpcache = (g2_pcache_t*)pcache;
-	tb_assert_and_check_return_val(gpcache && gpcache->hash && gpcache->cache && shape, TB_NULL);
+	tb_assert_and_check_return_val(gpcache && gpcache->hash && gpcache->cache && shape, tb_null);
 
 	// clear hash if full
 	if (tb_hash_size(gpcache->hash) >= gpcache->maxn)
@@ -177,7 +177,7 @@ tb_handle_t g2_pcache_add(tb_handle_t pcache, g2_shape_t const* shape)
 
 	// init path from cache
 	tb_handle_t path = (tb_handle_t)tb_stack_top(gpcache->cache);
-	tb_assert_and_check_return_val(path, TB_NULL);
+	tb_assert_and_check_return_val(path, tb_null);
 
 	// pop path from cache
 	tb_stack_pop(gpcache->cache);

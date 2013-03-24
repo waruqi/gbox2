@@ -61,11 +61,11 @@ typedef struct __g2_bitmap_t
 tb_handle_t g2_bitmap_init(tb_size_t pixfmt, tb_size_t width, tb_size_t height, tb_size_t lpitch)
 {
 	// check
-	tb_assert_and_check_return_val(G2_PIXFMT_OK(pixfmt) && width && height, TB_NULL);
+	tb_assert_and_check_return_val(G2_PIXFMT_OK(pixfmt) && width && height, tb_null);
 
 	// alloc
 	g2_bitmap_t* bitmap = tb_malloc0(sizeof(g2_bitmap_t));
-	tb_assert_and_check_return_val(bitmap, TB_NULL);
+	tb_assert_and_check_return_val(bitmap, tb_null);
 
 	// init pixmap
 	bitmap->pixmap 	= g2_pixmap(pixfmt, 0xff);
@@ -83,7 +83,7 @@ tb_handle_t g2_bitmap_init(tb_size_t pixfmt, tb_size_t width, tb_size_t height, 
 
 fail:
 	if (bitmap) g2_bitmap_exit(bitmap);
-	return TB_NULL;
+	return tb_null;
 }
 tb_void_t g2_bitmap_exit(tb_handle_t bitmap)
 {
@@ -101,14 +101,14 @@ tb_void_t g2_bitmap_exit(tb_handle_t bitmap)
 tb_pointer_t g2_bitmap_make(tb_handle_t bitmap)
 {
 	g2_bitmap_t* gbitmap = (g2_bitmap_t*)bitmap;
-	tb_assert_and_check_return_val(gbitmap, TB_NULL);
+	tb_assert_and_check_return_val(gbitmap, tb_null);
 
 	// has data?
 	if (gbitmap->data && gbitmap->flag & G2_BITMAP_FLAG_OWNER) return gbitmap->data;
 
 	// make data
 	gbitmap->data = tb_malloc0(gbitmap->size);
-	tb_assert_and_check_return_val(gbitmap->data, TB_NULL);
+	tb_assert_and_check_return_val(gbitmap->data, tb_null);
 
 	// init flag
 	gbitmap->flag |= G2_BITMAP_FLAG_OWNER;
@@ -142,7 +142,7 @@ tb_void_t g2_bitmap_flag_set(tb_handle_t bitmap, tb_size_t flag)
 tb_pointer_t g2_bitmap_data(tb_handle_t bitmap)
 {
 	g2_bitmap_t* gbitmap = (g2_bitmap_t*)bitmap;
-	tb_assert_and_check_return_val(gbitmap, TB_NULL);
+	tb_assert_and_check_return_val(gbitmap, tb_null);
 
 	return gbitmap->data;
 }
@@ -192,7 +192,7 @@ tb_size_t g2_bitmap_pixfmt(tb_handle_t bitmap)
 tb_handle_t g2_bitmap_resize(tb_handle_t bitmap, tb_size_t width, tb_size_t height)
 {
 	g2_bitmap_t* gbitmap = (g2_bitmap_t*)bitmap;
-	tb_assert_and_check_return_val(gbitmap, TB_NULL);
+	tb_assert_and_check_return_val(gbitmap, tb_null);
 
 	// same?
 	tb_check_return_val(gbitmap->width != width || gbitmap->height != height, bitmap);
@@ -212,10 +212,10 @@ tb_handle_t g2_bitmap_resize(tb_handle_t bitmap, tb_size_t width, tb_size_t heig
 		{
 			// free data
 			tb_free(gbitmap->data);
-			gbitmap->data = TB_NULL;
+			gbitmap->data = tb_null;
 
 			// make data
-			if (!g2_bitmap_make(bitmap)) return TB_NULL;
+			if (!g2_bitmap_make(bitmap)) return tb_null;
 		}
 	}
 

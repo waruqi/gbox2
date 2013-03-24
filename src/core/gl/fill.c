@@ -234,19 +234,19 @@ static __tb_inline__ tb_bool_t g2_gl_fill_apply_program(g2_gl_fill_t* fill)
 				type = G2_GL_PROGRAM_TYPE_BITMAP;
 				break;
 			default:
-				tb_assert_and_check_return_val(0, TB_FALSE);
+				tb_assert_and_check_return_val(0, tb_false);
 				break;
 			}
 		}
 
 		// program
 		fill->program = fill->context->programs[type];
-		tb_assert_and_check_return_val(fill->program, TB_FALSE);
+		tb_assert_and_check_return_val(fill->program, tb_false);
 		g2_gl_program_uses(fill->program);
 	}
 
 	// ok
-	return TB_TRUE;
+	return tb_true;
 }
 static __tb_inline__ tb_void_t g2_gl_fill_enter_vertex_state(g2_gl_fill_t* fill)
 {
@@ -429,10 +429,10 @@ static __tb_inline__ tb_void_t g2_gl_fill_leave_texture_matrix(g2_gl_fill_t* fil
 static __tb_inline__ tb_bool_t g2_gl_fill_context_init(g2_gl_fill_t* fill)
 {
 	// has fill?
-	tb_check_return_val(g2_style_mode(fill->style) & G2_STYLE_MODE_FILL, TB_FALSE);
+	tb_check_return_val(g2_style_mode(fill->style) & G2_STYLE_MODE_FILL, tb_false);
 
 	// apply program first
-	if (!g2_gl_fill_apply_program(fill)) return TB_FALSE;
+	if (!g2_gl_fill_apply_program(fill)) return tb_false;
 
 	// enter vertex state
 	g2_gl_fill_enter_vertex_state(fill);
@@ -441,7 +441,7 @@ static __tb_inline__ tb_bool_t g2_gl_fill_context_init(g2_gl_fill_t* fill)
 	if (!fill->shader) g2_gl_fill_apply_solid(fill);
 	
 	// ok
-	return TB_TRUE;
+	return tb_true;
 }
 static __tb_inline__ tb_void_t g2_gl_fill_context_exit(g2_gl_fill_t* fill)
 {
@@ -715,7 +715,7 @@ static __tb_inline__ tb_bool_t g2_gl_fill_init(g2_gl_fill_t* fill, g2_gl_painter
 	fill->clipper 	= g2_clipper(painter);
 	fill->flag 		= flag;
 	g2_gl_matrix_from(fill->vmatrix, &fill->painter->matrix);
-	tb_assert_and_check_return_val(fill->painter && fill->context && fill->style && fill->clipper, TB_FALSE);
+	tb_assert_and_check_return_val(fill->painter && fill->context && fill->style && fill->clipper, tb_false);
 
 	// use stencil?
 	if (!(flag & G2_GL_FILL_FLAG_CONVEX)) fill->flag |= G2_GL_FILL_FLAG_STENCIL;
@@ -726,7 +726,7 @@ static __tb_inline__ tb_bool_t g2_gl_fill_init(g2_gl_fill_t* fill, g2_gl_painter
 	else if (fill->shader) fill->flag |= G2_GL_FILL_FLAG_STENCIL;
 
 	// init context
-	if (!g2_gl_fill_context_init(fill)) return TB_FALSE;
+	if (!g2_gl_fill_context_init(fill)) return tb_false;
 
 	// enter vetex matrix
 	g2_gl_fill_enter_vertex_matrix(fill);
@@ -748,7 +748,7 @@ static __tb_inline__ tb_bool_t g2_gl_fill_init(g2_gl_fill_t* fill, g2_gl_painter
 	g2_gl_fill_scissor_init(fill);
 
 	// ok
-	return TB_TRUE;
+	return tb_true;
 }
 static __tb_inline__ tb_void_t g2_gl_fill_draw(g2_gl_fill_t* fill, g2_gl_rect_t* bounds)
 {

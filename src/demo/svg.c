@@ -1,7 +1,7 @@
 /* ////////////////////////////////////////////////////////////////////////
  * globals
  */
-static g2_svg_element_t* g_svg = TB_NULL;
+static g2_svg_element_t* g_svg = tb_null;
 
 /* ////////////////////////////////////////////////////////////////////////
  * events
@@ -40,7 +40,7 @@ static tb_void_t g2_demo_key(tb_int_t key)
 static tb_bool_t g2_demo_init(tb_int_t argc, tb_char_t const** argv)
 {
 	// check
-	tb_assert_and_check_return_val(argv[1], TB_FALSE);
+	tb_assert_and_check_return_val(argv[1], tb_false);
 
 	// load svg
 	tb_gstream_t* gst = tb_gstream_init_from_url(argv[1]);
@@ -62,12 +62,12 @@ static tb_bool_t g2_demo_init(tb_int_t argc, tb_char_t const** argv)
 	}
 
 	// ok?
-	return g_svg? TB_TRUE : TB_FALSE;
+	return g_svg? tb_true : tb_false;
 }
 static tb_void_t g2_demo_exit()
 {
 	if (g_svg) g2_svg_element_exit(g_svg);
-	g_svg = TB_NULL;
+	g_svg = tb_null;
 }
 static tb_void_t g2_demo_size(tb_int_t w, tb_int_t h)
 {

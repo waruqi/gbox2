@@ -35,7 +35,7 @@ tb_handle_t g2_style_init()
 {
 	// alloc
 	g2_style_t* gstyle = tb_malloc0(sizeof(g2_style_t));
-	tb_assert_and_check_return_val(gstyle, TB_NULL);
+	tb_assert_and_check_return_val(gstyle, tb_null);
 
 	// init
 	g2_style_clear(gstyle);
@@ -50,7 +50,7 @@ tb_void_t g2_style_exit(tb_handle_t style)
 	{
 		// exit shader
 		if (gstyle->shader) g2_shader_dec(gstyle->shader);
-		gstyle->shader = TB_NULL;
+		gstyle->shader = tb_null;
 
 		// exit style
 		tb_free(gstyle);
@@ -71,7 +71,7 @@ tb_void_t g2_style_clear(tb_handle_t style)
 
 	// clear shader
 	if (gstyle->shader) g2_shader_dec(gstyle->shader);
-	gstyle->shader = TB_NULL;
+	gstyle->shader = tb_null;
 }
 tb_void_t g2_style_copy(tb_handle_t style, tb_handle_t copy)
 {
@@ -189,7 +189,7 @@ tb_void_t g2_style_join_set(tb_handle_t style, tb_size_t join)
 tb_handle_t g2_style_shader(tb_handle_t style)
 {
 	g2_style_t* gstyle = (g2_style_t*)style;
-	tb_assert_and_check_return_val(gstyle, TB_NULL);
+	tb_assert_and_check_return_val(gstyle, tb_null);
 
 	return gstyle->shader;
 }

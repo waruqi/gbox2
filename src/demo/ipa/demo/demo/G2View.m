@@ -119,7 +119,7 @@
 - (tb_bool_t) glInit
 {
 	// check
-	tb_check_return_val(!glContext, TB_TRUE);
+	tb_check_return_val(!glContext, tb_true);
 	
 	// init layer
 	CAEAGLLayer* glLayer = (CAEAGLLayer*) self.layer;
@@ -157,13 +157,13 @@
 		glContext = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES1];
 		glVersion = 0x19;
 	}
-	tb_assert_and_check_return_val(glContext, TB_FALSE);
+	tb_assert_and_check_return_val(glContext, tb_false);
 	
 	// bind context
     [EAGLContext setCurrentContext:glContext];
 	
 	// init gl frame
-	if (![self glFrameInit]) return TB_FALSE;
+	if (![self glFrameInit]) return tb_false;
 	
 	// load interfaces for common
 	G2_GL_INTERFACE_LOAD_S(glActiveTexture);
@@ -240,7 +240,7 @@
 #endif
 
 	// ok
-	return TB_TRUE;
+	return tb_true;
 }
 
 - (tb_void_t) glExit
@@ -270,7 +270,7 @@
 	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, glRenderColor);
 	
 	// check
-	tb_assert_and_check_return_val(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE, TB_FALSE);
+	tb_assert_and_check_return_val(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE, tb_false);
 	
 	// get width & height
 	glGetRenderbufferParameteriv(GL_RENDERBUFFER, GL_RENDERBUFFER_WIDTH, &glWidth);
@@ -283,7 +283,7 @@
 	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, GL_RENDERBUFFER, glRenderStencil);
 	
 	// check
-	tb_assert_and_check_return_val(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE, TB_FALSE);
+	tb_assert_and_check_return_val(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE, tb_false);
 	
 	// init mssa frame
 	glGenFramebuffers(1, &glFrameMsaa);
@@ -296,7 +296,7 @@
     glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, glRenderColorMsaa);
 	
 	// check
-	tb_assert_and_check_return_val(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE, TB_FALSE);
+	tb_assert_and_check_return_val(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE, tb_false);
 	
 	// add stencil render to the mssa frame
 	glGenRenderbuffers(1, &glRenderStencilMssa);
@@ -305,10 +305,10 @@
 	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, GL_RENDERBUFFER, glRenderStencilMssa);
 	
 	// check
-	tb_assert_and_check_return_val(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE, TB_FALSE);
+	tb_assert_and_check_return_val(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE, tb_false);
 	
 	// ok
-	return TB_TRUE;
+	return tb_true;
 }
 - (tb_void_t)glFrameExit
 {
@@ -350,7 +350,7 @@
 - (tb_bool_t)lock
 {
 	// check
-	tb_assert_and_check_return_val(glFrame, TB_FALSE);
+	tb_assert_and_check_return_val(glFrame, tb_false);
 	
 	// bind frame
 	if (g2_quality() > G2_QUALITY_LOW)
@@ -361,7 +361,7 @@
 	else glBindFramebuffer(GL_FRAMEBUFFER, glFrame);
 	
 	// ok
-	return TB_TRUE;
+	return tb_true;
 }
 - (tb_void_t)draw
 {

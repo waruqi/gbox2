@@ -54,20 +54,20 @@
  */
 
 // context
-static tb_handle_t 	g_context 	= TB_NULL;
+static tb_handle_t 	g_context 	= tb_null;
 
 // surface
-static tb_handle_t 	g_surface 	= TB_NULL;
+static tb_handle_t 	g_surface 	= tb_null;
 
 // painter
-static tb_handle_t 	g_painter 	= TB_NULL;
+static tb_handle_t 	g_painter 	= tb_null;
 
 // clock
 static tb_hong_t 	g_bt 		= 0;
 static tb_hong_t 	g_fp 		= 0;
 static tb_hong_t 	g_rt 		= 0;
 static tb_hong_t 	g_fps 		= 0;
-static tb_bool_t 	g_pt 		= TB_FALSE;
+static tb_bool_t 	g_pt 		= tb_false;
 
 // position
 static tb_long_t 	g_x0 		= G2_DEMO_WIDTH >> 1;
@@ -77,7 +77,7 @@ static tb_long_t 	g_dy 		= 0;
 static tb_long_t 	g_x 		= 0;
 static tb_long_t 	g_y 		= 0;
 static tb_float_t 	g_an 		= 0.;
-static tb_bool_t 	g_bm 		= TB_FALSE;
+static tb_bool_t 	g_bm 		= tb_false;
 static g2_matrix_t 	g_mx;
 
 /* ////////////////////////////////////////////////////////////////////////
@@ -111,12 +111,12 @@ static tb_void_t g2_demo_gl_keyboard(tb_byte_t key, tb_int_t x, tb_int_t y)
 		break;
 	case 'm':
 		{
-			g_bm = g_bm? TB_FALSE : TB_TRUE;
+			g_bm = g_bm? tb_false : tb_true;
 		}
 		break;
 	case 't':
 		{
-			g_pt = g_pt? TB_FALSE : TB_TRUE;
+			g_pt = g_pt? tb_false : tb_true;
 		}
 		break;
 	default:
@@ -301,7 +301,7 @@ static tb_bool_t g2_demo_gl_init(tb_int_t argc, tb_char_t** argv)
 	glutSpecialFunc(g2_demo_gl_special);
 
 	// ok
-	return TB_TRUE;
+	return tb_true;
 }
 
 /* ////////////////////////////////////////////////////////////////////////
@@ -391,22 +391,22 @@ static tb_bool_t g2_demo_gbox2_init(tb_int_t argc, tb_char_t** argv)
 #if defined(G2_CONFIG_CORE_GL) || defined(G2_CONFIG_CORE_GLES)
 	g2_demo_gbox2_init_gl();
 	g_context = g2_context_init_gl(G2_DEMO_PIXFMT, G2_DEMO_WIDTH, G2_DEMO_HEIGHT, G2_CONFIG_GL_VERSION);
-	tb_assert_and_check_return_val(g_context, TB_FALSE);
+	tb_assert_and_check_return_val(g_context, tb_false);
 #elif defined(G2_CONFIG_CORE_SKIA)
-	g_context = g2_context_init_skia(G2_DEMO_PIXFMT, TB_NULL, G2_DEMO_WIDTH, G2_DEMO_HEIGHT, 0);
-	tb_assert_and_check_return_val(g_context, TB_FALSE);
+	g_context = g2_context_init_skia(G2_DEMO_PIXFMT, tb_null, G2_DEMO_WIDTH, G2_DEMO_HEIGHT, 0);
+	tb_assert_and_check_return_val(g_context, tb_false);
 #else
-	g_context = g2_context_init_soft(G2_DEMO_PIXFMT, TB_NULL, G2_DEMO_WIDTH, G2_DEMO_HEIGHT, 0);
-	tb_assert_and_check_return_val(g_context, TB_FALSE);
+	g_context = g2_context_init_soft(G2_DEMO_PIXFMT, tb_null, G2_DEMO_WIDTH, G2_DEMO_HEIGHT, 0);
+	tb_assert_and_check_return_val(g_context, tb_false);
 #endif
 
 	// init surface
 	g_surface = g2_context_surface(g_context);
-	tb_assert_and_check_return_val(g_surface, TB_FALSE);
+	tb_assert_and_check_return_val(g_surface, tb_false);
 
 	// init painter
 	g_painter = g2_init(g_context);
-	tb_assert_and_check_return_val(g_painter, TB_FALSE);
+	tb_assert_and_check_return_val(g_painter, tb_false);
 
 	// init position
 	g_x0 		= G2_DEMO_WIDTH >> 1;
@@ -420,7 +420,7 @@ static tb_bool_t g2_demo_gbox2_init(tb_int_t argc, tb_char_t** argv)
 	g2_matrix_init_translate(&g_mx, g2_long_to_float(g_x0), g2_long_to_float(g_y0));	
 
 	// ok
-	return TB_TRUE;
+	return tb_true;
 }
 static tb_void_t g2_demo_gbox2_exit()
 {

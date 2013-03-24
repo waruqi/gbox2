@@ -64,20 +64,20 @@ static g2_pixmap_t const* g_pixmaps_lo[] =
 ,	&g_pixmap_lo_rgba8888
 ,	&g_pixmap_lo_rgbx8888
 
-,	TB_NULL
-,	TB_NULL
-,	TB_NULL
-,	TB_NULL
-,	TB_NULL
-,	TB_NULL
-,	TB_NULL
-,	TB_NULL
-,	TB_NULL
-,	TB_NULL
-,	TB_NULL
-,	TB_NULL
-,	TB_NULL
-,	TB_NULL
+,	tb_null
+,	tb_null
+,	tb_null
+,	tb_null
+,	tb_null
+,	tb_null
+,	tb_null
+,	tb_null
+,	tb_null
+,	tb_null
+,	tb_null
+,	tb_null
+,	tb_null
+,	tb_null
 
 };
 
@@ -100,20 +100,20 @@ static g2_pixmap_t const* g_pixmaps_bo[] =
 ,	&g_pixmap_bo_rgba8888
 ,	&g_pixmap_bo_rgbx8888
 
-,	TB_NULL
-,	TB_NULL
-,	TB_NULL
-,	TB_NULL
-,	TB_NULL
-,	TB_NULL
-,	TB_NULL
-,	TB_NULL
-,	TB_NULL
-,	TB_NULL
-,	TB_NULL
-,	TB_NULL
-,	TB_NULL
-,	TB_NULL
+,	tb_null
+,	tb_null
+,	tb_null
+,	tb_null
+,	tb_null
+,	tb_null
+,	tb_null
+,	tb_null
+,	tb_null
+,	tb_null
+,	tb_null
+,	tb_null
+,	tb_null
+,	tb_null
 
 };
 
@@ -136,20 +136,20 @@ static g2_pixmap_t const* g_pixmaps_la[] =
 ,	&g_pixmap_la_rgba8888
 ,	&g_pixmap_la_rgbx8888
 
-,	TB_NULL
-,	TB_NULL
-,	TB_NULL
-,	TB_NULL
-,	TB_NULL
-,	TB_NULL
-,	TB_NULL
-,	TB_NULL
-,	TB_NULL
-,	TB_NULL
-,	TB_NULL
-,	TB_NULL
-,	TB_NULL
-,	TB_NULL
+,	tb_null
+,	tb_null
+,	tb_null
+,	tb_null
+,	tb_null
+,	tb_null
+,	tb_null
+,	tb_null
+,	tb_null
+,	tb_null
+,	tb_null
+,	tb_null
+,	tb_null
+,	tb_null
 
 };
 
@@ -172,20 +172,20 @@ static g2_pixmap_t const* g_pixmaps_ba[] =
 ,	&g_pixmap_ba_rgba8888
 ,	&g_pixmap_ba_rgbx8888
 
-,	TB_NULL
-,	TB_NULL
-,	TB_NULL
-,	TB_NULL
-,	TB_NULL
-,	TB_NULL
-,	TB_NULL
-,	TB_NULL
-,	TB_NULL
-,	TB_NULL
-,	TB_NULL
-,	TB_NULL
-,	TB_NULL
-,	TB_NULL
+,	tb_null
+,	tb_null
+,	tb_null
+,	tb_null
+,	tb_null
+,	tb_null
+,	tb_null
+,	tb_null
+,	tb_null
+,	tb_null
+,	tb_null
+,	tb_null
+,	tb_null
+,	tb_null
 
 };
 
@@ -199,17 +199,17 @@ g2_pixmap_t const* g2_pixmap(tb_size_t pixfmt, tb_byte_t alpha)
 	if (alpha >= (0xff - a))
 	{
 		// opaque
-		tb_assert_and_check_return_val(pixfmt && (pixfmt - 1) < tb_arrayn(g_pixmaps_lo), TB_NULL);
+		tb_assert_and_check_return_val(pixfmt && (pixfmt - 1) < tb_arrayn(g_pixmaps_lo), tb_null);
 		return e == G2_PIXFMT_LENDIAN? g_pixmaps_lo[pixfmt - 1] : g_pixmaps_bo[pixfmt - 1];
 	}
 	else if (alpha > a)
 	{
 		// alpha
-		tb_assert_and_check_return_val(pixfmt && (pixfmt - 1) < tb_arrayn(g_pixmaps_la), TB_NULL);
+		tb_assert_and_check_return_val(pixfmt && (pixfmt - 1) < tb_arrayn(g_pixmaps_la), tb_null);
 		return e == G2_PIXFMT_LENDIAN? g_pixmaps_la[pixfmt - 1] : g_pixmaps_ba[pixfmt - 1];
 	}
 
 	// transparent
-	return TB_NULL;
+	return tb_null;
 }
 

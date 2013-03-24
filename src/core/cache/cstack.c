@@ -55,18 +55,18 @@ typedef struct __g2_cstack_t
  */
 static tb_bool_t g2_cstack_item_free(tb_stack_t* stack, tb_pointer_t* item, tb_bool_t* bdel, tb_pointer_t data)
 {
-	tb_assert_and_check_return_val(stack && bdel && data, TB_FALSE);
+	tb_assert_and_check_return_val(stack && bdel && data, tb_false);
 
 	// free object item
 	if (item) 
 	{
 		tb_handle_t object = (tb_handle_t)*item;
 		if (object) ((g2_cstack_t*)data)->func.exit(object);
-		*item = TB_NULL;
+		*item = tb_null;
 	}
 
 	// ok
-	return TB_TRUE;
+	return tb_true;
 }
 
 /* ///////////////////////////////////////////////////////////////////////
@@ -76,11 +76,11 @@ static tb_bool_t g2_cstack_item_free(tb_stack_t* stack, tb_pointer_t* item, tb_b
 tb_handle_t g2_cstack_init(tb_size_t csize, g2_cstack_func_t const* ofunc)
 {
 	// check
-	tb_assert_and_check_return_val(csize && ofunc && ofunc->init && ofunc->exit, TB_NULL);
+	tb_assert_and_check_return_val(csize && ofunc && ofunc->init && ofunc->exit, tb_null);
 
 	// alloc
 	g2_cstack_t* cstack = tb_malloc0(sizeof(g2_cstack_t));
-	tb_assert_and_check_return_val(cstack, TB_NULL);
+	tb_assert_and_check_return_val(cstack, tb_null);
 
 	// init
 	cstack->func = *ofunc;
@@ -111,7 +111,7 @@ tb_handle_t g2_cstack_init(tb_size_t csize, g2_cstack_func_t const* ofunc)
 	return cstack;
 fail:
 	if (cstack) g2_cstack_exit(cstack);
-	return TB_NULL;
+	return tb_null;
 }
 tb_void_t g2_cstack_exit(tb_handle_t cstack)
 {
@@ -120,7 +120,7 @@ tb_void_t g2_cstack_exit(tb_handle_t cstack)
 	{
 		// exit object
 		if (gcstack->object) gcstack->func.exit(gcstack->object);
-		gcstack->object = TB_NULL;
+		gcstack->object = tb_null;
 
 		// exit stack
 		if (gcstack->stack) 
@@ -128,7 +128,7 @@ tb_void_t g2_cstack_exit(tb_handle_t cstack)
 			tb_stack_walk(gcstack->stack, g2_cstack_item_free, gcstack);
 			tb_stack_exit(gcstack->stack);
 		}
-		gcstack->stack = TB_NULL;
+		gcstack->stack = tb_null;
 
 		// exit object cache
 		if (gcstack->cache) 
@@ -136,7 +136,7 @@ tb_void_t g2_cstack_exit(tb_handle_t cstack)
 			tb_stack_walk(gcstack->cache, g2_cstack_item_free, gcstack);
 			tb_stack_exit(gcstack->cache);
 		}
-		gcstack->cache = TB_NULL;
+		gcstack->cache = tb_null;
 				
 		// exit it
 		tb_free(gcstack);
@@ -145,29 +145,29 @@ tb_void_t g2_cstack_exit(tb_handle_t cstack)
 tb_handle_t g2_cstack_object(tb_handle_t cstack)
 {
 	g2_cstack_t* gcstack = (g2_cstack_t*)cstack;
-	tb_assert_and_check_return_val(gcstack, TB_NULL);
+	tb_assert_and_check_return_val(gcstack, tb_null);
 
 	return gcstack->object;
 }
 tb_handle_t g2_cstack_save(tb_handle_t cstack)
 {
 	g2_cstack_t* gcstack = (g2_cstack_t*)cstack;
-	tb_assert_and_check_return_val(gcstack && gcstack->cache && gcstack->stack, TB_NULL);
+	tb_assert_and_check_return_val(gcstack && gcstack->cache && gcstack->stack, tb_null);
 
 	// init a new object from cache first
-	tb_handle_t object = TB_NULL;
+	tb_handle_t object = tb_null;
 	if (tb_stack_size(gcstack->cache))
 	{
 		// get
 		object = (tb_handle_t)tb_stack_top(gcstack->cache);
-		tb_assert_and_check_return_val(gcstack->cache, TB_NULL);
+		tb_assert_and_check_return_val(gcstack->cache, tb_null);
 
 		// pop
 		tb_stack_pop(gcstack->cache);
 	}
 	// init a new object
 	else object = gcstack->func.init();
-	tb_assert_and_check_return_val(object, TB_NULL);
+	tb_assert_and_check_return_val(object, tb_null);
 
 	// save the old object
 	tb_stack_put(gcstack->stack, gcstack->object);

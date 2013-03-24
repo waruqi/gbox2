@@ -107,7 +107,7 @@ static __tb_inline__ tb_void_t g2_gl_context_extensions(g2_gl_context_t* context
 g2_GLuint_t* g2_gl_context_texture_alc(g2_gl_context_t* context)
 {
 	// init
-	g2_GLuint_t* 	itor = TB_NULL;
+	g2_GLuint_t* 	itor = tb_null;
 	g2_GLuint_t* 	data = context->texture;
 	tb_byte_t* 	used = context->used;
 	tb_size_t 	pred = context->texture_pred;
@@ -178,7 +178,7 @@ tb_void_t g2_gl_context_texture_del(g2_gl_context_t* context, g2_GLuint_t const*
 g2_gl_shader_t* g2_gl_context_shader_alc(g2_gl_context_t* context)
 {
 	// init
-	g2_gl_shader_t* 	itor = TB_NULL;
+	g2_gl_shader_t* 	itor = tb_null;
 	g2_gl_shader_t* 	data = context->shaders;
 	tb_byte_t* 			used = context->used;
 	tb_size_t 			pred = context->shaders_pred;
@@ -256,21 +256,21 @@ tb_void_t g2_gl_context_shader_del(g2_gl_context_t* context, g2_gl_shader_t cons
 tb_handle_t g2_context_init_gl(tb_size_t pixfmt, tb_size_t width, tb_size_t height, tb_byte_t version)
 {
 	// check
-	tb_assert_and_check_return_val(G2_PIXFMT_OK(pixfmt) && width && height, TB_NULL);
+	tb_assert_and_check_return_val(G2_PIXFMT_OK(pixfmt) && width && height, tb_null);
 
 	// check pixfmt
 	tb_assert_and_check_return_val( 	(pixfmt == (G2_PIXFMT_RGBA8888 | G2_PIXFMT_BENDIAN))
 									|| 	(pixfmt == (G2_PIXFMT_RGB565 | G2_PIXFMT_LENDIAN))
 									|| 	(pixfmt == (G2_PIXFMT_RGB888 | G2_PIXFMT_BENDIAN))
 									|| 	(pixfmt == (G2_PIXFMT_RGBA4444 | G2_PIXFMT_LENDIAN))
-									|| 	(pixfmt == (G2_PIXFMT_RGBA5551 | G2_PIXFMT_LENDIAN)), TB_NULL);
+									|| 	(pixfmt == (G2_PIXFMT_RGBA5551 | G2_PIXFMT_LENDIAN)), tb_null);
 
 	// check interfaces
-	tb_check_return_val(g2_gl_interface_check(version), TB_NULL);
+	tb_check_return_val(g2_gl_interface_check(version), tb_null);
 
 	// alloc
 	g2_gl_context_t* gcontext = tb_malloc0(sizeof(g2_gl_context_t));
-	tb_assert_and_check_return_val(gcontext, TB_NULL);
+	tb_assert_and_check_return_val(gcontext, tb_null);
 
 	// init version 
 	tb_byte_t gversion = g2_gl_context_version();
@@ -301,7 +301,7 @@ tb_handle_t g2_context_init_gl(tb_size_t pixfmt, tb_size_t width, tb_size_t heig
 	// init programs
 	if (gcontext->version >= 0x20)
 	{
-		tb_bool_t ok = TB_FALSE;
+		tb_bool_t ok = tb_false;
 		do
 		{
 			// init color program
@@ -313,7 +313,7 @@ tb_handle_t g2_context_init_gl(tb_size_t pixfmt, tb_size_t width, tb_size_t heig
 			tb_assert_and_check_break(gcontext->programs[G2_GL_PROGRAM_TYPE_BITMAP]);
 
 			// ok
-			ok = TB_TRUE;
+			ok = tb_true;
 
 		} while (0);
 
@@ -358,7 +358,7 @@ tb_handle_t g2_context_init_gl(tb_size_t pixfmt, tb_size_t width, tb_size_t heig
 
 fail:
 	if (gcontext) g2_context_exit(gcontext);
-	return TB_NULL;
+	return tb_null;
 }
 tb_void_t g2_context_exit(tb_handle_t context)
 {
@@ -402,17 +402,17 @@ tb_void_t g2_context_exit(tb_handle_t context)
 tb_handle_t g2_context_surface(tb_handle_t context)
 {
 	g2_gl_context_t* gcontext = (g2_gl_context_t*)context;
-	tb_assert_and_check_return_val(gcontext, TB_NULL);
+	tb_assert_and_check_return_val(gcontext, tb_null);
 
 	return gcontext->surface;
 }
 tb_handle_t g2_context_resize(tb_handle_t context, tb_size_t width, tb_size_t height)
 {
 	g2_gl_context_t* gcontext = (g2_gl_context_t*)context;
-	tb_assert_and_check_return_val(gcontext && width && height, TB_NULL);
+	tb_assert_and_check_return_val(gcontext && width && height, tb_null);
 
 	// update surface
-	if (!g2_bitmap_resize(gcontext->surface, width, height)) return TB_NULL;
+	if (!g2_bitmap_resize(gcontext->surface, width, height)) return tb_null;
 
 	// update viewport
 	g2_glViewport(0, 0, width, height);

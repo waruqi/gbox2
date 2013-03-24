@@ -95,7 +95,7 @@ static tb_void_t g2_svg_element_image_exit(g2_svg_element_t* element)
 
 		// exit bitmap
 		if (image->bitmap) g2_bitmap_exit(image->bitmap);
-		image->bitmap = TB_NULL;
+		image->bitmap = tb_null;
 
 		// exit style
 		g2_svg_style_exit(&image->style);
@@ -108,7 +108,7 @@ g2_svg_element_t* g2_svg_element_init_image(tb_handle_t reader)
 {
 	// alloc 
 	g2_svg_element_image_t* element = tb_malloc0(sizeof(g2_svg_element_image_t));
-	tb_assert_and_check_return_val(element, TB_NULL);
+	tb_assert_and_check_return_val(element, tb_null);
 
 	// init
 	element->base.exit 		= g2_svg_element_image_exit;

@@ -86,7 +86,7 @@ static __tb_inline__ tb_char_t const* g2_svg_parser_style_color(tb_char_t const*
 	while (tb_isspace(*p)) p++;
 
 	// color
-	g2_named_color_t* ncolor = TB_NULL;
+	g2_named_color_t* ncolor = tb_null;
 	if (*p == '#') p = g2_svg_parser_style_color_value(p + 1, color);
 	else if (!tb_strnicmp(p, "rgb", 3)) p = g2_svg_parser_style_color_rgb(p + 3, color);
 	else if (ncolor = g2_color_from_name(p)) 
@@ -100,7 +100,7 @@ static __tb_inline__ tb_char_t const* g2_svg_parser_style_color(tb_char_t const*
 }
 static __tb_inline__ tb_char_t const* g2_svg_parser_style_paint(tb_char_t const* p, g2_svg_style_paint_t* paint)
 {
-	g2_named_color_t* ncolor = TB_NULL;
+	g2_named_color_t* ncolor = tb_null;
 	if (*p == '#')
 	{
 		paint->mode = G2_SVG_STYLE_PAINT_MODE_VALUE;
