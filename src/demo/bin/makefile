@@ -4,6 +4,7 @@ include $(PRO_DIR)/prefix.mak
 NAMES 					= \
 						arc \
 						svg \
+						save \
 						dump \
 						rect \
 						line \
