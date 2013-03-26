@@ -46,7 +46,7 @@
 
 // memory
 #define TB_CONFIG_MEMORY_MODE_SMALL
-//#define TB_CONFIG_MEMORY_POOL
+#define TB_CONFIG_MEMORY_POOL
 //#define TB_CONFIG_MEMORY_UNALIGNED_ACCESS_ENABLE
 
 // event
@@ -90,6 +90,10 @@
 //#define TB_CONFIG_LIBC_HAVE_STRNCMP
 //#define TB_CONFIG_LIBC_HAVE_STRNICMP
 
+#define TB_CONFIG_LIBC_HAVE_GMTIME
+#define TB_CONFIG_LIBC_HAVE_MKTIME
+#define TB_CONFIG_LIBC_HAVE_LOCALTIME
+
 // libm
 #define TB_CONFIG_LIBM_HAVE_SINCOS
 //#define TB_CONFIG_LIBM_HAVE_SINCOSF
@@ -101,5 +105,5 @@
 // config
 #ifndef tbox_AUTO_CONFIG_H
 #define tbox_AUTO_CONFIG_H
-#define tbox_CONFIG_DEBUG 0
+#define tbox_CONFIG_DEBUG 1
 #endif

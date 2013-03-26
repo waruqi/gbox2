@@ -2,22 +2,22 @@
 IS_CONFIG = yes
 
 # project
-PRO_DIR = /Users/ruki/projects/personal/gbox2
+PRO_DIR = /home/wangrunqing/projects/gbox2
 PRO_NAME = gbox2
 
 # debug
 DEBUG = y
 
 # platform
-PLAT = mac
+PLAT = mingw
 
 # architecture
-ARCH = x64
+ARCH = x86
 
 # toolchain
 SDK = 6.0
 NDK = /home/ruki/programs/android-ndk-r8
-BIN = /home/ruki/programs/android-ndk-r8/toolchains/arm-linux-androideabi-4.4.3/prebuilt/linux-x86/bin
+BIN =
 HOST = mac
 CCACHE = ccache
 DISTCC =
