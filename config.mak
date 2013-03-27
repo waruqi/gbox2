@@ -2,17 +2,17 @@
 IS_CONFIG = yes
 
 # project
-PRO_DIR = /home/wangrunqing/projects/gbox2
+PRO_DIR = /Users/ruki/projects/personal/gbox2
 PRO_NAME = gbox2
 
 # debug
 DEBUG = y
 
 # platform
-PLAT = mingw
+PLAT = mac
 
 # architecture
-ARCH = x86
+ARCH = x64
 
 # toolchain
 SDK = 6.0
