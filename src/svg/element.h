@@ -158,6 +158,9 @@ typedef struct __g2_svg_element_t
 	// writ it
 	tb_void_t 					(*writ)(struct __g2_svg_element_t const* element, tb_gstream_t* gst);
 
+	// clip it
+	tb_void_t 					(*clip)(struct __g2_svg_element_t const* element, g2_svg_painter_t* painter);
+
 	// fill it
 	tb_void_t 					(*fill)(struct __g2_svg_element_t const* element, g2_svg_painter_t* painter);
 

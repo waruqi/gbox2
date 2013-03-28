@@ -178,6 +178,9 @@ static tb_void_t g2_svg_element_painter_load(g2_svg_painter_t* spainter, g2_svg_
 }
 static tb_void_t g2_svg_element_painter_draw(g2_svg_painter_t* spainter, g2_svg_element_t const* element)
 {
+	// <defs> .. </defs>? not draw it
+	tb_check_return(element->type != G2_SVG_ELEMENT_TYPE_DEFS);
+
 	// draw
 	if (element->fill || element->stok) 
 	{
@@ -193,6 +196,13 @@ static tb_void_t g2_svg_element_painter_draw(g2_svg_painter_t* spainter, g2_svg_
 			g2_svg_element_t const* parent = element;
 			for (; parent; parent = parent->parent) 
 				if (parent->style) g2_svg_painter_style_walk(&style, parent->style);
+
+			// clipper: enter
+			if (style.mode & G2_SVG_STYLE_MODE_CLIPPATH)
+			{
+				g2_save_clipper(spainter->painter);
+				g2_svg_painter_style_clip(spainter, &style);
+			}
 
 			// fill
 			if (element->fill && style.mode & G2_SVG_STYLE_MODE_FILL)
@@ -213,6 +223,10 @@ static tb_void_t g2_svg_element_painter_draw(g2_svg_painter_t* spainter, g2_svg_
 				if (g2_svg_painter_style_stok(spainter, &style))
 					element->stok(element, spainter);
 			}
+
+			// clipper: leave
+			if (style.mode & G2_SVG_STYLE_MODE_CLIPPATH)
+				g2_load_clipper(spainter->painter);
 
 			// exit style
 			g2_svg_style_exit(&style);

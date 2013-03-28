@@ -222,11 +222,11 @@ tb_bool_t g2_translate_lhs(tb_handle_t painter, g2_float_t dx, g2_float_t dy)
 // multiply
 tb_bool_t g2_multiply(tb_handle_t painter, g2_matrix_t const* matrix)
 {
-	return g2_multiply(g2_matrix(painter), matrix);
+	return g2_matrix_multiply(g2_matrix(painter), matrix);
 }
 tb_bool_t g2_multiply_lhs(tb_handle_t painter, g2_matrix_t const* matrix)
 {
-	return g2_multiply_lhs(g2_matrix(painter), matrix);
+	return g2_matrix_multiply_lhs(g2_matrix(painter), matrix);
 }
 
 /* ///////////////////////////////////////////////////////////////////////

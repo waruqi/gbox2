@@ -63,6 +63,13 @@ static tb_void_t g2_svg_element_clippath_writ(g2_svg_element_t const* element, t
 	// transform 
 	g2_svg_writer_transform(gst, &clippath->transform); 
 }
+static tb_void_t g2_svg_element_clippath_clip(g2_svg_element_t const* element, g2_svg_painter_t* painter)
+{
+	g2_svg_element_clippath_t const* clippath = (g2_svg_element_clippath_t const*)element;
+	tb_assert_and_check_return(clippath);
+
+	tb_trace_impl("dddddddddddddddddd");
+}
 static tb_void_t g2_svg_element_clippath_exit(g2_svg_element_t* element)
 {
 	g2_svg_element_clippath_t* clippath = (g2_svg_element_clippath_t*)element;
@@ -84,6 +91,7 @@ g2_svg_element_t* g2_svg_element_init_clippath(tb_handle_t reader)
 	// init
 	element->base.exit = g2_svg_element_clippath_exit;
 	element->base.writ = g2_svg_element_clippath_writ;
+	element->base.clip = g2_svg_element_clippath_clip;
 	
 	// init style
 	g2_svg_style_init(&element->style);

@@ -23,11 +23,21 @@ tb_int_t main(tb_int_t argc, tb_char_t** argv)
 		tb_handle_t writer = g2_svg_writer_init(ost, tb_true);
 		if (reader && writer)
 		{
-			// load & save
-			g2_svg_writer_save(writer, g2_svg_reader_load(reader));
+			// load svg
+			g2_svg_element_t* svg = g2_svg_reader_load(reader);
+			if (svg)
+			{
+				// save svg
+				g2_svg_writer_save(writer, svg);
+
+				// exit svg
+				g2_svg_element_exit(svg);
+			}
 			
-			// exit reader & writer 
+			// exit reader
 			g2_svg_reader_exit(reader);
+
+			// exit writer
 			g2_svg_writer_exit(writer);
 		}
 	

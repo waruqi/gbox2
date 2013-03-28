@@ -46,7 +46,7 @@ static tb_bool_t g2_demo_init(tb_int_t argc, tb_char_t const** argv)
 	tb_gstream_t* gst = tb_gstream_init_from_url(argv[1]);
 	if (gst && tb_gstream_bopen(gst))
 	{
-		// init reader & writer
+		// init reader
 		tb_handle_t reader = g2_svg_reader_init(gst);
 		if (reader)
 		{

@@ -93,7 +93,7 @@ gbox2_C_FILES-$(G2_CONFIG_CORE_SOFT) += \
 
 # flags
 gbox2_CXFLAGS 			+= -DTB_PRINT_TAG=\"gbox2\"
-gbox2_CXFLAGS-$(DEBUG) += -DTB_TRACE_ENABLE -DTB_ASSERT_ENABLE
+gbox2_CXFLAGS-$(DEBUG) 	+= -DTB_TRACE_ENABLE -DTB_ASSERT_ENABLE
 
 
 # header files
