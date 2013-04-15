@@ -441,7 +441,11 @@ skia_CPP_FILES 			:= $(addprefix third/skia/,$(skia_CPP_FILES))
 skia_ASM_FILES 			:= $(addprefix third/skia/,$(skia_ASM_FILES))
 gbox2_CPP_FILES-$(G2_CONFIG_CORE_SKIA) += $(skia_CPP_FILES)
 gbox2_ASM_FILES-$(G2_CONFIG_CORE_SKIA) += $(skia_ASM_FILES)
-	
+
+# tbox
+gbox2_INC_DIR 			+= $(PRO_DIR)/../tbox/pre/inc/$(PLAT)/$(ARCH)
+gbox2_LIB_DIR 			+= $(PRO_DIR)/../tbox/pre/lib/$(PLAT)/$(ARCH)
+
 # demo
 ifeq ($(G2_CONFIG_DEMO),y)
 SUB_PROS 				= demo/$(G2_CONFIG_DEMO_TYPE)

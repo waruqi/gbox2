@@ -313,25 +313,20 @@ static __tb_inline__ tb_void_t g2_svg_painter_style_clip(g2_svg_painter_t* paint
 	// clear clipper
 	g2_clear_clipper(painter->painter);
 
-	tb_print("ffffffffffffffff: %d", style->clippath.mode);
 	// has url?
-	tb_check_return(style->clippath.mode == G2_SVG_STYLE_PAINT_MODE_URL);
+	tb_check_return(style->clippath.mode == G2_SVG_STYLE_CLIPPATH_MODE_URL);
 
-	tb_print("2");
 	// url
 	tb_char_t const* url = tb_pstring_cstr(&style->clippath.url);
 	tb_assert_and_check_return(url);
 
-	tb_print("3");
 	// id?
 	if (url[0] == '#')
 	{
-	tb_print("4");
 		// the clippath
 		g2_svg_element_t* clippath = tb_hash_get(painter->hash, &url[1]);
 		tb_assert_and_check_return(clippath && clippath->type == G2_SVG_ELEMENT_TYPE_CLIPPATH);
 
-	tb_print("5");
 		// clip it
 		if (clippath->clip) clippath->clip(clippath, painter);
 	}
@@ -506,8 +501,6 @@ static __tb_inline__ tb_void_t g2_svg_painter_style_walk(g2_svg_style_t* applied
 			if (style->clippath.mode == G2_SVG_STYLE_CLIPPATH_MODE_URL)
 				tb_pstring_strcpy(&applied->clippath.url, &style->clippath.url);
 		}
-#error
-	tb_print("applied: %d", applied->clippath.mode);
 	}
 }
 

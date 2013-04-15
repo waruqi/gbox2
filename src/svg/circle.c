@@ -64,6 +64,15 @@ static tb_void_t g2_svg_element_circle_draw(g2_svg_element_t const* element, g2_
 	// draw
 	g2_draw_circle(painter->painter, &circle->circle);
 }
+static tb_void_t g2_svg_element_circle_clip(g2_svg_element_t const* element, g2_svg_painter_t* painter)
+{
+	g2_svg_element_circle_t const* circle = (g2_svg_element_circle_t const*)element;
+	tb_assert_and_check_return(circle && painter && painter->painter);
+
+//#error
+	// clip
+	g2_clip_circle(painter->painter, G2_CLIPPER_MODE_UNION, &circle->circle);
+}
 static tb_void_t g2_svg_element_circle_exit(g2_svg_element_t* element)
 {
 	g2_svg_element_circle_t* circle = (g2_svg_element_circle_t*)element;
@@ -87,6 +96,7 @@ g2_svg_element_t* g2_svg_element_init_circle(tb_handle_t reader)
 	element->base.writ 		= g2_svg_element_circle_writ;
 	element->base.fill 		= g2_svg_element_circle_draw;
 	element->base.stok 		= g2_svg_element_circle_draw;
+	element->base.clip 		= g2_svg_element_circle_clip;
 	element->base.style 	= &element->style;
 	element->base.transform = &element->transform;
 

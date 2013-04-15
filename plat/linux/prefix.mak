@@ -42,7 +42,7 @@ ARCH_ASFLAGS 		= -m amd64
 endif
 
 # cxflags: .c/.cc/.cpp files
-CXFLAGS_RELEASE 	= -O3 -DNDEBUG -freg-struct-return -fno-bounds-check
+CXFLAGS_RELEASE 	= -O3 -DNDEBUG -freg-struct-return -fno-bounds-check -fvisibility=hidden
 CXFLAGS_DEBUG 		= -g
 CXFLAGS 			= -c -Wall -mssse3 $(ARCH_CXFLAGS) -D__tb_arch_$(ARCH)__
 CXFLAGS-I 			= -I
@@ -55,12 +55,13 @@ CFLAGS 				= \
 					-std=c99 \
 					-fomit-frame-pointer \
 					-D_GNU_SOURCE=1 -D_REENTRANT \
-					-Wno-parentheses \
+					-fno-math-errno -fno-signed-zeros -fno-tree-vectorize \
+					-Wno-parentheses -Wstrict-prototypes \
 					-Wno-switch -Wno-format-zero-length -Wdisabled-optimization \
-					-Wpointer-arith -Wredundant-decls -Wno-pointer-sign -Wwrite-strings \
-					-Wtype-limits -Wundef -Wno-pointer-to-int-cast \
-					-Wstrict-prototypes -fno-math-errno -fno-signed-zeros -fno-tree-vectorize \
-					-Werror=implicit-function-declaration 
+					-Wpointer-arith -Wno-pointer-sign -Wwrite-strings \
+					-Wtype-limits -Wundef -Wmissing-prototypes -Wno-pointer-to-int-cast \
+					-Werror=unused-variable -Werror=implicit-function-declaration 
+#					-Werror
 
 # ccflags: .cc/.cpp files
 CCFLAGS_RELEASE 	= -fno-rtti

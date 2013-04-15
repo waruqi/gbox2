@@ -67,9 +67,6 @@ static tb_handle_t g2_gif_decoder_done(g2_image_decoder_t* decoder)
 	// check
 	tb_assert_and_check_return_val(decoder && decoder->type == G2_IMAGE_TYPE_GIF, tb_null);
 
-	// decoder
-	g2_gif_decoder_t* gdecoder = (g2_gif_decoder_t*)decoder;
-
 	// the pixfmt
 	tb_size_t pixfmt 	= decoder->pixfmt;
 	tb_assert_and_check_return_val(G2_PIXFMT_OK(pixfmt), tb_null);

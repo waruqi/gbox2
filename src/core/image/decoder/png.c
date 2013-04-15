@@ -74,8 +74,7 @@ static tb_void_t g2_png_decoder_reader(png_structp png, png_bytep data, png_size
 	tb_assert_and_check_return(gst && size <= tb_gstream_left(gst));
 	
 	// read it
-	tb_bool_t ok = tb_gstream_bread(gst, data, size);
-	tb_assert(ok);
+	tb_gstream_bread(gst, data, size);
 }
 static tb_bool_t g2_png_decoder_probe(tb_gstream_t* gst)
 {

@@ -20,8 +20,8 @@ include $(LOCAL_PATH)/../../../../../prefix.mak
 
 LOCAL_MODULE    := demo
 LOCAL_SRC_FILES := com_gbox2_DemoView.c demo.c
-LOCAL_CFLAGS 	:= -I$(INC_DIR) -I$(SRC_DIR) -DTB_PRINT_TAG=\"gbox2\" -DTB_TRACE_ENABLE -DTB_ASSERT_ENABLE
-LOCAL_LDLIBS 	:= -L$(SYSROOT)/usr/lib -L$(LOCAL_PATH) -L$(LIB_DIR) -L$(SRC_DIR) -lgbox2 -ltbox -llog
+LOCAL_CFLAGS 	:= -I$(INC_DIR) -I$(SRC_DIR) -I$(PRO_DIR)/../tbox/pre/inc/$(PLAT)/$(ARCH) -DTB_PRINT_TAG=\"gbox2\" -DTB_TRACE_ENABLE -DTB_ASSERT_ENABLE
+LOCAL_LDLIBS 	:= -L$(SYSROOT)/usr/lib -L$(LOCAL_PATH) -L$(LIB_DIR) -L$(SRC_DIR) -L$(PRO_DIR)/../tbox/pre/lib/$(PLAT)/$(ARCH) -lgbox2 -ltbox -llog
 LOCAL_SHARED_LIBRARIES := libGLESv1_CM
 
 include $(BUILD_SHARED_LIBRARY)

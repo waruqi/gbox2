@@ -31,7 +31,11 @@
  */
 tb_bool_t g2_svg_style_init(g2_svg_style_t* style)
 {
+	// check
 	tb_assert_and_check_return_val(style, tb_false);
+
+	// clear
+	tb_memset(style, 0, sizeof(g2_svg_style_t));
 
 	// init
 	style->mode 			= G2_SVG_STYLE_MODE_NONE;
@@ -63,6 +67,7 @@ tb_bool_t g2_svg_style_init(g2_svg_style_t* style)
 	style->text.anchor 		= G2_SVG_STYLE_TEXT_ANCHOR_INHERIT;
 
 	// init clippath
+	style->clippath.mode 	= G2_SVG_STYLE_CLIPPATH_MODE_INHERIT;
 	tb_pstring_init(&style->clippath.url);
 
 	// ok

@@ -54,7 +54,6 @@ static __tb_inline__ tb_char_t const* g2_svg_parser_float(tb_char_t const* p, g2
 	tb_long_t 	dec = 0;
 	tb_uint32_t lhs = 0;
 	tb_float_t 	rhs = 0.;
-	tb_float_t 	val = 0;
 	tb_long_t 	zeros = 0;
 	tb_int8_t 	decimals[256];
 	tb_int8_t* 	d = decimals;

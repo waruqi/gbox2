@@ -254,7 +254,6 @@ static tb_handle_t g2_bmp_decoder_done(g2_image_decoder_t* decoder)
 	
 	// init flag
 	tb_size_t 	flag = g2_bitmap_flag(bitmap) & ~G2_BITMAP_FLAG_ALPHA;
-	tb_byte_t 	balpha = 0xff - ((G2_QUALITY_TOP - g2_quality()) << 3);
 
 	// init
 	tb_size_t 	b = dp->btp;
