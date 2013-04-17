@@ -307,7 +307,7 @@ static __tb_inline__ tb_bool_t g2_svg_painter_style_stok(g2_svg_painter_t* paint
 }
 static __tb_inline__ tb_void_t g2_svg_painter_style_clip(g2_svg_painter_t* painter, g2_svg_style_t const* style)
 {
-	// no fill? next it
+	// no clip? next it
 	tb_check_return(style->mode & G2_SVG_STYLE_MODE_CLIPPATH);
 
 	// clear clipper
@@ -328,7 +328,7 @@ static __tb_inline__ tb_void_t g2_svg_painter_style_clip(g2_svg_painter_t* paint
 		tb_assert_and_check_return(clippath && clippath->type == G2_SVG_ELEMENT_TYPE_CLIPPATH);
 
 		// clip it
-		if (clippath->clip) clippath->clip(clippath, painter);
+		if (clippath->clip) clippath->clip(clippath, painter, G2_CLIPPER_MODE_INTERSECT);
 	}
 }
 static __tb_inline__ tb_bool_t g2_svg_painter_style_image(g2_svg_painter_t* painter, g2_svg_style_t const* style)

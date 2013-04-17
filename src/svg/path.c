@@ -100,6 +100,14 @@ static tb_void_t g2_svg_element_path_draw(g2_svg_element_t const* element, g2_sv
 	// draw
 	if (path->path) g2_draw_path(painter->painter, path->path);
 }
+static tb_void_t g2_svg_element_path_clip(g2_svg_element_t const* element, g2_svg_painter_t* painter, tb_size_t mode)
+{
+	g2_svg_element_path_t const* path = (g2_svg_element_path_t const*)element;
+	tb_assert_and_check_return(path && painter && painter->painter);
+
+	// clip
+	if (path->path) g2_clip_path(painter->painter, mode, path->path);
+}
 static tb_void_t g2_svg_element_path_exit(g2_svg_element_t* element)
 {
 	g2_svg_element_path_t* path = (g2_svg_element_path_t*)element;
@@ -445,6 +453,7 @@ g2_svg_element_t* g2_svg_element_init_path(tb_handle_t reader)
 	element->base.writ 		= g2_svg_element_path_writ;
 	element->base.fill 		= g2_svg_element_path_draw;
 	element->base.stok 		= g2_svg_element_path_draw;
+	element->base.clip 		= g2_svg_element_path_clip;
 	element->base.style 	= &element->style;
 	element->base.transform = &element->transform;
 

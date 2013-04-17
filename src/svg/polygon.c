@@ -91,6 +91,14 @@ static tb_void_t g2_svg_element_polygon_draw(g2_svg_element_t const* element, g2
 	// draw
 	if (polygon->path) g2_draw_path(painter->painter, polygon->path);
 }
+static tb_void_t g2_svg_element_polygon_clip(g2_svg_element_t const* element, g2_svg_painter_t* painter, tb_size_t mode)
+{
+	g2_svg_element_polygon_t const* polygon = (g2_svg_element_polygon_t const*)element;
+	tb_assert_and_check_return(polygon && painter && painter->painter);
+
+	// clip
+	if (polygon->path) g2_clip_path(painter->painter, mode, polygon->path);
+}
 static tb_void_t g2_svg_element_polygon_exit(g2_svg_element_t* element)
 {
 	g2_svg_element_polygon_t* polygon = (g2_svg_element_polygon_t*)element;
@@ -171,6 +179,7 @@ g2_svg_element_t* g2_svg_element_init_polygon(tb_handle_t reader)
 	element->base.writ 		= g2_svg_element_polygon_writ;
 	element->base.fill 		= g2_svg_element_polygon_draw;
 	element->base.stok 		= g2_svg_element_polygon_draw;
+	element->base.clip 		= g2_svg_element_polygon_clip;
 	element->base.style 	= &element->style;
 	element->base.transform = &element->transform;
 

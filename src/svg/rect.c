@@ -62,13 +62,13 @@ static tb_void_t g2_svg_element_rect_draw(g2_svg_element_t const* element, g2_sv
 	// draw
 	g2_draw_rect(painter->painter, &rect->rect);
 }
-static tb_void_t g2_svg_element_rect_clip(g2_svg_element_t const* element, g2_svg_painter_t* painter)
+static tb_void_t g2_svg_element_rect_clip(g2_svg_element_t const* element, g2_svg_painter_t* painter, tb_size_t mode)
 {
 	g2_svg_element_rect_t const* rect = (g2_svg_element_rect_t const*)element;
 	tb_assert_and_check_return(rect && painter && painter->painter);
 
 	// clip
-	g2_clip_rect(painter->painter, G2_CLIPPER_MODE_UNION, &rect->rect);
+	g2_clip_rect(painter->painter, mode, &rect->rect);
 }
 static tb_void_t g2_svg_element_rect_exit(g2_svg_element_t* element)
 {

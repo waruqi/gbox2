@@ -63,7 +63,7 @@ static tb_void_t g2_svg_element_clippath_writ(g2_svg_element_t const* element, t
 	// transform 
 	g2_svg_writer_transform(gst, &clippath->transform); 
 }
-static tb_void_t g2_svg_element_clippath_clip(g2_svg_element_t const* element, g2_svg_painter_t* painter)
+static tb_void_t g2_svg_element_clippath_clip(g2_svg_element_t const* element, g2_svg_painter_t* painter, tb_size_t mode)
 {
 	// check
 	g2_svg_element_clippath_t const* clippath = (g2_svg_element_clippath_t const*)element;
@@ -76,10 +76,27 @@ static tb_void_t g2_svg_element_clippath_clip(g2_svg_element_t const* element, g
 		while (next)
 		{
 			// clip 
-			if (next->clip) next->clip(next, painter);
+			if (next->clip) next->clip(next, painter, (next == element->head)? mode : G2_CLIPPER_MODE_UNION);
 
 			// next
 			next = next->next;
+		}
+	}
+
+	// clip the sub-clippath if exists
+	if (clippath->style.mode & G2_SVG_STYLE_MODE_CLIPPATH
+		&& clippath->style.clippath.mode == G2_SVG_STYLE_CLIPPATH_MODE_URL)
+	{
+		// url
+		tb_char_t const* url = tb_pstring_cstr(&clippath->style.clippath.url);
+		if (url && url[0] == '#')
+		{
+			// the sub-clippath
+			g2_svg_element_t* subclippath = tb_hash_get(painter->hash, &url[1]);
+			tb_assert_and_check_return(subclippath && subclippath->type == G2_SVG_ELEMENT_TYPE_CLIPPATH);
+
+			// clip it
+			if (subclippath->clip) subclippath->clip(subclippath, painter, G2_CLIPPER_MODE_INTERSECT);
 		}
 	}
 }

@@ -65,6 +65,14 @@ static tb_void_t g2_svg_element_ellipse_draw(g2_svg_element_t const* element, g2
 	// draw
 	g2_draw_ellipse(painter->painter, &ellipse->ellipse);
 }
+static tb_void_t g2_svg_element_ellipse_clip(g2_svg_element_t const* element, g2_svg_painter_t* painter, tb_size_t mode)
+{
+	g2_svg_element_ellipse_t const* ellipse = (g2_svg_element_ellipse_t const*)element;
+	tb_assert_and_check_return(ellipse && painter && painter->painter);
+
+	// clip
+	g2_clip_ellipse(painter->painter, mode, &ellipse->ellipse);
+}
 static tb_void_t g2_svg_element_ellipse_exit(g2_svg_element_t* element)
 {
 	g2_svg_element_ellipse_t* ellipse = (g2_svg_element_ellipse_t*)element;
@@ -88,6 +96,7 @@ g2_svg_element_t* g2_svg_element_init_ellipse(tb_handle_t reader)
 	element->base.writ 		= g2_svg_element_ellipse_writ;
 	element->base.fill 		= g2_svg_element_ellipse_draw;
 	element->base.stok 		= g2_svg_element_ellipse_draw;
+	element->base.clip 		= g2_svg_element_ellipse_clip;
 	element->base.style 	= &element->style;
 	element->base.transform = &element->transform;
 

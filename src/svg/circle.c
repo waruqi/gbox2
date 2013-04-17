@@ -64,14 +64,13 @@ static tb_void_t g2_svg_element_circle_draw(g2_svg_element_t const* element, g2_
 	// draw
 	g2_draw_circle(painter->painter, &circle->circle);
 }
-static tb_void_t g2_svg_element_circle_clip(g2_svg_element_t const* element, g2_svg_painter_t* painter)
+static tb_void_t g2_svg_element_circle_clip(g2_svg_element_t const* element, g2_svg_painter_t* painter, tb_size_t mode)
 {
 	g2_svg_element_circle_t const* circle = (g2_svg_element_circle_t const*)element;
 	tb_assert_and_check_return(circle && painter && painter->painter);
 
-//#error
 	// clip
-	g2_clip_circle(painter->painter, G2_CLIPPER_MODE_UNION, &circle->circle);
+	g2_clip_circle(painter->painter, mode, &circle->circle);
 }
 static tb_void_t g2_svg_element_circle_exit(g2_svg_element_t* element)
 {
