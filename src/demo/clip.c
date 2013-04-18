@@ -212,14 +212,15 @@ static tb_void_t g2_demo_shape_render()
 	g2_clear_clipper(g_painter);
 //	g2_clip_path(g_painter, G2_CLIPPER_MODE_REPLACE, g_path[g_pti]);
 
-	// save
-	g2_save(g_painter);
+	// save matrix
+	g2_save_matrix(g_painter);
 	
 	// clear matrix
 	g2_clear_matrix(g_painter);
 
 	// clip
-	g2_clip_irect2(g_painter, G2_CLIPPER_MODE_INTERSECT, 10, 10, g2_bitmap_width(g_surface) - 20, g2_bitmap_height(g_surface) - 20);
+//	g2_clip_irect2(g_painter, G2_CLIPPER_MODE_INTERSECT, 10, 10, g2_bitmap_width(g_surface) - 20, g2_bitmap_height(g_surface) - 20);
+	g2_clip_itriangle2(g_painter, G2_CLIPPER_MODE_INTERSECT, g_x0 - 200, g_y0, g_x0, g_y0 - 100, g_x0 + 200, g_y0);
 //	g2_clip_icircle2(g_painter, G2_CLIPPER_MODE_INTERSECT, g_x0, g_y0, 200);
 //	g2_clip_iellipse2(g_painter, G2_CLIPPER_MODE_UNION, g_x0, g_y0, 300, 100);
 //	g2_clip_icircle2(g_painter, G2_CLIPPER_MODE_SUBTRACT, g_x0, g_y0, 10);
@@ -231,8 +232,8 @@ static tb_void_t g2_demo_shape_render()
 	// draw
 	g2_draw_irect2(g_painter, 0, 0, g2_bitmap_width(g_surface), g2_bitmap_height(g_surface));
 
-	// load
-	g2_load(g_painter);
+	// load matrix
+	g2_load_matrix(g_painter);
 }
 static tb_void_t g2_demo_shape_key(tb_int_t key)
 {

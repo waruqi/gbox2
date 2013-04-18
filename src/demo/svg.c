@@ -87,7 +87,7 @@ static tb_void_t g2_demo_render()
 	else rect = g2_rect_imake(g_x0 - g_dx, g_y0 - g_dy, g_dx << 1, g_dy << 1);
 
 	// save matrix
-	g2_save(g_painter);
+	g2_save_matrix(g_painter);
 
 	// trasform
 	g2_translate(g_painter, rect.x, rect.y);
@@ -97,7 +97,7 @@ static tb_void_t g2_demo_render()
 	g2_svg_element_draw(g_svg, g_painter);
 	
 	// load matrix
-	g2_load(g_painter);
+	g2_load_matrix(g_painter);
 
 	// bounds
 	g2_clear_style(g_painter);

@@ -27,7 +27,7 @@ static tb_void_t g2_demo_shape_render()
 	g2_line2i_to(g_painter, 100, 200);
 	g2_close(g_painter);
 
-	g2_save(g_painter);
+	g2_save_matrix(g_painter);
 	g2_save_path(g_painter);	
 	g2_save_style(g_painter);	
 	g2_color(g_painter, G2_COLOR_BLUE);
@@ -39,7 +39,7 @@ static tb_void_t g2_demo_shape_render()
 	g2_line2i_to(g_painter, 200, 200);
 	g2_close(g_painter);
 
-	g2_save(g_painter);
+	g2_save_matrix(g_painter);
 	g2_save_path(g_painter);	
 	g2_save_style(g_painter);	
 	g2_save_clipper(g_painter);
@@ -53,13 +53,13 @@ static tb_void_t g2_demo_shape_render()
 	g2_line2i_to(g_painter, 300, 200);
 	g2_close(g_painter);
 	g2_draw(g_painter);	
-	g2_load(g_painter);
+	g2_load_matrix(g_painter);
 	g2_load_path(g_painter);
 	g2_load_style(g_painter);
 	g2_load_clipper(g_painter);
 	
 	g2_draw(g_painter);	
-	g2_load(g_painter);
+	g2_load_matrix(g_painter);
 	g2_load_path(g_painter);
 	g2_load_style(g_painter);
 

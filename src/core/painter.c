@@ -117,18 +117,6 @@ tb_void_t g2_shader(tb_handle_t painter, tb_handle_t shader)
  * matrix
  */
 
-// save
-g2_matrix_t* g2_save(tb_handle_t painter)
-{
-	return g2_save_matrix(painter);
-}
-
-// load
-tb_void_t g2_load(tb_handle_t painter)
-{
-	g2_load_matrix(painter);
-}
-
 // rotate
 tb_bool_t g2_rotate(tb_handle_t painter, g2_float_t degrees)
 {

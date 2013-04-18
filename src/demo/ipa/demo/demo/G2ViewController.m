@@ -236,7 +236,7 @@ static tb_pointer_t onRender(tb_pointer_t data)
 		g2_clear(g_painter, G2_COLOR_BLACK);
 		
 		// matrix
-		if (g_bm) g2_matrix_copy(g2_save(g_painter), &g_mx);
+		if (g_bm) g2_matrix_copy(g2_save_matrix(g_painter), &g_mx);
 		
 		// start clock
 		g_rt = tb_uclock();
@@ -248,7 +248,7 @@ static tb_pointer_t onRender(tb_pointer_t data)
 		g_rt = tb_uclock() - g_rt;
 		
 		// load
-		if (g_bm) g2_load(g_painter);
+		if (g_bm) g2_load_matrix(g_painter);
 		
 		// render fps & rpt
 		g_fp++;
