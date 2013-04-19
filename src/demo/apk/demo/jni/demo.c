@@ -203,7 +203,7 @@ tb_void_t g2_demo_gl_exit()
 tb_void_t g2_demo_gl_draw()
 {	
 	// clear
-	g2_clear(g_painter, G2_COLOR_BLACK);
+	g2_clear(g_painter, G2_COLOR_WHITE);
 	
 	// matrix
 	if (g_bm) g2_matrix_copy(g2_save_matrix(g_painter), &g_mx);
