@@ -692,13 +692,16 @@ static __tb_inline__ tb_void_t g2_gl_fill_stencil_exit(g2_gl_fill_t* fill)
 }
 static __tb_inline__ tb_void_t g2_gl_fill_scissor_init(g2_gl_fill_t* fill)
 {
-	// FIXME
 	// only one rect and no rotate?
-	if (0)//g2_clipper_size(fill->clipper) == 1)
+	if (g2_clipper_size(fill->clipper) == 1)
 	{
 		g2_clipper_item_t const* item = (g2_clipper_item_t const*)g2_clipper_item(fill->clipper, 0);
 		if (item && item->type == G2_CLIPPER_ITEM_RECT && g2_ez(item->matrix.kx) && g2_ez(item->matrix.ky)) 
 		{
+			// the height
+			tb_size_t height = g2_bitmap_height(fill->context->surface);
+			tb_assert_and_check_return(height);
+
 			// enable scissor
 			fill->flag |= G2_GL_FILL_FLAG_SCISSOR;
 			g2_glEnable(G2_GL_SCISSOR_TEST);
@@ -712,11 +715,9 @@ static __tb_inline__ tb_void_t g2_gl_fill_scissor_init(g2_gl_fill_t* fill)
 			g2_float_t ny1 = g2_matrix_apply_y(&item->matrix, ox1, oy1);
 			g2_float_t nx2 = g2_matrix_apply_x(&item->matrix, ox2, oy2);
 			g2_float_t ny2 = g2_matrix_apply_y(&item->matrix, ox2, oy2);
-			tb_print("b: %f %f %f %f", g2_float_to_tb(ox1), g2_float_to_tb(oy1), g2_float_to_tb(ox2 - ox1), g2_float_to_tb(oy2 - oy1));
-			tb_print("e: %f %f %f %f", g2_float_to_tb(nx1), g2_float_to_tb(ny1), g2_float_to_tb(nx2 - nx1), g2_float_to_tb(ny2 - ny1));
 
-			// scissor
-			g2_glScissor(g2_float_to_tb(nx1), g2_float_to_tb(ny1), g2_float_to_tb(nx2 - nx1), g2_float_to_tb(ny2 - ny1));
+			// scissor, @note y-position for gl
+			g2_glScissor(g2_float_to_tb(nx1), (tb_float_t)height - g2_float_to_tb(ny2), g2_float_to_tb(nx2 - nx1), g2_float_to_tb(ny2 - ny1));
 		}
 	}
 }
@@ -1016,7 +1017,7 @@ static __tb_inline__ tb_bool_t g2_gl_fill_init(g2_gl_fill_t* fill, g2_gl_painter
 	fill->clipper 	= g2_clipper(painter);
 	fill->flag 		= flag;
 	g2_gl_matrix_from(fill->vmatrix, &fill->painter->matrix);
-	tb_assert_and_check_return_val(fill->painter && fill->context && fill->style && fill->clipper, tb_false);
+	tb_assert_and_check_return_val(fill->painter && fill->context && fill->context->surface && fill->style && fill->clipper, tb_false);
 
 	// use stencil?
 	if (!(flag & G2_GL_FILL_FLAG_CONVEX)) fill->flag |= G2_GL_FILL_FLAG_STENCIL;

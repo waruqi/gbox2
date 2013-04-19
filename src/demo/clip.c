@@ -210,7 +210,7 @@ static tb_void_t g2_demo_shape_render()
 {
 	// clip
 	g2_clear_clipper(g_painter);
-	g2_clip_path(g_painter, G2_CLIPPER_MODE_REPLACE, g_path[g_pti]);
+//	g2_clip_path(g_painter, G2_CLIPPER_MODE_REPLACE, g_path[g_pti]);
 
 	// save matrix
 	g2_save_matrix(g_painter);
