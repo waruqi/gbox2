@@ -271,12 +271,15 @@ tb_void_t g2_draw_path(tb_handle_t painter, tb_handle_t path)
 	// null?
 	tb_check_return(!g2_path_null(path));
 
-	// like
+	// make like
 	g2_gl_path_make_like((g2_gl_path_t*)path);
 
-	// fill
+	// make fill
 	if (g2_gl_path_make_fill((g2_gl_path_t*)path))
+	{
+		// fill path
 		g2_gl_fill_path(gpainter, (g2_gl_path_t const*)path);
+	}
 }
 tb_void_t g2_draw_arc(tb_handle_t painter, g2_arc_t const* arc)
 {

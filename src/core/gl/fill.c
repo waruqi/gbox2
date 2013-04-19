@@ -71,6 +71,9 @@ typedef struct __g2_gl_fill_t
 	// the flag
 	tb_size_t 			flag;
 
+	// the stencil reference
+	tb_size_t 			sref;
+
 	// the vertices, 4[points] x 2[xy]
 	tb_float_t 			vertices[8];
 
@@ -203,196 +206,6 @@ static __tb_inline__ tb_bool_t g2_gl_fill_apply_program(g2_gl_fill_t* fill)
 
 	// ok
 	return tb_true;
-}
-static __tb_inline__ tb_void_t g2_gl_fill_stencil_init(g2_gl_fill_t* fill)
-{
-	// has stencil or has clipper? init it
-	if ( 	fill->flag & G2_GL_FILL_FLAG_STENCIL
-		|| ( 	!(fill->flag & G2_GL_FILL_FLAG_SCISSOR)
-			&& 	g2_clipper_size(fill->clipper)))
-	{
-		// enable stencil
-		g2_glDisable(G2_GL_BLEND);
-		g2_glDisable(G2_GL_TEXTURE_2D);
-		g2_glDisable(G2_GL_DEPTH_TEST);
-		g2_glEnable(G2_GL_STENCIL_TEST);
-
-		// init stencil
-		g2_glStencilFunc(G2_GL_ALWAYS, 0, 0);
-		g2_glStencilOp(G2_GL_INVERT, G2_GL_INVERT, G2_GL_INVERT);
-		g2_glColorMask(G2_GL_FALSE, G2_GL_FALSE, G2_GL_FALSE, G2_GL_FALSE);
-
-		// use stencil 
-		fill->flag |= G2_GL_FILL_FLAG_STENCIL;
-	}
-}
-static __tb_inline__ tb_void_t g2_gl_fill_stencil_clip_rect(g2_gl_fill_t* fill, g2_clipper_item_t const* item)
-{
-	// check
-	tb_assert_and_check_return(item->type == G2_CLIPPER_ITEM_RECT);
-	
-	// init bounds
-	g2_gl_rect_t bounds;
-	bounds.x1 = g2_float_to_tb(item->u.rect.x);
-	bounds.y1 = g2_float_to_tb(item->u.rect.y);
-	bounds.x2 = g2_float_to_tb(item->u.rect.x + item->u.rect.w - G2_ONE);
-	bounds.y2 = g2_float_to_tb(item->u.rect.y + item->u.rect.h - G2_ONE);
-	tb_check_return(bounds.x1 < bounds.x2 && bounds.y1 < bounds.y2);
-
-	// init vertices
-	fill->vertices[0] = bounds.x1;
-	fill->vertices[1] = bounds.y1;
-	fill->vertices[2] = bounds.x2;
-	fill->vertices[3] = bounds.y1;
-	fill->vertices[4] = bounds.x1;
-	fill->vertices[5] = bounds.y2;
-	fill->vertices[6] = bounds.x2;
-	fill->vertices[7] = bounds.y2;
-	
-	// apply vertices
-	g2_gl_fill_apply_vertices(fill);
-
-	// draw 
-	g2_glDrawArrays(G2_GL_TRIANGLE_STRIP, 0, 4);
-}
-static __tb_inline__ tb_void_t g2_gl_fill_stencil_clip_path(g2_gl_fill_t* fill, g2_clipper_item_t const* item)
-{
-	// check
-	tb_assert_and_check_return(item->type == G2_CLIPPER_ITEM_PATH);
-}
-static __tb_inline__ tb_void_t g2_gl_fill_stencil_clip_circle(g2_gl_fill_t* fill, g2_clipper_item_t const* item)
-{
-	// check
-	tb_assert_and_check_return(item->type == G2_CLIPPER_ITEM_CIRCLE);
-}
-static __tb_inline__ tb_void_t g2_gl_fill_stencil_clip_ellipse(g2_gl_fill_t* fill, g2_clipper_item_t const* item)
-{
-	// check
-	tb_assert_and_check_return(item->type == G2_CLIPPER_ITEM_ELLIPSE);
-}
-static __tb_inline__ tb_void_t g2_gl_fill_stencil_clip_triangle(g2_gl_fill_t* fill, g2_clipper_item_t const* item)
-{
-	// check
-	tb_assert_and_check_return(item->type == G2_CLIPPER_ITEM_TRIANGLE);
-	
-	// init vertices
-	fill->vertices[0] = g2_float_to_tb(item->u.triangle.p0.x);
-	fill->vertices[1] = g2_float_to_tb(item->u.triangle.p0.y);
-	fill->vertices[2] = g2_float_to_tb(item->u.triangle.p1.x);
-	fill->vertices[3] = g2_float_to_tb(item->u.triangle.p1.y);
-	fill->vertices[4] = g2_float_to_tb(item->u.triangle.p2.x);
-	fill->vertices[5] = g2_float_to_tb(item->u.triangle.p2.y);
-	
-	// apply vertices
-	g2_gl_fill_apply_vertices(fill);
-
-	// draw 
-	g2_glDrawArrays(G2_GL_TRIANGLE_STRIP, 0, 3);
-}
-static __tb_inline__ tb_void_t g2_gl_fill_stencil_clip(g2_gl_fill_t* fill)
-{
-	// check
-	tb_check_return(fill->flag & G2_GL_FILL_FLAG_STENCIL);
-
-	// no scissor
-	tb_check_return(!(fill->flag & G2_GL_FILL_FLAG_SCISSOR));
-
-	// the clipper size
-	tb_size_t size = g2_clipper_size(fill->clipper);
-	tb_check_return(size);
-
-	// init the stencil for clipper
-//	g2_glStencilFunc(G2_GL_EQUAL, 1, 1);
-	g2_glStencilOp(G2_GL_INCR, G2_GL_INCR, G2_GL_INCR);
-//	g2_glStencilOp(G2_GL_DECR, G2_GL_DECR, G2_GL_DECR);
-
-	// clip stencil 
-	tb_size_t i = 0;
-	for (i = 0; i < size; i++)
-	{
-		// the clip item
-		g2_clipper_item_t const* item = g2_clipper_item(fill->clipper, i);
-		if (item)
-		{
-			// clip mode
-			switch (item->mode)
-			{
-			case G2_CLIPPER_MODE_REPLACE:
-				break;
-			case G2_CLIPPER_MODE_INTERSECT:
-				break;
-			case G2_CLIPPER_MODE_UNION:
-				break;
-			case G2_CLIPPER_MODE_SUBTRACT:
-				break;
-			default:
-				tb_trace_impl("unknown clip mode: %lu", item->mode);
-				break;
-			}
-
-			// clip item
-			tb_void_t (*clip[])(g2_gl_fill_t* , g2_clipper_item_t const* ) = 
-			{
-				g2_gl_fill_stencil_clip_rect
-			,	g2_gl_fill_stencil_clip_path
-			,	g2_gl_fill_stencil_clip_circle
-			,	g2_gl_fill_stencil_clip_ellipse
-			,	g2_gl_fill_stencil_clip_triangle
-			};
-			tb_assert_and_check_return(item->type < tb_arrayn(clip));
-			clip[item->type](fill, item);
-		}
-	}
-}
-static __tb_inline__ tb_void_t g2_gl_fill_stencil_draw(g2_gl_fill_t* fill)
-{
-	// check
-	tb_check_return(fill->flag & G2_GL_FILL_FLAG_STENCIL);
-
-	// draw stencil
-	g2_glStencilFunc(G2_GL_EQUAL, 1, 1);
-	g2_glStencilOp(G2_GL_ZERO, G2_GL_ZERO, G2_GL_ZERO);
-	g2_glColorMask(G2_GL_TRUE, G2_GL_TRUE, G2_GL_TRUE, G2_GL_TRUE);
-}
-static __tb_inline__ tb_void_t g2_gl_fill_stencil_exit(g2_gl_fill_t* fill)
-{
-	// check
-	tb_check_return(fill->flag & G2_GL_FILL_FLAG_STENCIL);
-
-	// exit
-	g2_glColorMask(G2_GL_TRUE, G2_GL_TRUE, G2_GL_TRUE, G2_GL_TRUE);
-	g2_glDisable(G2_GL_STENCIL_TEST);
-}
-static __tb_inline__ tb_void_t g2_gl_fill_scissor_init(g2_gl_fill_t* fill)
-{
-	// only one rect and no rotate?
-	if (g2_clipper_size(fill->clipper) == 1)
-	{
-		g2_clipper_item_t const* item = (g2_clipper_item_t const*)g2_clipper_item(fill->clipper, 0);
-		if (item && item->type == G2_CLIPPER_ITEM_RECT && g2_ez(item->matrix.kx) && g2_ez(item->matrix.ky)) 
-		{
-			// enable scissor
-			fill->flag |= G2_GL_FILL_FLAG_SCISSOR;
-			g2_glEnable(G2_GL_SCISSOR_TEST);
-			
-			// transform rect
-			g2_float_t ox1 = item->u.rect.x;
-			g2_float_t oy1 = item->u.rect.y;
-			g2_float_t ox2 = item->u.rect.x + item->u.rect.w;
-			g2_float_t oy2 = item->u.rect.y + item->u.rect.h;
-			g2_float_t nx1 = g2_matrix_apply_x(&item->matrix, ox1, oy1);
-			g2_float_t ny1 = g2_matrix_apply_y(&item->matrix, ox1, oy1);
-			g2_float_t nx2 = g2_matrix_apply_x(&item->matrix, ox2, oy2);
-			g2_float_t ny2 = g2_matrix_apply_y(&item->matrix, ox2, oy2);
-
-			// scissor
-			g2_glScissor(g2_float_to_tb(nx1), g2_float_to_tb(ny1), g2_float_to_tb(nx2 - nx1), g2_float_to_tb(ny2 - ny1));
-		}
-	}
-}
-static __tb_inline__ tb_void_t g2_gl_fill_scissor_exit(g2_gl_fill_t* fill)
-{
-	if (fill->flag & G2_GL_FILL_FLAG_SCISSOR) g2_glDisable(G2_GL_SCISSOR_TEST);
 }
 static __tb_inline__ tb_void_t g2_gl_fill_enter_vertex_state(g2_gl_fill_t* fill)
 {
@@ -571,6 +384,345 @@ static __tb_inline__ tb_void_t g2_gl_fill_leave_texture_matrix(g2_gl_fill_t* fil
 		g2_glPopMatrix();
 		g2_glMatrixMode(G2_GL_MODELVIEW);
 	}
+}
+static __tb_inline__ tb_void_t g2_gl_fill_stencil_init(g2_gl_fill_t* fill)
+{
+	// has stencil or has clipper? init it
+	if ( 	fill->flag & G2_GL_FILL_FLAG_STENCIL
+		|| ( 	!(fill->flag & G2_GL_FILL_FLAG_SCISSOR)
+			&& 	g2_clipper_size(fill->clipper)))
+	{
+		// enable stencil
+		g2_glDisable(G2_GL_BLEND);
+		g2_glDisable(G2_GL_TEXTURE_2D);
+		g2_glDisable(G2_GL_DEPTH_TEST);
+		g2_glEnable(G2_GL_STENCIL_TEST);
+
+		// init stencil
+		g2_glStencilFunc(G2_GL_ALWAYS, 0, 0);
+		g2_glStencilOp(G2_GL_INVERT, G2_GL_INVERT, G2_GL_INVERT);
+		g2_glColorMask(G2_GL_FALSE, G2_GL_FALSE, G2_GL_FALSE, G2_GL_FALSE);
+
+		// use stencil 
+		fill->flag |= G2_GL_FILL_FLAG_STENCIL;
+	}
+}
+static __tb_inline__ tb_void_t g2_gl_fill_stencil_clip_bounds(g2_gl_fill_t* fill, g2_gl_rect_t const* bounds)
+{
+	// init vertices
+	fill->vertices[0] = bounds->x1;
+	fill->vertices[1] = bounds->y1;
+	fill->vertices[2] = bounds->x2;
+	fill->vertices[3] = bounds->y1;
+	fill->vertices[4] = bounds->x1;
+	fill->vertices[5] = bounds->y2;
+	fill->vertices[6] = bounds->x2;
+	fill->vertices[7] = bounds->y2;
+	tb_print("clip: %f %f %f %f", bounds->x1, bounds->y1, bounds->x2, bounds->y2);
+	
+	// apply vertices
+	g2_gl_fill_apply_vertices(fill);
+
+	// draw 
+	g2_glDrawArrays(G2_GL_TRIANGLE_STRIP, 0, 4);
+}
+static __tb_inline__ tb_void_t g2_gl_fill_stencil_clip_rect(g2_gl_fill_t* fill, g2_clipper_item_t const* item)
+{
+	// check
+	tb_assert_and_check_return(item->type == G2_CLIPPER_ITEM_RECT);
+	
+	// init bounds
+	g2_gl_rect_t bounds;
+	bounds.x1 = g2_float_to_tb(item->u.rect.x);
+	bounds.y1 = g2_float_to_tb(item->u.rect.y);
+	bounds.x2 = g2_float_to_tb(item->u.rect.x + item->u.rect.w - G2_ONE);
+	bounds.y2 = g2_float_to_tb(item->u.rect.y + item->u.rect.h - G2_ONE);
+	tb_check_return(bounds.x1 < bounds.x2 && bounds.y1 < bounds.y2);
+
+	// clip bounds
+	g2_gl_fill_stencil_clip_bounds(fill, &bounds);
+}
+static __tb_inline__ tb_void_t g2_gl_fill_stencil_clip_triangle(g2_gl_fill_t* fill, g2_clipper_item_t const* item)
+{
+	// check
+	tb_assert_and_check_return(item->type == G2_CLIPPER_ITEM_TRIANGLE);
+	
+	// init vertices
+	fill->vertices[0] = g2_float_to_tb(item->u.triangle.p0.x);
+	fill->vertices[1] = g2_float_to_tb(item->u.triangle.p0.y);
+	fill->vertices[2] = g2_float_to_tb(item->u.triangle.p1.x);
+	fill->vertices[3] = g2_float_to_tb(item->u.triangle.p1.y);
+	fill->vertices[4] = g2_float_to_tb(item->u.triangle.p2.x);
+	fill->vertices[5] = g2_float_to_tb(item->u.triangle.p2.y);
+	
+	// apply vertices
+	g2_gl_fill_apply_vertices(fill);
+
+	// draw 
+	g2_glDrawArrays(G2_GL_TRIANGLE_STRIP, 0, 3);
+}
+static __tb_inline__ tb_void_t g2_gl_fill_stencil_clip_path(g2_gl_fill_t* fill, g2_clipper_item_t const* item)
+{
+	// check
+	tb_assert_and_check_return(item->type == G2_CLIPPER_ITEM_PATH);
+
+	// the clip path
+	g2_gl_path_t* path = (g2_gl_path_t*)item->u.path;
+	tb_assert_and_check_return(path);
+
+	// null?
+	tb_check_return(!g2_path_null(path));
+
+	// like
+	g2_gl_path_make_like(path);
+
+	// like rect?
+	if (path->like == G2_GL_PATH_LIKE_RECT)
+	{
+		// clip bounds
+		g2_gl_fill_stencil_clip_bounds(fill, &path->rect);
+
+		// ok
+		return ;
+	}
+	// like triangle?
+	else if (path->like == G2_GL_PATH_LIKE_TRIG)
+	{
+		// clip triangle
+		g2_clipper_item_t clip = {0};
+		clip.type = G2_CLIPPER_ITEM_TRIANGLE;
+		clip.mode = item->mode;
+		clip.u.triangle = path->trig;
+		g2_gl_fill_stencil_clip_triangle(fill, &clip);
+
+		// ok
+		return ;
+	}
+
+	// make fill
+	if (!g2_gl_path_make_fill(path)) return ;
+
+	// check
+	tb_assert(path->fill.data && tb_vector_size(path->fill.data));
+	tb_assert(path->fill.size && tb_vector_size(path->fill.size));
+	tb_check_return(path->fill.rect.x1 < path->fill.rect.x2 && path->fill.rect.y1 < path->fill.rect.y2);
+	
+	// init vertices
+	if (fill->context->version < 0x20)
+		g2_glVertexPointer(2, G2_GL_FLOAT, 0, tb_vector_data(path->fill.data));
+	else g2_glVertexAttribPointer(g2_gl_program_location(fill->program, G2_GL_PROGRAM_LOCATION_VERTICES), 2, G2_GL_FLOAT, G2_GL_FALSE, 0, tb_vector_data(path->fill.data));
+
+	// clip path
+	tb_size_t 	head = 0;
+	tb_size_t 	size = 0;
+	tb_size_t 	itor = tb_iterator_head(path->fill.size);
+	tb_size_t 	tail = tb_iterator_tail(path->fill.size);
+	for (; itor != tail; itor++)
+	{
+		size = tb_iterator_item(path->fill.size, itor);
+		g2_glDrawArrays(G2_GL_TRIANGLE_FAN, (g2_GLint_t)head, (g2_GLint_t)size);
+		head += size;
+	}
+}
+static __tb_inline__ tb_void_t g2_gl_fill_stencil_clip_circle(g2_gl_fill_t* fill, g2_clipper_item_t const* item)
+{
+	// check
+	tb_assert_and_check_return(item->type == G2_CLIPPER_ITEM_CIRCLE);
+
+	// init shape
+	g2_shape_t shape = {0};
+	shape.type = G2_SHAPE_TYPE_CIRCLE;
+	shape.u.circle = item->u.circle;
+
+	// get path from pcache first
+	tb_handle_t path = g2_pcache_get(fill->painter->pcache, &shape);
+	if (!path)
+	{
+		// init path from cache
+		path = g2_pcache_add(fill->painter->pcache, &shape);
+		tb_assert_and_check_return(path);
+
+		// add circle to path
+		g2_path_add_circle(path, &item->u.circle);
+	}
+	
+	// clip path
+	g2_clipper_item_t clip = {0};
+	clip.type = G2_CLIPPER_ITEM_PATH;
+	clip.mode = item->mode;
+	clip.u.path = path;
+	g2_gl_fill_stencil_clip_path(fill, &clip);
+}
+static __tb_inline__ tb_void_t g2_gl_fill_stencil_clip_ellipse(g2_gl_fill_t* fill, g2_clipper_item_t const* item)
+{
+	// check
+	tb_assert_and_check_return(item->type == G2_CLIPPER_ITEM_ELLIPSE);
+	
+	// init shape
+	g2_shape_t shape = {0};
+	shape.type = G2_SHAPE_TYPE_ELLIPSE;
+	shape.u.ellipse = item->u.ellipse;
+
+	// get path from pcache first
+	tb_handle_t path = g2_pcache_get(fill->painter->pcache, &shape);
+	if (!path)
+	{
+		// init path from cache
+		path = g2_pcache_add(fill->painter->pcache, &shape);
+		tb_assert_and_check_return(path);
+
+		// add ellipse to path
+		g2_path_add_ellipse(path, &item->u.ellipse);
+	}
+	
+	// clip path
+	g2_clipper_item_t clip = {0};
+	clip.type = G2_CLIPPER_ITEM_PATH;
+	clip.mode = item->mode;
+	clip.u.path = path;
+	g2_gl_fill_stencil_clip_path(fill, &clip);
+}
+static __tb_inline__ tb_void_t g2_gl_fill_stencil_clip(g2_gl_fill_t* fill)
+{
+	// check
+	tb_check_return(fill->flag & G2_GL_FILL_FLAG_STENCIL);
+
+	// no scissor
+	tb_check_return(!(fill->flag & G2_GL_FILL_FLAG_SCISSOR));
+
+	// the clipper size
+	tb_size_t size = g2_clipper_size(fill->clipper);
+	tb_check_return(size);
+
+	// clip stencil 
+	tb_size_t i = 0;
+	for (i = 0; i < size; i++)
+	{
+		// the clip item
+		g2_clipper_item_t const* item = g2_clipper_item(fill->clipper, i);
+		if (item)
+		{
+			// clip mode
+			switch (item->mode)
+			{
+			case G2_CLIPPER_MODE_REPLACE:
+				{
+					g2_glStencilFunc(G2_GL_ALWAYS, 0, 0);
+					g2_glStencilOp(G2_GL_ZERO, G2_GL_INCR, G2_GL_INCR);
+					fill->sref++;
+				}
+				break;
+			case G2_CLIPPER_MODE_INTERSECT:
+				{
+					g2_glStencilFunc(G2_GL_EQUAL, (g2_GLint_t)fill->sref, 0xff);
+					g2_glStencilOp(G2_GL_ZERO, G2_GL_INCR, G2_GL_INCR);
+					fill->sref++;
+				}
+				break;
+			case G2_CLIPPER_MODE_UNION:
+				{
+					g2_glStencilFunc(G2_GL_EQUAL, (g2_GLint_t)fill->sref, 0xff);
+					g2_glStencilOp(G2_GL_REPLACE, G2_GL_KEEP, G2_GL_KEEP);
+				}
+				break;
+			case G2_CLIPPER_MODE_SUBTRACT:
+				{
+					g2_glStencilFunc(G2_GL_EQUAL, (g2_GLint_t)fill->sref, 0xff);
+					g2_glStencilOp(G2_GL_ZERO, G2_GL_DECR, G2_GL_DECR);
+				}
+				break;
+			default:
+				tb_trace_impl("unknown clip mode: %lu", item->mode);
+				break;
+			}
+
+			// save vetex matrix
+			tb_float_t matrix0[16];
+			g2_gl_matrix_copy(matrix0, fill->vmatrix);
+
+			// clip matrix => vertex matrix
+			g2_gl_matrix_from(fill->vmatrix, &item->matrix);
+
+			// apply vetex matrix
+			g2_gl_fill_apply_vertex_matrix(fill);
+
+			// clip item
+			tb_void_t (*clip[])(g2_gl_fill_t* , g2_clipper_item_t const* ) = 
+			{
+				g2_gl_fill_stencil_clip_rect
+			,	g2_gl_fill_stencil_clip_path
+			,	g2_gl_fill_stencil_clip_circle
+			,	g2_gl_fill_stencil_clip_ellipse
+			,	g2_gl_fill_stencil_clip_triangle
+			};
+			tb_assert_and_check_return(item->type < tb_arrayn(clip));
+			clip[item->type](fill, item);
+
+			// restore vetex matrix
+			g2_gl_matrix_copy(fill->vmatrix, matrix0);
+		}
+	}
+
+	// apply vetex matrix
+	g2_gl_fill_apply_vertex_matrix(fill);
+
+	// use the cliped stencil
+	g2_glStencilFunc(G2_GL_EQUAL, (g2_GLint_t)fill->sref, 0xff);
+	g2_glStencilOp(G2_GL_INVERT, G2_GL_INVERT, G2_GL_INVERT);
+}
+static __tb_inline__ tb_void_t g2_gl_fill_stencil_draw(g2_gl_fill_t* fill)
+{
+	// check
+	tb_check_return(fill->flag & G2_GL_FILL_FLAG_STENCIL);
+
+	// draw stencil
+//	g2_glStencilFunc(G2_GL_EQUAL, 1, 1);
+	g2_glStencilFunc(G2_GL_EQUAL, (g2_GLint_t)((~fill->sref) & 0xff), 0xff);
+	g2_glStencilOp(G2_GL_ZERO, G2_GL_ZERO, G2_GL_ZERO);
+	g2_glColorMask(G2_GL_TRUE, G2_GL_TRUE, G2_GL_TRUE, G2_GL_TRUE);
+}
+static __tb_inline__ tb_void_t g2_gl_fill_stencil_exit(g2_gl_fill_t* fill)
+{
+	// check
+	tb_check_return(fill->flag & G2_GL_FILL_FLAG_STENCIL);
+
+	// exit
+	g2_glColorMask(G2_GL_TRUE, G2_GL_TRUE, G2_GL_TRUE, G2_GL_TRUE);
+	g2_glDisable(G2_GL_STENCIL_TEST);
+}
+static __tb_inline__ tb_void_t g2_gl_fill_scissor_init(g2_gl_fill_t* fill)
+{
+	// FIXME
+	// only one rect and no rotate?
+	if (0)//g2_clipper_size(fill->clipper) == 1)
+	{
+		g2_clipper_item_t const* item = (g2_clipper_item_t const*)g2_clipper_item(fill->clipper, 0);
+		if (item && item->type == G2_CLIPPER_ITEM_RECT && g2_ez(item->matrix.kx) && g2_ez(item->matrix.ky)) 
+		{
+			// enable scissor
+			fill->flag |= G2_GL_FILL_FLAG_SCISSOR;
+			g2_glEnable(G2_GL_SCISSOR_TEST);
+			
+			// transform rect
+			g2_float_t ox1 = item->u.rect.x;
+			g2_float_t oy1 = item->u.rect.y;
+			g2_float_t ox2 = item->u.rect.x + item->u.rect.w;
+			g2_float_t oy2 = item->u.rect.y + item->u.rect.h;
+			g2_float_t nx1 = g2_matrix_apply_x(&item->matrix, ox1, oy1);
+			g2_float_t ny1 = g2_matrix_apply_y(&item->matrix, ox1, oy1);
+			g2_float_t nx2 = g2_matrix_apply_x(&item->matrix, ox2, oy2);
+			g2_float_t ny2 = g2_matrix_apply_y(&item->matrix, ox2, oy2);
+			tb_print("b: %f %f %f %f", g2_float_to_tb(ox1), g2_float_to_tb(oy1), g2_float_to_tb(ox2 - ox1), g2_float_to_tb(oy2 - oy1));
+			tb_print("e: %f %f %f %f", g2_float_to_tb(nx1), g2_float_to_tb(ny1), g2_float_to_tb(nx2 - nx1), g2_float_to_tb(ny2 - ny1));
+
+			// scissor
+			g2_glScissor(g2_float_to_tb(nx1), g2_float_to_tb(ny1), g2_float_to_tb(nx2 - nx1), g2_float_to_tb(ny2 - ny1));
+		}
+	}
+}
+static __tb_inline__ tb_void_t g2_gl_fill_scissor_exit(g2_gl_fill_t* fill)
+{
+	if (fill->flag & G2_GL_FILL_FLAG_SCISSOR) g2_glDisable(G2_GL_SCISSOR_TEST);
 }
 static __tb_inline__ tb_bool_t g2_gl_fill_context_init(g2_gl_fill_t* fill)
 {
@@ -817,6 +969,9 @@ static __tb_inline__ tb_void_t g2_gl_fill_style_draw_shader_radial(g2_gl_fill_t*
 	// restore vetex matrix
 	g2_gl_matrix_copy(fill->vmatrix, matrix0);
 
+	// apply vetex matrix
+	g2_gl_fill_apply_vertex_matrix(fill);
+
 	// leave texture matrix
 	g2_gl_fill_leave_texture_matrix(fill);
 
@@ -886,14 +1041,14 @@ static __tb_inline__ tb_bool_t g2_gl_fill_init(g2_gl_fill_t* fill, g2_gl_painter
 	// init stencil
 	g2_gl_fill_stencil_init(fill);
 
+	// clip stencil
+	g2_gl_fill_stencil_clip(fill);
+
 	// ok
 	return tb_true;
 }
 static __tb_inline__ tb_void_t g2_gl_fill_draw(g2_gl_fill_t* fill, g2_gl_rect_t* bounds)
 {
-	// clip stencil
-	g2_gl_fill_stencil_clip(fill);
-
 	// draw stencil
 	g2_gl_fill_stencil_draw(fill);
 
