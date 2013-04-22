@@ -582,6 +582,20 @@ static __tb_inline__ tb_void_t g2_gl_fill_stencil_clip_ellipse(g2_gl_fill_t* fil
 	clip.u.path = path;
 	g2_gl_fill_stencil_clip_path(fill, &clip);
 }
+static __tb_inline__ tb_void_t g2_gl_fill_stencil_clip_item(g2_gl_fill_t* fill, g2_clipper_item_t const* item)
+{
+	static tb_void_t (*clip[])(g2_gl_fill_t* , g2_clipper_item_t const* ) = 
+	{
+		g2_gl_fill_stencil_clip_rect
+	,	g2_gl_fill_stencil_clip_path
+	,	g2_gl_fill_stencil_clip_circle
+	,	g2_gl_fill_stencil_clip_ellipse
+	,	g2_gl_fill_stencil_clip_triangle
+	};
+	tb_assert_and_check_return(item->type < tb_arrayn(clip));
+	clip[item->type](fill, item);
+}
+#if 0
 static __tb_inline__ tb_void_t g2_gl_fill_stencil_clip(g2_gl_fill_t* fill)
 {
 	// check
@@ -670,6 +684,185 @@ static __tb_inline__ tb_void_t g2_gl_fill_stencil_clip(g2_gl_fill_t* fill)
 	g2_glStencilFunc(G2_GL_EQUAL, (g2_GLint_t)fill->sref, 0xff);
 	g2_glStencilOp(G2_GL_INVERT, G2_GL_INVERT, G2_GL_INVERT);
 }
+#else
+static __tb_inline__ tb_void_t g2_gl_fill_stencil_clip(g2_gl_fill_t* fill, g2_gl_rect_t const* bounds)
+{
+	// check
+	tb_check_return(fill->flag & G2_GL_FILL_FLAG_STENCIL);
+
+	// no scissor
+	tb_check_return(!(fill->flag & G2_GL_FILL_FLAG_SCISSOR));
+
+	// the clipper size
+	tb_size_t size = g2_clipper_size(fill->clipper);
+	tb_check_return(size);
+
+	// clip stencil 
+	tb_size_t i = 0;
+	for (i = 0; i < size; i++)
+	{
+		// the clip item
+		g2_clipper_item_t const* item = g2_clipper_item(fill->clipper, i);
+		if (item)
+		{
+			// clip mode
+			switch (item->mode)
+			{
+			case G2_CLIPPER_MODE_REPLACE:
+				{
+					tb_print("G2_CLIPPER_MODE_REPLACE");
+					g2_glStencilFunc(G2_GL_ALWAYS, 0, 0);
+					g2_glStencilOp(G2_GL_INVERT, G2_GL_INVERT, G2_GL_INVERT);
+
+					// save vetex matrix
+					tb_float_t matrix0[16];
+					g2_gl_matrix_copy(matrix0, fill->vmatrix);
+
+					// clip matrix => vertex matrix
+					g2_gl_matrix_from(fill->vmatrix, &item->matrix);
+
+					// apply vetex matrix
+					g2_gl_fill_apply_vertex_matrix(fill);
+
+					// clip item
+					g2_gl_fill_stencil_clip_item(fill, item);
+
+					// restore vetex matrix
+					g2_gl_matrix_copy(fill->vmatrix, matrix0);
+
+					// apply vetex matrix
+					g2_gl_fill_apply_vertex_matrix(fill);
+
+					g2_glStencilFunc(G2_GL_EQUAL, 0xff, 0xff);
+					g2_glStencilOp(G2_GL_INCR, G2_GL_ZERO, G2_GL_ZERO);
+					g2_gl_fill_stencil_clip_bounds(fill, bounds);
+				}
+				break;
+			case G2_CLIPPER_MODE_INTERSECT:
+				{
+					tb_print("G2_CLIPPER_MODE_INTERSECT");
+					// save vetex matrix
+					tb_float_t matrix0[16];
+					g2_gl_matrix_copy(matrix0, fill->vmatrix);
+
+					// clip matrix => vertex matrix
+					g2_gl_matrix_from(fill->vmatrix, &item->matrix);
+
+					// apply vetex matrix
+					g2_gl_fill_apply_vertex_matrix(fill);
+
+					g2_glStencilFunc(G2_GL_EQUAL, 0x00, 0xff);
+					g2_glStencilOp(G2_GL_KEEP, G2_GL_INVERT, G2_GL_INVERT);
+
+					// clip item
+					g2_gl_fill_stencil_clip_item(fill, item);
+	
+					// restore vetex matrix
+					g2_gl_matrix_copy(fill->vmatrix, matrix0);
+
+					// apply vetex matrix
+					g2_gl_fill_apply_vertex_matrix(fill);
+
+#if 1
+					g2_glStencilFunc(G2_GL_EQUAL, 0xff, 0xff);
+					g2_glStencilOp(G2_GL_INCR, G2_GL_ZERO, G2_GL_ZERO);
+					g2_gl_fill_stencil_clip_bounds(fill, bounds);
+#else
+					g2_gl_rect_t rect;
+					rect.x1 = 0;
+					rect.y1 = 0;
+					rect.x2 = 640;
+					rect.y2 = 480;
+					g2_glStencilFunc(G2_GL_EQUAL, 0xff, 0xff);
+					g2_glStencilOp(G2_GL_INCR, G2_GL_ZERO, G2_GL_ZERO);
+					g2_gl_fill_stencil_clip_bounds(fill, &rect);
+#endif
+				}
+				break;
+			case G2_CLIPPER_MODE_UNION:
+				{
+					tb_print("G2_CLIPPER_MODE_UNION");
+					g2_glStencilFunc(G2_GL_EQUAL, 0x00, 0xff);
+					g2_glStencilOp(G2_GL_ZERO, G2_GL_INVERT, G2_GL_INVERT);
+					g2_gl_fill_stencil_clip_bounds(fill, bounds);
+
+					// save vetex matrix
+					tb_float_t matrix0[16];
+					g2_gl_matrix_copy(matrix0, fill->vmatrix);
+
+					// clip matrix => vertex matrix
+					g2_gl_matrix_from(fill->vmatrix, &item->matrix);
+
+					// apply vetex matrix
+					g2_gl_fill_apply_vertex_matrix(fill);
+
+					g2_glStencilFunc(G2_GL_EQUAL, 0xff, 0xff);
+					g2_glStencilOp(G2_GL_INVERT, G2_GL_KEEP, G2_GL_KEEP);
+
+					// clip item
+					g2_gl_fill_stencil_clip_item(fill, item);
+	
+					// restore vetex matrix
+					g2_gl_matrix_copy(fill->vmatrix, matrix0);
+
+					// apply vetex matrix
+					g2_gl_fill_apply_vertex_matrix(fill);
+
+					g2_glStencilFunc(G2_GL_EQUAL, 0xff, 0xff);
+					g2_glStencilOp(G2_GL_INCR, G2_GL_ZERO, G2_GL_ZERO);
+					g2_gl_fill_stencil_clip_bounds(fill, bounds);
+				}
+				break;
+			case G2_CLIPPER_MODE_SUBTRACT:
+				{
+					tb_print("G2_CLIPPER_MODE_SUBTRACT");
+					// save vetex matrix
+					tb_float_t matrix0[16];
+					g2_gl_matrix_copy(matrix0, fill->vmatrix);
+
+					// clip matrix => vertex matrix
+					g2_gl_matrix_from(fill->vmatrix, &item->matrix);
+
+					// apply vetex matrix
+					g2_gl_fill_apply_vertex_matrix(fill);
+
+					g2_glStencilFunc(G2_GL_EQUAL, 0x00, 0xff);
+					g2_glStencilOp(G2_GL_KEEP, G2_GL_INVERT, G2_GL_INVERT);
+
+					// clip item
+					tb_void_t (*clip[])(g2_gl_fill_t* , g2_clipper_item_t const* ) = 
+					{
+						g2_gl_fill_stencil_clip_rect
+					,	g2_gl_fill_stencil_clip_path
+					,	g2_gl_fill_stencil_clip_circle
+					,	g2_gl_fill_stencil_clip_ellipse
+					,	g2_gl_fill_stencil_clip_triangle
+					};
+					tb_assert_and_check_return(item->type < tb_arrayn(clip));
+					clip[item->type](fill, item);
+	
+					// restore vetex matrix
+					g2_gl_matrix_copy(fill->vmatrix, matrix0);
+
+					// apply vetex matrix
+					g2_gl_fill_apply_vertex_matrix(fill);
+				}
+				break;
+			default:
+				tb_trace_impl("unknown clip mode: %lu", item->mode);
+				break;
+			}
+		}
+	}
+
+	// apply vetex matrix
+	g2_gl_fill_apply_vertex_matrix(fill);
+
+	// use the cliped stencil
+	g2_glStencilFunc(G2_GL_EQUAL, 0x00, 0xff);
+	g2_glStencilOp(G2_GL_ZERO, G2_GL_INVERT, G2_GL_INVERT);
+}
+#endif
 static __tb_inline__ tb_void_t g2_gl_fill_stencil_draw(g2_gl_fill_t* fill)
 {
 	// check
@@ -677,7 +870,9 @@ static __tb_inline__ tb_void_t g2_gl_fill_stencil_draw(g2_gl_fill_t* fill)
 
 	// draw stencil
 //	g2_glStencilFunc(G2_GL_EQUAL, 1, 1);
-	g2_glStencilFunc(G2_GL_EQUAL, (g2_GLint_t)((~fill->sref) & 0xff), 0xff);
+	g2_glStencilFunc(G2_GL_EQUAL, 0xff, 0xff);
+//	g2_glStencilFunc(G2_GL_EQUAL, (g2_GLint_t)((~fill->sref) & 0xff), 0xff);
+//	g2_glStencilFunc(G2_GL_EQUAL, fill->sref? 0 : 1, 1);
 	g2_glStencilOp(G2_GL_ZERO, G2_GL_ZERO, G2_GL_ZERO);
 	g2_glColorMask(G2_GL_TRUE, G2_GL_TRUE, G2_GL_TRUE, G2_GL_TRUE);
 }
@@ -1042,11 +1237,13 @@ static __tb_inline__ tb_bool_t g2_gl_fill_init(g2_gl_fill_t* fill, g2_gl_painter
 	// init stencil
 	g2_gl_fill_stencil_init(fill);
 
-	// clip stencil
-	g2_gl_fill_stencil_clip(fill);
-
 	// ok
 	return tb_true;
+}
+static __tb_inline__ tb_void_t g2_gl_fill_clip(g2_gl_fill_t* fill, g2_gl_rect_t* bounds)
+{
+	// clip stencil
+	g2_gl_fill_stencil_clip(fill, bounds);
 }
 static __tb_inline__ tb_void_t g2_gl_fill_draw(g2_gl_fill_t* fill, g2_gl_rect_t* bounds)
 {
@@ -1075,6 +1272,9 @@ static tb_void_t g2_gl_fill_bounds(g2_gl_painter_t* painter, g2_gl_rect_t const*
 	// init fill
 	g2_gl_fill_t fill = {0};
 	if (!g2_gl_fill_init(&fill, painter, G2_GL_FILL_FLAG_RECT | G2_GL_FILL_FLAG_CONVEX)) return ;
+
+	// clip fill
+	g2_gl_fill_clip(&fill, bounds);
 
 	// use stencil?
 	if (fill.flag & G2_GL_FILL_FLAG_STENCIL)
@@ -1148,6 +1348,9 @@ tb_void_t g2_gl_fill_path(g2_gl_painter_t* painter, g2_gl_path_t const* path)
 	g2_gl_fill_t fill = {0};
 	if (!g2_gl_fill_init(&fill, painter, path->like == G2_GL_PATH_LIKE_CONX? G2_GL_FILL_FLAG_CONVEX : G2_GL_FILL_FLAG_NONE)) return ;
 
+	// clip fill
+	g2_gl_fill_clip(&fill, &path->fill.rect);
+
 	// init vertices
 	if (fill.context->version < 0x20)
 		g2_glVertexPointer(2, G2_GL_FLOAT, 0, tb_vector_data(path->fill.data));
@@ -1192,6 +1395,9 @@ tb_void_t g2_gl_fill_triangle(g2_gl_painter_t* painter, g2_triangle_t const* tri
 	// init fill
 	g2_gl_fill_t fill = {0};
 	if (!g2_gl_fill_init(&fill, painter, G2_GL_FILL_FLAG_CONVEX)) return ;
+
+	// clip fill
+	g2_gl_fill_clip(&fill, &bounds);
 
 	// draw vertices
 	if (fill.context->version < 0x20) g2_glVertexPointer(2, G2_GL_FLOAT, 0, vertices);
