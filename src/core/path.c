@@ -29,6 +29,49 @@
  * implementation
  */
 
+// dump
+tb_void_t g2_path_dump(tb_handle_t path)
+{
+	// check
+	tb_assert_and_check_return(path);
+
+	// path
+	if (g2_path_itor_init(path))
+	{
+		// path
+		tb_print("=============================================================");
+		tb_print("path: ");
+
+		// walk
+		g2_point_t 	pt[3];
+		tb_size_t 	co = G2_PATH_CODE_NONE;
+		while (co = g2_path_itor_next(path, pt))
+		{
+			switch (co)
+			{
+			case G2_PATH_CODE_MOVE:
+				tb_print("move_to: %f, %f", g2_float_to_tb(pt[0].x), g2_float_to_tb(pt[0].y));
+				break;
+			case G2_PATH_CODE_LINE:
+				tb_print("line_to: %f, %f", g2_float_to_tb(pt[0].x), g2_float_to_tb(pt[0].y));
+				break;
+			case G2_PATH_CODE_QUAD:
+				tb_print("quad_to: %f, %f, %f,%f", g2_float_to_tb(pt[0].x), g2_float_to_tb(pt[0].y), g2_float_to_tb(pt[1].x), g2_float_to_tb(pt[1].y));
+				break;
+			case G2_PATH_CODE_CUBE:
+				tb_print("cube_to: %f, %f, %f, %f, %f, %f", g2_float_to_tb(pt[0].x), g2_float_to_tb(pt[0].y), g2_float_to_tb(pt[1].x), g2_float_to_tb(pt[1].y), g2_float_to_tb(pt[2].x), g2_float_to_tb(pt[2].y));
+				break;
+			case G2_PATH_CODE_CLOS:
+				tb_print("close");
+				break;
+			default:
+				break;
+			}
+		}
+		g2_path_itor_exit(path);
+	}
+}
+
 // move to
 tb_void_t g2_path_movei_to(tb_handle_t path, g2_ipoint_t const* pt)
 {

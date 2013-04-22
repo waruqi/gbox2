@@ -69,6 +69,9 @@ tb_void_t 		g2_path_copy(tb_handle_t path, 				tb_handle_t copy);
 // null?
 tb_bool_t 		g2_path_null(tb_handle_t path);
 
+// dump
+tb_void_t 		g2_path_dump(tb_handle_t path);
+
 // iterator
 tb_bool_t 		g2_path_itor_init(tb_handle_t path);
 tb_size_t 		g2_path_itor_next(tb_handle_t path, 		g2_point_t pt[3]);

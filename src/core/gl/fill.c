@@ -512,6 +512,9 @@ static __tb_inline__ tb_void_t g2_gl_fill_stencil_clip_path(g2_gl_fill_t* fill, 
 		g2_glVertexPointer(2, G2_GL_FLOAT, 0, tb_vector_data(path->fill.data));
 	else g2_glVertexAttribPointer(g2_gl_program_location(fill->program, G2_GL_PROGRAM_LOCATION_VERTICES), 2, G2_GL_FLOAT, G2_GL_FALSE, 0, tb_vector_data(path->fill.data));
 
+	// dump
+	g2_path_dump(path);
+
 	// clip path
 	tb_size_t 	head = 0;
 	tb_size_t 	size = 0;
@@ -710,7 +713,6 @@ static __tb_inline__ tb_void_t g2_gl_fill_stencil_clip(g2_gl_fill_t* fill, g2_gl
 			{
 			case G2_CLIPPER_MODE_REPLACE:
 				{
-					tb_print("G2_CLIPPER_MODE_REPLACE");
 					g2_glStencilFunc(G2_GL_ALWAYS, 0, 0);
 					g2_glStencilOp(G2_GL_INVERT, G2_GL_INVERT, G2_GL_INVERT);
 
@@ -740,7 +742,6 @@ static __tb_inline__ tb_void_t g2_gl_fill_stencil_clip(g2_gl_fill_t* fill, g2_gl
 				break;
 			case G2_CLIPPER_MODE_INTERSECT:
 				{
-					tb_print("G2_CLIPPER_MODE_INTERSECT");
 					// save vetex matrix
 					tb_float_t matrix0[16];
 					g2_gl_matrix_copy(matrix0, fill->vmatrix);
@@ -763,25 +764,13 @@ static __tb_inline__ tb_void_t g2_gl_fill_stencil_clip(g2_gl_fill_t* fill, g2_gl
 					// apply vetex matrix
 					g2_gl_fill_apply_vertex_matrix(fill);
 
-#if 1
 					g2_glStencilFunc(G2_GL_EQUAL, 0xff, 0xff);
 					g2_glStencilOp(G2_GL_INCR, G2_GL_ZERO, G2_GL_ZERO);
 					g2_gl_fill_stencil_clip_bounds(fill, bounds);
-#else
-					g2_gl_rect_t rect;
-					rect.x1 = 0;
-					rect.y1 = 0;
-					rect.x2 = 640;
-					rect.y2 = 480;
-					g2_glStencilFunc(G2_GL_EQUAL, 0xff, 0xff);
-					g2_glStencilOp(G2_GL_INCR, G2_GL_ZERO, G2_GL_ZERO);
-					g2_gl_fill_stencil_clip_bounds(fill, &rect);
-#endif
 				}
 				break;
 			case G2_CLIPPER_MODE_UNION:
 				{
-					tb_print("G2_CLIPPER_MODE_UNION");
 					g2_glStencilFunc(G2_GL_EQUAL, 0x00, 0xff);
 					g2_glStencilOp(G2_GL_ZERO, G2_GL_INVERT, G2_GL_INVERT);
 					g2_gl_fill_stencil_clip_bounds(fill, bounds);
@@ -815,7 +804,6 @@ static __tb_inline__ tb_void_t g2_gl_fill_stencil_clip(g2_gl_fill_t* fill, g2_gl
 				break;
 			case G2_CLIPPER_MODE_SUBTRACT:
 				{
-					tb_print("G2_CLIPPER_MODE_SUBTRACT");
 					// save vetex matrix
 					tb_float_t matrix0[16];
 					g2_gl_matrix_copy(matrix0, fill->vmatrix);
