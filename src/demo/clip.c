@@ -184,6 +184,7 @@ static tb_bool_t g2_demo_shape_init(tb_int_t argc, tb_char_t** argv)
 				}
 				else 
 				{
+#error close bug for clip
 					g2_path_linei_to(g_path[i], &g_pts[i][j]);
 					if (g_pts[i][j].x == g_pts[i][h].x && g_pts[i][j].y == g_pts[i][h].y) c = 1;
 				}
