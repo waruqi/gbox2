@@ -3,9 +3,6 @@
 # #
 
 # demo
-G2_CONFIG_DEMO 						= n
-
-# demo
 G2_CONFIG_DEMO_TYPE 				= ipa
 
 # arm

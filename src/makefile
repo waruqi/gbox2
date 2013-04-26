@@ -447,7 +447,7 @@ gbox2_INC_DIR 			+= $(PRO_DIR)/../tbox/pre/inc/$(PLAT)/$(ARCH)
 gbox2_LIB_DIR 			+= $(PRO_DIR)/../tbox/pre/lib/$(PLAT)/$(ARCH)
 
 # demo
-ifeq ($(G2_CONFIG_DEMO),y)
+ifeq ($(DEMO),y)
 SUB_PROS 				= demo/$(G2_CONFIG_DEMO_TYPE)
 endif
 

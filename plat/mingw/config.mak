@@ -3,7 +3,6 @@
 # #
 
 # demo
-G2_CONFIG_DEMO 						= y
 G2_CONFIG_DEMO_LIBS 				= glut gl gdi usp10 ole winmm ws2_32 gcc
 
 # demo

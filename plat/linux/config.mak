@@ -3,7 +3,6 @@
 # #
 
 # demo
-G2_CONFIG_DEMO 						= y
 G2_CONFIG_DEMO_LIBS 				= glut GLU GL z m dl pthread
 
 # demo
