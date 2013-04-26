@@ -90,7 +90,7 @@
 
 #undef SK_DEBUG
 #undef SK_RELEASE
-#ifdef G2_DEBUG
+#ifdef __tb_debug__
 # 	define SK_DEBUG
 #else
 # 	define SK_RELEASE

@@ -37,7 +37,7 @@
  */
 
 // grow
-#ifdef TB_CONFIG_MEMORY_MODE_SMALL
+#ifdef __tb_small__
 # 	define G2_GL_SHADERS_GROW 				(32)
 #else
 # 	define G2_GL_SHADERS_GROW 				(128)
@@ -86,7 +86,7 @@ static __tb_inline__ tb_void_t g2_gl_context_extensions(g2_gl_context_t* context
 		tb_size_t 			l = q? q - p : tb_strlen(p);
 
 		// dump
-#ifdef G2_DEBUG
+#ifdef __tb_debug__
 		tb_char_t 			e[4096] = {0};
 		tb_strncpy(e, p, tb_min(4096, l));
 		tb_trace_impl("extension: %s", e);

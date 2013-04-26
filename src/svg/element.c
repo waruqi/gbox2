@@ -29,7 +29,7 @@
 /* ///////////////////////////////////////////////////////////////////////
  * macros
  */
-#ifdef TB_CONFIG_MEMORY_MODE_SMALL
+#ifdef __tb_small__
 # 	define G2_SVG_ELEMENT_PAINTER_HASH_MAXN 			(32)
 #else
 # 	define G2_SVG_ELEMENT_PAINTER_HASH_MAXN 			(64)

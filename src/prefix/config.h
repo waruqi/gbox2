@@ -35,7 +35,7 @@
 
 // is debug?
 #if gbox2_CONFIG_DEBUG
-# 	define G2_DEBUG
+# 	define __tb_debug__
 #endif
 
 

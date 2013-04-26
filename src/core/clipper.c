@@ -29,7 +29,7 @@
 /* ///////////////////////////////////////////////////////////////////////
  * macros
  */
-#ifdef TB_CONFIG_MEMORY_MODE_SMALL
+#ifdef __tb_small__
 # 	define G2_CLIPPER_GROW_SIZE 			(4)
 #else
 # 	define G2_CLIPPER_GROW_SIZE 			(8)

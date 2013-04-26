@@ -36,7 +36,7 @@
  */
 
 // maxn
-#ifdef TB_CONFIG_MEMORY_MODE_SMALL
+#ifdef __tb_small__
 # 	define G2_GL_PROGRAM_SHADER_MAXN 		(8)
 # 	define G2_GL_PROGRAM_LOCATION_MAXN 		(32)
 #else

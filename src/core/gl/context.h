@@ -35,7 +35,7 @@
  */
 
 // the texture maxn
-#ifdef TB_CONFIG_MEMORY_MODE_SMALL
+#ifdef __tb_small__
 # 	define G2_GL_TEXTURE_MAXN 		(256)
 #else
 # 	define G2_GL_TEXTURE_MAXN 		(1024)
