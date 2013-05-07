@@ -512,9 +512,6 @@ static __tb_inline__ tb_void_t g2_gl_fill_stencil_clip_path(g2_gl_fill_t* fill, 
 		g2_glVertexPointer(2, G2_GL_FLOAT, 0, tb_vector_data(path->fill.data));
 	else g2_glVertexAttribPointer(g2_gl_program_location(fill->program, G2_GL_PROGRAM_LOCATION_VERTICES), 2, G2_GL_FLOAT, G2_GL_FALSE, 0, tb_vector_data(path->fill.data));
 
-	// dump
-	g2_path_dump(path);
-
 	// clip path
 	tb_size_t 	head = 0;
 	tb_size_t 	size = 0;
@@ -753,7 +750,7 @@ static __tb_inline__ tb_void_t g2_gl_fill_stencil_clip(g2_gl_fill_t* fill, g2_gl
 					g2_gl_fill_apply_vertex_matrix(fill);
 
 					g2_glStencilFunc(G2_GL_EQUAL, 0x00, 0xff);
-					g2_glStencilOp(G2_GL_KEEP, G2_GL_INVERT, G2_GL_INVERT);
+					g2_glStencilOp(G2_GL_INVERT, G2_GL_INVERT, G2_GL_INVERT);
 
 					// clip item
 					g2_gl_fill_stencil_clip_item(fill, item);
@@ -818,16 +815,7 @@ static __tb_inline__ tb_void_t g2_gl_fill_stencil_clip(g2_gl_fill_t* fill, g2_gl
 					g2_glStencilOp(G2_GL_KEEP, G2_GL_INVERT, G2_GL_INVERT);
 
 					// clip item
-					tb_void_t (*clip[])(g2_gl_fill_t* , g2_clipper_item_t const* ) = 
-					{
-						g2_gl_fill_stencil_clip_rect
-					,	g2_gl_fill_stencil_clip_path
-					,	g2_gl_fill_stencil_clip_circle
-					,	g2_gl_fill_stencil_clip_ellipse
-					,	g2_gl_fill_stencil_clip_triangle
-					};
-					tb_assert_and_check_return(item->type < tb_arrayn(clip));
-					clip[item->type](fill, item);
+					g2_gl_fill_stencil_clip_item(fill, item);
 	
 					// restore vetex matrix
 					g2_gl_matrix_copy(fill->vmatrix, matrix0);

@@ -785,7 +785,6 @@ tb_void_t g2_path_line_to(tb_handle_t path, g2_point_t const* pt)
 	// bounds
 	g2_gl_rect_done(&gpath->rect, data[0], data[1]);
 
-#error
 	// patch move-to
 	if (!(gpath->flag & G2_GL_PATH_FLAG_OPEN)) 
 	{

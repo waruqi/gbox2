@@ -126,14 +126,6 @@ static tb_size_t 		g_ptn[] = 	{ 	sizeof(pts0) / sizeof(g2_ipoint_t)
 									, 	sizeof(pts4) / sizeof(g2_ipoint_t)
 									};
 static g2_ipoint_t* 	g_cpts[] = 	{ 	tb_null, tb_null, tb_null, cpts3, cpts4 };
-#if 0
-static tb_size_t 		g_cptn[] = 	{ 	0
-									, 	0
-									, 	0
-									, 	sizeof(cpts3) / sizeof(g2_point_t)
-									, 	sizeof(cpts4) / sizeof(g2_point_t)
-									};
-#endif
 static tb_size_t const 	g_ptm = 5;
 static tb_handle_t 		g_path[5] = {0};
 
@@ -224,7 +216,7 @@ static tb_void_t g2_demo_shape_render()
 	// clip
 //	g2_clip_irect2(g_painter, G2_CLIPPER_MODE_INTERSECT, 10, 10, g2_bitmap_width(g_surface) - 20, g2_bitmap_height(g_surface) - 20);
 //	g2_clip_itriangle2(g_painter, G2_CLIPPER_MODE_INTERSECT, g_x0 - 300, g_y0, g_x0, g_y0 - 100, g_x0 + 300, g_y0);
-//	g2_clip_icircle2(g_painter, G2_CLIPPER_MODE_INTERSECT, g_x0, g_y0, 200);
+	g2_clip_icircle2(g_painter, G2_CLIPPER_MODE_INTERSECT, g_x0, g_y0, 200);
 //	g2_clip_iellipse2(g_painter, G2_CLIPPER_MODE_UNION, g_x0, g_y0, 300, 100);
 //	g2_clip_icircle2(g_painter, G2_CLIPPER_MODE_SUBTRACT, g_x0, g_y0, 10);
 
@@ -234,8 +226,8 @@ static tb_void_t g2_demo_shape_render()
 
 #if 1 // suffix
 	g2_load_matrix(g_painter);
-	g2_clip_path(g_painter, G2_CLIPPER_MODE_INTERSECT, g_path[g_pti]);
-//	g2_clip_path(g_painter, G2_CLIPPER_MODE_UNION, g_path[g_pti]);
+//	g2_clip_path(g_painter, G2_CLIPPER_MODE_INTERSECT, g_path[g_pti]);
+	g2_clip_path(g_painter, G2_CLIPPER_MODE_UNION, g_path[g_pti]);
 //	g2_clip_path(g_painter, G2_CLIPPER_MODE_SUBTRACT, g_path[g_pti]);
 	g2_save_matrix(g_painter);
 	g2_clear_matrix(g_painter);

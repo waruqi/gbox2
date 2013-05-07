@@ -116,7 +116,6 @@ static g2_ipoint_t cpts4[] =
 , 	{-100, 50}
 , 	{-100, -50}
 };
-
 static tb_size_t 		g_pti = 0;
 static g2_ipoint_t* 	g_pts[] = 	{ 	pts0, pts1, pts2, pts3, pts4 	};
 static tb_size_t 		g_ptn[] = 	{ 	sizeof(pts0) / sizeof(g2_ipoint_t)
@@ -126,14 +125,6 @@ static tb_size_t 		g_ptn[] = 	{ 	sizeof(pts0) / sizeof(g2_ipoint_t)
 									, 	sizeof(pts4) / sizeof(g2_ipoint_t)
 									};
 static g2_ipoint_t* 	g_cpts[] = 	{ 	tb_null, tb_null, tb_null, cpts3, cpts4 };
-#if 0
-static tb_size_t 		g_cptn[] = 	{ 	0
-									, 	0
-									, 	0
-									, 	sizeof(cpts3) / sizeof(g2_point_t)
-									, 	sizeof(cpts4) / sizeof(g2_point_t)
-									};
-#endif
 static tb_size_t const 	g_ptm = 5;
 static tb_handle_t 		g_path[5] = {0};
 
@@ -142,6 +133,7 @@ static tb_handle_t 		g_path[5] = {0};
  */
 static tb_bool_t g2_demo_shape_init(tb_int_t argc, tb_char_t** argv)
 {
+#if 1
 	// init path
 	tb_size_t 	i = 0;
 	tb_size_t 	j = 0;
@@ -191,6 +183,29 @@ static tb_bool_t g2_demo_shape_init(tb_int_t argc, tb_char_t** argv)
 			g2_path_close(g_path[i]);
 		}
 	}
+#else	
+	// init path
+	tb_size_t 	i = 0;
+	tb_size_t 	j = 0;
+	for (i = 0; i < g_ptm; i++)
+	{
+		g_path[i] = g2_path_init();
+		if (g_cpts[i])
+		{
+			g2_path_movei_to(g_path[i], &g_pts[i][0]);
+			for (j = 1; j < g_ptn[i]; j++)
+				g2_path_quadi_to(g_path[i], &g_cpts[i][j - 1], &g_pts[i][j]);
+			g2_path_close(g_path[i]);
+		}
+		else
+		{
+			g2_path_movei_to(g_path[i], &g_pts[i][0]);
+			for (j = 1; j < g_ptn[i]; j++)
+				g2_path_linei_to(g_path[i], &g_pts[i][j]);
+			g2_path_close(g_path[i]);
+		}
+	}
+#endif
 
 	// init mode
 	g_mode = G2_STYLE_MODE_FILL_STOK;
