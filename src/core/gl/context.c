@@ -88,7 +88,7 @@ static __tb_inline__ tb_void_t g2_gl_context_extensions(g2_gl_context_t* context
 		// dump
 #ifdef __tb_debug__
 		tb_char_t 			e[4096] = {0};
-		tb_strncpy(e, p, tb_min(4096, l));
+		tb_strlcpy(e, p, tb_min(4096, l));
 		tb_trace_impl("extension: %s", e);
 #endif
 

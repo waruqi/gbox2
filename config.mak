@@ -7,6 +7,7 @@ PRO_NAME = gbox2
 
 # debug
 DEBUG = y
+DTYPE = d
 
 # small
 SMALL = n
@@ -33,6 +34,7 @@ DISTCC =
 export PRO_DIR
 export PRO_NAME
 export DEBUG
+export DTYPE
 export SMALL
 export PLAT
 export ARCH

@@ -121,7 +121,7 @@ tb_handle_t g2_pcache_init(tb_size_t maxn)
 	}
 
 	// init path hash
-	pcache->hash = tb_hash_init(tb_int32_sqrt(pcache->maxn), tb_item_func_ifm(sizeof(g2_shape_t), tb_null, tb_null), func);
+	pcache->hash = tb_hash_init(tb_isqrti(pcache->maxn), tb_item_func_ifm(sizeof(g2_shape_t), tb_null, tb_null), func);
 	tb_assert_and_check_goto(pcache->hash, fail);
 
 	// ok
