@@ -71,6 +71,9 @@ typedef struct __g2_gl_fill_t
 	// the flag
 	tb_size_t 			flag;
 
+	// the stencil pass value
+	tb_byte_t 			pass;
+
 	// the vertices, 4[points] x 2[xy]
 	tb_float_t 			vertices[8];
 
@@ -402,6 +405,9 @@ static __tb_inline__ tb_void_t g2_gl_fill_stencil_init(g2_gl_fill_t* fill)
 
 		// use stencil 
 		fill->flag |= G2_GL_FILL_FLAG_STENCIL;
+
+		// init the pass value
+		fill->pass = 0xff;
 	}
 }
 static __tb_inline__ tb_void_t g2_gl_fill_stencil_clip_bounds(g2_gl_fill_t* fill, g2_gl_rect_t const* bounds)
@@ -652,47 +658,73 @@ static __tb_inline__ tb_void_t g2_gl_fill_stencil_clip(g2_gl_fill_t* fill, g2_gl
 			// apply vetex matrix
 			g2_gl_fill_apply_vertex_matrix(fill);
 			
-			// last? need not filter it
-//			tb_check_continue(i + 1 == size);
-
 			// filter the stencil mask
 			switch (item->mode)
 			{
 			case G2_CLIPPER_MODE_REPLACE:
 				{
-					// 0x00 => 0x01, 0xff => 0x00
-					g2_glStencilFunc(G2_GL_EQUAL, 0xff, 0xff);
-					g2_glStencilOp(G2_GL_INCR, G2_GL_ZERO, G2_GL_ZERO);
-					g2_gl_fill_stencil_clip_bounds(fill, bounds);
+					// done mask
+					if (i + 1 < size)
+					{
+						// 0x00 => 0x01, 0xff => 0x00
+						g2_glStencilFunc(G2_GL_EQUAL, 0xff, 0xff);
+						g2_glStencilOp(G2_GL_INCR, G2_GL_ZERO, G2_GL_ZERO);
+						g2_gl_fill_stencil_clip_bounds(fill, bounds);
+			
+						// pass: 0x00
+						fill->pass = 0;
+					}
+					// last? using the pass value directly
+					else fill->pass = 0xff;
 				}
 				break;
 			case G2_CLIPPER_MODE_INTERSECT:
 				{
-					// 0x00 => 0x01
-					g2_glStencilFunc(G2_GL_EQUAL, 0x00, 0xff);
-					g2_glStencilOp(G2_GL_KEEP, G2_GL_INCR, G2_GL_INCR);
-					g2_gl_fill_stencil_clip_bounds(fill, bounds);
+					// FIXME
+					// done mask
+					if (i + 1 < size)
+					{
+						// 0x00 => 0x01
+						g2_glStencilFunc(G2_GL_EQUAL, 0x00, 0xff);
+						g2_glStencilOp(G2_GL_KEEP, G2_GL_INCR, G2_GL_INCR);
+						g2_gl_fill_stencil_clip_bounds(fill, bounds);
 
-					// 0xff => 0x00
-					g2_glStencilFunc(G2_GL_EQUAL, 0xff, 0xff);
-					g2_glStencilOp(G2_GL_KEEP, G2_GL_ZERO, G2_GL_ZERO);
-					g2_gl_fill_stencil_clip_bounds(fill, bounds);
+						// 0xff => 0x00
+						g2_glStencilFunc(G2_GL_EQUAL, 0xff, 0xff);
+						g2_glStencilOp(G2_GL_KEEP, G2_GL_ZERO, G2_GL_ZERO);
+						g2_gl_fill_stencil_clip_bounds(fill, bounds);
+
+						// pass: 0x00
+						fill->pass = 0;
+					}
+					// last? using the pass value directly
+					else fill->pass = 0xff;
 				}
 				break;
 			case G2_CLIPPER_MODE_UNION:
 				{
-					// 0xff => 0x00
+					// 0x01 => 0x00, 0xff => 0x00
 					g2_glStencilFunc(G2_GL_NOTEQUAL, 0xfe, 0xff);
 					g2_glStencilOp(G2_GL_KEEP, G2_GL_ZERO, G2_GL_ZERO);
 					g2_gl_fill_stencil_clip_bounds(fill, bounds);
+
+					// pass: 0x00
+					fill->pass = 0;
 				}
 				break;
 			case G2_CLIPPER_MODE_SUBTRACT:
 				{
-					// 0xff => 0xfe
-					g2_glStencilFunc(G2_GL_EQUAL, 0xff, 0xff);
-					g2_glStencilOp(G2_GL_KEEP, G2_GL_DECR, G2_GL_DECR);
-					g2_gl_fill_stencil_clip_bounds(fill, bounds);
+					// done mask
+					if (i + 1 < size)
+					{
+						// 0xff => 0xfe
+						g2_glStencilFunc(G2_GL_EQUAL, 0xff, 0xff);
+						g2_glStencilOp(G2_GL_KEEP, G2_GL_DECR, G2_GL_DECR);
+						g2_gl_fill_stencil_clip_bounds(fill, bounds);
+					}
+
+					// pass: 0x00
+					fill->pass = 0;
 				}
 				break;
 			default:
@@ -705,6 +737,9 @@ static __tb_inline__ tb_void_t g2_gl_fill_stencil_clip(g2_gl_fill_t* fill, g2_gl
 	// apply stencil for draw path
 	g2_glStencilFunc(G2_GL_ALWAYS, 0, 0);
 	g2_glStencilOp(G2_GL_INVERT, G2_GL_INVERT, G2_GL_INVERT);
+
+	// invert pass 
+	fill->pass = ~fill->pass;
 }
 static __tb_inline__ tb_void_t g2_gl_fill_stencil_draw(g2_gl_fill_t* fill)
 {
@@ -712,7 +747,7 @@ static __tb_inline__ tb_void_t g2_gl_fill_stencil_draw(g2_gl_fill_t* fill)
 	tb_check_return(fill->flag & G2_GL_FILL_FLAG_STENCIL);
 
 	// draw stencil
-	g2_glStencilFunc(G2_GL_EQUAL, 0xff, 0xff);
+	g2_glStencilFunc(G2_GL_EQUAL, (g2_GLint_t)fill->pass, 0xff);
 	g2_glStencilOp(G2_GL_ZERO, G2_GL_ZERO, G2_GL_ZERO);
 	g2_glColorMask(G2_GL_TRUE, G2_GL_TRUE, G2_GL_TRUE, G2_GL_TRUE);
 }
