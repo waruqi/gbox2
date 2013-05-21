@@ -47,6 +47,20 @@ typedef enum __g2_gl_fill_flag_t
 
 }g2_gl_fill_flag_t;
 
+// the gl fill radial factor type
+typedef struct __g2_gl_fill_radial_factor_t
+{
+	// the factor
+	tb_float_t 			factor;
+
+	// the rotate
+	tb_float_t 			rotation;
+
+	// the count
+	tb_size_t 			count;
+	
+}g2_gl_fill_radial_factor_t;
+
 // the gl fill type
 typedef struct __g2_gl_fill_t
 {
@@ -70,9 +84,6 @@ typedef struct __g2_gl_fill_t
 
 	// the flag
 	tb_size_t 			flag;
-
-	// the stencil pass value
-	tb_byte_t 			pass;
 
 	// the vertices, 4[points] x 2[xy]
 	tb_float_t 			vertices[8];
@@ -405,9 +416,6 @@ static __tb_inline__ tb_void_t g2_gl_fill_stencil_init(g2_gl_fill_t* fill)
 
 		// use stencil 
 		fill->flag |= G2_GL_FILL_FLAG_STENCIL;
-
-		// init the pass value
-		fill->pass = 0xff;
 	}
 }
 static __tb_inline__ tb_void_t g2_gl_fill_stencil_clip_bounds(g2_gl_fill_t* fill, g2_gl_rect_t const* bounds)
@@ -421,7 +429,6 @@ static __tb_inline__ tb_void_t g2_gl_fill_stencil_clip_bounds(g2_gl_fill_t* fill
 	fill->vertices[5] = bounds->y2;
 	fill->vertices[6] = bounds->x2;
 	fill->vertices[7] = bounds->y2;
-	tb_print("clip: %f %f %f %f", bounds->x1, bounds->y1, bounds->x2, bounds->y2);
 	
 	// apply vertices
 	g2_gl_fill_apply_vertices(fill);
@@ -663,42 +670,23 @@ static __tb_inline__ tb_void_t g2_gl_fill_stencil_clip(g2_gl_fill_t* fill, g2_gl
 			{
 			case G2_CLIPPER_MODE_REPLACE:
 				{
-					// done mask
-					if (i + 1 < size)
-					{
-						// 0x00 => 0x01, 0xff => 0x00
-						g2_glStencilFunc(G2_GL_EQUAL, 0xff, 0xff);
-						g2_glStencilOp(G2_GL_INCR, G2_GL_ZERO, G2_GL_ZERO);
-						g2_gl_fill_stencil_clip_bounds(fill, bounds);
-			
-						// pass: 0x00
-						fill->pass = 0;
-					}
-					// last? using the pass value directly
-					else fill->pass = 0xff;
+					// 0x00 => 0x01, 0xff => 0x00
+					g2_glStencilFunc(G2_GL_EQUAL, 0xff, 0xff);
+					g2_glStencilOp(G2_GL_INCR, G2_GL_ZERO, G2_GL_ZERO);
+					g2_gl_fill_stencil_clip_bounds(fill, bounds);
 				}
 				break;
 			case G2_CLIPPER_MODE_INTERSECT:
 				{
-					// FIXME
-					// done mask
-					if (i + 1 < size)
-					{
-						// 0x00 => 0x01
-						g2_glStencilFunc(G2_GL_EQUAL, 0x00, 0xff);
-						g2_glStencilOp(G2_GL_KEEP, G2_GL_INCR, G2_GL_INCR);
-						g2_gl_fill_stencil_clip_bounds(fill, bounds);
+					// 0x00 => 0x01
+					g2_glStencilFunc(G2_GL_EQUAL, 0x00, 0xff);
+					g2_glStencilOp(G2_GL_KEEP, G2_GL_INCR, G2_GL_INCR);
+					g2_gl_fill_stencil_clip_bounds(fill, bounds);
 
-						// 0xff => 0x00
-						g2_glStencilFunc(G2_GL_EQUAL, 0xff, 0xff);
-						g2_glStencilOp(G2_GL_KEEP, G2_GL_ZERO, G2_GL_ZERO);
-						g2_gl_fill_stencil_clip_bounds(fill, bounds);
-
-						// pass: 0x00
-						fill->pass = 0;
-					}
-					// last? using the pass value directly
-					else fill->pass = 0xff;
+					// 0xff => 0x00
+					g2_glStencilFunc(G2_GL_EQUAL, 0xff, 0xff);
+					g2_glStencilOp(G2_GL_KEEP, G2_GL_ZERO, G2_GL_ZERO);
+					g2_gl_fill_stencil_clip_bounds(fill, bounds);
 				}
 				break;
 			case G2_CLIPPER_MODE_UNION:
@@ -707,24 +695,14 @@ static __tb_inline__ tb_void_t g2_gl_fill_stencil_clip(g2_gl_fill_t* fill, g2_gl
 					g2_glStencilFunc(G2_GL_NOTEQUAL, 0xfe, 0xff);
 					g2_glStencilOp(G2_GL_KEEP, G2_GL_ZERO, G2_GL_ZERO);
 					g2_gl_fill_stencil_clip_bounds(fill, bounds);
-
-					// pass: 0x00
-					fill->pass = 0;
 				}
 				break;
 			case G2_CLIPPER_MODE_SUBTRACT:
 				{
-					// done mask
-					if (i + 1 < size)
-					{
-						// 0xff => 0xfe
-						g2_glStencilFunc(G2_GL_EQUAL, 0xff, 0xff);
-						g2_glStencilOp(G2_GL_KEEP, G2_GL_DECR, G2_GL_DECR);
-						g2_gl_fill_stencil_clip_bounds(fill, bounds);
-					}
-
-					// pass: 0x00
-					fill->pass = 0;
+					// 0xff => 0xfe
+					g2_glStencilFunc(G2_GL_EQUAL, 0xff, 0xff);
+					g2_glStencilOp(G2_GL_KEEP, G2_GL_DECR, G2_GL_DECR);
+					g2_gl_fill_stencil_clip_bounds(fill, bounds);
 				}
 				break;
 			default:
@@ -737,9 +715,6 @@ static __tb_inline__ tb_void_t g2_gl_fill_stencil_clip(g2_gl_fill_t* fill, g2_gl
 	// apply stencil for draw path
 	g2_glStencilFunc(G2_GL_ALWAYS, 0, 0);
 	g2_glStencilOp(G2_GL_INVERT, G2_GL_INVERT, G2_GL_INVERT);
-
-	// invert pass 
-	fill->pass = ~fill->pass;
 }
 static __tb_inline__ tb_void_t g2_gl_fill_stencil_draw(g2_gl_fill_t* fill)
 {
@@ -747,7 +722,7 @@ static __tb_inline__ tb_void_t g2_gl_fill_stencil_draw(g2_gl_fill_t* fill)
 	tb_check_return(fill->flag & G2_GL_FILL_FLAG_STENCIL);
 
 	// draw stencil
-	g2_glStencilFunc(G2_GL_EQUAL, (g2_GLint_t)fill->pass, 0xff);
+	g2_glStencilFunc(G2_GL_EQUAL, 0xff, 0xff);
 	g2_glStencilOp(G2_GL_ZERO, G2_GL_ZERO, G2_GL_ZERO);
 	g2_glColorMask(G2_GL_TRUE, G2_GL_TRUE, G2_GL_TRUE, G2_GL_TRUE);
 }
@@ -962,24 +937,26 @@ static __tb_inline__ tb_void_t g2_gl_fill_style_draw_shader_radial(g2_gl_fill_t*
 	g2_gl_matrix_from(smatrix, &fill->shader->matrix);
 	tb_float_t cx = g2_float_to_tb(fill->shader->u.radial.cp.c.x);
 	tb_float_t cy = g2_float_to_tb(fill->shader->u.radial.cp.c.y);
-	tb_float_t x0 = g2_gl_matrix_apply_x(smatrix, cx, cy);
-	tb_float_t y0 = g2_gl_matrix_apply_y(smatrix, cx, cy);
-
-	// init scale factor
-	tb_float_t sx = tb_fabs(smatrix[0]);
-	tb_float_t sy = tb_fabs(smatrix[5]);
-	tb_float_t fs = tb_min(sx, sy);
-	if (fs < 1e-9) fs = 1e-9;
 
 	// init maximum radius 
-	tb_float_t n1 = (x0 - bounds->x1) * (x0 - bounds->x1) + (y0 - bounds->y1) * (y0 - bounds->y1);
-	tb_float_t n2 = (x0 - bounds->x2) * (x0 - bounds->x2) + (y0 - bounds->y1) * (y0 - bounds->y1);
-	tb_float_t n3 = (x0 - bounds->x1) * (x0 - bounds->x1) + (y0 - bounds->y2) * (y0 - bounds->y2);
-	tb_float_t n4 = (x0 - bounds->x2) * (x0 - bounds->x2) + (y0 - bounds->y2) * (y0 - bounds->y2);
+	tb_float_t n1 = (cx - bounds->x1) * (cx - bounds->x1) + (cy - bounds->y1) * (cy - bounds->y1);
+	tb_float_t n2 = (cx - bounds->x2) * (cx - bounds->x2) + (cy - bounds->y1) * (cy - bounds->y1);
+	tb_float_t n3 = (cx - bounds->x1) * (cx - bounds->x1) + (cy - bounds->y2) * (cy - bounds->y2);
+	tb_float_t n4 = (cx - bounds->x2) * (cx - bounds->x2) + (cy - bounds->y2) * (cy - bounds->y2);
 	if (n2 > n1) n1 = n2;
 	if (n3 > n1) n1 = n3; 
 	if (n4 > n1) n1 = n4; 
-	tb_float_t rm = tb_sqrtf(n1) / fs;
+	tb_float_t rm = tb_sqrtf(n1);
+
+	// the radial factor
+	static g2_gl_fill_radial_factor_t factors[] =
+	{
+		{0.105396307f, 	12.0f, 	30} // rm * sin(6.05)
+	,	{0.070626986f, 	8.0f, 	45} // rm * sin(4.05)
+	,	{0.035771616f, 	4.0f, 	90} // rm * sin(2.05)
+	};
+	tb_assert(g2_quality() < tb_arrayn(factors));
+	g2_gl_fill_radial_factor_t const* factor = &factors[g2_quality()];
 
 	/* init fragment vertices
 	 *        
@@ -991,7 +968,7 @@ static __tb_inline__ tb_void_t g2_gl_fill_style_draw_shader_radial(g2_gl_fill_t*
 	 *     *|*
 	 *      *
 	 */
-	tb_float_t fn = rm * 0.008726535498; // rm * sin(0.5)
+	tb_float_t fn = rm * factor->factor; // rm * sin(x.05)
 	fill->vertices[0] = cx - fn;
 	fill->vertices[1] = cy - rm;
 	fill->vertices[2] = cx + fn;
@@ -1020,10 +997,10 @@ static __tb_inline__ tb_void_t g2_gl_fill_style_draw_shader_radial(g2_gl_fill_t*
 
 	// init rotate matrix: rotate one degress
 	tb_float_t matrix1[16];
-	g2_gl_matrix_init_rotatep(matrix1, 1.0f, cx, cy);
+	g2_gl_matrix_init_rotatep(matrix1, factor->rotation, cx, cy);
 
-	// rotate 361 degress for drawing all fragments
-	tb_size_t n = 361;
+	// rotate for drawing all fragments
+	tb_size_t n = factor->count;
 	while (n--)
 	{
 		// rotate one degress
