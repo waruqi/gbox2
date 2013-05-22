@@ -226,9 +226,9 @@ static tb_void_t g2_demo_shape_render()
 
 #if 1 // suffix
 	g2_load_matrix(g_painter);
-	g2_clip_path(g_painter, G2_CLIPPER_MODE_INTERSECT, g_path[g_pti]);
+//	g2_clip_path(g_painter, G2_CLIPPER_MODE_INTERSECT, g_path[g_pti]);
 //	g2_clip_path(g_painter, G2_CLIPPER_MODE_UNION, g_path[g_pti]);
-//	g2_clip_path(g_painter, G2_CLIPPER_MODE_SUBTRACT, g_path[g_pti]);
+	g2_clip_path(g_painter, G2_CLIPPER_MODE_SUBTRACT, g_path[g_pti]);
 	g2_save_matrix(g_painter);
 	g2_clear_matrix(g_painter);
 #endif
