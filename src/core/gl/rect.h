@@ -44,6 +44,8 @@ static __tb_inline__ tb_void_t g2_gl_rect_done(g2_gl_rect_t* rect, tb_float_t x,
 	if (y < rect->y1) rect->y1 = y;
 	if (x > rect->x2) rect->x2 = x;
 	if (y > rect->y2) rect->y2 = y;
+	rect->x2 += 1.0f;
+	rect->y2 += 1.0f;
 }
 
 #endif

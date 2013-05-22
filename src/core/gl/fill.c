@@ -352,8 +352,8 @@ static __tb_inline__ tb_void_t g2_gl_fill_apply_texture_matrix(g2_gl_fill_t* fil
 	// init
 	tb_float_t bx = bounds->x1;
 	tb_float_t by = bounds->y1;
-	tb_float_t bw = bounds->x2 - bounds->x1 + 1;
-	tb_float_t bh = bounds->y2 - bounds->y1 + 1;
+	tb_float_t bw = bounds->x2 - bounds->x1;
+	tb_float_t bh = bounds->y2 - bounds->y1;
 	tb_float_t sw = fill->shader->width;
 	tb_float_t sh = fill->shader->height;
 
@@ -445,8 +445,8 @@ static __tb_inline__ tb_void_t g2_gl_fill_stencil_clip_rect(g2_gl_fill_t* fill, 
 	g2_gl_rect_t bounds;
 	bounds.x1 = g2_float_to_tb(item->u.rect.x);
 	bounds.y1 = g2_float_to_tb(item->u.rect.y);
-	bounds.x2 = g2_float_to_tb(item->u.rect.x + item->u.rect.w - G2_ONE);
-	bounds.y2 = g2_float_to_tb(item->u.rect.y + item->u.rect.h - G2_ONE);
+	bounds.x2 = g2_float_to_tb(item->u.rect.x + item->u.rect.w);
+	bounds.y2 = g2_float_to_tb(item->u.rect.y + item->u.rect.h);
 	tb_check_return(bounds.x1 < bounds.x2 && bounds.y1 < bounds.y2);
 
 	// clip bounds
@@ -1163,8 +1163,8 @@ tb_void_t g2_gl_fill_rect(g2_gl_painter_t* painter, g2_rect_t const* rect)
 	g2_gl_rect_t bounds;
 	bounds.x1 = g2_float_to_tb(rect->x);
 	bounds.y1 = g2_float_to_tb(rect->y);
-	bounds.x2 = g2_float_to_tb(rect->x + rect->w - G2_ONE);
-	bounds.y2 = g2_float_to_tb(rect->y + rect->h - G2_ONE);
+	bounds.x2 = g2_float_to_tb(rect->x + rect->w);
+	bounds.y2 = g2_float_to_tb(rect->y + rect->h);
 	tb_check_return(bounds.x1 < bounds.x2 && bounds.y1 < bounds.y2);
 
 	// fill bounds
