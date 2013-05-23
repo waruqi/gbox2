@@ -979,16 +979,24 @@ static __tb_inline__ tb_void_t g2_gl_fill_style_draw_shader_radial(g2_gl_fill_t*
 	g2_gl_matrix_from(smatrix, &fill->shader->matrix);
 	tb_float_t cx = g2_float_to_tb(fill->shader->u.radial.cp.c.x);
 	tb_float_t cy = g2_float_to_tb(fill->shader->u.radial.cp.c.y);
+	tb_float_t x0 = g2_gl_matrix_apply_x(smatrix, cx, cy);
+	tb_float_t y0 = g2_gl_matrix_apply_y(smatrix, cx, cy);
+
+	// init scale factor
+	tb_float_t sx = tb_fabs(smatrix[0]);
+	tb_float_t sy = tb_fabs(smatrix[5]);
+	tb_float_t fs = tb_min(sx, sy);
+	if (fs < 1e-9) fs = 1e-9;
 
 	// init maximum radius 
-	tb_float_t n1 = (cx - bounds->x1) * (cx - bounds->x1) + (cy - bounds->y1) * (cy - bounds->y1);
-	tb_float_t n2 = (cx - bounds->x2) * (cx - bounds->x2) + (cy - bounds->y1) * (cy - bounds->y1);
-	tb_float_t n3 = (cx - bounds->x1) * (cx - bounds->x1) + (cy - bounds->y2) * (cy - bounds->y2);
-	tb_float_t n4 = (cx - bounds->x2) * (cx - bounds->x2) + (cy - bounds->y2) * (cy - bounds->y2);
+	tb_float_t n1 = (x0 - bounds->x1) * (x0 - bounds->x1) + (y0 - bounds->y1) * (y0 - bounds->y1);
+	tb_float_t n2 = (x0 - bounds->x2) * (x0 - bounds->x2) + (y0 - bounds->y1) * (y0 - bounds->y1);
+	tb_float_t n3 = (x0 - bounds->x1) * (x0 - bounds->x1) + (y0 - bounds->y2) * (y0 - bounds->y2);
+	tb_float_t n4 = (x0 - bounds->x2) * (x0 - bounds->x2) + (y0 - bounds->y2) * (y0 - bounds->y2);
 	if (n2 > n1) n1 = n2;
 	if (n3 > n1) n1 = n3; 
 	if (n4 > n1) n1 = n4; 
-	tb_float_t rm = tb_sqrtf(n1);
+	tb_float_t rm = (tb_float_t)(tb_isqrti(tb_ceil(n1)) + 1) / fs;
 
 	// the radial factor
 	static g2_gl_fill_radial_factor_t factors[] =
