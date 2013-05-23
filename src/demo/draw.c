@@ -1,7 +1,7 @@
 /* ////////////////////////////////////////////////////////////////////////
  * globals
  */
-static tb_size_t 	g_mode 		= G2_STYLE_MODE_NONE;
+static tb_size_t 	g_mode 		= G2_STYLE_MODE_FILL_STOK;
 static tb_size_t 	g_penw 		= 1;
 static tb_size_t 	g_capi 		= 0;
 static tb_size_t 	g_joini 	= 0;
@@ -11,6 +11,8 @@ static tb_size_t 	g_cap[] 	= {G2_STYLE_CAP_BUTT, G2_STYLE_CAP_SQUARE, G2_STYLE_C
 static tb_size_t 	g_join[] 	= {G2_STYLE_JOIN_MITER, G2_STYLE_JOIN_BEVEL, G2_STYLE_JOIN_ROUND};
 static tb_handle_t 	g_shader[4] = {tb_null};
 static tb_handle_t 	g_mhader[4] = {tb_null};
+static tb_handle_t 	g_path 		= tb_null;
+static tb_bool_t 	g_move 		= tb_true;
 
 /* ////////////////////////////////////////////////////////////////////////
  * interfaces
@@ -37,15 +39,20 @@ static tb_void_t g2_demo_wheelup(tb_int_t x, tb_int_t y)
 }
 static tb_void_t g2_demo_lclickdown(tb_int_t x, tb_int_t y)
 {	
-	g_shaderi = (g_shaderi + 1) % (g_bitmap? 4 : 3);
+	if (g_move)
+	{
+		g2_path_move2i_to(g_path, x, y);
+		g_move = tb_false;
+	}
+	else g2_path_line2i_to(g_path, x, y);
 }
 static tb_void_t g2_demo_lclickup(tb_int_t x, tb_int_t y)
 {
 }
 static tb_void_t g2_demo_rclickdown(tb_int_t x, tb_int_t y)
 {
-	g_capi = (g_capi + 1) % 3;
-	g_joini = (g_joini + 1) % 3;
+	g2_path_close(g_path);
+	g_move = tb_true;
 }
 static tb_void_t g2_demo_rclickup(tb_int_t x, tb_int_t y)
 {
@@ -71,11 +78,12 @@ static tb_void_t g2_demo_key(tb_int_t key)
 			g_joini = (g_joini + 1) % 3;
 		}
 		break;
+	case 'c':
+		g2_path_clear(g_path);
+		break;
 	default:
 		break;
 	}
-
-	g2_demo_shape_key(key);
 }
 
 /* ////////////////////////////////////////////////////////////////////////
@@ -104,13 +112,18 @@ static tb_bool_t g2_demo_init(tb_int_t argc, tb_char_t const** argv)
 		g_mhader[3]	= g2_shader_init_bitmap(g_context, g_bitmap, G2_SHADER_WRAP_CLAMP);
 	}
 
+	// init path
+	g_path = g2_path_init();
+	tb_assert_and_check_return_val(g_path, tb_false);
+
 	// ok
-	return g2_demo_shape_init(argc, argv);
+	return tb_true;
 }
 static tb_void_t g2_demo_exit()
 {
-	// exit shape
-	g2_demo_shape_exit();
+	// exit path
+	if (g_path) g2_path_exit(g_path);
+	g_path = tb_null;
 
 	// exit shader
 	tb_size_t i = 0;
@@ -162,7 +175,7 @@ static tb_void_t g2_demo_render()
 		}
 
 		// render
-		g2_demo_shape_render();
+		g2_draw_path(g_painter, g_path);
 	}
 
 	if (g_mode & G2_STYLE_MODE_STOK)
@@ -176,6 +189,6 @@ static tb_void_t g2_demo_render()
 		g2_join(g_painter, g_join[g_joini]);
 
 		// render
-		g2_demo_shape_render();
+		g2_draw_path(g_painter, g_path);
 	}
 }

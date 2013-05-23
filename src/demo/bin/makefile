@@ -10,6 +10,7 @@ NAMES 					= \
 						line \
 						clip \
 						path \
+						draw \
 						point \
 						circle \
 						ellipse \
