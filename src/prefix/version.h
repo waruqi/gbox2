@@ -32,10 +32,10 @@
  * macros
  */
 
-// version: v1.0.3
+// version: v1.0.5
 #define G2_VERSION_MAJOR 			(1)
 #define G2_VERSION_MINOR 			(0)
-#define G2_VERSION_ALTER 			(4)
+#define G2_VERSION_ALTER 			(5)
 
 #endif
 
