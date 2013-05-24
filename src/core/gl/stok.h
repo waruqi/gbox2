@@ -47,6 +47,12 @@ tb_void_t g2_gl_stok_path(g2_gl_painter_t* painter, g2_gl_path_t const* path);
 // stok point
 tb_void_t g2_gl_stok_point(g2_gl_painter_t* painter, g2_point_t const* point);
 
+// stok circle
+tb_void_t g2_gl_stok_circle(g2_gl_painter_t* painter, g2_circle_t const* circle);
+
+// stok ellipse
+tb_void_t g2_gl_stok_ellipse(g2_gl_painter_t* painter, g2_ellipse_t const* ellipse);
+
 // stok triangle
 tb_void_t g2_gl_stok_triangle(g2_gl_painter_t* painter, g2_triangle_t const* triangle);
 

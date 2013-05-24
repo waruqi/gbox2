@@ -1222,6 +1222,15 @@ tb_void_t g2_gl_fill_rect(g2_gl_painter_t* painter, g2_rect_t const* rect)
 }
 tb_void_t g2_gl_fill_path(g2_gl_painter_t* painter, g2_gl_path_t const* path)
 {
+	// null?
+	tb_check_return(!g2_path_null(path));
+
+	// make like
+	g2_gl_path_make_like((g2_gl_path_t*)path);
+
+	// make fill
+	if (!g2_gl_path_make_fill((g2_gl_path_t*)path)) return ;
+	
 	// check
 	tb_assert(path->fill.data && tb_vector_size(path->fill.data));
 	tb_assert(path->fill.size && tb_vector_size(path->fill.size));
@@ -1275,6 +1284,56 @@ tb_void_t g2_gl_fill_path(g2_gl_painter_t* painter, g2_gl_path_t const* path)
 
 	// exit fill
 	g2_gl_fill_exit(&fill);
+}
+tb_void_t g2_gl_fill_circle(g2_gl_painter_t* painter, g2_circle_t const* circle)
+{
+	// check
+	tb_assert_and_check_return(painter->pcache);
+
+	// init shape
+	g2_shape_t shape = {0};
+	shape.type = G2_SHAPE_TYPE_CIRCLE;
+	shape.u.circle = *circle;
+
+	// get path from pcache first
+	tb_handle_t path = g2_pcache_get(painter->pcache, &shape);
+	if (!path)
+	{
+		// init path from cache
+		path = g2_pcache_add(painter->pcache, &shape);
+		tb_assert_and_check_return(path);
+
+		// add circle to path
+		g2_path_add_circle(path, circle);
+	}
+	
+	// fill path
+	g2_gl_fill_path(painter, (g2_gl_path_t const*)path);
+}
+tb_void_t g2_gl_fill_ellipse(g2_gl_painter_t* painter, g2_ellipse_t const* ellipse)
+{
+	// check
+	tb_assert_and_check_return(painter->pcache);
+
+	// init shape
+	g2_shape_t shape = {0};
+	shape.type = G2_SHAPE_TYPE_ELLIPSE;
+	shape.u.ellipse = *ellipse;
+
+	// get path from pcache first
+	tb_handle_t path = g2_pcache_get(painter->pcache, &shape);
+	if (!path)
+	{
+		// init path from cache
+		path = g2_pcache_add(painter->pcache, &shape);
+		tb_assert_and_check_return(path);
+
+		// add ellipse to path
+		g2_path_add_ellipse(path, ellipse);
+	}
+	
+	// fill path
+	g2_gl_fill_path(painter, (g2_gl_path_t const*)path);
 }
 tb_void_t g2_gl_fill_triangle(g2_gl_painter_t* painter, g2_triangle_t const* triangle)
 {

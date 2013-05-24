@@ -291,25 +291,11 @@ tb_void_t g2_draw_path(tb_handle_t painter, tb_handle_t path)
 	// the mode
 	tb_size_t mode = g2_style_mode(style);
 
-	// null?
-	tb_check_return(!g2_path_null(path));
-
-	// make like
-	g2_gl_path_make_like((g2_gl_path_t*)path);
-
-	// make fill
-	if ((mode & G2_STYLE_MODE_FILL) && g2_gl_path_make_fill((g2_gl_path_t*)path))
-	{
-		// fill path
-		g2_gl_fill_path(gpainter, (g2_gl_path_t const*)path);
-	}
+	// fill
+	if (mode & G2_STYLE_MODE_FILL) g2_gl_fill_path(gpainter, (g2_gl_path_t const*)path);
 	
-	// make stok
-	if ((mode & G2_STYLE_MODE_STOK)/* && g2_gl_path_make_stok((g2_gl_path_t*)path)*/)
-	{
-		// stok path
-		g2_gl_stok_path(gpainter, (g2_gl_path_t const*)path);
-	}
+	// stok
+	if (mode & G2_STYLE_MODE_STOK) g2_gl_stok_path(gpainter, (g2_gl_path_t const*)path);
 }
 tb_void_t g2_draw_arc(tb_handle_t painter, g2_arc_t const* arc)
 {
@@ -385,53 +371,39 @@ tb_void_t g2_draw_circle(tb_handle_t painter, g2_circle_t const* circle)
 {
 	// check
 	g2_gl_painter_t* gpainter = (g2_gl_painter_t*)painter;
-	tb_assert_and_check_return(gpainter && gpainter->pcache && circle);
+	tb_assert_and_check_return(gpainter && circle);
 
-	// init shape
-	g2_shape_t shape = {0};
-	shape.type = G2_SHAPE_TYPE_CIRCLE;
-	shape.u.circle = *circle;
+	// the style
+	tb_handle_t style = g2_style(painter);
+	tb_assert_and_check_return(style);
 
-	// get path from pcache first
-	tb_handle_t path = g2_pcache_get(gpainter->pcache, &shape);
-	if (!path)
-	{
-		// init path from cache
-		path = g2_pcache_add(gpainter->pcache, &shape);
-		tb_assert_and_check_return(path);
+	// the mode
+	tb_size_t mode = g2_style_mode(style);
 
-		// add circle to path
-		g2_path_add_circle(path, circle);
-	}
-	
-	// draw path
-	g2_draw_path(painter, path);
+	// fill
+	if (mode & G2_STYLE_MODE_FILL) g2_gl_fill_circle(gpainter, circle);
+
+	// stok
+	if (mode & G2_STYLE_MODE_STOK) g2_gl_stok_circle(gpainter, circle);
 }
 tb_void_t g2_draw_ellipse(tb_handle_t painter, g2_ellipse_t const* ellipse)
 {
 	// check
 	g2_gl_painter_t* gpainter = (g2_gl_painter_t*)painter;
-	tb_assert_and_check_return(gpainter && gpainter->pcache && ellipse);
+	tb_assert_and_check_return(gpainter && ellipse);
 
-	// init shape
-	g2_shape_t shape = {0};
-	shape.type = G2_SHAPE_TYPE_ELLIPSE;
-	shape.u.ellipse = *ellipse;
+	// the style
+	tb_handle_t style = g2_style(painter);
+	tb_assert_and_check_return(style);
 
-	// get path from pcache first
-	tb_handle_t path = g2_pcache_get(gpainter->pcache, &shape);
-	if (!path)
-	{
-		// init path from cache
-		path = g2_pcache_add(gpainter->pcache, &shape);
-		tb_assert_and_check_return(path);
+	// the mode
+	tb_size_t mode = g2_style_mode(style);
 
-		// add ellipse to path
-		g2_path_add_ellipse(path, ellipse);
-	}
-	
-	// draw path
-	g2_draw_path(painter, path);
+	// fill
+	if (mode & G2_STYLE_MODE_FILL) g2_gl_fill_ellipse(gpainter, ellipse);
+
+	// stok
+	if (mode & G2_STYLE_MODE_STOK) g2_gl_stok_ellipse(gpainter, ellipse);
 }
 tb_void_t g2_draw_triangle(tb_handle_t painter, g2_triangle_t const* triangle)
 {
