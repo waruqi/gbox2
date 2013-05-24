@@ -56,6 +56,7 @@ gbox2_C_FILES-$(G2_CONFIG_CORE_GL) += \
 						core/soft/bitmap \
 						core/gl/path \
 						core/gl/fill \
+						core/gl/stok \
 						core/gl/shader \
 						core/gl/context \
 						core/gl/painter \

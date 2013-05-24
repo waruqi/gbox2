@@ -25,6 +25,7 @@
  */
 #include "painter.h"
 #include "fill.h"
+#include "stok.h"
 
 /* ///////////////////////////////////////////////////////////////////////
  * macros
@@ -143,6 +144,7 @@ tb_void_t g2_exit(tb_handle_t painter)
 }
 tb_size_t g2_pixfmt(tb_handle_t painter)
 {
+	// check
 	g2_gl_painter_t* gpainter = (g2_gl_painter_t*)painter;
 	tb_assert_and_check_return_val(gpainter && gpainter->context, G2_PIXFMT_NONE);
 
@@ -150,6 +152,7 @@ tb_size_t g2_pixfmt(tb_handle_t painter)
 }
 tb_handle_t g2_context(tb_handle_t painter)
 {
+	// check
 	g2_gl_painter_t* gpainter = (g2_gl_painter_t*)painter;
 	tb_assert_and_check_return_val(gpainter, tb_null);
 
@@ -157,6 +160,7 @@ tb_handle_t g2_context(tb_handle_t painter)
 }
 tb_handle_t g2_path(tb_handle_t painter)
 {
+	// check
 	g2_gl_painter_t* gpainter = (g2_gl_painter_t*)painter;
 	tb_assert_and_check_return_val(gpainter && gpainter->stack_path, tb_null);
 
@@ -164,6 +168,7 @@ tb_handle_t g2_path(tb_handle_t painter)
 }
 tb_handle_t g2_save_path(tb_handle_t painter)
 {
+	// check
 	g2_gl_painter_t* gpainter = (g2_gl_painter_t*)painter;
 	tb_assert_and_check_return_val(gpainter && gpainter->stack_path, tb_null);
 
@@ -172,6 +177,7 @@ tb_handle_t g2_save_path(tb_handle_t painter)
 }
 tb_void_t g2_load_path(tb_handle_t painter)
 {
+	// check
 	g2_gl_painter_t* gpainter = (g2_gl_painter_t*)painter;
 	tb_assert_and_check_return(gpainter && gpainter->stack_path);
 
@@ -180,6 +186,7 @@ tb_void_t g2_load_path(tb_handle_t painter)
 }
 g2_matrix_t* g2_matrix(tb_handle_t painter)
 {
+	// check
 	g2_gl_painter_t* gpainter = (g2_gl_painter_t*)painter;
 	tb_assert_and_check_return_val(gpainter, tb_null);
 
@@ -187,6 +194,7 @@ g2_matrix_t* g2_matrix(tb_handle_t painter)
 }
 g2_matrix_t* g2_save_matrix(tb_handle_t painter)
 {
+	// check
 	g2_gl_painter_t* gpainter = (g2_gl_painter_t*)painter;
 	tb_assert_and_check_return_val(gpainter && gpainter->stack_matrix, tb_null);
 
@@ -198,6 +206,7 @@ g2_matrix_t* g2_save_matrix(tb_handle_t painter)
 }
 tb_void_t g2_load_matrix(tb_handle_t painter)
 {
+	// check
 	g2_gl_painter_t* gpainter = (g2_gl_painter_t*)painter;
 	tb_assert_and_check_return(gpainter && gpainter->stack_matrix);
 
@@ -213,6 +222,7 @@ tb_void_t g2_load_matrix(tb_handle_t painter)
 }
 tb_handle_t g2_style(tb_handle_t painter)
 {
+	// check
 	g2_gl_painter_t* gpainter = (g2_gl_painter_t*)painter;
 	tb_assert_and_check_return_val(gpainter && gpainter->stack_style, tb_null);
 
@@ -220,6 +230,7 @@ tb_handle_t g2_style(tb_handle_t painter)
 }
 tb_handle_t g2_save_style(tb_handle_t painter)
 {
+	// check
 	g2_gl_painter_t* gpainter = (g2_gl_painter_t*)painter;
 	tb_assert_and_check_return_val(gpainter && gpainter->stack_style, tb_null);
 
@@ -228,6 +239,7 @@ tb_handle_t g2_save_style(tb_handle_t painter)
 }
 tb_void_t g2_load_style(tb_handle_t painter)
 {
+	// check
 	g2_gl_painter_t* gpainter = (g2_gl_painter_t*)painter;
 	tb_assert_and_check_return(gpainter && gpainter->stack_style);
 
@@ -236,6 +248,7 @@ tb_void_t g2_load_style(tb_handle_t painter)
 }
 tb_handle_t g2_clipper(tb_handle_t painter)
 {
+	// check
 	g2_gl_painter_t* gpainter = (g2_gl_painter_t*)painter;
 	tb_assert_and_check_return_val(gpainter && gpainter->stack_clipper, tb_null);
 
@@ -243,6 +256,7 @@ tb_handle_t g2_clipper(tb_handle_t painter)
 }
 tb_handle_t g2_save_clipper(tb_handle_t painter)
 {
+	// check
 	g2_gl_painter_t* gpainter = (g2_gl_painter_t*)painter;
 	tb_assert_and_check_return_val(gpainter && gpainter->stack_clipper, tb_null);
 
@@ -251,6 +265,7 @@ tb_handle_t g2_save_clipper(tb_handle_t painter)
 }
 tb_void_t g2_load_clipper(tb_handle_t painter)
 {
+	// check
 	g2_gl_painter_t* gpainter = (g2_gl_painter_t*)painter;
 	tb_assert_and_check_return(gpainter && gpainter->stack_clipper);
 
@@ -265,9 +280,17 @@ tb_void_t g2_draw_clear(tb_handle_t painter, g2_color_t color)
 }
 tb_void_t g2_draw_path(tb_handle_t painter, tb_handle_t path)
 {
+	// check
 	g2_gl_painter_t* gpainter = (g2_gl_painter_t*)painter;
 	tb_assert_and_check_return(gpainter && path);
 	
+	// the style
+	tb_handle_t style = g2_style(painter);
+	tb_assert_and_check_return(style);
+
+	// the mode
+	tb_size_t mode = g2_style_mode(style);
+
 	// null?
 	tb_check_return(!g2_path_null(path));
 
@@ -275,34 +298,92 @@ tb_void_t g2_draw_path(tb_handle_t painter, tb_handle_t path)
 	g2_gl_path_make_like((g2_gl_path_t*)path);
 
 	// make fill
-	if (g2_gl_path_make_fill((g2_gl_path_t*)path))
+	if ((mode & G2_STYLE_MODE_FILL) && g2_gl_path_make_fill((g2_gl_path_t*)path))
 	{
 		// fill path
 		g2_gl_fill_path(gpainter, (g2_gl_path_t const*)path);
 	}
+	
+	// make stok
+	if ((mode & G2_STYLE_MODE_STOK)/* && g2_gl_path_make_stok((g2_gl_path_t*)path)*/)
+	{
+		// stok path
+		g2_gl_stok_path(gpainter, (g2_gl_path_t const*)path);
+	}
 }
 tb_void_t g2_draw_arc(tb_handle_t painter, g2_arc_t const* arc)
 {
-	tb_trace_noimpl();
+	// check
+	g2_gl_painter_t* gpainter = (g2_gl_painter_t*)painter;
+	tb_assert_and_check_return(gpainter && arc);
+	
+	// the style
+	tb_handle_t style = g2_style(painter);
+	tb_assert_and_check_return(style);
+
+	// the mode
+	tb_size_t mode = g2_style_mode(style);
+	tb_assert_and_check_return(mode & G2_STYLE_MODE_STOK);
+
+	// stok
+	g2_gl_stok_arc(gpainter, arc);
 }
 tb_void_t g2_draw_rect(tb_handle_t painter, g2_rect_t const* rect)
 {
+	// check
 	g2_gl_painter_t* gpainter = (g2_gl_painter_t*)painter;
 	tb_assert_and_check_return(gpainter && rect);
 
+	// the style
+	tb_handle_t style = g2_style(painter);
+	tb_assert_and_check_return(style);
+
+	// the mode
+	tb_size_t mode = g2_style_mode(style);
+
 	// fill
-	g2_gl_fill_rect(gpainter, rect);
+	if (mode & G2_STYLE_MODE_FILL) g2_gl_fill_rect(gpainter, rect);
+
+	// stok
+	if (mode & G2_STYLE_MODE_STOK) g2_gl_stok_rect(gpainter, rect);
 }
 tb_void_t g2_draw_line(tb_handle_t painter, g2_line_t const* line)
 {
-	tb_trace_noimpl();
+	// check
+	g2_gl_painter_t* gpainter = (g2_gl_painter_t*)painter;
+	tb_assert_and_check_return(gpainter && line);
+
+	// the style
+	tb_handle_t style = g2_style(painter);
+	tb_assert_and_check_return(style);
+
+	// the mode
+	tb_size_t mode = g2_style_mode(style);
+	tb_assert_and_check_return(mode & G2_STYLE_MODE_STOK);
+
+	// stok
+	g2_gl_stok_line(gpainter, line);
 }
 tb_void_t g2_draw_point(tb_handle_t painter, g2_point_t const* point)
 {
-	tb_trace_noimpl();
+	// check
+	g2_gl_painter_t* gpainter = (g2_gl_painter_t*)painter;
+	tb_assert_and_check_return(gpainter && point);
+
+	// the style
+	tb_handle_t style = g2_style(painter);
+	tb_assert_and_check_return(style);
+
+	// the mode
+	tb_size_t mode = g2_style_mode(style);
+	tb_assert_and_check_return(mode & G2_STYLE_MODE_STOK);
+
+	// stok
+	g2_gl_stok_point(gpainter, point);
 }
 tb_void_t g2_draw_circle(tb_handle_t painter, g2_circle_t const* circle)
 {
+	// check
 	g2_gl_painter_t* gpainter = (g2_gl_painter_t*)painter;
 	tb_assert_and_check_return(gpainter && gpainter->pcache && circle);
 
@@ -328,6 +409,7 @@ tb_void_t g2_draw_circle(tb_handle_t painter, g2_circle_t const* circle)
 }
 tb_void_t g2_draw_ellipse(tb_handle_t painter, g2_ellipse_t const* ellipse)
 {
+	// check
 	g2_gl_painter_t* gpainter = (g2_gl_painter_t*)painter;
 	tb_assert_and_check_return(gpainter && gpainter->pcache && ellipse);
 
@@ -353,9 +435,20 @@ tb_void_t g2_draw_ellipse(tb_handle_t painter, g2_ellipse_t const* ellipse)
 }
 tb_void_t g2_draw_triangle(tb_handle_t painter, g2_triangle_t const* triangle)
 {
+	// check
 	g2_gl_painter_t* gpainter = (g2_gl_painter_t*)painter;
 	tb_assert_and_check_return(gpainter && triangle);
 
+	// the style
+	tb_handle_t style = g2_style(painter);
+	tb_assert_and_check_return(style);
+
+	// the mode
+	tb_size_t mode = g2_style_mode(style);
+
 	// fill
-	g2_gl_fill_triangle(gpainter, triangle);
+	if (mode & G2_STYLE_MODE_FILL) g2_gl_fill_triangle(gpainter, triangle);
+
+	// stok
+	if (mode & G2_STYLE_MODE_STOK) g2_gl_stok_triangle(gpainter, triangle);
 }

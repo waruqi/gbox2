@@ -1,5 +1,5 @@
 # config
-IS_CONFIG = yes
+IS_CONFIG = y
 
 # project
 PRO_DIR = /Users/ruki/projects/personal/gbox2
@@ -22,11 +22,11 @@ ARCH = x64
 DEMO = y
 
 # toolchain
-SDK = 6.0
-NDK = /home/ruki/programs/android-ndk-r8
+SDK =
+NDK =
 BIN =
 PRE =
-HOST = mac
+HOST = linux
 CCACHE = ccache
 DISTCC =
 
