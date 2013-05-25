@@ -32,27 +32,15 @@
  * types
  */
 
-// the soft cutter quad func type
-struct __g2_cutter_quad_t;
-typedef tb_void_t (*g2_cutter_quad_func_t)(struct __g2_cutter_quad_t* cutter, g2_point_t const* pt);
-
-// the soft cutter quad type
-typedef struct __g2_cutter_quad_t
-{
-	// the func
-	g2_cutter_quad_func_t 	func;
-
-	// the data
-	tb_pointer_t 				data;
-
-}g2_cutter_quad_t;
+// the cutter quad type
+typedef g2_cutter_t 	g2_cutter_quad_t;
 
 /* ///////////////////////////////////////////////////////////////////////
  * interfaces
  */
 
 // init
-tb_void_t g2_cutter_quad_init(g2_cutter_quad_t* cutter, g2_cutter_quad_func_t func, tb_pointer_t data);
+tb_void_t g2_cutter_quad_init(g2_cutter_quad_t* cutter, g2_cutter_func_t func, tb_pointer_t data);
 
 // done
 tb_void_t g2_cutter_quad_done(g2_cutter_quad_t* cutter, g2_point_t const* pb, g2_point_t const* cp, g2_point_t const* pe);

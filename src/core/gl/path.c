@@ -62,7 +62,7 @@ static __tb_inline__ tb_size_t g2_gl_path_code_step(tb_size_t code)
 	};
 
 	// check
-	tb_assert_return_val(code < tb_arrayn(step), 0);
+	tb_assert_and_check_return_val(code < tb_arrayn(step), 0);
 
 	// ok
 	return step[code];
@@ -90,11 +90,11 @@ static __tb_inline__ tb_void_t g2_gl_path_fill_clear(g2_gl_path_t* path)
 	// clear fill rect
 	tb_memset(&path->fill.rect, 0, sizeof(g2_gl_rect_t));
 }
-static tb_void_t g2_gl_path_fill_quad_to_func(g2_cutter_quad_t* cutter, g2_point_t const* pt)
+static tb_void_t g2_gl_path_line_to_fill_func(g2_cutter_t* cutter, g2_point_t const* pt)
 {
 	// path
 	g2_gl_path_t* path = (g2_gl_path_t*)cutter->data;
-	tb_assert_return(path);
+	tb_assert_and_check_return(path);
 
 	// data
 	tb_float_t data[2];
@@ -106,31 +106,20 @@ static tb_void_t g2_gl_path_fill_quad_to_func(g2_cutter_quad_t* cutter, g2_point
 	if (tb_vector_size(path->fill.size)) 
 		tb_vector_replace_last(path->fill.size, tb_vector_last(path->fill.size) + 1);
 }
-static tb_void_t g2_gl_path_fill_cube_to_func(g2_cutter_cube_t* cutter, g2_point_t const* pt)
+static tb_void_t g2_gl_path_line_to_func(g2_cutter_t* cutter, g2_point_t const* pt)
 {
-	// path
-	g2_gl_path_t* path = (g2_gl_path_t*)cutter->data;
-	tb_assert_return(path);
-
 	// data
-	tb_float_t data[2];
-	data[0] = g2_float_to_tb(pt->x);
-	data[1] = g2_float_to_tb(pt->y);
+	tb_handle_t path = (tb_handle_t)cutter->data;
+	tb_assert_and_check_return(path);
 
-	// add
-	tb_vector_insert_tail(path->fill.data, data);
-	if (tb_vector_size(path->fill.size)) 
-		tb_vector_replace_last(path->fill.size, tb_vector_last(path->fill.size) + 1);
+	// line-to
+	g2_path_line_to(path, pt);
 }
-
-/* ///////////////////////////////////////////////////////////////////////
- * path
- */
-static tb_void_t g2_gl_path_add_line_func(g2_cutter_circle_t* cutter, g2_point_t const* pt)
+static tb_void_t g2_gl_path_move_line_to_func(g2_cutter_t* cutter, g2_point_t const* pt)
 {
 	// data
 	tb_handle_t* data = (tb_handle_t*)cutter->data;
-	tb_assert_return(data && data[0]);
+	tb_assert_and_check_return(data && data[0]);
 
 	// line-to?
 	if (!data[1]) g2_path_line_to(data[0], pt);
@@ -343,8 +332,8 @@ tb_bool_t g2_gl_path_make_fill(g2_gl_path_t* path)
 	// init cutter
 	g2_cutter_quad_t quad;
 	g2_cutter_cube_t cube;
-	g2_cutter_quad_init(&quad, g2_gl_path_fill_quad_to_func, path);
-	g2_cutter_cube_init(&cube, g2_gl_path_fill_cube_to_func, path);
+	g2_cutter_quad_init(&quad, g2_gl_path_line_to_fill_func, path);
+	g2_cutter_cube_init(&cube, g2_gl_path_line_to_fill_func, path);
 
 	// walk
 	for (; code < cail && data < dail; code++)
@@ -882,7 +871,13 @@ tb_void_t g2_path_cube_to(tb_handle_t path, g2_point_t const* c0, g2_point_t con
 }
 tb_void_t g2_path_arc_to(tb_handle_t path, g2_arc_t const* arc)
 {
-	tb_trace_noimpl();
+	g2_gl_path_t* gpath = (g2_gl_path_t*)path;
+	tb_assert_and_check_return(path && arc);
+
+	// cutter
+	g2_cutter_arc_t cutter;
+	g2_cutter_arc_init(&cutter, g2_gl_path_line_to_func, path);
+	g2_cutter_arc_done(&cutter, arc);
 }
 tb_void_t g2_path_add_path(tb_handle_t path, tb_handle_t path2)
 {
@@ -935,14 +930,10 @@ tb_void_t g2_path_add_arc(tb_handle_t path, g2_arc_t const* arc)
 	// init
 	tb_handle_t data[2] = {path, path};
 
-#if 0
 	// cutter
 	g2_cutter_arc_t cutter;
-	g2_cutter_arc_init(&cutter, g2_gl_path_add_line_func, data);
+	g2_cutter_arc_init(&cutter, g2_gl_path_move_line_to_func, data);
 	g2_cutter_arc_done(&cutter, arc);
-#else
-	tb_trace_noimpl();
-#endif
 }
 tb_void_t g2_path_add_triangle(tb_handle_t path, g2_triangle_t const* triangle)
 {
@@ -958,9 +949,9 @@ tb_void_t g2_path_add_rect(tb_handle_t path, g2_rect_t const* rect)
 	tb_assert_and_check_return(path && rect);
 	
 	g2_path_move2_to(path, rect->x, rect->y);
-	g2_path_line2_to(path, rect->x + rect->w - G2_ONE, rect->y);
-	g2_path_line2_to(path, rect->x + rect->w - G2_ONE, rect->y + rect->h - G2_ONE);
-	g2_path_line2_to(path, rect->x, rect->y + rect->h - G2_ONE);
+	g2_path_line2_to(path, rect->x + rect->w, rect->y);
+	g2_path_line2_to(path, rect->x + rect->w, rect->y + rect->h);
+	g2_path_line2_to(path, rect->x, rect->y + rect->h);
 	g2_path_close(path);
 }
 tb_void_t g2_path_add_circle(tb_handle_t path, g2_circle_t const* circle)
@@ -973,7 +964,7 @@ tb_void_t g2_path_add_circle(tb_handle_t path, g2_circle_t const* circle)
 
 	// cutter
 	g2_cutter_circle_t cutter;
-	g2_cutter_circle_init(&cutter, g2_gl_path_add_line_func, data);
+	g2_cutter_circle_init(&cutter, g2_gl_path_move_line_to_func, data);
 	g2_cutter_circle_done(&cutter, circle);
 
 	// close
@@ -992,7 +983,7 @@ tb_void_t g2_path_add_ellipse(tb_handle_t path, g2_ellipse_t const* ellipse)
 
 	// cutter
 	g2_cutter_ellipse_t cutter;
-	g2_cutter_ellipse_init(&cutter, g2_gl_path_add_line_func, data);
+	g2_cutter_ellipse_init(&cutter, g2_gl_path_move_line_to_func, data);
 	g2_cutter_ellipse_done(&cutter, ellipse);
 
 	// close

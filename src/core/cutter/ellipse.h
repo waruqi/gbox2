@@ -32,27 +32,15 @@
  * types
  */
 
-// the soft cutter ellipse func type
-struct __g2_cutter_ellipse_t;
-typedef tb_void_t (*g2_cutter_ellipse_func_t)(struct __g2_cutter_ellipse_t* cutter, g2_point_t const* pt);
-
-// the soft cutter ellipse type
-typedef struct __g2_cutter_ellipse_t
-{
-	// the func
-	g2_cutter_ellipse_func_t 	func;
-
-	// the data
-	tb_pointer_t 					data;
-
-}g2_cutter_ellipse_t;
+// the cutter ellipse type
+typedef g2_cutter_t 	g2_cutter_ellipse_t;
 
 /* ///////////////////////////////////////////////////////////////////////
  * interfaces
  */
 
 // init
-tb_void_t g2_cutter_ellipse_init(g2_cutter_ellipse_t* cutter, g2_cutter_ellipse_func_t func, tb_pointer_t data);
+tb_void_t g2_cutter_ellipse_init(g2_cutter_ellipse_t* cutter, g2_cutter_func_t func, tb_pointer_t data);
 
 // done
 tb_void_t g2_cutter_ellipse_done(g2_cutter_ellipse_t* cutter, g2_ellipse_t const* ellipse);

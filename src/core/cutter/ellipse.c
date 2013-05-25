@@ -30,7 +30,7 @@
  * implementation
  */
 
-tb_void_t g2_cutter_ellipse_init(g2_cutter_ellipse_t* cutter, g2_cutter_ellipse_func_t func, tb_pointer_t data)
+tb_void_t g2_cutter_ellipse_init(g2_cutter_ellipse_t* cutter, g2_cutter_func_t func, tb_pointer_t data)
 {
 	// check
 	tb_assert_and_check_return(cutter);
@@ -43,7 +43,7 @@ tb_void_t g2_cutter_ellipse_init(g2_cutter_ellipse_t* cutter, g2_cutter_ellipse_
 	cutter->data = data;
 }
 
-/*!cutter ellipse
+/*! cutter ellipse
  *
  * <pre>
  *

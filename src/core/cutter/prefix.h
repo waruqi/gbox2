@@ -28,6 +28,25 @@
  */
 #include "../prefix.h"
 
+/* ///////////////////////////////////////////////////////////////////////
+ * types
+ */
+
+// the cutter func type
+struct __g2_cutter_t;
+typedef tb_void_t (*g2_cutter_func_t)(struct __g2_cutter_t* cutter, g2_point_t const* pt);
+
+// the cutter type
+typedef struct __g2_cutter_t
+{
+	// the func
+	g2_cutter_func_t 	func;
+
+	// the data
+	tb_pointer_t 		data;
+
+}g2_cutter_t;
+
 
 #endif
 

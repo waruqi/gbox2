@@ -17,23 +17,38 @@
  * Copyright (C) 2009 - 2012, ruki All rights reserved.
  *
  * @author		ruki
- * @file		cutter.h
+ * @file		arc.c
  *
  */
-#ifndef G2_CORE_CUTTER_H
-#define G2_CORE_CUTTER_H
 
 /* ///////////////////////////////////////////////////////////////////////
  * includes
  */
-#include "prefix.h"
 #include "arc.h"
-#include "quad.h"
-#include "cube.h"
-#include "circle.h"
-#include "ellipse.h"
 
+/* ///////////////////////////////////////////////////////////////////////
+ * implementation
+ */
 
-#endif
+tb_void_t g2_cutter_arc_init(g2_cutter_arc_t* cutter, g2_cutter_func_t func, tb_pointer_t data)
+{
+	// check
+	tb_assert_and_check_return(cutter);
+
+	// clear
+	tb_memset(cutter, 0, sizeof(g2_cutter_arc_t));
+
+	// init
+	cutter->func = func;
+	cutter->data = data;
+}
+
+/*!cutter arc
+ *
+ */
+tb_void_t g2_cutter_arc_done(g2_cutter_arc_t* cutter, g2_arc_t const* arc)
+{
+
+}
 
 

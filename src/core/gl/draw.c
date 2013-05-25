@@ -112,9 +112,9 @@ static __tb_inline__ tb_void_t g2_gl_draw_apply_antialiasing(g2_gl_draw_t* draw)
 {
 	if (g2_style_flag(draw->style) & G2_STYLE_FLAG_ANTI_ALIAS) 
 	{
-//		g2_glEnable(G2_GL_MULTISAMPLE);
-		g2_glEnable(G2_GL_LINE_SMOOTH);
-		g2_glHint(G2_GL_LINE_SMOOTH_HINT, G2_GL_NICEST);
+		g2_glEnable(G2_GL_MULTISAMPLE);
+//		g2_glEnable(G2_GL_LINE_SMOOTH);
+//		g2_glHint(G2_GL_LINE_SMOOTH_HINT, G2_GL_NICEST);
 	}
 	else g2_glDisable(G2_GL_MULTISAMPLE);
 }

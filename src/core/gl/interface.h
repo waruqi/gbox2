@@ -303,6 +303,7 @@ typedef g2_GLvoid_t 			(G2_GL_INTERFACE_TYPE(glGetShaderiv))				(g2_GLuint_t sha
 typedef g2_GLvoid_t 			(G2_GL_INTERFACE_TYPE(glGetShaderInfoLog))			(g2_GLuint_t shader, g2_GLsizei_t bufsize, g2_GLsizei_t* length, g2_GLchar_t* infolog);
 typedef g2_GLubyte_t const* 	(G2_GL_INTERFACE_TYPE(glGetString)) 				(g2_GLenum_t name);
 typedef g2_GLint_t 				(G2_GL_INTERFACE_TYPE(glGetUniformLocation))		(g2_GLuint_t program, g2_GLchar_t const* name);
+typedef g2_GLvoid_t 			(G2_GL_INTERFACE_TYPE(glHint)) 						(g2_GLenum_t target, g2_GLenum_t mode);
 typedef g2_GLboolean_t 			(G2_GL_INTERFACE_TYPE(glIsTexture)) 				(g2_GLuint_t texture);
 typedef g2_GLvoid_t 			(G2_GL_INTERFACE_TYPE(glLineWidth))					(g2_GLfloat_t width);
 typedef g2_GLvoid_t 			(G2_GL_INTERFACE_TYPE(glLinkProgram))				(g2_GLuint_t program);
@@ -371,6 +372,7 @@ G2_GL_INTERFACE_EXTERN(glGetShaderiv);
 G2_GL_INTERFACE_EXTERN(glGetShaderInfoLog);
 G2_GL_INTERFACE_EXTERN(glGetString);
 G2_GL_INTERFACE_EXTERN(glGetUniformLocation);
+G2_GL_INTERFACE_EXTERN(glHint);
 G2_GL_INTERFACE_EXTERN(glIsTexture);
 G2_GL_INTERFACE_EXTERN(glLineWidth);
 G2_GL_INTERFACE_EXTERN(glLinkProgram);

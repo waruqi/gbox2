@@ -32,27 +32,15 @@
  * types
  */
 
-// the soft cutter circle func type
-struct __g2_cutter_circle_t;
-typedef tb_void_t (*g2_cutter_circle_func_t)(struct __g2_cutter_circle_t* cutter, g2_point_t const* pt);
-
-// the soft cutter circle type
-typedef struct __g2_cutter_circle_t
-{
-	// the func
-	g2_cutter_circle_func_t 	func;
-
-	// the data
-	tb_pointer_t 					data;
-
-}g2_cutter_circle_t;
+// the cutter circle type
+typedef g2_cutter_t g2_cutter_circle_t;
 
 /* ///////////////////////////////////////////////////////////////////////
  * interfaces
  */
 
 // init
-tb_void_t g2_cutter_circle_init(g2_cutter_circle_t* cutter, g2_cutter_circle_func_t func, tb_pointer_t data);
+tb_void_t g2_cutter_circle_init(g2_cutter_circle_t* cutter, g2_cutter_func_t func, tb_pointer_t data);
 
 // done
 tb_void_t g2_cutter_circle_done(g2_cutter_circle_t* cutter, g2_circle_t const* circle);

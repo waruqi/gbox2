@@ -30,7 +30,7 @@
  * implementation
  */
 
-tb_void_t g2_cutter_quad_init(g2_cutter_quad_t* cutter, g2_cutter_quad_func_t func, tb_pointer_t data)
+tb_void_t g2_cutter_quad_init(g2_cutter_quad_t* cutter, g2_cutter_func_t func, tb_pointer_t data)
 {
 	// check
 	tb_assert_and_check_return(cutter);
@@ -43,7 +43,7 @@ tb_void_t g2_cutter_quad_init(g2_cutter_quad_t* cutter, g2_cutter_quad_func_t fu
 	cutter->data = data;
 }
 
-/*!cutter the quad bezier curve using binary segmentation
+/*! cutter the quad bezier curve using binary segmentation
  *
  * <pre>
  *            cp
