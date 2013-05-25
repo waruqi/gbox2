@@ -126,6 +126,9 @@
 
 // multisample
 #define G2_GL_MULTISAMPLE 				(0x809D)
+#define G2_GL_LINE_SMOOTH 				(0x0B20)
+#define G2_GL_LINE_SMOOTH_HINT 			(0x0C52)
+#define G2_GL_NICEST 					(0x1102)
 
 // stencil op
 //#define G2_GL_ZERO
@@ -301,6 +304,7 @@ typedef g2_GLvoid_t 			(G2_GL_INTERFACE_TYPE(glGetShaderInfoLog))			(g2_GLuint_t
 typedef g2_GLubyte_t const* 	(G2_GL_INTERFACE_TYPE(glGetString)) 				(g2_GLenum_t name);
 typedef g2_GLint_t 				(G2_GL_INTERFACE_TYPE(glGetUniformLocation))		(g2_GLuint_t program, g2_GLchar_t const* name);
 typedef g2_GLboolean_t 			(G2_GL_INTERFACE_TYPE(glIsTexture)) 				(g2_GLuint_t texture);
+typedef g2_GLvoid_t 			(G2_GL_INTERFACE_TYPE(glLineWidth))					(g2_GLfloat_t width);
 typedef g2_GLvoid_t 			(G2_GL_INTERFACE_TYPE(glLinkProgram))				(g2_GLuint_t program);
 typedef g2_GLvoid_t 			(G2_GL_INTERFACE_TYPE(glLoadIdentity)) 				(g2_GLvoid_t);
 typedef g2_GLvoid_t 			(G2_GL_INTERFACE_TYPE(glLoadMatrixf)) 				(g2_GLfloat_t const* matrix);
@@ -368,6 +372,7 @@ G2_GL_INTERFACE_EXTERN(glGetShaderInfoLog);
 G2_GL_INTERFACE_EXTERN(glGetString);
 G2_GL_INTERFACE_EXTERN(glGetUniformLocation);
 G2_GL_INTERFACE_EXTERN(glIsTexture);
+G2_GL_INTERFACE_EXTERN(glLineWidth);
 G2_GL_INTERFACE_EXTERN(glLinkProgram);
 G2_GL_INTERFACE_EXTERN(glLoadIdentity);
 G2_GL_INTERFACE_EXTERN(glLoadMatrixf);

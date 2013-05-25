@@ -17,42 +17,43 @@
  * Copyright (C) 2009 - 2012, ruki All rights reserved.
  *
  * @author		ruki
- * @file		fill.c
+ * @file		draw.h
  *
  */
-
-/* ///////////////////////////////////////////////////////////////////////
- * trace
- */
-#define TB_TRACE_IMPL_TAG 		"fill"
+#ifndef G2_CORE_GL_DRAW_H
+#define G2_CORE_GL_DRAW_H
 
 /* ///////////////////////////////////////////////////////////////////////
  * includes
  */
-#include "fill.h"
-#include "draw.h"
+#include "painter.h"
 
 /* ///////////////////////////////////////////////////////////////////////
  * interfaces
  */
-tb_void_t g2_gl_fill_rect(g2_gl_painter_t* painter, g2_rect_t const* rect)
-{
-	return g2_gl_draw_rect(painter, G2_STYLE_MODE_FILL, rect);
-}
-tb_void_t g2_gl_fill_path(g2_gl_painter_t* painter, g2_gl_path_t const* path)
-{
-	return g2_gl_draw_path(painter, G2_STYLE_MODE_FILL, path);
-}
-tb_void_t g2_gl_fill_circle(g2_gl_painter_t* painter, g2_circle_t const* circle)
-{
-	return g2_gl_draw_circle(painter, G2_STYLE_MODE_FILL, circle);
-}
-tb_void_t g2_gl_fill_ellipse(g2_gl_painter_t* painter, g2_ellipse_t const* ellipse)
-{
-	return g2_gl_draw_ellipse(painter, G2_STYLE_MODE_FILL, ellipse);
-}
-tb_void_t g2_gl_fill_triangle(g2_gl_painter_t* painter, g2_triangle_t const* triangle)
-{
-	return g2_gl_draw_triangle(painter, G2_STYLE_MODE_FILL, triangle);
-}
 
+// draw arc
+tb_void_t g2_gl_draw_arc(g2_gl_painter_t* painter, tb_size_t mode, g2_arc_t const* arc);
+
+// draw line
+tb_void_t g2_gl_draw_line(g2_gl_painter_t* painter, tb_size_t mode, g2_line_t const* line);
+
+// draw rect
+tb_void_t g2_gl_draw_rect(g2_gl_painter_t* painter, tb_size_t mode, g2_rect_t const* rect);
+
+// draw path
+tb_void_t g2_gl_draw_path(g2_gl_painter_t* painter, tb_size_t mode, g2_gl_path_t const* path);
+
+// draw point
+tb_void_t g2_gl_draw_point(g2_gl_painter_t* painter, tb_size_t mode, g2_point_t const* point);
+
+// draw circle
+tb_void_t g2_gl_draw_circle(g2_gl_painter_t* painter, tb_size_t mode, g2_circle_t const* circle);
+
+// draw ellipse
+tb_void_t g2_gl_draw_ellipse(g2_gl_painter_t* painter, tb_size_t mode, g2_ellipse_t const* ellipse);
+
+// draw triangle
+tb_void_t g2_gl_draw_triangle(g2_gl_painter_t* painter, tb_size_t mode, g2_triangle_t const* triangle);
+
+#endif
