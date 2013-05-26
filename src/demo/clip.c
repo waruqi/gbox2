@@ -185,7 +185,8 @@ static tb_bool_t g2_demo_shape_init(tb_int_t argc, tb_char_t** argv)
 	}
 
 	// init mode
-	g_mode = G2_STYLE_MODE_FILL;
+//	g_mode = G2_STYLE_MODE_FILL_STOK;
+	g_mode = G2_STYLE_MODE_STOK;
 
 	// init matrix
 	g_bm = tb_true;
@@ -216,9 +217,9 @@ static tb_void_t g2_demo_shape_render()
 	// clip
 	g2_clip_irect2(g_painter, G2_CLIPPER_MODE_INTERSECT, 10, 10, g2_bitmap_width(g_surface) - 20, g2_bitmap_height(g_surface) - 20);
 //	g2_clip_itriangle2(g_painter, G2_CLIPPER_MODE_INTERSECT, g_x0 - 300, g_y0, g_x0, g_y0 - 100, g_x0 + 300, g_y0);
-	g2_clip_icircle2(g_painter, G2_CLIPPER_MODE_INTERSECT, g_x0, g_y0, 200);
-	g2_clip_iellipse2(g_painter, G2_CLIPPER_MODE_UNION, g_x0, g_y0, 300, 100);
-	g2_clip_icircle2(g_painter, G2_CLIPPER_MODE_SUBTRACT, g_x0, g_y0, 10);
+//	g2_clip_icircle2(g_painter, G2_CLIPPER_MODE_INTERSECT, g_x0, g_y0, 200);
+//	g2_clip_iellipse2(g_painter, G2_CLIPPER_MODE_UNION, g_x0, g_y0, 300, 100);
+//	g2_clip_icircle2(g_painter, G2_CLIPPER_MODE_SUBTRACT, g_x0, g_y0, 10);
 
 	// set shader matrix
 	tb_handle_t shader = g2_style_shader(g2_style(g_painter));
@@ -234,7 +235,9 @@ static tb_void_t g2_demo_shape_render()
 #endif
 
 	// draw
-	g2_draw_irect2(g_painter, 0, 0, g2_bitmap_width(g_surface), g2_bitmap_height(g_surface));
+//	g2_draw_irect2(g_painter, 0, 0, g2_bitmap_width(g_surface), g2_bitmap_height(g_surface));
+	g2_draw_iline2(g_painter, 0, 0, g2_bitmap_width(g_surface), g2_bitmap_height(g_surface));
+//	g2_draw_itriangle2(g_painter, 0, g2_bitmap_height(g_surface) >> 1, g2_bitmap_width(g_surface) >> 1, 0, g2_bitmap_width(g_surface), g2_bitmap_height(g_surface) >> 1);
 
 	// load matrix
 	g2_load_matrix(g_painter);
