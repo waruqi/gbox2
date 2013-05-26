@@ -70,11 +70,12 @@ tb_void_t g2_cutter_quad_init(g2_cutter_quad_t* cutter, g2_cutter_func_t func, t
  */
 tb_void_t g2_cutter_quad_done(g2_cutter_quad_t* cutter, g2_point_t const* pb, g2_point_t const* cp, g2_point_t const* pe)
 {
+	// check
+	tb_assert_and_check_return(cutter->func);
+
+	// init
 	g2_float_t mx = cp->x - g2_rsh(pb->x + pe->x, 1);
 	g2_float_t my = cp->y - g2_rsh(pb->y + pe->y, 1);
-
-	// check
-	tb_assert(cutter->func);
 
 	// ok?
 	if (g2_fabs(mx) + g2_fabs(my) <= G2_ONE)

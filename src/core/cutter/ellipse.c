@@ -70,26 +70,26 @@ tb_void_t g2_cutter_ellipse_init(g2_cutter_ellipse_t* cutter, g2_cutter_func_t f
  * e = 0.125: n > 4 * pi * sqrt(r)
  *
  * y = pi * sqrt(x):
- * x < 90: y = (1 / 3) * x
- * x > 90: y = (0.08) * x + 23
+ * x: [0, 90]: 		y = (1 / 3) * x
+ * x: [90, 1000]: 	y = (0.08) * x + 23
  *
- * r < 90: n > (4 / 3) * r + 16
- * r > 90: n > (1 / 3) * r + 92
+ * r: [0, 90]: 		n > (4 / 3) * r [+ 16]
+ * r: [90, 1000]: 	n > (1 / 3) * r + 128 [- 32]
  *
  * rx = ry = 1:
  * xx = x * cos(q) - y * sin(q)
  * yy = x * sin(q) + y * cos(q)
  * 
  * if (q < 1)
- * cos(q) ~= 1 - q * q / 2
- * sin(q) ~= q - q * q * q / 6
+ * a: cos(q) ~= 1 - q * q / 2
+ * b: sin(q) ~= q - q * q * q / 6
  *
  * </pre>
  */
 tb_void_t g2_cutter_ellipse_done(g2_cutter_ellipse_t* cutter, g2_ellipse_t const* ellipse)
 {
 	// check
-	tb_assert(cutter->func);
+	tb_assert_and_check_return(cutter->func);
 
 	// init
 	tb_size_t 	rxi = (tb_size_t)g2_float_to_long(ellipse->rx);
@@ -102,7 +102,6 @@ tb_void_t g2_cutter_ellipse_done(g2_cutter_ellipse_t* cutter, g2_ellipse_t const
 	tb_size_t 	n = (xn + yn) >> 1;
 	tb_int64_t 	a = TB_FIXED_ONE - (((pi * pi) / (n * n)) >> 15);
 	tb_int64_t 	b = (pi << 1) / n - (((pi * pi * pi) / (3 * n * n * n)) >> 30);
-
 	tb_int64_t 	x0 = (tb_int64_t)g2_float_to_fixed(ellipse->c0.x);
 	tb_int64_t 	y0 = (tb_int64_t)g2_float_to_fixed(ellipse->c0.y);
 	tb_int64_t 	x1 = TB_FIXED_ONE;
@@ -112,8 +111,8 @@ tb_void_t g2_cutter_ellipse_done(g2_cutter_ellipse_t* cutter, g2_ellipse_t const
 
 	// head
 	g2_point_t pb, pt;
-	pb.x = g2_fixed_to_float(x0 + rxf);
-	pb.y = g2_fixed_to_float(y0);
+	pb.x = ellipse->c0.x + ellipse->rx;
+	pb.y = ellipse->c0.y;
 
 	// done
 	cutter->func(cutter, &pb);
@@ -125,7 +124,7 @@ tb_void_t g2_cutter_ellipse_done(g2_cutter_ellipse_t* cutter, g2_ellipse_t const
 		y2 = (b * x1 + a * y1) >> 16;
 
 		pt.x = g2_fixed_to_float(x0 + ((x2 * rxf) >> 16));
-		pt.y = g2_fixed_to_float(y0 - ((y2 * ryf) >> 16));
+		pt.y = g2_fixed_to_float(y0 + ((y2 * ryf) >> 16));
 
 		// done
 		cutter->func(cutter, &pt);

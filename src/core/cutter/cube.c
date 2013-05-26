@@ -68,6 +68,10 @@ tb_void_t g2_cutter_cube_init(g2_cutter_cube_t* cutter, g2_cutter_func_t func, t
 
 tb_void_t g2_cutter_cube_done(g2_cutter_cube_t* cutter, g2_point_t const* pb, g2_point_t const* cpb, g2_point_t const* cpe, g2_point_t const* pe)
 {
+	// check
+	tb_assert_and_check_return(cutter->func);
+
+	// init
 	g2_float_t mxb = g2_lsh(cpb->x - pb->x, 1) + cpb->x - pe->x;
 	g2_float_t myb = g2_lsh(cpb->y - pb->y, 1) + cpb->y - pe->y;
 	g2_float_t mxe = g2_lsh(cpe->x - pe->x, 1) + cpe->x - pb->x;
@@ -80,9 +84,6 @@ tb_void_t g2_cutter_cube_done(g2_cutter_cube_t* cutter, g2_point_t const* pb, g2
 
 	if (mxe < mxb) mxb = mxe;
 	if (mye < myb) myb = mye;
-
-	// check
-	tb_assert(cutter->func);
 
 	// ok?
 	if (mxb + myb <= G2_ONE)

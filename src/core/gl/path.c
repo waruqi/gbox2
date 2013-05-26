@@ -495,6 +495,7 @@ fail:
 }
 tb_void_t g2_path_exit(tb_handle_t path)
 {
+	// check
 	g2_gl_path_t* gpath = (g2_gl_path_t*)path;
 	if (gpath)
 	{
@@ -519,6 +520,7 @@ tb_void_t g2_path_exit(tb_handle_t path)
 }
 tb_void_t g2_path_clear(tb_handle_t path)
 {
+	// check
 	g2_gl_path_t* gpath = (g2_gl_path_t*)path;
 	tb_assert_and_check_return(gpath);
 
@@ -545,6 +547,7 @@ tb_void_t g2_path_clear(tb_handle_t path)
 }
 tb_void_t g2_path_close(tb_handle_t path)
 {
+	// check
 	g2_gl_path_t* gpath = (g2_gl_path_t*)path;
 	tb_assert_and_check_return(gpath && gpath->code);
 
@@ -570,6 +573,7 @@ tb_bool_t g2_path_null(tb_handle_t path)
 }
 tb_void_t g2_path_copy(tb_handle_t path, tb_handle_t copy)
 {
+	// check
 	g2_gl_path_t* gpath = (g2_gl_path_t*)path;
 	g2_gl_path_t* gcopy = (g2_gl_path_t*)copy;
 	tb_assert_and_check_return(gpath && gcopy);
@@ -604,6 +608,7 @@ tb_void_t g2_path_copy(tb_handle_t path, tb_handle_t copy)
 }
 tb_bool_t g2_path_itor_init(tb_handle_t path)
 {
+	// check
 	g2_gl_path_t* gpath = (g2_gl_path_t*)path;
 	tb_assert_and_check_return_val(gpath && gpath->code && gpath->data, tb_false);
 
@@ -620,6 +625,7 @@ tb_bool_t g2_path_itor_init(tb_handle_t path)
 }
 tb_size_t g2_path_itor_next(tb_handle_t path, g2_point_t pt[3])
 {
+	// check
 	g2_gl_path_t* gpath = (g2_gl_path_t*)path;
 	tb_assert_and_check_return_val(gpath && gpath->code && gpath->data && pt, G2_PATH_CODE_NONE);
 
@@ -688,6 +694,7 @@ tb_size_t g2_path_itor_next(tb_handle_t path, g2_point_t pt[3])
 }
 tb_void_t g2_path_itor_exit(tb_handle_t path)
 {
+	// check
 	g2_gl_path_t* gpath = (g2_gl_path_t*)path;
 	tb_assert_and_check_return(gpath);
 
@@ -696,6 +703,7 @@ tb_void_t g2_path_itor_exit(tb_handle_t path)
 }
 tb_bool_t g2_path_last_pt(tb_handle_t path, g2_point_t* pt)
 {
+	// check
 	g2_gl_path_t* gpath = (g2_gl_path_t*)path;
 	tb_assert_and_check_return_val(gpath && gpath->data && pt, tb_false);
 
@@ -715,6 +723,7 @@ tb_bool_t g2_path_last_pt(tb_handle_t path, g2_point_t* pt)
 }
 tb_void_t g2_path_move_to(tb_handle_t path, g2_point_t const* pt)
 {
+	// check
 	g2_gl_path_t* gpath = (g2_gl_path_t*)path;
 	tb_assert_and_check_return(gpath && gpath->code && gpath->data && gpath->size && pt);
 
@@ -748,6 +757,7 @@ tb_void_t g2_path_move_to(tb_handle_t path, g2_point_t const* pt)
 }
 tb_void_t g2_path_line_to(tb_handle_t path, g2_point_t const* pt)
 {
+	// check
 	g2_gl_path_t* gpath = (g2_gl_path_t*)path;
 	tb_assert_and_check_return(gpath && gpath->code && gpath->data && gpath->size && pt);
 
@@ -785,6 +795,7 @@ tb_void_t g2_path_line_to(tb_handle_t path, g2_point_t const* pt)
 }
 tb_void_t g2_path_quad_to(tb_handle_t path, g2_point_t const* cp, g2_point_t const* pt)
 {
+	// check
 	g2_gl_path_t* gpath = (g2_gl_path_t*)path;
 	tb_assert_and_check_return(gpath && gpath->code && gpath->data && gpath->size && cp && pt);
 
@@ -826,6 +837,7 @@ tb_void_t g2_path_quad_to(tb_handle_t path, g2_point_t const* cp, g2_point_t con
 }
 tb_void_t g2_path_cube_to(tb_handle_t path, g2_point_t const* c0, g2_point_t const* c1, g2_point_t const* pt)
 {
+	// check
 	g2_gl_path_t* gpath = (g2_gl_path_t*)path;
 	tb_assert_and_check_return(gpath && gpath->code && gpath->data && gpath->size && c0 && c1 && pt);
 
@@ -871,7 +883,7 @@ tb_void_t g2_path_cube_to(tb_handle_t path, g2_point_t const* c0, g2_point_t con
 }
 tb_void_t g2_path_arc_to(tb_handle_t path, g2_arc_t const* arc)
 {
-	g2_gl_path_t* gpath = (g2_gl_path_t*)path;
+	// check
 	tb_assert_and_check_return(path && arc);
 
 	// cutter
@@ -881,6 +893,7 @@ tb_void_t g2_path_arc_to(tb_handle_t path, g2_arc_t const* arc)
 }
 tb_void_t g2_path_add_path(tb_handle_t path, tb_handle_t path2)
 {
+	// check
 	tb_assert_and_check_return(path && path2);
 
 	// path
@@ -917,6 +930,7 @@ tb_void_t g2_path_add_path(tb_handle_t path, tb_handle_t path2)
 }
 tb_void_t g2_path_add_line(tb_handle_t path, g2_line_t const* line)
 {
+	// check
 	tb_assert_and_check_return(path && line);
 	
 	g2_path_move_to(path, &line->p0);
@@ -924,7 +938,7 @@ tb_void_t g2_path_add_line(tb_handle_t path, g2_line_t const* line)
 }
 tb_void_t g2_path_add_arc(tb_handle_t path, g2_arc_t const* arc)
 {
-	g2_gl_path_t* gpath = (g2_gl_path_t*)path;
+	// check
 	tb_assert_and_check_return(path && arc);
 
 	// init
@@ -937,6 +951,7 @@ tb_void_t g2_path_add_arc(tb_handle_t path, g2_arc_t const* arc)
 }
 tb_void_t g2_path_add_triangle(tb_handle_t path, g2_triangle_t const* triangle)
 {
+	// check
 	tb_assert_and_check_return(path && triangle);
 	
 	g2_path_move_to(path, &triangle->p0);
@@ -946,6 +961,7 @@ tb_void_t g2_path_add_triangle(tb_handle_t path, g2_triangle_t const* triangle)
 }
 tb_void_t g2_path_add_rect(tb_handle_t path, g2_rect_t const* rect)
 {
+	// check
 	tb_assert_and_check_return(path && rect);
 	
 	g2_path_move2_to(path, rect->x, rect->y);
@@ -956,6 +972,7 @@ tb_void_t g2_path_add_rect(tb_handle_t path, g2_rect_t const* rect)
 }
 tb_void_t g2_path_add_circle(tb_handle_t path, g2_circle_t const* circle)
 {
+	// check
 	g2_gl_path_t* gpath = (g2_gl_path_t*)path;
 	tb_assert_and_check_return(path && circle);
 
@@ -975,6 +992,7 @@ tb_void_t g2_path_add_circle(tb_handle_t path, g2_circle_t const* circle)
 }
 tb_void_t g2_path_add_ellipse(tb_handle_t path, g2_ellipse_t const* ellipse)
 {
+	// check
 	g2_gl_path_t* gpath = (g2_gl_path_t*)path;
 	tb_assert_and_check_return(path && ellipse);
 
