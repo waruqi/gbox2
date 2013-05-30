@@ -292,17 +292,11 @@ tb_void_t g2_draw_path(tb_handle_t painter, tb_handle_t path)
 	// the mode
 	tb_size_t mode = g2_style_mode(style);
 
-	// fill & stok
-	if ((mode & G2_STYLE_MODE_FILL) && (mode & G2_STYLE_MODE_STOK) && g2_e1(g2_style_width(style)))
-		g2_gl_draw_path(gpainter, G2_STYLE_MODE_FILL_STOK, (g2_gl_path_t const*)path);
-	else
-	{
-		// fill
-		if (mode & G2_STYLE_MODE_FILL) g2_gl_fill_path(gpainter, (g2_gl_path_t const*)path);
-	
-		// stok
-		if (mode & G2_STYLE_MODE_STOK) g2_gl_stok_path(gpainter, (g2_gl_path_t const*)path);
-	}
+	// fill
+	if (mode & G2_STYLE_MODE_FILL) g2_gl_fill_path(gpainter, (g2_gl_path_t const*)path);
+
+	// stok
+	if (mode & G2_STYLE_MODE_STOK) g2_gl_stok_path(gpainter, (g2_gl_path_t const*)path);
 }
 tb_void_t g2_draw_arc(tb_handle_t painter, g2_arc_t const* arc)
 {
@@ -334,17 +328,11 @@ tb_void_t g2_draw_rect(tb_handle_t painter, g2_rect_t const* rect)
 	// the mode
 	tb_size_t mode = g2_style_mode(style);
 
-	// fill & stok
-	if ((mode & G2_STYLE_MODE_FILL) && (mode & G2_STYLE_MODE_STOK) && g2_e1(g2_style_width(style)))
-		g2_gl_draw_rect(gpainter, G2_STYLE_MODE_FILL_STOK, rect);
-	else
-	{
-		// fill
-		if (mode & G2_STYLE_MODE_FILL) g2_gl_fill_rect(gpainter, rect);
+	// fill
+	if (mode & G2_STYLE_MODE_FILL) g2_gl_fill_rect(gpainter, rect);
 
-		// stok
-		if (mode & G2_STYLE_MODE_STOK) g2_gl_stok_rect(gpainter, rect);
-	}
+	// stok
+	if (mode & G2_STYLE_MODE_STOK) g2_gl_stok_rect(gpainter, rect);
 }
 tb_void_t g2_draw_line(tb_handle_t painter, g2_line_t const* line)
 {
@@ -393,17 +381,11 @@ tb_void_t g2_draw_circle(tb_handle_t painter, g2_circle_t const* circle)
 	// the mode
 	tb_size_t mode = g2_style_mode(style);
 
-	// fill & stok
-	if ((mode & G2_STYLE_MODE_FILL) && (mode & G2_STYLE_MODE_STOK) && g2_e1(g2_style_width(style)))
-		g2_gl_draw_circle(gpainter, G2_STYLE_MODE_FILL_STOK, circle);
-	else
-	{
-		// fill
-		if (mode & G2_STYLE_MODE_FILL) g2_gl_fill_circle(gpainter, circle);
+	// fill
+	if (mode & G2_STYLE_MODE_FILL) g2_gl_fill_circle(gpainter, circle);
 
-		// stok
-		if (mode & G2_STYLE_MODE_STOK) g2_gl_stok_circle(gpainter, circle);
-	}
+	// stok
+	if (mode & G2_STYLE_MODE_STOK) g2_gl_stok_circle(gpainter, circle);
 }
 tb_void_t g2_draw_ellipse(tb_handle_t painter, g2_ellipse_t const* ellipse)
 {
@@ -418,17 +400,11 @@ tb_void_t g2_draw_ellipse(tb_handle_t painter, g2_ellipse_t const* ellipse)
 	// the mode
 	tb_size_t mode = g2_style_mode(style);
 
-	// fill & stok
-	if ((mode & G2_STYLE_MODE_FILL) && (mode & G2_STYLE_MODE_STOK) && g2_e1(g2_style_width(style)))
-		g2_gl_draw_ellipse(gpainter, G2_STYLE_MODE_FILL_STOK, ellipse);
-	else
-	{
-		// fill
-		if (mode & G2_STYLE_MODE_FILL) g2_gl_fill_ellipse(gpainter, ellipse);
+	// fill
+	if (mode & G2_STYLE_MODE_FILL) g2_gl_fill_ellipse(gpainter, ellipse);
 
-		// stok
-		if (mode & G2_STYLE_MODE_STOK) g2_gl_stok_ellipse(gpainter, ellipse);
-	}
+	// stok
+	if (mode & G2_STYLE_MODE_STOK) g2_gl_stok_ellipse(gpainter, ellipse);
 }
 tb_void_t g2_draw_triangle(tb_handle_t painter, g2_triangle_t const* triangle)
 {
@@ -443,15 +419,9 @@ tb_void_t g2_draw_triangle(tb_handle_t painter, g2_triangle_t const* triangle)
 	// the mode
 	tb_size_t mode = g2_style_mode(style);
 
-	// fill & stok
-	if ((mode & G2_STYLE_MODE_FILL) && (mode & G2_STYLE_MODE_STOK) && g2_e1(g2_style_width(style)))
-		g2_gl_draw_triangle(gpainter, G2_STYLE_MODE_FILL_STOK, triangle);
-	else
-	{
-		// fill
-		if (mode & G2_STYLE_MODE_FILL) g2_gl_fill_triangle(gpainter, triangle);
+	// fill
+	if (mode & G2_STYLE_MODE_FILL) g2_gl_fill_triangle(gpainter, triangle);
 
-		// stok
-		if (mode & G2_STYLE_MODE_STOK) g2_gl_stok_triangle(gpainter, triangle);
-	}
+	// stok
+	if (mode & G2_STYLE_MODE_STOK) g2_gl_stok_triangle(gpainter, triangle);
 }
