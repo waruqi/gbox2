@@ -171,6 +171,7 @@ static tb_void_t g2_demo_render()
 		g2_clear_style(g_painter);
 		g2_mode(g_painter, G2_STYLE_MODE_STOK);
 		g2_color(g_painter, G2_COLOR_BLUE);
+		g2_shader(g_painter, g_bm? g_mhader[g_shaderi] : g_shader[g_shaderi]);
 		g2_width(g_painter, g2_long_to_float(g_penw));
 		g2_cap(g_painter, g_cap[g_capi]);
 		g2_join(g_painter, g_join[g_joini]);

@@ -277,7 +277,7 @@ tb_void_t g2_draw_clear(tb_handle_t painter, g2_color_t color)
 {
 	// clear
 	g2_glClearColor((tb_float_t)color.r / 0xff, (tb_float_t)color.g / 0xff, (tb_float_t)color.b / 0xff, (tb_float_t)color.a / 0xff);
-	g2_glClear(G2_GL_COLOR_BUFFER_BIT | G2_GL_STENCIL_BUFFER_BIT);
+	g2_glClear(G2_GL_COLOR_BUFFER_BIT);
 }
 tb_void_t g2_draw_path(tb_handle_t painter, tb_handle_t path)
 {
@@ -308,9 +308,8 @@ tb_void_t g2_draw_arc(tb_handle_t painter, g2_arc_t const* arc)
 	tb_handle_t style = g2_style(painter);
 	tb_assert_and_check_return(style);
 
-	// the mode
-	tb_size_t mode = g2_style_mode(style);
-	tb_assert_and_check_return(mode & G2_STYLE_MODE_STOK);
+	// only for stok
+	tb_check_return(g2_style_mode(style) & G2_STYLE_MODE_STOK);
 
 	// stok
 	g2_gl_stok_arc(gpainter, arc);
@@ -344,9 +343,8 @@ tb_void_t g2_draw_line(tb_handle_t painter, g2_line_t const* line)
 	tb_handle_t style = g2_style(painter);
 	tb_assert_and_check_return(style);
 
-	// the mode
-	tb_size_t mode = g2_style_mode(style);
-	tb_assert_and_check_return(mode & G2_STYLE_MODE_STOK);
+	// only for stok
+	tb_check_return(g2_style_mode(style) & G2_STYLE_MODE_STOK);
 
 	// stok
 	g2_gl_stok_line(gpainter, line);
@@ -361,9 +359,8 @@ tb_void_t g2_draw_point(tb_handle_t painter, g2_point_t const* point)
 	tb_handle_t style = g2_style(painter);
 	tb_assert_and_check_return(style);
 
-	// the mode
-	tb_size_t mode = g2_style_mode(style);
-	tb_assert_and_check_return(mode & G2_STYLE_MODE_STOK);
+	// only for stok
+	tb_check_return(g2_style_mode(style) & G2_STYLE_MODE_STOK);
 
 	// stok
 	g2_gl_stok_point(gpainter, point);

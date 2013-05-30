@@ -766,9 +766,6 @@ tb_void_t g2_path_line_to(tb_handle_t path, g2_point_t const* pt)
 	data[0] = g2_float_to_tb(pt->x);
 	data[1] = g2_float_to_tb(pt->y);
 
-	// bounds
-	g2_gl_rect_done(&gpath->rect, data[0], data[1]);
-
 	// patch move-to
 	if (!(gpath->flag & G2_GL_PATH_FLAG_OPEN)) 
 	{
@@ -780,6 +777,9 @@ tb_void_t g2_path_line_to(tb_handle_t path, g2_point_t const* pt)
 		// move to the last
 		g2_path_move_to(path, last? last : null);
 	}
+
+	// bounds
+	g2_gl_rect_done(&gpath->rect, data[0], data[1]);
 
 	// line to
 	gpath->flag |= G2_GL_PATH_FLAG_LINE;
@@ -806,10 +806,6 @@ tb_void_t g2_path_quad_to(tb_handle_t path, g2_point_t const* cp, g2_point_t con
 	data[2] = g2_float_to_tb(pt->x);
 	data[3] = g2_float_to_tb(pt->y);
 
-	// bounds
-	g2_gl_rect_done(&gpath->rect, data[0], data[1]);
-	g2_gl_rect_done(&gpath->rect, data[2], data[3]);
-
 	// patch move-to
 	if (!(gpath->flag & G2_GL_PATH_FLAG_OPEN)) 
 	{
@@ -821,6 +817,10 @@ tb_void_t g2_path_quad_to(tb_handle_t path, g2_point_t const* cp, g2_point_t con
 		// move to the last
 		g2_path_move_to(path, last? last : null);
 	}
+
+	// bounds
+	g2_gl_rect_done(&gpath->rect, data[0], data[1]);
+	g2_gl_rect_done(&gpath->rect, data[2], data[3]);
 
 	// quad to
 	gpath->flag |= G2_GL_PATH_FLAG_QUAD;
@@ -850,11 +850,6 @@ tb_void_t g2_path_cube_to(tb_handle_t path, g2_point_t const* c0, g2_point_t con
 	data[4] = g2_float_to_tb(pt->x);
 	data[5] = g2_float_to_tb(pt->y);
 
-	// bounds
-	g2_gl_rect_done(&gpath->rect, data[0], data[1]);
-	g2_gl_rect_done(&gpath->rect, data[2], data[3]);
-	g2_gl_rect_done(&gpath->rect, data[4], data[5]);
-
 	// patch move-to
 	if (!(gpath->flag & G2_GL_PATH_FLAG_OPEN)) 
 	{
@@ -866,6 +861,11 @@ tb_void_t g2_path_cube_to(tb_handle_t path, g2_point_t const* c0, g2_point_t con
 		// move to the last
 		g2_path_move_to(path, last? last : null);
 	}
+
+	// bounds
+	g2_gl_rect_done(&gpath->rect, data[0], data[1]);
+	g2_gl_rect_done(&gpath->rect, data[2], data[3]);
+	g2_gl_rect_done(&gpath->rect, data[4], data[5]);
 
 	// cube to
 	gpath->flag |= G2_GL_PATH_FLAG_CUBE;

@@ -40,12 +40,12 @@ static __tb_inline__ tb_void_t g2_gl_rect_init(g2_gl_rect_t* rect, tb_float_t x,
 }
 static __tb_inline__ tb_void_t g2_gl_rect_done(g2_gl_rect_t* rect, tb_float_t x, tb_float_t y)
 {
+	x += 1.0f;
+	y += 1.0f;
 	if (x < rect->x1) rect->x1 = x;
 	if (y < rect->y1) rect->y1 = y;
 	if (x > rect->x2) rect->x2 = x;
 	if (y > rect->y2) rect->y2 = y;
-	rect->x2 += 1.0f;
-	rect->y2 += 1.0f;
 }
 
 #endif

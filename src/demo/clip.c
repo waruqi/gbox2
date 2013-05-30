@@ -185,8 +185,9 @@ static tb_bool_t g2_demo_shape_init(tb_int_t argc, tb_char_t** argv)
 	}
 
 	// init mode
-//	g_mode = G2_STYLE_MODE_FILL_STOK;
-	g_mode = G2_STYLE_MODE_STOK;
+	g_mode = G2_STYLE_MODE_FILL_STOK;
+//	g_mode = G2_STYLE_MODE_STOK;
+//	g_mode = G2_STYLE_MODE_FILL;
 
 	// init matrix
 	g_bm = tb_true;
@@ -238,6 +239,8 @@ static tb_void_t g2_demo_shape_render()
 //	g2_draw_irect2(g_painter, 0, 0, g2_bitmap_width(g_surface), g2_bitmap_height(g_surface));
 	g2_draw_iline2(g_painter, 0, 0, g2_bitmap_width(g_surface), g2_bitmap_height(g_surface));
 //	g2_draw_itriangle2(g_painter, 0, g2_bitmap_height(g_surface) >> 1, g2_bitmap_width(g_surface) >> 1, 0, g2_bitmap_width(g_surface), g2_bitmap_height(g_surface) >> 1);
+	g2_draw_irect2(g_painter, 0, 0, g2_bitmap_width(g_surface) >> 1, g2_bitmap_height(g_surface) >> 1);
+	g2_draw_icircle2(g_painter, g_x0, g_y0, 100);
 
 	// load matrix
 	g2_load_matrix(g_painter);

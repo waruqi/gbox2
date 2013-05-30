@@ -88,9 +88,6 @@ typedef struct __g2_gl_draw_t
 	// the flag
 	tb_size_t 			flag;
 
-	// the stencil pass value
-	tb_byte_t 			pass;
-
 	// the vertices, 4[points] x 2[xy]
 	tb_float_t 			vertices[8];
 
@@ -427,9 +424,6 @@ static __tb_inline__ tb_void_t g2_gl_draw_stencil_init(g2_gl_draw_t* draw)
 
 		// use stencil 
 		draw->flag |= G2_GL_DRAW_FLAG_STENCIL;
-
-		// init the pass value
-		draw->pass = 0xff;
 	}
 }
 static __tb_inline__ tb_void_t g2_gl_draw_stencil_clip_bounds(g2_gl_draw_t* draw, g2_gl_rect_t const* bounds)
@@ -626,6 +620,34 @@ static __tb_inline__ tb_void_t g2_gl_draw_stencil_clip_item(g2_gl_draw_t* draw, 
 	// clip it
 	clip[item->type](draw, item);
 }
+static __tb_inline__ tb_void_t g2_gl_draw_stencil_clip_filter(g2_gl_draw_t* draw, g2_gl_rect_t const* bounds)
+{
+	// radial? maybe out of range, filter with fullscreen
+	if (draw->shader && draw->shader->type == G2_GL_SHADER_TYPE_RADIAL)
+	{
+		// the width & height
+		tb_size_t width = g2_bitmap_width(draw->context->surface);
+		tb_size_t height = g2_bitmap_height(draw->context->surface);
+		tb_assert_and_check_return(width && height);
+
+		// init vertices
+		draw->vertices[0] = 0;
+		draw->vertices[1] = 0;
+		draw->vertices[2] = width;
+		draw->vertices[3] = 0;
+		draw->vertices[4] = 0;
+		draw->vertices[5] = height;
+		draw->vertices[6] = width;
+		draw->vertices[7] = height;
+		
+		// apply vertices
+		g2_gl_draw_apply_vertices(draw);
+
+		// draw 
+		g2_glDrawArrays(G2_GL_TRIANGLE_STRIP, 0, 4);
+	}
+	else g2_gl_draw_stencil_clip_bounds(draw, bounds);
+}
 static __tb_inline__ tb_void_t g2_gl_draw_stencil_clip(g2_gl_draw_t* draw, g2_gl_rect_t const* bounds)
 {
 	// check
@@ -638,8 +660,9 @@ static __tb_inline__ tb_void_t g2_gl_draw_stencil_clip(g2_gl_draw_t* draw, g2_gl
 	tb_size_t size = g2_clipper_size(draw->clipper);
 	tb_check_return(size);
 
-	// force to done mask
-	tb_bool_t fmask = (draw->shader && draw->shader->type == G2_GL_SHADER_TYPE_RADIAL)? tb_true : tb_false;
+	// clear stencil
+	g2_glClearStencil(0);
+	g2_glClear(G2_GL_STENCIL_BUFFER_BIT);
 
 	/* clip stencil
 	 *
@@ -660,7 +683,7 @@ static __tb_inline__ tb_void_t g2_gl_draw_stencil_clip(g2_gl_draw_t* draw, g2_gl
 				// 0x01 => 0xfe
 				g2_glStencilFunc(G2_GL_EQUAL, 0x01, 0xff);
 				g2_glStencilOp(G2_GL_KEEP, G2_GL_INVERT, G2_GL_INVERT);
-				g2_gl_draw_stencil_clip_bounds(draw, bounds);
+				g2_gl_draw_stencil_clip_filter(draw, bounds);
 			}
 
 			// save vetex matrix
@@ -687,41 +710,23 @@ static __tb_inline__ tb_void_t g2_gl_draw_stencil_clip(g2_gl_draw_t* draw, g2_gl
 			{
 			case G2_CLIPPER_MODE_REPLACE:
 				{
-					// done mask
-					if (i + 1 < size || fmask)
-					{
-						// 0x00 => 0x01, 0xff => 0x00
-						g2_glStencilFunc(G2_GL_EQUAL, 0xff, 0xff);
-						g2_glStencilOp(G2_GL_INCR, G2_GL_ZERO, G2_GL_ZERO);
-						g2_gl_draw_stencil_clip_bounds(draw, bounds);
-
-						// pass: 0x00
-						draw->pass = 0x00;
-					}
-					// last? using the pass value directly
-					else draw->pass = 0xff;
+					// 0x00 => 0x01, 0xff => 0x00
+					g2_glStencilFunc(G2_GL_EQUAL, 0xff, 0xff);
+					g2_glStencilOp(G2_GL_INCR, G2_GL_ZERO, G2_GL_ZERO);
+					g2_gl_draw_stencil_clip_filter(draw, bounds);
 				}
 				break;
 			case G2_CLIPPER_MODE_INTERSECT:
 				{
-					// done mask
-					if (i + 1 < size || fmask)
-					{
-						// 0x00 => 0x01
-						g2_glStencilFunc(G2_GL_EQUAL, 0x00, 0xff);
-						g2_glStencilOp(G2_GL_KEEP, G2_GL_INCR, G2_GL_INCR);
-						g2_gl_draw_stencil_clip_bounds(draw, bounds);
+					// 0x00 => 0x01
+					g2_glStencilFunc(G2_GL_EQUAL, 0x00, 0xff);
+					g2_glStencilOp(G2_GL_KEEP, G2_GL_INCR, G2_GL_INCR);
+					g2_gl_draw_stencil_clip_filter(draw, bounds);
 
-						// 0xff => 0x00
-						g2_glStencilFunc(G2_GL_EQUAL, 0xff, 0xff);
-						g2_glStencilOp(G2_GL_KEEP, G2_GL_ZERO, G2_GL_ZERO);
-						g2_gl_draw_stencil_clip_bounds(draw, bounds);
-
-						// pass: 0x00
-						draw->pass = 0x00;
-					}
-					// last? using the pass value directly
-					else draw->pass = 0xff;
+					// 0xff => 0x00
+					g2_glStencilFunc(G2_GL_EQUAL, 0xff, 0xff);
+					g2_glStencilOp(G2_GL_KEEP, G2_GL_ZERO, G2_GL_ZERO);
+					g2_gl_draw_stencil_clip_filter(draw, bounds);
 				}
 				break;
 			case G2_CLIPPER_MODE_UNION:
@@ -729,27 +734,15 @@ static __tb_inline__ tb_void_t g2_gl_draw_stencil_clip(g2_gl_draw_t* draw, g2_gl
 					// 0x01 => 0x00, 0xff => 0x00
 					g2_glStencilFunc(G2_GL_NOTEQUAL, 0xfe, 0xff);
 					g2_glStencilOp(G2_GL_KEEP, G2_GL_ZERO, G2_GL_ZERO);
-					g2_gl_draw_stencil_clip_bounds(draw, bounds);
-
-					// pass: 0x00
-					draw->pass = 0x00;
+					g2_gl_draw_stencil_clip_filter(draw, bounds);
 				}
 				break;
 			case G2_CLIPPER_MODE_SUBTRACT:
 				{
-					// done mask
-					if (i + 1 < size)
-					{
-						// 0xff => 0xfe
-						g2_glStencilFunc(G2_GL_EQUAL, 0xff, 0xff);
-						g2_glStencilOp(G2_GL_KEEP, G2_GL_DECR, G2_GL_DECR);
-						g2_gl_draw_stencil_clip_bounds(draw, bounds);
-
-						// pass: 0x00
-						draw->pass = 0x00;
-					}
-					// last? using the pass value directly
-					else draw->pass = 0x00;
+					// 0xff => 0xfe
+					g2_glStencilFunc(G2_GL_EQUAL, 0xff, 0xff);
+					g2_glStencilOp(G2_GL_KEEP, G2_GL_DECR, G2_GL_DECR);
+					g2_gl_draw_stencil_clip_filter(draw, bounds);
 				}
 				break;
 			default:
@@ -762,9 +755,6 @@ static __tb_inline__ tb_void_t g2_gl_draw_stencil_clip(g2_gl_draw_t* draw, g2_gl
 	// apply stencil for draw path
 	g2_glStencilFunc(G2_GL_ALWAYS, 0, 0);
 	g2_glStencilOp(G2_GL_INVERT, G2_GL_INVERT, G2_GL_INVERT);
-
-	// invert pass 
-	draw->pass = ~draw->pass;
 }
 static __tb_inline__ tb_void_t g2_gl_draw_stencil_draw(g2_gl_draw_t* draw)
 {
@@ -772,7 +762,7 @@ static __tb_inline__ tb_void_t g2_gl_draw_stencil_draw(g2_gl_draw_t* draw)
 	tb_check_return(draw->flag & G2_GL_DRAW_FLAG_STENCIL);
 
 	// draw stencil
-	g2_glStencilFunc(G2_GL_EQUAL, (g2_GLint_t)draw->pass, 0xff);
+	g2_glStencilFunc(G2_GL_EQUAL, 0xff, 0xff);
 	g2_glStencilOp(G2_GL_ZERO, G2_GL_ZERO, G2_GL_ZERO);
 	g2_glColorMask(G2_GL_TRUE, G2_GL_TRUE, G2_GL_TRUE, G2_GL_TRUE);
 }
@@ -1109,11 +1099,6 @@ static __tb_inline__ tb_void_t g2_gl_draw_style_fill(g2_gl_draw_t* draw, g2_gl_r
 	if (draw->shader) g2_gl_draw_style_fill_shader(draw, bounds);
 	else g2_gl_draw_style_fill_color(draw, bounds);
 }
-static __tb_inline__ tb_void_t g2_gl_draw_style_stok(g2_gl_draw_t* draw, g2_gl_rect_t const* bounds)
-{
-	// draw
-	if (draw->shader) g2_gl_draw_style_fill_shader(draw, bounds);
-}
 static __tb_inline__ tb_bool_t g2_gl_draw_init(g2_gl_draw_t* draw, g2_gl_painter_t* painter, tb_size_t mode, tb_size_t flag)
 {
 	// init draw
@@ -1166,14 +1151,6 @@ static __tb_inline__ tb_void_t g2_gl_draw_fill(g2_gl_draw_t* draw, g2_gl_rect_t*
 	// draw style
 	g2_gl_draw_style_fill(draw, bounds);
 }
-static __tb_inline__ tb_void_t g2_gl_draw_stok(g2_gl_draw_t* draw, g2_gl_rect_t* bounds)
-{
-	// draw stencil
-	g2_gl_draw_stencil_draw(draw);
-
-	// draw style
-	g2_gl_draw_style_stok(draw, bounds);
-}
 static __tb_inline__ tb_void_t g2_gl_draw_exit(g2_gl_draw_t* draw)
 {
 	// exit scissor
@@ -1197,9 +1174,6 @@ static tb_void_t g2_gl_draw_bounds(g2_gl_painter_t* painter, tb_size_t mode, g2_
 	// clip draw
 	g2_gl_draw_clip(&draw, bounds);
 
-	// draw stok
-	if (draw.mode == G2_STYLE_MODE_STOK) g2_gl_draw_stok(&draw, bounds);
-
 	// fill or stok
 	if ((draw.flag & G2_GL_DRAW_FLAG_STENCIL) || (draw.mode == G2_STYLE_MODE_STOK))
 	{
@@ -1215,11 +1189,11 @@ static tb_void_t g2_gl_draw_bounds(g2_gl_painter_t* painter, tb_size_t mode, g2_
 		
 		// draw vertices
 		g2_gl_draw_apply_vertices(&draw);
-		g2_glDrawArrays(draw.mode == G2_STYLE_MODE_FILL? G2_GL_TRIANGLE_STRIP : G2_GL_LINE_LOOP, 0, 4);
+		g2_glDrawArrays(draw.mode == G2_STYLE_MODE_FILL? G2_GL_TRIANGLE_FAN : G2_GL_LINE_LOOP, 0, 4);
 	}
 
 	// draw fill
-	if (draw.mode == G2_STYLE_MODE_FILL) g2_gl_draw_fill(&draw, bounds);
+	g2_gl_draw_fill(&draw, bounds);
 
 	// exit draw
 	g2_gl_draw_exit(&draw);
@@ -1290,9 +1264,6 @@ tb_void_t g2_gl_draw_path(g2_gl_painter_t* painter, tb_size_t mode, g2_gl_path_t
 	// clip draw
 	g2_gl_draw_clip(&draw, &path->fill.rect);
 
-	// draw stok
-	if (draw.mode == G2_STYLE_MODE_STOK) g2_gl_draw_stok(&draw, &path->fill.rect);
-
 	// init vertices
 	if (draw.context->version < 0x20)
 		g2_glVertexPointer(2, G2_GL_FLOAT, 0, tb_vector_data(path->fill.data));
@@ -1312,7 +1283,7 @@ tb_void_t g2_gl_draw_path(g2_gl_painter_t* painter, tb_size_t mode, g2_gl_path_t
 	}
 
 	// draw fill
-	if (draw.mode == G2_STYLE_MODE_FILL) g2_gl_draw_fill(&draw, &path->fill.rect);
+	g2_gl_draw_fill(&draw, &path->fill.rect);
 
 	// exit draw
 	g2_gl_draw_exit(&draw);
@@ -1424,16 +1395,13 @@ tb_void_t g2_gl_draw_triangle(g2_gl_painter_t* painter, tb_size_t mode, g2_trian
 	// clip draw
 	g2_gl_draw_clip(&draw, &bounds);
 
-	// draw stok
-	if (draw.mode == G2_STYLE_MODE_STOK) g2_gl_draw_stok(&draw, &bounds);
-
 	// draw vertices
 	if (draw.context->version < 0x20) g2_glVertexPointer(2, G2_GL_FLOAT, 0, vertices);
 	else g2_glVertexAttribPointer(g2_gl_program_location(draw.program, G2_GL_PROGRAM_LOCATION_VERTICES), 2, G2_GL_FLOAT, G2_GL_FALSE, 0, vertices);
 	g2_glDrawArrays((draw.mode == G2_STYLE_MODE_FILL)? G2_GL_TRIANGLE_STRIP : G2_GL_LINE_STRIP, 0, 3);
 
 	// draw fill
-	if (draw.mode == G2_STYLE_MODE_FILL) g2_gl_draw_fill(&draw, &bounds);
+	g2_gl_draw_fill(&draw, &bounds);
 
 	// exit draw
 	g2_gl_draw_exit(&draw);
@@ -1461,17 +1429,16 @@ tb_void_t g2_gl_draw_line(g2_gl_painter_t* painter, tb_size_t mode, g2_line_t co
 	g2_gl_draw_t draw = {0};
 	if (!g2_gl_draw_init(&draw, painter, mode, G2_GL_DRAW_FLAG_CONVEX)) return ;
 
-	// FIXME opti clip
 	// clip draw
 	g2_gl_draw_clip(&draw, &bounds);
-
-	// draw stok
-	g2_gl_draw_stok(&draw, &bounds);
 
 	// draw vertices
 	if (draw.context->version < 0x20) g2_glVertexPointer(2, G2_GL_FLOAT, 0, vertices);
 	else g2_glVertexAttribPointer(g2_gl_program_location(draw.program, G2_GL_PROGRAM_LOCATION_VERTICES), 2, G2_GL_FLOAT, G2_GL_FALSE, 0, vertices);
 	g2_glDrawArrays(G2_GL_LINE_STRIP, 0, 2);
+
+	// draw fill
+	g2_gl_draw_fill(&draw, &bounds);
 
 	// exit draw
 	g2_gl_draw_exit(&draw);
@@ -1489,24 +1456,26 @@ tb_void_t g2_gl_draw_point(g2_gl_painter_t* painter, tb_size_t mode, g2_point_t 
 
 	// init bounds
 	g2_gl_rect_t bounds;
-	g2_gl_rect_init(&bounds, vertices[0], vertices[1]);
+	bounds.x1 = vertices[0];
+	bounds.y1 = vertices[1];
+	bounds.x2 = vertices[0] + 1.0f;
+	bounds.y2 = vertices[1] + 1.0f;
 	tb_check_return(bounds.x1 < bounds.x2 && bounds.y1 < bounds.y2);
 
 	// init draw
 	g2_gl_draw_t draw = {0};
 	if (!g2_gl_draw_init(&draw, painter, mode, G2_GL_DRAW_FLAG_CONVEX)) return ;
 
-	// FIXME opti clip
 	// clip draw
 	g2_gl_draw_clip(&draw, &bounds);
-
-	// draw stok
-	g2_gl_draw_stok(&draw, &bounds);
 
 	// draw vertices
 	if (draw.context->version < 0x20) g2_glVertexPointer(2, G2_GL_FLOAT, 0, vertices);
 	else g2_glVertexAttribPointer(g2_gl_program_location(draw.program, G2_GL_PROGRAM_LOCATION_VERTICES), 2, G2_GL_FLOAT, G2_GL_FALSE, 0, vertices);
 	g2_glDrawArrays(G2_GL_POINTS, 0, 1);
+
+	// draw fill
+	g2_gl_draw_fill(&draw, &bounds);
 
 	// exit draw
 	g2_gl_draw_exit(&draw);
