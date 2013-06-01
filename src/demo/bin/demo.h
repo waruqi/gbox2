@@ -65,7 +65,6 @@ static tb_handle_t 	g_painter 	= tb_null;
 // clock
 static tb_hong_t 	g_bt 		= 0;
 static tb_hong_t 	g_fp 		= 0;
-static tb_hong_t 	g_rt 		= 0;
 static tb_hong_t 	g_fps 		= 0;
 static tb_bool_t 	g_pt 		= tb_false;
 
@@ -140,8 +139,8 @@ static tb_void_t g2_demo_gl_display()
 	// matrix
 	if (g_bm) g2_matrix_copy(g2_save_matrix(g_painter), &g_mx);
 
-	// start clock
-	g_rt = tb_uclock();
+	// init render time
+	tb_hong_t rpt = tb_uclock();
 
 	// render
 	g2_demo_render();
@@ -176,22 +175,28 @@ static tb_void_t g2_demo_gl_display()
 	}
 #endif
 
+	// exit render time
+	rpt = tb_uclock() - rpt;
+
+	// init swap time
+	tb_hong_t spt = tb_uclock();
+
 	// flush
 	glutSwapBuffers();
 	
-	// stop clock
-	g_rt = tb_uclock() - g_rt;
+	// exit swap time
+	spt = tb_uclock() - spt;
 
 	// render fps & rpt
 	g_fp++;
-	if (!g_bt) g_bt = tb_uclock();
-	if ((tb_uclock() - g_bt) > 1000000)
+	if (!g_bt) g_bt = tb_mclock();
+	if ((tb_mclock() - g_bt) > 1000)
 	{
-		g_fps = (1000000 * g_fp) / (tb_uclock() - g_bt);
+		g_fps = (1000 * g_fp) / (tb_mclock() - g_bt);
 		g_fp = 0;
 		g_bt = 0;
 
-		if (g_pt) tb_print("fps: %lld, rpt: %lld us", g_fps, g_rt);
+		if (g_pt) tb_print("fps: %lld, rpt: %lld us, spt: %lld us", g_fps, rpt, spt);
 	}
 }
 static tb_void_t g2_demo_gl_reshape(tb_int_t w, tb_int_t h)

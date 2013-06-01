@@ -14,6 +14,7 @@
 *.bak
 *.orig
 .DS_Store
+gmon.out
 other
 doc
 tags

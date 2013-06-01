@@ -421,7 +421,6 @@ static __tb_inline__ tb_void_t g2_gl_draw_stencil_init(g2_gl_draw_t* draw)
 		g2_glEnable(G2_GL_STENCIL_TEST);
 
 		// clear stencil
-		g2_glClearStencil(0);
 		g2_glClear(G2_GL_STENCIL_BUFFER_BIT);
 
 		// init stencil

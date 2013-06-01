@@ -112,7 +112,6 @@ tb_void_t g2_cutter_cube_done(g2_cutter_cube_t* cutter, g2_point_t const* pb, g2
 
 		g2_cutter_cube_done(cutter, pb, &cp1, &pb0, &p0);
 		g2_cutter_cube_done(cutter, &p0, &pe0, &cp2, pe);
-
 	}
 }
 
