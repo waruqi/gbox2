@@ -146,9 +146,6 @@ static tb_void_t g2_demo_gl_display()
 	// render
 	g2_demo_render();
 
-	// stop clock
-	g_rt = tb_uclock() - g_rt;
-
 	// load 
 	if (g_bm) g2_load_matrix(g_painter);
 
@@ -179,6 +176,12 @@ static tb_void_t g2_demo_gl_display()
 	}
 #endif
 
+	// flush
+	glutSwapBuffers();
+	
+	// stop clock
+	g_rt = tb_uclock() - g_rt;
+
 	// render fps & rpt
 	g_fp++;
 	if (!g_bt) g_bt = tb_uclock();
@@ -190,9 +193,6 @@ static tb_void_t g2_demo_gl_display()
 
 		if (g_pt) tb_print("fps: %lld, rpt: %lld us", g_fps, g_rt);
 	}
-
-	// flush
-	glutSwapBuffers();
 }
 static tb_void_t g2_demo_gl_reshape(tb_int_t w, tb_int_t h)
 {

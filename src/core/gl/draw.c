@@ -88,6 +88,9 @@ typedef struct __g2_gl_draw_t
 	// the flag
 	tb_size_t 			flag;
 
+	// the width
+	tb_float_t 			width;
+
 	// the vertices, 4[points] x 2[xy]
 	tb_float_t 			vertices[8];
 
@@ -417,6 +420,10 @@ static __tb_inline__ tb_void_t g2_gl_draw_stencil_init(g2_gl_draw_t* draw)
 		g2_glDisable(G2_GL_DEPTH_TEST);
 		g2_glEnable(G2_GL_STENCIL_TEST);
 
+		// clear stencil
+		g2_glClearStencil(0);
+		g2_glClear(G2_GL_STENCIL_BUFFER_BIT);
+
 		// init stencil
 		g2_glStencilFunc(G2_GL_ALWAYS, 0, 0);
 		g2_glStencilOp(G2_GL_INVERT, G2_GL_INVERT, G2_GL_INVERT);
@@ -660,10 +667,6 @@ static __tb_inline__ tb_void_t g2_gl_draw_stencil_clip(g2_gl_draw_t* draw, g2_gl
 	tb_size_t size = g2_clipper_size(draw->clipper);
 	tb_check_return(size);
 
-	// clear stencil
-	g2_glClearStencil(0);
-	g2_glClear(G2_GL_STENCIL_BUFFER_BIT);
-
 	/* clip stencil
 	 *
 	 * invisible: 	0x01 or 0xfe
@@ -820,7 +823,7 @@ static __tb_inline__ tb_bool_t g2_gl_draw_context_init(g2_gl_draw_t* draw)
 
 	// apply solid if no shader
 	if (!draw->shader) g2_gl_draw_apply_solid(draw);
-	
+
 	// ok
 	return tb_true;
 }
@@ -1023,9 +1026,9 @@ static __tb_inline__ tb_void_t g2_gl_draw_style_fill_shader_radial(g2_gl_draw_t*
 
 	// init fragment bounds
 	g2_gl_rect_t fbounds;
-	g2_gl_rect_init(&fbounds, draw->vertices[0], draw->vertices[1]);
-	g2_gl_rect_done(&fbounds, draw->vertices[2], draw->vertices[3]);
-	g2_gl_rect_done(&fbounds, draw->vertices[4], draw->vertices[5]);
+	g2_gl_bounds_init(&fbounds, draw->vertices[0], draw->vertices[1]);
+	g2_gl_bounds_done(&fbounds, draw->vertices[2], draw->vertices[3]);
+	g2_gl_bounds_done(&fbounds, draw->vertices[4], draw->vertices[5]);
 	
 	// apply vertices
 	g2_gl_draw_apply_vertices(draw);
@@ -1113,12 +1116,16 @@ static __tb_inline__ tb_bool_t g2_gl_draw_init(g2_gl_draw_t* draw, g2_gl_painter
 	tb_assert_and_check_return_val(draw->painter && draw->context && draw->context->surface && draw->style && draw->clipper, tb_false);
 
 	// use stencil?
-	if (!(flag & G2_GL_DRAW_FLAG_CONVEX)) draw->flag |= G2_GL_DRAW_FLAG_STENCIL;
-	else if (flag & G2_GL_DRAW_FLAG_RECT)
-	{ 
-		if (draw->shader && draw->shader->type == G2_GL_SHADER_TYPE_RADIAL) draw->flag |= G2_GL_DRAW_FLAG_STENCIL;
+	if (mode == G2_STYLE_MODE_FILL)
+	{
+		if (!(flag & G2_GL_DRAW_FLAG_CONVEX)) draw->flag |= G2_GL_DRAW_FLAG_STENCIL;
+		else if (flag & G2_GL_DRAW_FLAG_RECT)
+		{ 
+			if (draw->shader && draw->shader->type == G2_GL_SHADER_TYPE_RADIAL) draw->flag |= G2_GL_DRAW_FLAG_STENCIL;
+		}
+		else if (draw->shader) draw->flag |= G2_GL_DRAW_FLAG_STENCIL;
 	}
-	else if (draw->shader) draw->flag |= G2_GL_DRAW_FLAG_STENCIL;
+	else if (mode == G2_STYLE_MODE_STOK && draw->shader) draw->flag |= G2_GL_DRAW_FLAG_STENCIL;
 
 	// init context
 	if (!g2_gl_draw_context_init(draw)) return tb_false;
@@ -1165,27 +1172,31 @@ static __tb_inline__ tb_void_t g2_gl_draw_exit(g2_gl_draw_t* draw)
 	// exit context
 	g2_gl_draw_context_exit(draw);
 }
-static tb_void_t g2_gl_draw_bounds(g2_gl_painter_t* painter, tb_size_t mode, g2_gl_rect_t const* bounds)
+static tb_void_t g2_gl_draw_bounds(g2_gl_painter_t* painter, tb_size_t mode, g2_gl_rect_t const* rect)
 {
 	// init draw
 	g2_gl_draw_t draw = {0};
-	if (!g2_gl_draw_init(&draw, painter, mode, G2_GL_DRAW_FLAG_RECT | G2_GL_DRAW_FLAG_CONVEX)) return ;
+	if (!g2_gl_draw_init(&draw, painter, mode, ((mode == G2_STYLE_MODE_STOK)? G2_GL_DRAW_FLAG_CONVEX : (G2_GL_DRAW_FLAG_RECT | G2_GL_DRAW_FLAG_CONVEX)))) return ;
+
+	// init bounds
+	g2_gl_rect_t bounds = *rect;
+	if (draw.mode == G2_STYLE_MODE_STOK) g2_gl_bounds_stok(&bounds, 1);
 
 	// clip draw
-	g2_gl_draw_clip(&draw, bounds);
+	g2_gl_draw_clip(&draw, &bounds);
 
 	// fill or stok
 	if ((draw.flag & G2_GL_DRAW_FLAG_STENCIL) || (draw.mode == G2_STYLE_MODE_STOK))
 	{
 		// init vertices
-		draw.vertices[0] = bounds->x1;
-		draw.vertices[1] = bounds->y1;
-		draw.vertices[2] = bounds->x2;
-		draw.vertices[3] = bounds->y1;
-		draw.vertices[4] = bounds->x2;
-		draw.vertices[5] = bounds->y2;
-		draw.vertices[6] = bounds->x1;
-		draw.vertices[7] = bounds->y2;
+		draw.vertices[0] = rect->x1;
+		draw.vertices[1] = rect->y1;
+		draw.vertices[2] = rect->x2;
+		draw.vertices[3] = rect->y1;
+		draw.vertices[4] = rect->x2;
+		draw.vertices[5] = rect->y2;
+		draw.vertices[6] = rect->x1;
+		draw.vertices[7] = rect->y2;
 		
 		// draw vertices
 		g2_gl_draw_apply_vertices(&draw);
@@ -1193,7 +1204,7 @@ static tb_void_t g2_gl_draw_bounds(g2_gl_painter_t* painter, tb_size_t mode, g2_
 	}
 
 	// draw fill
-	g2_gl_draw_fill(&draw, bounds);
+	g2_gl_draw_fill(&draw, &bounds);
 
 	// exit draw
 	g2_gl_draw_exit(&draw);
@@ -1261,8 +1272,12 @@ tb_void_t g2_gl_draw_path(g2_gl_painter_t* painter, tb_size_t mode, g2_gl_path_t
 	g2_gl_draw_t draw = {0};
 	if (!g2_gl_draw_init(&draw, painter, mode, path->like == G2_GL_PATH_LIKE_CONX? G2_GL_DRAW_FLAG_CONVEX : G2_GL_DRAW_FLAG_NONE)) return ;
 
+	// init bounds
+	g2_gl_rect_t bounds = path->fill.rect;
+	if (draw.mode == G2_STYLE_MODE_STOK) g2_gl_bounds_stok(&bounds, 1);
+
 	// clip draw
-	g2_gl_draw_clip(&draw, &path->fill.rect);
+	g2_gl_draw_clip(&draw, &bounds);
 
 	// init vertices
 	if (draw.context->version < 0x20)
@@ -1283,7 +1298,7 @@ tb_void_t g2_gl_draw_path(g2_gl_painter_t* painter, tb_size_t mode, g2_gl_path_t
 	}
 
 	// draw fill
-	g2_gl_draw_fill(&draw, &path->fill.rect);
+	g2_gl_draw_fill(&draw, &bounds);
 
 	// exit draw
 	g2_gl_draw_exit(&draw);
@@ -1383,9 +1398,10 @@ tb_void_t g2_gl_draw_triangle(g2_gl_painter_t* painter, tb_size_t mode, g2_trian
 
 	// init bounds
 	g2_gl_rect_t bounds;
-	g2_gl_rect_init(&bounds, vertices[0], vertices[1]);
-	g2_gl_rect_done(&bounds, vertices[2], vertices[3]);
-	g2_gl_rect_done(&bounds, vertices[4], vertices[5]);
+	g2_gl_bounds_init(&bounds, vertices[0], vertices[1]);
+	g2_gl_bounds_done(&bounds, vertices[2], vertices[3]);
+	g2_gl_bounds_done(&bounds, vertices[4], vertices[5]);
+	g2_gl_bounds_stok(&bounds, 1);
 	tb_check_return(bounds.x1 < bounds.x2 && bounds.y1 < bounds.y2);
 
 	// init draw
@@ -1421,8 +1437,9 @@ tb_void_t g2_gl_draw_line(g2_gl_painter_t* painter, tb_size_t mode, g2_line_t co
 
 	// init bounds
 	g2_gl_rect_t bounds;
-	g2_gl_rect_init(&bounds, vertices[0], vertices[1]);
-	g2_gl_rect_done(&bounds, vertices[2], vertices[3]);
+	g2_gl_bounds_init(&bounds, vertices[0], vertices[1]);
+	g2_gl_bounds_done(&bounds, vertices[2], vertices[3]);
+	g2_gl_bounds_stok(&bounds, 1);
 	tb_check_return(bounds.x1 < bounds.x2 && bounds.y1 < bounds.y2);
 
 	// init draw
@@ -1460,6 +1477,7 @@ tb_void_t g2_gl_draw_point(g2_gl_painter_t* painter, tb_size_t mode, g2_point_t 
 	bounds.y1 = vertices[1];
 	bounds.x2 = vertices[0] + 1.0f;
 	bounds.y2 = vertices[1] + 1.0f;
+	g2_gl_bounds_stok(&bounds, 1);
 	tb_check_return(bounds.x1 < bounds.x2 && bounds.y1 < bounds.y2);
 
 	// init draw

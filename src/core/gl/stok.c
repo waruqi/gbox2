@@ -97,8 +97,6 @@ tb_void_t g2_gl_stok_line(g2_gl_painter_t* painter, g2_line_t const* line)
 			break;
 		case G2_STYLE_CAP_SQUARE:
 		default:
-			{
-			}
 			break;
 		}
 	}

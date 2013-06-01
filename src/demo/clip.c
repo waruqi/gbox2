@@ -235,6 +235,7 @@ static tb_void_t g2_demo_shape_render()
 	g2_clear_matrix(g_painter);
 #endif
 
+	// FIXME clip stok
 	// draw
 //	g2_draw_irect2(g_painter, 0, 0, g2_bitmap_width(g_surface), g2_bitmap_height(g_surface));
 	g2_draw_iline2(g_painter, 0, 0, g2_bitmap_width(g_surface), g2_bitmap_height(g_surface));

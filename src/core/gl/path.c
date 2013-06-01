@@ -30,7 +30,7 @@
  * includes
  */
 #include "path.h"
-#include "rect.h"
+#include "bounds.h"
 
 /* ///////////////////////////////////////////////////////////////////////
  * macros
@@ -733,8 +733,8 @@ tb_void_t g2_path_move_to(tb_handle_t path, g2_point_t const* pt)
 	data[1] = g2_float_to_tb(pt->y);
 
 	// bounds
-	if (!tb_vector_size(gpath->code)) g2_gl_rect_init(&gpath->rect, data[0], data[1]);
-	else g2_gl_rect_done(&gpath->rect, data[0], data[1]);
+	if (!tb_vector_size(gpath->code)) g2_gl_bounds_init(&gpath->rect, data[0], data[1]);
+	else g2_gl_bounds_done(&gpath->rect, data[0], data[1]);
 
 	// move to
 	if (!tb_vector_size(gpath->code) || (tb_byte_t)tb_vector_last(gpath->code) != G2_PATH_CODE_MOVE) 
@@ -779,7 +779,7 @@ tb_void_t g2_path_line_to(tb_handle_t path, g2_point_t const* pt)
 	}
 
 	// bounds
-	g2_gl_rect_done(&gpath->rect, data[0], data[1]);
+	g2_gl_bounds_done(&gpath->rect, data[0], data[1]);
 
 	// line to
 	gpath->flag |= G2_GL_PATH_FLAG_LINE;
@@ -819,8 +819,8 @@ tb_void_t g2_path_quad_to(tb_handle_t path, g2_point_t const* cp, g2_point_t con
 	}
 
 	// bounds
-	g2_gl_rect_done(&gpath->rect, data[0], data[1]);
-	g2_gl_rect_done(&gpath->rect, data[2], data[3]);
+	g2_gl_bounds_done(&gpath->rect, data[0], data[1]);
+	g2_gl_bounds_done(&gpath->rect, data[2], data[3]);
 
 	// quad to
 	gpath->flag |= G2_GL_PATH_FLAG_QUAD;
@@ -863,9 +863,9 @@ tb_void_t g2_path_cube_to(tb_handle_t path, g2_point_t const* c0, g2_point_t con
 	}
 
 	// bounds
-	g2_gl_rect_done(&gpath->rect, data[0], data[1]);
-	g2_gl_rect_done(&gpath->rect, data[2], data[3]);
-	g2_gl_rect_done(&gpath->rect, data[4], data[5]);
+	g2_gl_bounds_done(&gpath->rect, data[0], data[1]);
+	g2_gl_bounds_done(&gpath->rect, data[2], data[3]);
+	g2_gl_bounds_done(&gpath->rect, data[4], data[5]);
 
 	// cube to
 	gpath->flag |= G2_GL_PATH_FLAG_CUBE;
