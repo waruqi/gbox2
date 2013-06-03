@@ -544,6 +544,8 @@ tb_void_t g2_path_close(tb_handle_t path)
 	// clear fill
 	g2_gl_path_fill_clear(gpath);
 
+	// FIXME patch close
+//#error
 }
 tb_bool_t g2_path_null(tb_handle_t path)
 {

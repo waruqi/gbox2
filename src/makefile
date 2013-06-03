@@ -44,6 +44,7 @@ gbox2_C_FILES 			+= \
 						core/cutter/arc \
 						core/cutter/func \
 						core/cutter/fill \
+						core/cutter/path \
 						core/cutter/quad \
 						core/cutter/cube \
 						core/cutter/circle \

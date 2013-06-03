@@ -8,6 +8,7 @@
  */
 static tb_handle_t 	g_path 		= tb_null;
 static tb_handle_t 	g_fill 		= tb_null;
+static tb_handle_t 	g_temp 		= tb_null;
 static tb_bool_t 	g_move 		= tb_true;
 
 /* ////////////////////////////////////////////////////////////////////////
@@ -51,15 +52,24 @@ static tb_void_t g2_demo_rclickdown(tb_int_t x, tb_int_t y)
 	g2_path_close(g_path);
 	g_move = tb_true;
 
+	// clear temp
+	g2_path_clear(g_temp);
+
 	// clear fill
 	g2_path_clear(g_fill);
 
-	// cutter
-	g2_cutter_fill_t 	cutter;
-	g2_cutter_fill_init(&cutter, G2_STYLE_RULE_EVENODD, g2_cutter_func_path_append, g_fill);
-//	g2_cutter_fill_init(&cutter, G2_STYLE_RULE_NONZERO, g2_cutter_func_path_append, g_fill);
-	g2_cutter_fill_done(&cutter, g_path);
-	g2_cutter_fill_exit(&cutter);
+	// cutter path
+	g2_cutter_path_t cp;
+	g2_cutter_path_init(&cp, g2_cutter_func_path_append, g_temp);
+	g2_cutter_path_done(&cp, g_path);
+	g2_cutter_path_exit(&cp);
+
+	// cutter fill
+	g2_cutter_fill_t cf;
+	g2_cutter_fill_init(&cf, G2_STYLE_RULE_EVENODD, g2_cutter_func_path_append, g_fill);
+//	g2_cutter_fill_init(&cf, G2_STYLE_RULE_NONZERO, g2_cutter_func_path_append, g_fill);
+	g2_cutter_fill_done(&cf, g_temp);
+	g2_cutter_fill_exit(&cf);
 }
 static tb_void_t g2_demo_rclickup(tb_int_t x, tb_int_t y)
 {
@@ -86,6 +96,10 @@ static tb_bool_t g2_demo_init(tb_int_t argc, tb_char_t const** argv)
 	g_path = g2_path_init();
 	tb_assert_and_check_return_val(g_path, tb_false);
 
+	// init temp
+	g_temp = g2_path_init();
+	tb_assert_and_check_return_val(g_temp, tb_false);
+
 	// init fill
 	g_fill = g2_path_init();
 	tb_assert_and_check_return_val(g_fill, tb_false);
@@ -98,8 +112,10 @@ static tb_void_t g2_demo_exit()
 	// exit path
 	if (g_path) g2_path_exit(g_path);
 	if (g_fill) g2_path_exit(g_fill);
+	if (g_temp) g2_path_exit(g_temp);
 	g_path = tb_null;
 	g_fill = tb_null;
+	g_temp = tb_null;
 }
 static tb_void_t g2_demo_size(tb_int_t w, tb_int_t h)
 {

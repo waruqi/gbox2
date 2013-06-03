@@ -17,44 +17,22 @@
  * Copyright (C) 2009 - 2012, ruki All rights reserved.
  *
  * @author		ruki
- * @file		fill.c
+ * @file		path.c
  *
  */
 
 /* ///////////////////////////////////////////////////////////////////////
  * includes
  */
-#include "fill.h"
+#include "path.h"
 #include "quad.h"
 #include "cube.h"
 #include "func.h"
 
 /* ///////////////////////////////////////////////////////////////////////
- * implementation
- */
-static tb_void_t g2_cutter_fill_nonzero_done(g2_cutter_fill_t* cutter, tb_handle_t path)
-{
-}
-static tb_void_t g2_cutter_fill_evenodd_done(g2_cutter_fill_t* cutter, tb_handle_t path)
-{
-	// init path itor
-	if (g2_path_itor_init(path))
-	{
-		// walk path
-		g2_point_t 	pt[3];
-		tb_size_t 	co = G2_PATH_CODE_NONE;
-		while (co = g2_path_itor_next(path, pt))
-			cutter->base.func(cutter, co, pt);
-
-		// exit path itor
-		g2_path_itor_exit(path);
-	}
-}
-
-/* ///////////////////////////////////////////////////////////////////////
  * interfaces
  */
-tb_void_t g2_cutter_fill_init(g2_cutter_fill_t* cutter, tb_size_t rule, g2_cutter_func_t func, tb_pointer_t data)
+tb_void_t g2_cutter_path_init(g2_cutter_path_t* cutter, g2_cutter_func_t func, tb_pointer_t data)
 {
 	// check
 	tb_assert_and_check_return(cutter);
@@ -62,9 +40,8 @@ tb_void_t g2_cutter_fill_init(g2_cutter_fill_t* cutter, tb_size_t rule, g2_cutte
 	// init
 	cutter->base.func = func;
 	cutter->base.data = data;
-	cutter->rule = rule;
 }
-tb_void_t g2_cutter_fill_done(g2_cutter_fill_t* cutter, tb_handle_t path)
+tb_void_t g2_cutter_path_done(g2_cutter_path_t* cutter, tb_handle_t path)
 {
 	// check
 	tb_assert_and_check_return(cutter->base.func && path);
@@ -72,19 +49,53 @@ tb_void_t g2_cutter_fill_done(g2_cutter_fill_t* cutter, tb_handle_t path)
 	// null?
 	tb_check_return(!g2_path_null(path));
 
-	// done 
-	switch (cutter->rule)
+	// init path itor
+	if (g2_path_itor_init(path))
 	{
-	case G2_STYLE_RULE_NONZERO:
-		g2_cutter_fill_nonzero_done(cutter, path);
-		break;
-	case G2_STYLE_RULE_EVENODD:
-	default:
-		g2_cutter_fill_evenodd_done(cutter, path);
-		break;
+		// init cutter
+		g2_cutter_quad_t quad;
+		g2_cutter_cube_t cube;
+		g2_cutter_quad_init(&quad, cutter->base.func, cutter->base.data);
+		g2_cutter_cube_init(&cube, cutter->base.func, cutter->base.data);
+
+		// walk path
+		g2_point_t 	pt[3];
+		g2_point_t 	pb = {0};
+		tb_size_t 	co = G2_PATH_CODE_NONE;
+		while (co = g2_path_itor_next(path, pt))
+		{
+			switch (co)
+			{
+			case G2_PATH_CODE_MOVE:
+			case G2_PATH_CODE_LINE:
+				cutter->base.func(cutter, co, pt);
+				pb = pt[0];
+				break;
+			case G2_PATH_CODE_QUAD:
+				g2_cutter_quad_done(&quad, &pb, &pt[0], &pt[1]);
+				pb = pt[1];
+				break;
+			case G2_PATH_CODE_CUBE:
+				g2_cutter_cube_done(&quad, &pb, &pt[0], &pt[1], &pt[2]);
+				pb = pt[2];
+				break;
+			case G2_PATH_CODE_CLOS:
+				cutter->base.func(cutter, co, tb_null);
+				break;
+			default:
+				break;
+			}
+		}
+
+		// exit cutter
+		g2_cutter_quad_exit(&quad);
+		g2_cutter_cube_exit(&cube);
+
+		// exit path itor
+		g2_path_itor_exit(path);
 	}
 }
-tb_void_t g2_cutter_fill_exit(g2_cutter_fill_t* cutter)
+tb_void_t g2_cutter_path_exit(g2_cutter_path_t* cutter)
 {
 }
 

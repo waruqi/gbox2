@@ -17,11 +17,11 @@
  * Copyright (C) 2009 - 2012, ruki All rights reserved.
  *
  * @author		ruki
- * @file		fill.h
+ * @file		path.h
  *
  */
-#ifndef G2_CORE_CUTTER_FILL_H
-#define G2_CORE_CUTTER_FILL_H
+#ifndef G2_CORE_CUTTER_PATH_H
+#define G2_CORE_CUTTER_PATH_H
 
 /* ///////////////////////////////////////////////////////////////////////
  * includes
@@ -32,29 +32,26 @@
  * types
  */
 
-// the cutter fill type
-typedef struct __g2_cutter_fill_t
+// the cutter path type
+typedef struct __g2_cutter_path_t
 {
 	// the base
 	g2_cutter_t 			base;
 	
-	// the rule
-	tb_size_t 				rule;
-
-}g2_cutter_fill_t;
+}g2_cutter_path_t;
 
 /* ///////////////////////////////////////////////////////////////////////
  * interfaces
  */
 
 // init
-tb_void_t g2_cutter_fill_init(g2_cutter_fill_t* cutter, tb_size_t rule, g2_cutter_func_t func, tb_pointer_t data);
+tb_void_t g2_cutter_path_init(g2_cutter_path_t* cutter, g2_cutter_func_t func, tb_pointer_t data);
 
 // done
-tb_void_t g2_cutter_fill_done(g2_cutter_fill_t* cutter, tb_handle_t path);
+tb_void_t g2_cutter_path_done(g2_cutter_path_t* cutter, tb_handle_t path);
 
 // exit
-tb_void_t g2_cutter_fill_exit(g2_cutter_fill_t* cutter);
+tb_void_t g2_cutter_path_exit(g2_cutter_path_t* cutter);
 
 #endif
 

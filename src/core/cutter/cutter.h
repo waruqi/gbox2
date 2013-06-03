@@ -28,6 +28,7 @@
  */
 #include "prefix.h"
 #include "arc.h"
+#include "path.h"
 #include "fill.h"
 #include "func.h"
 #include "quad.h"
