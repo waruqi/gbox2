@@ -17,38 +17,29 @@
  * Copyright (C) 2009 - 2012, ruki All rights reserved.
  *
  * @author		ruki
- * @file		prefix.h
+ * @file		func.h
  *
  */
-#ifndef G2_CORE_CUTTER_PREFIX_H
-#define G2_CORE_CUTTER_PREFIX_H
+#ifndef G2_CORE_CUTTER_FUNC_H
+#define G2_CORE_CUTTER_FUNC_H
 
 /* ///////////////////////////////////////////////////////////////////////
  * includes
  */
-#include "../prefix.h"
-#include "../path.h"
-#include "../style.h"
+#include "prefix.h"
 
 /* ///////////////////////////////////////////////////////////////////////
- * types
+ * interfaces
  */
 
-// the cutter func type
-struct __g2_cutter_t;
-typedef tb_void_t (*g2_cutter_func_t)(struct __g2_cutter_t* cutter, tb_size_t code, g2_point_t const* pt);
+// path: replace
+tb_void_t g2_cutter_func_path_replace(g2_cutter_t* cutter, tb_size_t code, g2_point_t const* pt);
 
-// the cutter type
-typedef struct __g2_cutter_t
-{
-	// the func
-	g2_cutter_func_t 	func;
+// path: append
+tb_void_t g2_cutter_func_path_append(g2_cutter_t* cutter, tb_size_t code, g2_point_t const* pt);
 
-	// the data
-	tb_pointer_t 		data;
-
-}g2_cutter_t;
-
+// path: append to
+tb_void_t g2_cutter_func_path_append_to(g2_cutter_t* cutter, tb_size_t code, g2_point_t const* pt);
 
 #endif
 

@@ -17,38 +17,47 @@
  * Copyright (C) 2009 - 2012, ruki All rights reserved.
  *
  * @author		ruki
- * @file		prefix.h
+ * @file		fill.h
  *
  */
-#ifndef G2_CORE_CUTTER_PREFIX_H
-#define G2_CORE_CUTTER_PREFIX_H
+#ifndef G2_CORE_CUTTER_FILL_H
+#define G2_CORE_CUTTER_FILL_H
 
 /* ///////////////////////////////////////////////////////////////////////
  * includes
  */
-#include "../prefix.h"
-#include "../path.h"
-#include "../style.h"
+#include "prefix.h"
 
 /* ///////////////////////////////////////////////////////////////////////
  * types
  */
 
-// the cutter func type
-struct __g2_cutter_t;
-typedef tb_void_t (*g2_cutter_func_t)(struct __g2_cutter_t* cutter, tb_size_t code, g2_point_t const* pt);
-
-// the cutter type
-typedef struct __g2_cutter_t
+// the cutter fill type
+typedef struct __g2_cutter_fill_t
 {
-	// the func
-	g2_cutter_func_t 	func;
+	// the base
+	g2_cutter_t 			base;
+	
+	// the rule
+	tb_size_t 				rule;
 
-	// the data
-	tb_pointer_t 		data;
+	// the path
+	tb_handle_t 			path;
 
-}g2_cutter_t;
+}g2_cutter_fill_t;
 
+/* ///////////////////////////////////////////////////////////////////////
+ * interfaces
+ */
+
+// init
+tb_void_t g2_cutter_fill_init(g2_cutter_fill_t* cutter, tb_size_t rule, g2_cutter_func_t func, tb_pointer_t data);
+
+// done
+tb_void_t g2_cutter_fill_done(g2_cutter_fill_t* cutter, tb_handle_t path);
+
+// exit
+tb_void_t g2_cutter_fill_exit(g2_cutter_fill_t* cutter);
 
 #endif
 

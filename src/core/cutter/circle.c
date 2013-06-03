@@ -35,9 +35,6 @@ tb_void_t g2_cutter_circle_init(g2_cutter_circle_t* cutter, g2_cutter_func_t fun
 	// check
 	tb_assert_and_check_return(cutter);
 
-	// clear
-	tb_memset(cutter, 0, sizeof(g2_cutter_circle_t));
-
 	// init
 	cutter->func = func;
 	cutter->data = data;
@@ -89,7 +86,7 @@ tb_void_t g2_cutter_circle_init(g2_cutter_circle_t* cutter, g2_cutter_func_t fun
 tb_void_t g2_cutter_circle_done(g2_cutter_circle_t* cutter, g2_circle_t const* circle)
 {
 	// check
-	tb_assert_and_check_return(cutter->func);
+	tb_assert_and_check_return(cutter->func && circle);
 
 	// init
 	tb_size_t 	ri = (tb_size_t)g2_float_to_long(circle->r);
@@ -111,7 +108,7 @@ tb_void_t g2_cutter_circle_done(g2_cutter_circle_t* cutter, g2_circle_t const* c
 	pb.y = circle->c.y;
 
 	// done
-	cutter->func(cutter, &pb);
+	cutter->func(cutter, G2_PATH_CODE_MOVE, &pb);
 
 	// walk
 	while (n--)
@@ -123,7 +120,7 @@ tb_void_t g2_cutter_circle_done(g2_cutter_circle_t* cutter, g2_circle_t const* c
 		pt.y = g2_fixed_to_float(y0 + ((y2 * rf) >> 16));
 
 		// done
-		cutter->func(cutter, &pt);
+		cutter->func(cutter, G2_PATH_CODE_LINE, &pt);
 
 		// next
 		x1 = x2;
@@ -131,7 +128,8 @@ tb_void_t g2_cutter_circle_done(g2_cutter_circle_t* cutter, g2_circle_t const* c
 	}
 	
 	// close 
-	cutter->func(cutter, &pb);
+	cutter->func(cutter, G2_PATH_CODE_CLOS, tb_null);
 }
-
-
+tb_void_t g2_cutter_circle_exit(g2_cutter_circle_t* cutter)
+{
+}

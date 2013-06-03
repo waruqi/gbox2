@@ -45,6 +45,9 @@ tb_void_t g2_cutter_ellipse_init(g2_cutter_ellipse_t* cutter, g2_cutter_func_t f
 // done
 tb_void_t g2_cutter_ellipse_done(g2_cutter_ellipse_t* cutter, g2_ellipse_t const* ellipse);
 
+// exit
+tb_void_t g2_cutter_ellipse_exit(g2_cutter_ellipse_t* cutter);
+
 #endif
 
 

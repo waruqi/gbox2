@@ -45,6 +45,9 @@ tb_void_t g2_cutter_arc_init(g2_cutter_arc_t* cutter, g2_cutter_func_t func, tb_
 // done
 tb_void_t g2_cutter_arc_done(g2_cutter_arc_t* cutter, g2_arc_t const* arc);
 
+// exit
+tb_void_t g2_cutter_arc_exit(g2_cutter_arc_t* cutter);
+
 #endif
 
 

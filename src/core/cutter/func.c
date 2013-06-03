@@ -17,39 +17,57 @@
  * Copyright (C) 2009 - 2012, ruki All rights reserved.
  *
  * @author		ruki
- * @file		prefix.h
+ * @file		func.c
  *
  */
-#ifndef G2_CORE_CUTTER_PREFIX_H
-#define G2_CORE_CUTTER_PREFIX_H
 
 /* ///////////////////////////////////////////////////////////////////////
  * includes
  */
-#include "../prefix.h"
-#include "../path.h"
-#include "../style.h"
+#include "func.h"
 
 /* ///////////////////////////////////////////////////////////////////////
- * types
+ * implementation
  */
-
-// the cutter func type
-struct __g2_cutter_t;
-typedef tb_void_t (*g2_cutter_func_t)(struct __g2_cutter_t* cutter, tb_size_t code, g2_point_t const* pt);
-
-// the cutter type
-typedef struct __g2_cutter_t
+tb_void_t g2_cutter_func_path_append(g2_cutter_t* cutter, tb_size_t code, g2_point_t const* pt)
 {
-	// the func
-	g2_cutter_func_t 	func;
+	// check
+	tb_handle_t path = (tb_handle_t)cutter->data;
+	tb_assert_and_check_return(path);
 
-	// the data
-	tb_pointer_t 		data;
+	// done
+	switch (code)
+	{
+	case G2_PATH_CODE_MOVE:
+		if (pt) g2_path_move_to(path, pt);
+		break;
+	case G2_PATH_CODE_LINE:
+		if (pt) g2_path_line_to(path, pt);
+		break;
+	case G2_PATH_CODE_CLOS:
+		g2_path_close(path);
+		break;
+	default:
+		break;
+	}
+}
+tb_void_t g2_cutter_func_path_append_to(g2_cutter_t* cutter, tb_size_t code, g2_point_t const* pt)
+{
+	// check
+	tb_handle_t path = (tb_handle_t)cutter->data;
+	tb_assert_and_check_return(path);
 
-}g2_cutter_t;
-
-
-#endif
-
-
+	// done
+	switch (code)
+	{
+	case G2_PATH_CODE_MOVE:
+	case G2_PATH_CODE_LINE:
+		if (pt) g2_path_line_to(path, pt);
+		break;
+	case G2_PATH_CODE_CLOS:
+		g2_path_close(path);
+		break;
+	default:
+		break;
+	}
+}

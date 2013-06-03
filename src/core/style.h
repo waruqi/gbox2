@@ -56,7 +56,7 @@ typedef enum __g2_style_flag_t
 
 }g2_style_flag_t;
 
-// the style cap type
+// the style stok cap type
 typedef enum __g2_style_cap_t
 {
 	G2_STYLE_CAP_NONE 			= 0 //!< none
@@ -66,7 +66,7 @@ typedef enum __g2_style_cap_t
 
 }g2_style_cap_t;
 
-// the style join type
+// the style stok join type
 typedef enum __g2_style_join_t
 {
 	G2_STYLE_JOIN_NONE 			= 0 //!< none
@@ -76,20 +76,31 @@ typedef enum __g2_style_join_t
 
 }g2_style_join_t;
 
+// the style fill rule type
+typedef enum __g2_style_rule_t
+{
+	G2_STYLE_RULE_EVENODD 		= 0 //!< even odd fill
+,	G2_STYLE_RULE_NONZERO 		= 1 //!< non-zero fill
+
+}g2_style_rule_t;
+
 // the style type
 typedef struct __g2_style_t
 {
 	// the style mode
-	tb_size_t 			mode 	: 4;
+	tb_uint32_t 		mode 	: 4;
 
 	// the style flag
-	tb_size_t 			flag 	: 4;
+	tb_uint32_t 		flag 	: 4;
 
-	// the pen join
-	tb_size_t 			join 	: 4;
+	// the stok cap
+	tb_uint32_t 		cap 	: 4;
 
-	// the pen cap
-	tb_size_t 			cap 	: 4;
+	// the stok join
+	tb_uint32_t 		join 	: 4;
+
+	// the fill rule
+	tb_uint32_t 		rule 	: 1;
 
 	// the style color
 	g2_color_t 			color;
@@ -143,6 +154,10 @@ tb_void_t 		g2_style_cap_set(tb_handle_t style, tb_size_t cap);
 // join
 tb_size_t 		g2_style_join(tb_handle_t style);
 tb_void_t 		g2_style_join_set(tb_handle_t style, tb_size_t join);
+
+// rule
+tb_size_t 		g2_style_rule(tb_handle_t style);
+tb_void_t 		g2_style_rule_set(tb_handle_t style, tb_size_t rule);
 
 // shader
 tb_handle_t 	g2_style_shader(tb_handle_t style);

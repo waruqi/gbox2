@@ -45,6 +45,9 @@ tb_void_t g2_cutter_quad_init(g2_cutter_quad_t* cutter, g2_cutter_func_t func, t
 // done
 tb_void_t g2_cutter_quad_done(g2_cutter_quad_t* cutter, g2_point_t const* pb, g2_point_t const* cp, g2_point_t const* pe);
 
+// exit
+tb_void_t g2_cutter_quad_exit(g2_cutter_quad_t* cutter);
+
 #endif
 
 

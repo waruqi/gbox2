@@ -45,6 +45,9 @@ tb_void_t g2_cutter_circle_init(g2_cutter_circle_t* cutter, g2_cutter_func_t fun
 // done
 tb_void_t g2_cutter_circle_done(g2_cutter_circle_t* cutter, g2_circle_t const* circle);
 
+// exit
+tb_void_t g2_cutter_circle_exit(g2_cutter_circle_t* cutter);
+
 #endif
 
 

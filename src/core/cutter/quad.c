@@ -35,9 +35,6 @@ tb_void_t g2_cutter_quad_init(g2_cutter_quad_t* cutter, g2_cutter_func_t func, t
 	// check
 	tb_assert_and_check_return(cutter);
 
-	// clear
-	tb_memset(cutter, 0, sizeof(g2_cutter_quad_t));
-
 	// init
 	cutter->func = func;
 	cutter->data = data;
@@ -71,7 +68,7 @@ tb_void_t g2_cutter_quad_init(g2_cutter_quad_t* cutter, g2_cutter_func_t func, t
 tb_void_t g2_cutter_quad_done(g2_cutter_quad_t* cutter, g2_point_t const* pb, g2_point_t const* cp, g2_point_t const* pe)
 {
 	// check
-	tb_assert_and_check_return(cutter->func);
+	tb_assert_and_check_return(cutter->func && pb && cp && pe);
 
 	// init
 	g2_float_t mx = cp->x - g2_rsh(pb->x + pe->x, 1);
@@ -79,7 +76,7 @@ tb_void_t g2_cutter_quad_done(g2_cutter_quad_t* cutter, g2_point_t const* pb, g2
 
 	// ok?
 	if (g2_fabs(mx) + g2_fabs(my) <= G2_ONE)
-		cutter->func(cutter, pe);
+		cutter->func(cutter, G2_PATH_CODE_LINE, pe);
 	else
 	{
 		g2_point_t p0, cpb, cpe;
@@ -94,5 +91,7 @@ tb_void_t g2_cutter_quad_done(g2_cutter_quad_t* cutter, g2_point_t const* pb, g2
 		g2_cutter_quad_done(cutter, &p0, &cpe, pe);
 	}
 }
-
+tb_void_t g2_cutter_quad_exit(g2_cutter_quad_t* cutter)
+{
+}
 

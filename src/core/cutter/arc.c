@@ -35,9 +35,6 @@ tb_void_t g2_cutter_arc_init(g2_cutter_arc_t* cutter, g2_cutter_func_t func, tb_
 	// check
 	tb_assert_and_check_return(cutter);
 
-	// clear
-	tb_memset(cutter, 0, sizeof(g2_cutter_arc_t));
-
 	// init
 	cutter->func = func;
 	cutter->data = data;
@@ -91,7 +88,7 @@ tb_void_t g2_cutter_arc_init(g2_cutter_arc_t* cutter, g2_cutter_func_t func, tb_
 tb_void_t g2_cutter_arc_done(g2_cutter_arc_t* cutter, g2_arc_t const* arc)
 {
 	// check
-	tb_assert_and_check_return(cutter->func);
+	tb_assert_and_check_return(cutter->func && arc);
 
 	// the sin & cos for the start angle
 	g2_float_t 	bs;
@@ -122,7 +119,7 @@ tb_void_t g2_cutter_arc_done(g2_cutter_arc_t* cutter, g2_arc_t const* arc)
 	pb.y = arc->c0.y + g2_mul(arc->ry, bs);
 
 	// done
-	cutter->func(cutter, &pb);
+	cutter->func(cutter, G2_PATH_CODE_MOVE, &pb);
 
 	// walk
 	while (n--)
@@ -134,12 +131,15 @@ tb_void_t g2_cutter_arc_done(g2_cutter_arc_t* cutter, g2_arc_t const* arc)
 		pt.y = g2_fixed_to_float(y0 + ((y2 * ryf) >> 16));
 
 		// done
-		cutter->func(cutter, &pt);
+		cutter->func(cutter, G2_PATH_CODE_LINE, &pt);
 
 		// next
 		x1 = x2;
 		y1 = y2;
 	}
+}
+tb_void_t g2_cutter_arc_exit(g2_cutter_arc_t* cutter)
+{
 }
 
 

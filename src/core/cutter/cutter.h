@@ -28,6 +28,8 @@
  */
 #include "prefix.h"
 #include "arc.h"
+#include "fill.h"
+#include "func.h"
 #include "quad.h"
 #include "cube.h"
 #include "circle.h"

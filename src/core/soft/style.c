@@ -64,8 +64,9 @@ tb_void_t g2_style_clear(tb_handle_t style)
 	// clear
 	gstyle->mode 	= G2_STYLE_MODE_NONE;
 	gstyle->flag 	= g2_quality() > G2_QUALITY_LOW? (G2_STYLE_FLAG_ANTI_ALIAS | G2_STYLE_FLAG_BITMAP_FILTER) : G2_STYLE_FLAG_NONE;
-	gstyle->join 	= G2_STYLE_JOIN_MITER;
 	gstyle->cap 	= G2_STYLE_CAP_BUTT;
+	gstyle->join 	= G2_STYLE_JOIN_MITER;
+	gstyle->rule 	= G2_STYLE_RULE_EVENODD;
 	gstyle->width 	= G2_ONE;
 	gstyle->color 	= G2_COLOR_DEFAULT;
 
@@ -185,6 +186,20 @@ tb_void_t g2_style_join_set(tb_handle_t style, tb_size_t join)
 	tb_assert_and_check_return(gstyle);
 
 	gstyle->join = join;
+}
+tb_size_t g2_style_rule(tb_handle_t style)
+{
+	g2_style_t* gstyle = (g2_style_t*)style;
+	tb_assert_and_check_return_val(gstyle, G2_STYLE_RULE_EVENODD);
+
+	return gstyle->rule;
+}
+tb_void_t g2_style_rule_set(tb_handle_t style, tb_size_t rule)
+{
+	g2_style_t* gstyle = (g2_style_t*)style;
+	tb_assert_and_check_return(gstyle);
+
+	gstyle->rule = rule;
 }
 tb_handle_t g2_style_shader(tb_handle_t style)
 {

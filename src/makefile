@@ -42,6 +42,8 @@ gbox2_C_FILES 			+= \
 						core/cache/pcache \
 						core/cache/cstack \
 						core/cutter/arc \
+						core/cutter/func \
+						core/cutter/fill \
 						core/cutter/quad \
 						core/cutter/cube \
 						core/cutter/circle \
