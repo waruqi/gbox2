@@ -533,7 +533,13 @@ tb_void_t g2_path_close(tb_handle_t path)
 
 	// close it, no double closed
 	if (!tb_vector_size(gpath->code) || (tb_byte_t)tb_vector_last(gpath->code) != G2_PATH_CODE_CLOS) 
+	{
+		// patch to head
+		g2_path_line_to(path, &gpath->head);
+
+		// close it
 		tb_vector_insert_tail(gpath->code, G2_PATH_CODE_CLOS);
+	}
 
 	// close it
 	gpath->flag &= ~G2_GL_PATH_FLAG_OPEN;
@@ -543,9 +549,6 @@ tb_void_t g2_path_close(tb_handle_t path)
 
 	// clear fill
 	g2_gl_path_fill_clear(gpath);
-
-	// FIXME patch close
-//#error
 }
 tb_bool_t g2_path_null(tb_handle_t path)
 {
@@ -728,6 +731,9 @@ tb_void_t g2_path_move_to(tb_handle_t path, g2_point_t const* pt)
 	}
 	// avoid a lone move-to
 	else tb_vector_replace_last(gpath->data, data);
+
+	// save head
+	gpath->head = *pt;
 
 	// open it
 	gpath->flag |= G2_GL_PATH_FLAG_OPEN | G2_GL_PATH_FLAG_MOVE;

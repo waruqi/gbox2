@@ -109,6 +109,9 @@ typedef struct __g2_gl_path_t
 	// the liked rect or the bounds
 	g2_gl_rect_t 			rect;
 
+	// the last head
+	g2_point_t 				head;
+
 	// the code, vector<tb_byte_t>
 	tb_vector_t* 			code;
 
