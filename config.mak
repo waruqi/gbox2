@@ -2,7 +2,7 @@
 IS_CONFIG = y
 
 # project
-PRO_DIR = /home/ruki/projects/personal/gbox2
+PRO_DIR = /home/ruki/projects/gbox2
 PRO_NAME = gbox2
 
 # debug
@@ -27,7 +27,7 @@ NDK =
 BIN =
 PRE =
 HOST = linux
-CCACHE = ccache
+CCACHE =
 DISTCC =
 
 # export
