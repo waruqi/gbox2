@@ -2,5 +2,5 @@
  * includes
  */
 #include "demo.h"
-#include "../test.c"
+#include "../cutter.c"
 

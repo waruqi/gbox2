@@ -17,22 +17,25 @@
  * Copyright (C) 2009 - 2012, ruki All rights reserved.
  *
  * @author		ruki
- * @file		prefix.h
+ * @file		version.h
  *
  */
-#ifndef G2_CORE_SOFT_PREFIX_H
-#define G2_CORE_SOFT_PREFIX_H
+#ifndef G2_PREFIX_VERSION_H
+#define G2_PREFIX_VERSION_H
 
 /* ///////////////////////////////////////////////////////////////////////
  * includes
  */
-#include "../prefix.h"
-#include "../path.h"
-#include "../style.h"
-#include "../bitmap.h"
-#include "../shader.h"
-#include "../pixmap.h"
+#include "config.h"
 
+/* ///////////////////////////////////////////////////////////////////////
+ * macros
+ */
+
+// version: v1.0.0
+#define G2_VERSION_MAJOR 			(1)
+#define G2_VERSION_MINOR 			(0)
+#define G2_VERSION_ALTER 			(0)
 
 #endif
 

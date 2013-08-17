@@ -88,4 +88,31 @@ tb_void_t g2_path_itor_exit(tb_handle_t path)
 {
 	tb_trace_noimpl();
 }
-
+tb_void_t g2_path_add_path(tb_handle_t path, tb_handle_t path2)
+{
+	tb_trace_noimpl();
+}
+tb_void_t g2_path_add_line(tb_handle_t path, g2_line_t const* line)
+{
+	tb_trace_noimpl();
+}
+tb_void_t g2_path_add_arc(tb_handle_t path, g2_arc_t const* arc)
+{
+	tb_trace_noimpl();
+}
+tb_void_t g2_path_add_triangle(tb_handle_t path, g2_triangle_t const* triangle)
+{
+	tb_trace_noimpl();
+}
+tb_void_t g2_path_add_rect(tb_handle_t path, g2_rect_t const* rect)
+{
+	tb_trace_noimpl();
+}
+tb_void_t g2_path_add_circle(tb_handle_t path, g2_circle_t const* circle)
+{
+	tb_trace_noimpl();
+}
+tb_void_t g2_path_add_ellipse(tb_handle_t path, g2_ellipse_t const* ellipse)
+{
+	tb_trace_noimpl();
+}

@@ -14,11 +14,12 @@
 *.bak
 *.orig
 .DS_Store
+.svn
 gmon.out
 other
 doc
 tags
 samples
-bin
+./bin
 gen
 pre

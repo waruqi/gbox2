@@ -9,11 +9,6 @@ G2_CONFIG_DEMO_TYPE 				= ipa
 G2_CONFIG_ARM 						= y
 G2_CONFIG_ARM_NEON 					= y
 
-# core
-G2_CONFIG_CORE_GLES					= y
-G2_CONFIG_CORE_SKIA 				= n
-G2_CONFIG_CORE_SOFT 				= n
-
 ###############################################################################
 # tbox
 # #

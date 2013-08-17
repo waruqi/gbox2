@@ -4,7 +4,6 @@ include $(PRO_DIR)/prefix.mak
 NAMES 					= \
 						arc \
 						svg \
-						test \
 						save \
 						dump \
 						rect \
@@ -14,6 +13,7 @@ NAMES 					= \
 						draw \
 						point \
 						circle \
+						cutter \
 						ellipse \
 						triangle
 

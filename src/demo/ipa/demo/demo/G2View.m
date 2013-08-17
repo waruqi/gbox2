@@ -200,7 +200,7 @@
 	G2_GL_INTERFACE_LOAD_S(glLoadMatrixf);
 	G2_GL_INTERFACE_LOAD_S(glMatrixMode);
 	G2_GL_INTERFACE_LOAD_S(glMultMatrixf);
-# 	ifdef G2_CONFIG_CORE_GLES
+# 	ifdef __g2_core_gles__
 	G2_GL_INTERFACE_LOAD_S(glOrthof);
 # 	else
 	G2_GL_INTERFACE_LOAD_S(glOrtho);

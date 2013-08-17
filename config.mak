@@ -21,6 +21,9 @@ ARCH = x64
 # demo
 DEMO = y
 
+# core
+CORE = gl
+
 # toolchain
 SDK =
 NDK =
@@ -39,6 +42,7 @@ export SMALL
 export PLAT
 export ARCH
 export DEMO
+export CORE
 export SDK
 export NDK
 export BIN

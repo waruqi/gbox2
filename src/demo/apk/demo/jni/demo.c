@@ -107,7 +107,7 @@ tb_bool_t g2_demo_gl_init(tb_size_t width, tb_size_t height, tb_byte_t version)
 		G2_GL_INTERFACE_LOAD_D(g_library, glLoadMatrixf);
 		G2_GL_INTERFACE_LOAD_D(g_library, glMatrixMode);
 		G2_GL_INTERFACE_LOAD_D(g_library, glMultMatrixf);
-# 	ifdef G2_CONFIG_CORE_GLES
+# 	ifdef __g2_core_gles__
 		G2_GL_INTERFACE_LOAD_D(g_library, glOrthof);
 # 	else
 		G2_GL_INTERFACE_LOAD_D(g_library, glOrtho);

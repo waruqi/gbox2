@@ -46,7 +46,7 @@ tb_handle_t g2_gl_program_init_color()
 
 	// the vertex shader
 	tb_char_t const* vshader = 
-#ifdef G2_CONFIG_CORE_GLES
+#ifdef __g2_core_gles__
 		"precision mediump float; 												\n"
 #endif
 		" 																		\n"
@@ -65,7 +65,7 @@ tb_handle_t g2_gl_program_init_color()
 	
 	// the fragment shader
 	tb_char_t const* fshader = 
-#ifdef G2_CONFIG_CORE_GLES
+#ifdef __g2_core_gles__
 		"precision mediump float; 												\n"
 #endif
 		" 																		\n"

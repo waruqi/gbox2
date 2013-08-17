@@ -55,9 +55,10 @@ gbox2_C_FILES 			+= \
 						core/image/decoder/gif \
 						core/image/decoder/decoder
 
-gbox2_C_FILES-$(G2_CONFIG_CORE_GL) += \
-						core/soft/style \
-						core/soft/bitmap \
+ifeq ($(CORE),gl)
+gbox2_C_FILES 			+= \
+						core/gbox/style \
+						core/gbox/bitmap \
 						core/gl/path \
 						core/gl/draw \
 						core/gl/fill \
@@ -69,20 +70,44 @@ gbox2_C_FILES-$(G2_CONFIG_CORE_GL) += \
 						core/gl/program/color \
 						core/gl/program/bitmap \
 						core/gl/interface 
+endif
 
-gbox2_CPP_FILES-$(G2_CONFIG_CORE_SKIA) += \
+ifeq ($(CORE),gles)
+gbox2_C_FILES 			+= \
+						core/gbox/style \
+						core/gbox/bitmap \
+						core/gl/path \
+						core/gl/draw \
+						core/gl/fill \
+						core/gl/stok \
+						core/gl/shader \
+						core/gl/context \
+						core/gl/painter \
+						core/gl/program \
+						core/gl/program/color \
+						core/gl/program/bitmap \
+						core/gl/interface 
+endif
+
+ifeq ($(CORE),skia)
+gbox2_CPP_FILES 		+= \
 						core/skia/path \
 						core/skia/style \
 						core/skia/shader \
 						core/skia/bitmap \
 						core/skia/context \
 						core/skia/painter 
+endif
 
-gbox2_C_FILES-$(G2_CONFIG_CORE_SOFT) += \
-						core/soft/path \
-						core/soft/style \
-						core/soft/shader \
-						core/soft/bitmap
+ifeq ($(CORE),gbox)
+gbox2_C_FILES 			+= \
+						core/gbox/path \
+						core/gbox/style \
+						core/gbox/shader \
+						core/gbox/bitmap \
+						core/gbox/context \
+						core/gbox/painter 
+endif
 
 # flags
 gbox2_CXFLAGS 			+= -DTB_PRINT_TAG=\"gbox2\"
@@ -179,9 +204,11 @@ freetype_C_FILES 		= \
 freetype_INC_DIR 		:= third/freetype/include
 freetype_CFLAGS 		:= -DFT2_BUILD_LIBRARY
 freetype_C_FILES 		:= $(addprefix third/freetype/,$(freetype_C_FILES))
-gbox2_C_FILES-$(G2_CONFIG_CORE_SKIA) 	+= $(freetype_C_FILES)
-gbox2_CFLAGS-$(G2_CONFIG_CORE_SKIA) 	+= $(freetype_CFLAGS)
-gbox2_INC_DIR-$(G2_CONFIG_CORE_SKIA) 	+= $(freetype_INC_DIR)
+ifeq ($(CORE),skia)
+gbox2_C_FILES 			+= $(freetype_C_FILES)
+gbox2_CFLAGS 			+= $(freetype_CFLAGS)
+gbox2_INC_DIR 			+= $(freetype_INC_DIR)
+endif
 	
 # jpeg files
 jpeg_C_FILES 			= \
@@ -432,8 +459,10 @@ endif
 
 skia_CPP_FILES 			:= $(addprefix third/skia/,$(skia_CPP_FILES))
 skia_ASM_FILES 			:= $(addprefix third/skia/,$(skia_ASM_FILES))
-gbox2_CPP_FILES-$(G2_CONFIG_CORE_SKIA) += $(skia_CPP_FILES)
-gbox2_ASM_FILES-$(G2_CONFIG_CORE_SKIA) += $(skia_ASM_FILES)
+ifeq ($(CORE),skia)
+gbox2_CPP_FILES 		+= $(skia_CPP_FILES)
+gbox2_ASM_FILES 		+= $(skia_ASM_FILES)
+endif
 
 # tbox
 gbox2_INC_DIR 			+= $(PRO_DIR)/../tbox/pre/inc/$(PLAT)/$(ARCH)

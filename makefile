@@ -175,6 +175,11 @@ ifeq ($(DEMO),)
 DEMO := n
 endif
 
+# core
+ifeq ($(CORE),)
+CORE := gbox
+endif
+
 # project
 PRO_DIR 	:= ${shell pwd}
 PRO_NAME 	:= ${shell basename ${shell pwd}}
@@ -200,6 +205,7 @@ config : .null
 	@echo "config: plat: \t" 							$(PLAT)
 	@echo "config: arch: \t" 							$(ARCH)
 	@echo "config: demo: \t" 							$(DEMO)
+	@echo "config: core: \t" 							$(CORE)
 	@echo "config: debug: \t" 							$(DEBUG)
 	@echo "config: bin: \t" 							$(BIN)
 	@echo "config: pre: \t" 							$(PRE)
@@ -230,6 +236,9 @@ config : .null
 	@echo "# demo" 			               				>> config.mak
 	@echo "DEMO =" $(DEMO) 								>> config.mak
 	@echo ""                              				>> config.mak
+	@echo "# core" 			               				>> config.mak
+	@echo "CORE =" $(CORE) 								>> config.mak
+	@echo ""                              				>> config.mak
 	@echo "# toolchain"            						>> config.mak
 	@echo "SDK =" $(SDK) 								>> config.mak
 	@echo "NDK =" $(NDK) 								>> config.mak
@@ -248,6 +257,7 @@ config : .null
 	@echo "export PLAT"					 				>> config.mak
 	@echo "export ARCH"					 				>> config.mak
 	@echo "export DEMO"					 				>> config.mak
+	@echo "export CORE" 			 					>> config.mak
 	@echo "export SDK" 				 					>> config.mak
 	@echo "export NDK" 				 					>> config.mak
 	@echo "export BIN" 				 					>> config.mak
