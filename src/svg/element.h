@@ -120,10 +120,10 @@ typedef struct __g2_svg_painter_t
 	tb_handle_t 				pool;
 
 	// the hash
-	tb_hash_t* 					hash;
+	tb_handle_t 				hash;
 
 	// the shaders
-	tb_hash_t* 					shaders;
+	tb_handle_t					shaders;
 
 	// is loaded?
 	tb_bool_t 					load;

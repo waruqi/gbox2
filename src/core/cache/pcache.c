@@ -38,7 +38,7 @@ typedef struct __g2_pcache_t
 	tb_size_t 		maxn;
 
 	// the hash: shape => path
-	tb_hash_t* 		hash;
+	tb_handle_t 	hash;
 
 	// the path cache
 	tb_stack_t* 	cache;
