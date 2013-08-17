@@ -20,6 +20,8 @@ other
 doc
 tags
 samples
-./bin
+bin
 gen
 pre
+!src/demo/bin
+
