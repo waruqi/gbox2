@@ -98,12 +98,12 @@ output : .null
 # make error
 error : .null
 	@echo error $(PRO_NAME)
-	@cat /tmp/$(PRO_NAME).out | grep -Pi "error|undefined|cannot|错误" | cat
+	@cat /tmp/$(PRO_NAME).out | egrep -i "error|undefined|cannot|错误" | cat
 
 # make warning
 warning : .null
 	@echo warning $(PRO_NAME)
-	@cat /tmp/$(PRO_NAME).out | grep warning
+	@cat /tmp/$(PRO_NAME).out | egrep warning
 
 # make doc
 doc : .null
@@ -207,6 +207,7 @@ config : .null
 	@echo "config: demo: \t" 							$(DEMO)
 	@echo "config: core: \t" 							$(CORE)
 	@echo "config: debug: \t" 							$(DEBUG)
+	@echo "config: small: \t" 							$(SMALL)
 	@echo "config: bin: \t" 							$(BIN)
 	@echo "config: pre: \t" 							$(PRE)
 	@echo "config: sdk: \t" 							$(SDK)
