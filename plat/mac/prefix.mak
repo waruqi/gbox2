@@ -33,7 +33,7 @@ MAKE 				= make
 PWD 				= pwd
 
 # cxflags: .c/.cc/.cpp files
-CXFLAGS_RELEASE 	= -freg-struct-return -fno-bounds-check -fvisibility=hidden
+CXFLAGS_RELEASE 	= -fomit-frame-pointer -freg-struct-return -fno-bounds-check -fvisibility=hidden
 CXFLAGS_DEBUG 		= -g -D__tb_debug__
 CXFLAGS 			= -c -Wall -D__tb_arch_$(ARCH)__ -D__g2_core_$(CORE)__
 CXFLAGS-I 			= -I
@@ -63,7 +63,6 @@ CFLAGS_RELEASE 		=
 CFLAGS_DEBUG 		= 
 CFLAGS 				= \
 					-std=c99 \
-					-fomit-frame-pointer \
 					-D_GNU_SOURCE=1 -D_REENTRANT \
 					-Wno-parentheses \
 					-Wno-switch -Wno-format-zero-length -Wdisabled-optimization \
@@ -106,9 +105,9 @@ MMFLAGS_DEBUG 		=
 MMFLAGS 			=
 
 # ldflags
-LDFLAGS_RELEASE 	= 
-LDFLAGS_DEBUG 		= 
-LDFLAGS 			= $(ARCH_LDFLAGS)
+LDFLAGS_RELEASE 	= -static -s
+LDFLAGS_DEBUG 		= -rdynamic -pg
+LDFLAGS 			= 
 LDFLAGS-L 			= -L
 LDFLAGS-l 			= -l
 LDFLAGS-o 			= -o
