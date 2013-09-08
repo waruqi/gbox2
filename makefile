@@ -59,17 +59,14 @@ install : .null
 
 # make prefix
 prefix : .null
-	-@$(RMDIR) $(PRE_DIR)/inc/$(PLAT)/$(ARCH)/$(PRO_NAME)
-	-@$(RM) $(PRE_DIR)/lib/$(PLAT)/$(ARCH)/$(LIB_PREFIX)$(PRO_NAME)$(LIB_SUFFIX)
-	-@$(MKDIR) $(PRE_DIR)
-	-@$(MKDIR) $(PRE_DIR)/inc
-	-@$(MKDIR) $(PRE_DIR)/inc/$(PLAT)
 	-@$(MKDIR) $(PRE_DIR)/inc/$(PLAT)/$(ARCH)
-	-@$(MKDIR) $(PRE_DIR)/lib
-	-@$(MKDIR) $(PRE_DIR)/lib/$(PLAT)
 	-@$(MKDIR) $(PRE_DIR)/lib/$(PLAT)/$(ARCH)
-	-@$(CP) -r $(BIN_DIR)/inc/$(PRO_NAME) $(PRE_DIR)/inc/$(PLAT)/$(ARCH)/
-	-@$(CP) $(BIN_DIR)/lib/$(LIB_PREFIX)$(PRO_NAME)$(LIB_SUFFIX) $(PRE_DIR)/lib/$(PLAT)/$(ARCH)/
+	-@$(CPDIR) $(BIN_DIR)/inc/$(PRO_NAME) $(PRE_DIR)/inc/$(PLAT)/$(ARCH)/
+	-@$(CP) $(BIN_DIR)/lib/$(LIB_PREFIX)$(PRO_NAME)$(LIB_SUFFIX) $(PRE_DIR)/lib/$(PLAT)/$(ARCH)/$(LIB_PREFIX)$(PRO_NAME)$(DTYPE)$(LIB_SUFFIX)
+	$(if $(PREFIX),-@$(MKDIR) $(PREFIX)/inc/$(PLAT)/$(ARCH),)
+	$(if $(PREFIX),-@$(MKDIR) $(PREFIX)/lib/$(PLAT)/$(ARCH),)
+	$(if $(PREFIX),-@$(CPDIR) $(BIN_DIR)/inc/$(PRO_NAME) $(PREFIX)/inc/$(PLAT)/$(ARCH)/,)
+	$(if $(PREFIX),-@$(CP) $(BIN_DIR)/lib/$(LIB_PREFIX)$(PRO_NAME)$(LIB_SUFFIX) $(PREFIX)/lib/$(PLAT)/$(ARCH)/$(LIB_PREFIX)$(PRO_NAME)$(DTYPE)$(LIB_SUFFIX),)
 
 # make lipo
 lipo : .null
@@ -202,17 +199,18 @@ config : .null
 	-@cp ${shell pwd}/plat/$(PLAT)/config.h ${shell pwd}/src/config.h
 	-@perl -pi -e "s/\[build\]/\(`date +%Y%m%d%H%M`\)/g" ./src/config.h
 	@echo "config: ==================================================================="
-	@echo "config: name: \t" 							$(PRO_NAME)
-	@echo "config: plat: \t" 							$(PLAT)
-	@echo "config: arch: \t" 							$(ARCH)
-	@echo "config: demo: \t" 							$(DEMO)
-	@echo "config: core: \t" 							$(CORE)
-	@echo "config: debug: \t" 							$(DEBUG)
-	@echo "config: small: \t" 							$(SMALL)
-	@echo "config: bin: \t" 							$(BIN)
-	@echo "config: pre: \t" 							$(PRE)
-	@echo "config: sdk: \t" 							$(SDK)
-	@echo "config: ndk: \t" 							$(NDK)
+	@echo "config: name:     " 							$(PRO_NAME)
+	@echo "config: plat:     " 							$(PLAT)
+	@echo "config: arch:     " 							$(ARCH)
+	@echo "config: demo:     " 							$(DEMO)
+	@echo "config: core:     " 							$(CORE)
+	@echo "config: debug:    " 							$(DEBUG)
+	@echo "config: small:    " 							$(SMALL)
+	@echo "config: prefix:   " 							$(PREFIX)
+	@echo "config: bin:      " 							$(BIN)
+	@echo "config: pre:      " 							$(PRE)
+	@echo "config: sdk:      " 							$(SDK)
+	@echo "config: ndk:      " 							$(NDK)
 	@echo "config: ==================================================================="
 
 	@echo "# config"                      				> config.mak
@@ -240,6 +238,9 @@ config : .null
 	@echo ""                              				>> config.mak
 	@echo "# core" 			               				>> config.mak
 	@echo "CORE =" $(CORE) 								>> config.mak
+	@echo ""                              				>> config.mak
+	@echo "# prefix"              						>> config.mak
+	@echo "PREFIX =" $(PREFIX) 							>> config.mak
 	@echo ""                              				>> config.mak
 	@echo "# toolchain"            						>> config.mak
 	@echo "SDK =" $(SDK) 								>> config.mak

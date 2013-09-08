@@ -2,7 +2,7 @@
 IS_CONFIG = y
 
 # project
-PRO_DIR = /Users/ruki/projects/personal/gbox2
+PRO_DIR = /home/ruki/projects/gbox2
 PRO_NAME = gbox2
 
 # debug
@@ -13,7 +13,7 @@ DTYPE = d
 SMALL = y
 
 # platform
-PLAT = mac
+PLAT = linux
 
 # architecture
 ARCH = x64
@@ -23,6 +23,9 @@ DEMO = y
 
 # core
 CORE = gl
+
+# prefix
+PREFIX =
 
 # toolchain
 SDK =

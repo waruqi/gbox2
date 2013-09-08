@@ -9,4 +9,7 @@
 // float
 #define G2_CONFIG_FLOAT_FIXED
 
+// the build version
+#define G2_CONFIG_VERSION_BUILD 		(201309090312)
+
 #endif

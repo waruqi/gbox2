@@ -40,7 +40,7 @@ extern "C" {
  */
 
 // version
-tb_char_t const* 	g2_version();
+tb_version_t const* g2_version();
 
 // quality
 tb_size_t 			g2_quality();
