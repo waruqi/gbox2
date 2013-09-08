@@ -200,6 +200,7 @@ endif
 
 config : .null
 	-@cp ${shell pwd}/plat/$(PLAT)/config.h ${shell pwd}/src/config.h
+	-@perl -pi -e "s/\[build\]/\(`date +%Y%m%d%H%M`\)/g" ./src/config.h
 	@echo "config: ==================================================================="
 	@echo "config: name: \t" 							$(PRO_NAME)
 	@echo "config: plat: \t" 							$(PLAT)

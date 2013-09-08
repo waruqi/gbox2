@@ -33,17 +33,19 @@ static tb_size_t 		g_quality = G2_QUALITY_LOW;
 /* ///////////////////////////////////////////////////////////////////////
  * implementation
  */
-tb_char_t const* g2_version()
+tb_version_t const* g2_version()
 {
-	static tb_char_t version_data[32] = {0};
-	static tb_size_t version_size = 0;
-	
-	if (!version_size)
+	// init version
+	static tb_version_t s_version = {0};
+	if (!s_version.major)
 	{
-		version_size = tb_snprintf(version_data, 32, "gbox2-v%u.%u.%u", G2_VERSION_MAJOR, G2_VERSION_MINOR, G2_VERSION_ALTER);
-		version_data[version_size] = '\0';
+		s_version.major = G2_VERSION_MAJOR;
+		s_version.minor = G2_VERSION_MINOR;
+		s_version.alter = G2_VERSION_ALTER;
+		s_version.build = G2_CONFIG_VERSION_BUILD;
 	}
-	return version_data;
+
+	return &s_version;
 }
 tb_size_t g2_quality()
 {
