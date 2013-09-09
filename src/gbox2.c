@@ -36,7 +36,7 @@ static tb_size_t 		g_quality = G2_QUALITY_LOW;
 tb_version_t const* g2_version()
 {
 	// init version tag for binary search
-	static tb_char_t const* s_vtag = "[gbox2]: [vtag]: " G2_CONFIG_VERSION_BUILD; tb_used(s_vtag);
+	static __tb_volatile__ tb_char_t const* s_vtag = "[gbox2]: [vtag]: " G2_CONFIG_VERSION_BUILD; tb_used(s_vtag);
 
 	// init version
 	static tb_version_t s_version = {0};
