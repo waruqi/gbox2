@@ -35,6 +35,9 @@ static tb_size_t 		g_quality = G2_QUALITY_LOW;
  */
 tb_version_t const* g2_version()
 {
+	// init version tag for binary search
+	static tb_char_t const* s_vtag = "[gbox2]: [vtag]: " G2_CONFIG_VERSION_BUILD; tb_used(s_vtag);
+
 	// init version
 	static tb_version_t s_version = {0};
 	if (!s_version.major)
@@ -42,7 +45,7 @@ tb_version_t const* g2_version()
 		s_version.major = G2_VERSION_MAJOR;
 		s_version.minor = G2_VERSION_MINOR;
 		s_version.alter = G2_VERSION_ALTER;
-		s_version.build = G2_CONFIG_VERSION_BUILD;
+		s_version.build = (tb_size_t)tb_atoll(G2_CONFIG_VERSION_BUILD);
 	}
 
 	return &s_version;
