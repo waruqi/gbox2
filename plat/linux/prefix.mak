@@ -46,7 +46,7 @@ CXFLAGS-o 			= -o
 
 # arch
 ifeq ($(ARCH),x86)
-CXFLAGS 			+= -march=i686 -mssse3 
+CXFLAGS 			+= -m32 -mssse3 
 endif
 
 ifeq ($(ARCH),x64)
@@ -92,6 +92,14 @@ LDFLAGS-L 			= -L
 LDFLAGS-l 			= -l
 LDFLAGS-o 			= -o
 
+ifeq ($(ARCH),x86)
+LDFLAGS 			+= -m32
+endif
+
+ifeq ($(ARCH),x64)
+LDFLAGS 			+= -m64
+endif
+
 # asflags
 ASFLAGS_RELEASE 	= 
 ASFLAGS_DEBUG 		= 
@@ -99,8 +107,12 @@ ASFLAGS 			= -f elf $(ARCH_ASFLAGS)
 ASFLAGS-I 			= -I
 ASFLAGS-o 			= -o
 
+ifeq ($(ARCH),x86)
+ASFLAGS 			+= -m32
+endif
+
 ifeq ($(ARCH),x64)
-ASFLAGS 			+= -m amd64
+ASFLAGS 			+= -m64
 endif
 
 # arflags

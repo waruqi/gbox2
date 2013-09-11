@@ -153,7 +153,7 @@ static tb_void_t g2_svg_element_painter_load(g2_svg_painter_t* spainter, g2_svg_
 		if (!spainter->pool) spainter->pool = tb_spool_init(TB_SPOOL_GROW_SMALL, 0);
 
 		// init hash
-		if (!spainter->hash) spainter->hash = tb_hash_init(G2_SVG_ELEMENT_PAINTER_HASH_MAXN, tb_item_func_str(tb_true, spainter->pool), tb_item_func_ptr());
+		if (!spainter->hash) spainter->hash = tb_hash_init(G2_SVG_ELEMENT_PAINTER_HASH_MAXN, tb_item_func_str(tb_true, spainter->pool), tb_item_func_ptr(tb_null, tb_null));
 	
 		// set id => element
 		if (spainter->hash) tb_hash_set(spainter->hash, tb_pstring_cstr(&element->id), element);

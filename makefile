@@ -155,6 +155,10 @@ ifeq ($(PLAT),linux)
 ARCH := x$(shell getconf LONG_BIT)
 endif
 
+ifeq ($(ARCH),x32)
+ARCH := x86
+endif
+
 ifeq ($(PLAT),ios)
 ARCH := armv7
 endif
@@ -184,7 +188,7 @@ endif
 
 # small
 ifeq ($(SMALL),)
-SMALL := n
+SMALL := y
 endif
 
 # demo

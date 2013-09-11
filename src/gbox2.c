@@ -45,7 +45,7 @@ tb_version_t const* g2_version()
 		s_version.major = G2_VERSION_MAJOR;
 		s_version.minor = G2_VERSION_MINOR;
 		s_version.alter = G2_VERSION_ALTER;
-		s_version.build = (tb_size_t)tb_atoll(G2_CONFIG_VERSION_BUILD);
+		s_version.build = (tb_hize_t)tb_atoll(G2_CONFIG_VERSION_BUILD);
 	}
 
 	return &s_version;

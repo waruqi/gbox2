@@ -101,14 +101,9 @@ tb_handle_t g2_pcache_init(tb_size_t maxn)
 	g2_pcache_t* pcache = tb_malloc0(sizeof(g2_pcache_t));
 	tb_assert_and_check_return_val(pcache, tb_null);
 
-	// init func
-	tb_item_func_t func = tb_item_func_ptr();
-	func.free = g2_pcache_hash_item_free;
-	func.priv = pcache;
-
 	// init path cache
 	pcache->maxn = maxn;
-	pcache->cache = tb_stack_init(maxn, tb_item_func_ptr());
+	pcache->cache = tb_stack_init(maxn, tb_item_func_ptr(tb_null, tb_null));
 	tb_assert_and_check_goto(pcache->cache, fail);
 	while (maxn--)
 	{
@@ -121,7 +116,7 @@ tb_handle_t g2_pcache_init(tb_size_t maxn)
 	}
 
 	// init path hash
-	pcache->hash = tb_hash_init(tb_isqrti(pcache->maxn), tb_item_func_ifm(sizeof(g2_shape_t), tb_null, tb_null), func);
+	pcache->hash = tb_hash_init(tb_isqrti(pcache->maxn), tb_item_func_ifm(sizeof(g2_shape_t), tb_null, tb_null), tb_item_func_ptr(g2_pcache_hash_item_free, pcache));
 	tb_assert_and_check_goto(pcache->hash, fail);
 
 	// ok

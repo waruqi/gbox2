@@ -91,7 +91,7 @@ tb_handle_t g2_cstack_init(tb_size_t csize, g2_cstack_func_t const* ofunc)
 	tb_assert_and_check_goto(cstack->object, fail);
 
 	// init cache
-	cstack->cache = tb_stack_init(csize, tb_item_func_ptr());
+	cstack->cache = tb_stack_init(csize, tb_item_func_ptr(tb_null, tb_null));
 	tb_assert_and_check_goto(cstack->cache, fail);
 	while (csize--)
 	{
@@ -104,7 +104,7 @@ tb_handle_t g2_cstack_init(tb_size_t csize, g2_cstack_func_t const* ofunc)
 	}
 
 	// init stack
-	cstack->stack = tb_stack_init(cstack->csize << 2, tb_item_func_ptr());
+	cstack->stack = tb_stack_init(cstack->csize << 2, tb_item_func_ptr(tb_null, tb_null));
 	tb_assert_and_check_goto(cstack->stack, fail);
 
 	// ok
