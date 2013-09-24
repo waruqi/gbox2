@@ -10,19 +10,26 @@ OBJ_SUFFIX 			= .o
 LIB_PREFIX 			= lib
 LIB_SUFFIX 			= .a
 
-DLL_PREFIX 			= lib
-DLL_SUFFIX 			= .so
+DLL_PREFIX 			= 
+DLL_SUFFIX 			= .dylib
 
 ASM_SUFFIX 			= .S
 
+# cc
+CC_ 				:= ${shell if [ -f "/usr/bin/clang" ]; then echo "clang"; elif [ -f "/usr/local/bin/clang" ]; then echo "clang"; else echo "gcc"; fi }
+CC_CHECK 			= ${shell if $(CC_) $(1) -S -o /dev/null -xc /dev/null > /dev/null 2>&1; then echo "$(1)"; else echo "$(2)"; fi }
+
+# ld
+LD_ 				:= ${shell if [ -f "/usr/bin/clang++" ]; then echo "clang++"; elif [ -f "/usr/local/bin/clang++" ]; then echo "clang++"; else echo "g++"; fi }
+LD_CHECK 			= ${shell if $(LD_) $(1) -S -o /dev/null -xc /dev/null > /dev/null 2>&1; then echo "$(1)"; else echo "$(2)"; fi }
+
 # tool
-PRE 				= 
-CC 					= $(PRE)gcc
-MM 					= $(PRE)gcc
+CC 					= $(PRE)$(CC_)
+MM 					= $(PRE)$(CC_)
 AR 					= $(PRE)ar
 STRIP 				= $(PRE)strip
 RANLIB 				= $(PRE)ranlib
-LD 					= $(PRE)g++
+LD 					= $(PRE)$(LD_)
 AS					= yasm
 RM 					= rm -f
 RMDIR 				= rm -rf
@@ -34,7 +41,7 @@ PWD 				= pwd
 
 # cxflags: .c/.cc/.cpp files
 CXFLAGS_RELEASE 	= -fomit-frame-pointer -freg-struct-return -fno-bounds-check -fvisibility=hidden
-CXFLAGS_DEBUG 		= -g -D__tb_debug__
+CXFLAGS_DEBUG 		= -g -D__tb_debug__ -fno-omit-frame-pointer $(call CC_CHECK,-ftrapv,) $(call CC_CHECK,-fsanitize=address,) #-fsanitize=thread
 CXFLAGS 			= -c -Wall -D__tb_arch_$(ARCH)__ -D__g2_core_$(CORE)__
 CXFLAGS-I 			= -I
 CXFLAGS-o 			= -o
@@ -46,6 +53,7 @@ endif
 
 ifeq ($(ARCH),x64)
 CXFLAGS 			+= -m64 -mssse3
+CXFLAGS_DEBUG 		+= -pg
 endif
 
 # opti
@@ -64,12 +72,14 @@ CFLAGS_DEBUG 		=
 CFLAGS 				= \
 					-std=c99 \
 					-D_GNU_SOURCE=1 -D_REENTRANT \
-					-Wno-parentheses \
+					-fno-math-errno \
+					-Wno-parentheses -Wstrict-prototypes \
 					-Wno-switch -Wno-format-zero-length -Wdisabled-optimization \
-					-Wpointer-arith -Wredundant-decls -Wno-pointer-sign -Wwrite-strings \
-					-Wundef -Wno-pointer-to-int-cast \
-					-Wstrict-prototypes -fno-math-errno -fno-tree-vectorize \
-					-Werror=implicit-function-declaration 
+					-Wpointer-arith -Wwrite-strings \
+					-Wundef -Wmissing-prototypes  \
+					-fno-tree-vectorize \
+					-Werror=unused-variable -Wno-pointer-sign -Wno-pointer-to-int-cast \
+					-Werror=implicit-function-declaration -Werror=missing-prototypes 
 
 # ccflags: .cc/.cpp files
 CCFLAGS_RELEASE 	= 
@@ -79,13 +89,9 @@ CCFLAGS 			= \
 					-D_POSIX_C_SOURCE=200112 -D_XOPEN_SOURCE=600
 
 # mxflags: .m/.mm files
-MXFLAGS_RELEASE 	= \
-					-O3 -DNDEBUG \
-					-fomit-frame-pointer -freg-struct-return -fno-bounds-check \
-					-fvisibility=hidden
-
-MXFLAGS_DEBUG 		= -g -DDEBUG=1
-MXFLAGS 			= -c -Wall -mssse3 $(ARCH_CXFLAGS) -D__tb_arch_$(ARCH)__ \
+MXFLAGS_RELEASE 	= -O3 -fomit-frame-pointer -freg-struct-return -fno-bounds-check -fvisibility=hidden
+MXFLAGS_DEBUG 		= -g -D__tb_debug__ -fno-omit-frame-pointer $(call CC_CHECK,-ftrapv,) $(call CC_CHECK,-fsanitize=address,) #-fsanitize=thread
+MXFLAGS 			= -c -Wall -mssse3 $(ARCH_CXFLAGS) -D__tb_arch_$(ARCH)__ -D__g2_core_$(CORE)__ \
 					-fmessage-length=0  -Wreturn-type -Wunused-variable \
 					-pipe -Wno-trigraphs -fpascal-strings \
 					"-DIBOutlet=__attribute__((iboutlet))" \
@@ -93,15 +99,6 @@ MXFLAGS 			= -c -Wall -mssse3 $(ARCH_CXFLAGS) -D__tb_arch_$(ARCH)__ \
 					"-DIBAction=void)__attribute__((ibaction)" 
 MXFLAGS-I 			= -I
 MXFLAGS-o 			= -o
-
-# arch
-ifeq ($(ARCH),x86)
-MXFLAGS 			+= -m32
-endif
-
-ifeq ($(ARCH),x64)
-MXFLAGS 			+= -m64
-endif
 
 # mflags: .m files
 MFLAGS_RELEASE 		= 
@@ -113,9 +110,19 @@ MMFLAGS_RELEASE 	=
 MMFLAGS_DEBUG 		=	 
 MMFLAGS 			=
 
+# arch
+ifeq ($(ARCH),x86)
+MXFLAGS 			+= -m32
+endif
+
+# arch
+ifeq ($(ARCH),x64)
+MXFLAGS 			+= -m64
+endif
+
 # ldflags
-LDFLAGS_RELEASE 	= -static -s
-LDFLAGS_DEBUG 		= -rdynamic
+LDFLAGS_RELEASE 	= -s
+LDFLAGS_DEBUG 		= -rdynamic $(call LD_CHECK,-ftrapv,) $(call LD_CHECK,-fsanitize=address,) #-fsanitize=thread
 LDFLAGS 			= 
 LDFLAGS-L 			= -L
 LDFLAGS-l 			= -l
@@ -126,6 +133,7 @@ ifeq ($(ARCH),x86)
 LDFLAGS 			+= -m32
 endif
 
+# arch
 ifeq ($(ARCH),x64)
 LDFLAGS 			+= -m64
 LDFLAGS_DEBUG 		+= -pg
@@ -151,7 +159,7 @@ endif
 ARFLAGS 			= -cr
 
 # share ldflags
-SHFLAGS 			= -shared -Wl,-soname
+SHFLAGS 			= $(ARCH_LDFLAGS) -dynamiclib
 
 # config
 include 			$(PLAT_DIR)/config.mak
