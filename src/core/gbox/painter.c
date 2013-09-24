@@ -24,6 +24,7 @@
  * includes
  */
 #include "prefix.h"
+#include "../painter.h"
 
 /* ///////////////////////////////////////////////////////////////////////
  * implementation

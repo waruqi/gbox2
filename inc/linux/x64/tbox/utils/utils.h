@@ -35,6 +35,7 @@
 #include "crc.h"
 #include "url.h"
 #include "dump.h"
+#include "used.h"
 #include "base32.h"
 #include "base64.h"
 #include "option.h"

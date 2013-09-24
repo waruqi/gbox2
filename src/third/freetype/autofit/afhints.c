@@ -397,6 +397,8 @@
 #ifdef __cplusplus
   extern "C" {
 #endif
+  void
+  af_glyph_hints_dump_points( AF_GlyphHints  hints );
 
   void
   af_glyph_hints_dump_points( AF_GlyphHints  hints )
@@ -404,6 +406,8 @@
     FT_UNUSED( hints );
   }
 
+  void
+  af_glyph_hints_dump_segments( AF_GlyphHints  hints );
 
   void
   af_glyph_hints_dump_segments( AF_GlyphHints  hints )
@@ -412,6 +416,10 @@
   }
 
 
+  FT_Error
+  af_glyph_hints_get_num_segments( AF_GlyphHints  hints,
+                                   FT_Int         dimension,
+                                   FT_Int*        num_segments );
   FT_Error
   af_glyph_hints_get_num_segments( AF_GlyphHints  hints,
                                    FT_Int         dimension,
@@ -429,6 +437,11 @@
   af_glyph_hints_get_segment_offset( AF_GlyphHints  hints,
                                      FT_Int         dimension,
                                      FT_Int         idx,
+                                     FT_Pos*        offset );
+  FT_Error
+  af_glyph_hints_get_segment_offset( AF_GlyphHints  hints,
+                                     FT_Int         dimension,
+                                     FT_Int         idx,
                                      FT_Pos*        offset )
   {
     FT_UNUSED( hints );
@@ -440,6 +453,9 @@
   }
 
 
+
+  void
+  af_glyph_hints_dump_edges( AF_GlyphHints  hints );
   void
   af_glyph_hints_dump_edges( AF_GlyphHints  hints )
   {

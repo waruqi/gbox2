@@ -24,6 +24,7 @@
  * includes
  */
 #include "prefix.h"
+#include "../shader.h"
 
 /* ///////////////////////////////////////////////////////////////////////
  * implementation
@@ -34,11 +35,6 @@ tb_handle_t g2_shader_init_linear(tb_handle_t context, g2_point_t const* pb, g2_
 	return tb_null;
 }
 tb_handle_t g2_shader_init_radial(tb_handle_t context, g2_circle_t const* cp, g2_gradient_t const* gradient, tb_size_t mode)
-{
-	tb_trace_noimpl();
-	return tb_null;
-}
-tb_handle_t g2_shader_init_radial2(tb_handle_t context, g2_circle_t const* cb, g2_circle_t const* ce, g2_gradient_t const* gradient, tb_size_t mode)
 {
 	tb_trace_noimpl();
 	return tb_null;

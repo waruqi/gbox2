@@ -54,7 +54,7 @@ typedef enum __g2_path_code_e
  */
 
 // init & exit
-tb_handle_t 	g2_path_init();
+tb_handle_t 	g2_path_init(tb_noarg_t);
 tb_void_t 		g2_path_exit(tb_handle_t path);
 
 // clear

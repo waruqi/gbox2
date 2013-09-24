@@ -40,10 +40,10 @@ extern "C" {
  */
 
 // version
-tb_version_t const* g2_version();
+tb_version_t const* g2_version(tb_noarg_t);
 
 // quality
-tb_size_t 			g2_quality();
+tb_size_t 			g2_quality(tb_noarg_t);
 tb_void_t 			g2_quality_set(tb_size_t quality);
 
 // c plus plus

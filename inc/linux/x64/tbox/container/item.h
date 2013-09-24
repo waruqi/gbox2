@@ -52,19 +52,20 @@ typedef tb_void_t 			(*tb_item_func_ncopy_t)(struct __tb_item_func_t* func, tb_p
 /// the item type
 typedef enum __tb_item_type_t
 {
-	TB_ITEM_TYPE_NUL 		= 0 	//!< null
+	TB_ITEM_TYPE_NULL 		= 0 	//!< null
 ,	TB_ITEM_TYPE_LONG 		= 1 	//!< integer for tb_long_t
 ,	TB_ITEM_TYPE_SIZE 		= 2 	//!< integer for tb_size_t
 ,	TB_ITEM_TYPE_UINT8 		= 3 	//!< integer for tb_uint8_t
 ,	TB_ITEM_TYPE_UINT16 	= 4 	//!< integer for tb_uint16_t
 ,	TB_ITEM_TYPE_UINT32 	= 5 	//!< integer for tb_uint32_t
-,	TB_ITEM_TYPE_STR 		= 6 	//!< c-string
+,	TB_ITEM_TYPE_STR 		= 6 	//!< string
 ,	TB_ITEM_TYPE_PTR 		= 7 	//!< pointer
 ,	TB_ITEM_TYPE_EFM 		= 8 	//!< external fixed memory
 ,	TB_ITEM_TYPE_IFM 		= 9 	//!< internal fixed memory
 ,	TB_ITEM_TYPE_OBJ 		= 10 	//!< object
 ,	TB_ITEM_TYPE_SCACHE 	= 11 	//!< scache
-,	TB_ITEM_TYPE_OTR 		= 12 	//!< other
+,	TB_ITEM_TYPE_TRUE 		= 12 	//!< true
+,	TB_ITEM_TYPE_OTR 		= 13 	//!< other
 
 }tb_item_type_t;
 
@@ -102,35 +103,47 @@ typedef struct __tb_item_func_t
  * interfaces
  */
 
+/*! the true item function for hash data: null 
+ *
+ * @return 			the item func
+ */
+tb_item_func_t 		tb_item_func_true(tb_noarg_t);
+
 /*! the integer item function for tb_long_t 
  *
  * @return 			the item func
  */
-tb_item_func_t 		tb_item_func_long();
+tb_item_func_t 		tb_item_func_long(tb_noarg_t);
 
 /*! the integer item function for tb_size_t
  *
  * @return 			the item func
  */
-tb_item_func_t 		tb_item_func_size();
+tb_item_func_t 		tb_item_func_size(tb_noarg_t);
 
 /*! the integer item function for tb_uint8_t
  *
  * @return 			the item func
  */
-tb_item_func_t 		tb_item_func_uint8();
+tb_item_func_t 		tb_item_func_uint8(tb_noarg_t);
 
 /*! the integer item function for tb_uint16_t
  *
  * @return 			the item func
  */
-tb_item_func_t 		tb_item_func_uint16();
+tb_item_func_t 		tb_item_func_uint16(tb_noarg_t);
 
 /*! the integer item function for tb_uint32_t
  *
  * @return 			the item func
  */
-tb_item_func_t 		tb_item_func_uint32();
+tb_item_func_t 		tb_item_func_uint32(tb_noarg_t);
+
+/*! the integer item function for tb_uint64_t
+ *
+ * @return 			the item func
+ */
+tb_item_func_t 		tb_item_func_uint64(tb_noarg_t);
 
 /*! the string item function
  *
@@ -148,15 +161,18 @@ tb_item_func_t 		tb_item_func_str(tb_bool_t bcase, tb_handle_t spool);
  *
  * @note if the free func have been hooked, the nfree need hook too.
  *
+ * @param free 		the item free func
+ * @param priv 		the private data of the item free func
+ *
  * @return 			the item func
  */
-tb_item_func_t 		tb_item_func_ptr();
+tb_item_func_t 		tb_item_func_ptr(tb_item_func_free_t free, tb_pointer_t priv);
 
 /*! the object item function 
  *
  * @return 			the item func
  */
-tb_item_func_t 		tb_item_func_obj();
+tb_item_func_t 		tb_item_func_obj(tb_noarg_t);
 
 /*! the external fixed memory item function
  *

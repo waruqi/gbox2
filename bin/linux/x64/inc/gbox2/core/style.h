@@ -118,7 +118,7 @@ typedef struct __g2_style_t
  */
 
 // init & exit
-tb_handle_t 	g2_style_init();
+tb_handle_t 	g2_style_init(tb_noarg_t);
 tb_void_t 		g2_style_exit(tb_handle_t style);
 
 // clear

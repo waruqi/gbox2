@@ -37,7 +37,6 @@
 #include "scache.h"
 #include "pbuffer.h"
 #include "sbuffer.h"
-#include "rbuffer.h"
 #include "qbuffer.h"
 #ifdef TB_CONFIG_MEMORY_POOL
 # 	include "malloc.h"
@@ -74,7 +73,7 @@
 tb_bool_t 				tb_memory_init(tb_byte_t* data, tb_size_t size, tb_size_t align);
 
 /// exit
-tb_void_t 				tb_memory_exit();
+tb_void_t 				tb_memory_exit(tb_noarg_t);
 
 #endif
 

@@ -33,7 +33,7 @@
  */
 
 // init program: bitmap
-tb_handle_t 			g2_gl_program_init_bitmap();
+tb_handle_t 			g2_gl_program_init_bitmap(tb_noarg_t);
 
 
 #endif

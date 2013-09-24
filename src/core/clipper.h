@@ -99,7 +99,7 @@ typedef struct __g2_clipper_item_t
  */
 
 // init & exit
-tb_handle_t 				g2_clipper_init();
+tb_handle_t 				g2_clipper_init(tb_noarg_t);
 tb_void_t 					g2_clipper_exit(tb_handle_t clipper);
 
 // size

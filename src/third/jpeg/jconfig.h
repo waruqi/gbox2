@@ -2,7 +2,7 @@
 /* jconfig.cfg --- source file edited by configure script */
 /* see jconfig.doc for explanations */
 
-#undef HAVE_PROTOTYPES
+#define HAVE_PROTOTYPES
 #undef HAVE_UNSIGNED_CHAR
 #undef HAVE_UNSIGNED_SHORT
 #undef void

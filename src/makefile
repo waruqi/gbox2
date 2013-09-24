@@ -149,38 +149,20 @@ INC_FILES 				= \
 # freetype files
 freetype_C_FILES 		= \
 						base/ftinit \
-						base/ftadvanc \
-						base/ftcalc \
-						base/ftgloadr \
-						base/ftobjs \
-						base/ftoutln \
-						base/ftrfork \
-						base/ftsnames \
-						base/ftstream \
-						base/fttrigon \
-						base/ftutil \
-						base/ftlcdfil \
-						base/ftfstype \
+						base/ftbase \
 						base/ftxf86 \
-						base/fttype1 \
-						base/ftbitmap \
-						base/ftapi \
 						base/ftsystem \
+						base/ftlcdfil \
+						base/fttype1 \
+						base/ftfstype \
+						base/ftbitmap \
 						truetype/ttdriver \
 						truetype/ttgload \
 						truetype/ttgxvar \
 						truetype/ttinterp \
 						truetype/ttobjs \
 						truetype/ttpload \
-						autofit/afangles \
-						autofit/afcjk \
-						autofit/afdummy \
-						autofit/afglobal \
-						autofit/afhints \
-						autofit/afindic \
-						autofit/aflatin \
-						autofit/afloader \
-						autofit/afmodule \
+						autofit/autofit \
 						cache/ftcbasic \
 						cache/ftccache \
 						cache/ftccmap \
@@ -200,6 +182,7 @@ freetype_C_FILES 		= \
 						sfnt/sfdriver \
 						smooth/ftgrays \
 						smooth/ftsmooth
+
 
 freetype_INC_DIR 		:= third/freetype/include
 freetype_CFLAGS 		:= -DFT2_BUILD_LIBRARY

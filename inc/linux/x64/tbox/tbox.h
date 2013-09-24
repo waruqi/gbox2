@@ -71,7 +71,7 @@ extern "C" {
 #endif
 
 // init tbox
-#define tb_init(data, size) 	tb_init_for_mode(data, size, (tb_size_t)(__tb_mode_debug__ | __tb_mode_small__), (tb_size_t)TB_CONFIG_VERSION_BUILD)
+#define tb_init(data, size) 	tb_init_for_mode(data, size, (tb_size_t)(__tb_mode_debug__ | __tb_mode_small__), TB_CONFIG_VERSION_BUILD)
 
 /* ///////////////////////////////////////////////////////////////////////
  * interfaces
@@ -86,13 +86,13 @@ extern "C" {
  *
  * @return 			tb_true or tb_false
  */
-tb_bool_t 			tb_init_for_mode(tb_byte_t* data, tb_size_t size, tb_size_t mode, tb_size_t build);
+tb_bool_t 			tb_init_for_mode(tb_byte_t* data, tb_size_t size, tb_size_t mode, tb_char_t const* build);
 
 /// exit the tbox library
-tb_void_t 			tb_exit();
+tb_void_t 			tb_exit(tb_noarg_t);
 
 /// the tbox version string
-tb_version_t const*	tb_version();
+tb_version_t const*	tb_version(tb_noarg_t);
 
 
 // c plus plus

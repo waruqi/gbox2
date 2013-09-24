@@ -60,7 +60,7 @@ typedef enum __g2_gl_program_location_t
  */
 
 // init & exit
-tb_handle_t 		g2_gl_program_init();
+tb_handle_t 		g2_gl_program_init(tb_noarg_t);
 tb_void_t 			g2_gl_program_exit(tb_handle_t program);
 
 // load shader

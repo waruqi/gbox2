@@ -33,7 +33,7 @@
  */
 
 // init program: color
-tb_handle_t 			g2_gl_program_init_color();
+tb_handle_t 			g2_gl_program_init_color(tb_noarg_t);
 
 
 #endif

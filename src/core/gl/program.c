@@ -194,7 +194,7 @@ tb_void_t g2_gl_program_uses(tb_handle_t program)
 {
 	// check
 	g2_gl_program_t* gprogram = (g2_gl_program_t*)program;
-	tb_assert_and_check_return_val(gprogram && gprogram->program, tb_false);
+	tb_assert_and_check_return(gprogram && gprogram->program);
 
 	// use it
 	g2_glUseProgram(gprogram->program);

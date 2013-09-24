@@ -79,6 +79,13 @@ typedef tb_void_t* 					tb_pointer_t;
 typedef tb_void_t const* 			tb_cpointer_t;
 typedef tb_pointer_t 				tb_handle_t;
 
+// no argument
+#ifdef __cplusplus
+# 	define tb_noarg_t 				
+#else
+# 	define tb_noarg_t 				tb_void_t
+#endif
+
 // wchar
 #ifdef TB_CONFIG_OS_WINDOWS
 typedef tb_int16_t 					tb_wchar_t;
@@ -171,7 +178,7 @@ typedef struct __tb_version_t
 	tb_byte_t 						alter;
 
 	/// the build
-	tb_size_t 						build;
+	tb_hize_t 						build;
 
 }tb_version_t;
 
