@@ -16,26 +16,37 @@ DLL_SUFFIX 			= .so
 ASM_SUFFIX 			= .S
 
 # prefix
-ifneq ($(BIN),)
-PRE_ 				:= $(BIN)/$(PRE)
-else
-PRE_ 				:=
-endif
+PRE_ 				:= $(if $(BIN),$(BIN)/$(PRE),)
 
 # cc
 CC_ 				:= ${shell if [ -f "/usr/bin/clang" ]; then echo "clang"; elif [ -f "/usr/local/bin/clang" ]; then echo "clang"; else echo "gcc"; fi }
-CC_CHECK 			= ${shell if $(CC_) $(1) -S -o /dev/null -xc /dev/null > /dev/null 2>&1; then echo "$(1)"; else echo "$(2)"; fi }
+CC_ 				:= $(if $(findstring y,$(PROF)),gcc,$(CC_))
+CC 					= $(PRE_)$(CC_)
+ifeq ($(CXFLAGS_CHECK),)
+CC_CHECK 			= ${shell if $(CC) $(1) -S -o /dev/null -xc /dev/null > /dev/null 2>&1; then echo "$(1)"; else echo "$(2)"; fi }
+CXFLAGS_CHECK 		:= $(call CC_CHECK,-ftrapv,) $(call CC_CHECK,-fsanitize=address,) #-fsanitize=thread
+export CXFLAGS_CHECK
+endif
 
 # ld
 LD_ 				:= ${shell if [ -f "/usr/bin/clang++" ]; then echo "clang++"; elif [ -f "/usr/local/bin/clang++" ]; then echo "clang++"; else echo "g++"; fi }
-LD_CHECK 			= ${shell if $(LD_) $(1) -S -o /dev/null -xc /dev/null > /dev/null 2>&1; then echo "$(1)"; else echo "$(2)"; fi }
+LD_ 				:= $(if $(findstring y,$(PROF)),g++,$(LD_))
+LD 					= $(PRE_)$(LD_)
+ifeq ($(LDFLAGS_CHECK),)
+LD_CHECK 			= ${shell if $(LD) $(1) -S -o /dev/null -xc /dev/null > /dev/null 2>&1; then echo "$(1)"; else echo "$(2)"; fi }
+LDFLAGS_CHECK 		:= $(call LD_CHECK,-ftrapv,) $(call LD_CHECK,-fsanitize=address,) #-fsanitize=thread
+export LDFLAGS_CHECK
+endif
+
+# cpu bits
+BITS 				:= $(if $(findstring x64,$(ARCH)),64,)
+BITS 				:= $(if $(findstring x86,$(ARCH)),32,)
+BITS 				:= $(if $(BITS),$(BITS),$(shell getconf LONG_BIT))
 
 # tool
-CC 					= $(PRE_)$(CC_)
 AR 					= $(PRE_)ar
 STRIP 				= $(PRE_)strip
 RANLIB 				= $(PRE_)ranlib
-LD 					= $(PRE_)$(LD_)
 AS					= yasm
 RM 					= rm -f
 RMDIR 				= rm -rf
@@ -46,19 +57,15 @@ MAKE 				= make
 PWD 				= pwd
 
 # cxflags: .c/.cc/.cpp files
-CXFLAGS_RELEASE 	= -fomit-frame-pointer -freg-struct-return -fno-bounds-check -fvisibility=hidden
-CXFLAGS_DEBUG 		= -g -pg -D__tb_debug__ -fno-omit-frame-pointer $(call CC_CHECK,-ftrapv,) $(call CC_CHECK,-fsanitize=address,) #-fsanitize=thread
-CXFLAGS 			= -c -Wall -D__tb_arch_$(ARCH)__ -D__g2_core_$(CORE)__
+CXFLAGS_RELEASE 	= -freg-struct-return -fno-bounds-check -fvisibility=hidden
+CXFLAGS_DEBUG 		= -g -D__tb_debug__
+CXFLAGS 			= -m$(BITS) -c -Wall -D__tb_arch_$(ARCH)__ -D__g2_core_$(CORE)__ -mssse3
 CXFLAGS-I 			= -I
 CXFLAGS-o 			= -o
 
 # arch
 ifeq ($(ARCH),x86)
-CXFLAGS 			+= -m32 -mssse3 -I/usr/include/i386-linux-gnu 
-endif
-
-ifeq ($(ARCH),x64)
-CXFLAGS 			+= -m64 -mssse3
+CXFLAGS 			+= -I/usr/include/i386-linux-gnu 
 endif
 
 # opti
@@ -66,6 +73,14 @@ ifeq ($(SMALL),y)
 CXFLAGS_RELEASE 	+= -Os
 else
 CXFLAGS_RELEASE 	+= -O3
+endif
+
+# prof
+ifeq ($(PROF),y)
+CXFLAGS 			+= -g -pg -fno-omit-frame-pointer 
+else
+CXFLAGS_RELEASE 	+= -fomit-frame-pointer 
+CXFLAGS_DEBUG 		+= -fno-omit-frame-pointer $(CXFLAGS_CHECK)
 endif
 
 # small
@@ -90,40 +105,30 @@ CFLAGS 				= \
 # ccflags: .cc/.cpp files
 CCFLAGS_RELEASE 	= -fno-rtti
 CCFLAGS_DEBUG 		= 
-CCFLAGS 			= \
-					-D_ISOC99_SOURCE -D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE \
-					-D_POSIX_C_SOURCE=200112 -D_XOPEN_SOURCE=600
+CCFLAGS 			= -D_ISOC99_SOURCE -D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE -D_POSIX_C_SOURCE=200112 -D_XOPEN_SOURCE=600
 
 # ldflags
-LDFLAGS_RELEASE 	= -static -s
-LDFLAGS_DEBUG 		= -rdynamic -pg $(call LD_CHECK,-ftrapv,) $(call LD_CHECK,-fsanitize=address,) #-fsanitize=thread
-LDFLAGS 			=  
+LDFLAGS_RELEASE 	= -static
+LDFLAGS_DEBUG 		= -rdynamic 
+LDFLAGS 			= -m$(BITS) 
 LDFLAGS-L 			= -L
 LDFLAGS-l 			= -l
 LDFLAGS-o 			= -o
 
-ifeq ($(ARCH),x86)
-LDFLAGS 			+= -m32 
-endif
-
-ifeq ($(ARCH),x64)
-LDFLAGS 			+= -m64
+# prof
+ifeq ($(PROF),y)
+LDFLAGS 			+= -pg 
+else
+LDFLAGS_RELEASE 	+= -s
+LDFLAGS_DEBUG 		+= $(LDFLAGS_CHECK)
 endif
 
 # asflags
 ASFLAGS_RELEASE 	= 
 ASFLAGS_DEBUG 		= 
-ASFLAGS 			= -f elf
+ASFLAGS 			= -m$(BITS) -f elf
 ASFLAGS-I 			= -I
 ASFLAGS-o 			= -o
-
-ifeq ($(ARCH),x64)
-ASFLAGS 			+= -m32
-endif
-
-ifeq ($(ARCH),x64)
-ASFLAGS 			+= -m64
-endif
 
 # arflags
 ARFLAGS 			= -cr
