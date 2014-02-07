@@ -31,8 +31,8 @@
  */
 #include "jpg.h"
 #include "decoder.h"
-#include "../../../third/jpeg/jinclude.h"
-#include "../../../third/jpeg/jpeglib.h"
+#include <stdio.h>
+#include <jpeglib.h>
 
 /* ///////////////////////////////////////////////////////////////////////
  * types

@@ -45,7 +45,7 @@ tb_handle_t g2_bitmap_init_url(tb_size_t pixfmt, tb_char_t const* url)
 		bitmap = g2_bitmap_init_gst(pixfmt, gst);
 
 		// close stream
-		tb_gstream_bclose(gst);
+		tb_gstream_bclos(gst);
 	}
 
 	// exit gstream

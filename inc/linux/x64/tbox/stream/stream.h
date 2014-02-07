@@ -30,6 +30,8 @@
 #include "prefix.h"
 #include "bstream.h"
 #include "gstream.h"
+#include "astream.h"
+#include "tstream.h"
 
 /*!architecture
  *
@@ -37,36 +39,38 @@
  * <pre>   
  *     bstream
  *        |         
- *        |                                               - dstream(data) - no wait
- *    (url, ...)                                         |
- *     gstream ------------- gstream ---------------------  fstream(file) - wait for aioo
- *                   |              \                    |
- *                   |               -- hstream(http) ----- sstream(sock) - wait for aioo
+ *        |                                          - data
+ *    (url, ...)                                    |
+ *     gstream ------------- gstream ---------------- file
+ *     [aioo]        |              \               |
+ *                   |               ----- http ----- sock
  *                   |
  *                   |
- *                   |           - estream(utf8, gb2312, gbk)
+ *                   |           - charset
  *                   |          |
- *                   - tstream -| lstream(ssl)      
+ *                   - filter - |- chunked 
  *                              |        
- *                              - zstream(rlc, lzsw, gzip)
- *                        
+ *                               - zip
  *
- *     bstream
- *        |         
- *        |                                               - dstream(data) - no wait
- *    (url, ...)                                         |
- *     mstream ------------- mstream ---------------------  fstream(file) - wait for aicp
- *                   |              \                    |
- *                   |               -- hstream(http) ----- sstream(sock) - wait for aicp
+ *
+ *
+ *                                                   - data
+ *    (url, ...)                                    |
+ *     astream ------------- astream ---------------- file
+ *      [aicp]       |              \               |
+ *                   |               ----- http ----- sock
  *                   |
  *                   |
- *                   |           - estream(utf8, gb2312, gbk)
+ *                   |           - charset
  *                   |          |
- *                   - tstream -| lstream(ssl)      
+ *                   - filter - |- chunked 
  *                              |        
- *                              - zstream(rlc, lzsw, gzip)
+ *                               - zip    
  *
- *                               
+ *                -- gstream
+ *    tstream - |
+ *                -- astream
+ *
  *                         
  * url: 
  *     unix: /home/path/file...

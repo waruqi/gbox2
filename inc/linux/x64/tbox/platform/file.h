@@ -30,23 +30,39 @@
 #include "prefix.h"
 
 /* ///////////////////////////////////////////////////////////////////////
+ * macros
+ */
+
+/// the aligned size for direct mode
+#define TB_FILE_DIRECT_ASIZE 			(512)
+
+/// the cached size for direct mode
+#ifdef __tb_small__
+# 	define TB_FILE_DIRECT_CSIZE 		(1 << 14)
+#else
+# 	define TB_FILE_DIRECT_CSIZE 		(1 << 17)
+#endif
+
+/* ///////////////////////////////////////////////////////////////////////
  * types
  */
 
-// the file mode type
+/// the file mode type
 typedef enum __tb_file_mode_t
 {
-	TB_FILE_MODE_RO 		= 1
-, 	TB_FILE_MODE_WO 		= 2
-, 	TB_FILE_MODE_RW 		= 4
-, 	TB_FILE_MODE_CREAT 		= 8
-, 	TB_FILE_MODE_APPEND 	= 16
-, 	TB_FILE_MODE_TRUNC 		= 32
-, 	TB_FILE_MODE_BINARY 	= 64
+	TB_FILE_MODE_RO 		= 1 	//!< read only
+, 	TB_FILE_MODE_WO 		= 2 	//!< writ only
+, 	TB_FILE_MODE_RW 		= 4 	//!< read and writ
+, 	TB_FILE_MODE_CREAT 		= 8 	//!< create
+, 	TB_FILE_MODE_APPEND 	= 16 	//!< append
+, 	TB_FILE_MODE_TRUNC 		= 32 	//!< truncate
+, 	TB_FILE_MODE_BINARY 	= 64 	//!< binary
+, 	TB_FILE_MODE_DIRECT 	= 128 	//!< direct, no cache, @note data & size must be aligned by TB_FILE_DIRECT_ASIZE
+, 	TB_FILE_MODE_AICP 		= 256 	//!< support for aicp
 
 }tb_file_mode_t;
 
-// the file seek type
+/// the file seek type
 typedef enum __tb_file_seek_flag_t
 {
  	TB_FILE_SEEK_BEG 		= 0
@@ -55,7 +71,7 @@ typedef enum __tb_file_seek_flag_t
 
 }tb_file_seek_flag_t;
 
-// the file type
+/// the file type
 typedef enum __tb_file_type_t
 {
 	TB_FILE_TYPE_NONE 		= 0
@@ -66,19 +82,19 @@ typedef enum __tb_file_type_t
 
 }tb_file_type_t;
 
-// the file info type
+/// the file info type
 typedef struct __tb_file_info_t
 {
-	// the file type
+	/// the file type
 	tb_size_t 				type;
 
-	// the file size
+	/// the file size
 	tb_hize_t 				size;
 
-	// the last access time
+	/// the last access time
 	tb_time_t 				atime;
 
-	// the last modify time
+	/// the last modify time
 	tb_time_t 				mtime;
 
 }tb_file_info_t;
@@ -124,29 +140,81 @@ tb_long_t 				tb_file_read(tb_handle_t file, tb_byte_t* data, tb_size_t size);
  */
 tb_long_t 				tb_file_writ(tb_handle_t file, tb_byte_t const* data, tb_size_t size);
 
+/*! pread the file data
+ * 
+ * @param file 			the file handle
+ * @param data 			the data
+ * @param size 			the size
+ *
+ * @return 				the real size or -1
+ */
+tb_long_t 				tb_file_pread(tb_handle_t file, tb_byte_t* data, tb_size_t size, tb_hize_t offset);
+
+/*! pwrit the file data
+ * 
+ * @param file 			the file handle
+ * @param data 			the data
+ * @param size 			the size
+ *
+ * @return 				the real size or -1
+ */
+tb_long_t 				tb_file_pwrit(tb_handle_t file, tb_byte_t const* data, tb_size_t size, tb_hize_t offset);
+
+/*! readv the file data
+ * 
+ * @param file 			the file handle
+ * @param list 			the iovec list
+ * @param size 			the iovec size
+ *
+ * @return 				the real size or -1
+ */
+tb_long_t 				tb_file_readv(tb_handle_t file, tb_iovec_t const* list, tb_size_t size);
+
+/*! writv the file data
+ * 
+ * @param file 			the file handle
+ * @param list 			the iovec list
+ * @param size 			the iovec size
+ *
+ * @return 				the real size or -1
+ */
+tb_long_t 				tb_file_writv(tb_handle_t file, tb_iovec_t const* list, tb_size_t size);
+
+/*! preadv the file data 
+ * 
+ * @param file 			the file handle
+ * @param list 			the iovec list
+ * @param size 			the iovec size
+ *
+ * @return 				the real size or -1
+ */
+tb_long_t 				tb_file_preadv(tb_handle_t file, tb_iovec_t const* list, tb_size_t size, tb_hize_t offset);
+
+/*! pwritv the file data 
+ * 
+ * @param file 			the file handle
+ * @param list 			the iovec list
+ * @param size 			the iovec size
+ *
+ * @return 				the real size or -1
+ */
+tb_long_t 				tb_file_pwritv(tb_handle_t file, tb_iovec_t const* list, tb_size_t size, tb_hize_t offset);
+
 /*! seek the file offset
  * 
  * @param file 			the file handle
  * @param offset 		the file offset
+ * @param mode 			the seek mode
  *
- * @return 				tb_true or tb_false
+ * @return 				the real offset or -1
  */
-tb_bool_t 				tb_file_seek(tb_handle_t file, tb_hize_t offset);
+tb_hong_t 				tb_file_seek(tb_handle_t file, tb_hong_t offset, tb_size_t mode);
 
-/*! skip the file size
- * 
- * @param file 			the file handle
- * @param size 			the file size
- *
- * @return 				tb_true or tb_false
- */
-tb_bool_t 				tb_file_skip(tb_handle_t file, tb_hize_t size);
-
-/*! sync the file data
+/*! fsync the file 
  * 
  * @param file 			the file handle
  */
-tb_void_t 				tb_file_sync(tb_handle_t file);
+tb_bool_t 				tb_file_sync(tb_handle_t file);
 
 /*! the file size
  * 
@@ -155,6 +223,14 @@ tb_void_t 				tb_file_sync(tb_handle_t file);
  * @return 				the file size
  */
 tb_hize_t 				tb_file_size(tb_handle_t file);
+
+/*! the file offset
+ * 
+ * @param file 			the file handle
+ *
+ * @return 				the file offset or -1
+ */
+tb_hong_t 				tb_file_offset(tb_handle_t file);
 
 /*! the file info for file or directory
  * 

@@ -28,13 +28,12 @@
  * includes
  */
 #include "prefix.h"
-
-#if defined(TB_ARCH_x86) || defined(TB_ARCH_x64)
+#if defined(TB_ARCH_x86)
 # 	include "x86/atomic.h"
+#elif defined(TB_ARCH_x64)
+# 	include "x64/atomic.h"
 #elif defined(TB_ARCH_ARM)
 # 	include "arm/atomic.h"
-#elif defined(TB_ARCH_SH4)
-# 	include "sh4/atomic.h"
 #endif
 
 #endif

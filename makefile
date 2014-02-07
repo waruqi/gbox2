@@ -38,7 +38,6 @@ all : .null
 
 # make rebuild
 rebuild : .null
-	@$(MAKE) f
 	@$(MAKE) c
 	-@$(MAKE) -j4
 	@$(MAKE)
@@ -111,17 +110,37 @@ else
 # ######################################################################################
 # no-config
 # #
-all : 		help
-rebuild : 	help
-install : 	help
-prefix : 	help
-lipo : 		help
-clean : 	help
-update : 	help
-output : 	help
-error : 	help
-warning : 	help
-doc : 		help
+all : 
+	make f
+	make r
+
+rebuild :
+	make f
+	make r
+
+install :
+	make f
+	make i
+
+prefix :
+	make f
+	make p
+
+lipo : help
+clean :
+	make f
+	make c
+
+update :
+	make f
+	make u
+
+output : 	
+error : 	
+warning : 	
+doc :
+	make f
+	make d
 
 endif
 
@@ -136,53 +155,82 @@ endif
 # #
 
 # platform
-PLAT := $(if $(PLAT),$(PLAT),linux)
-
+PLAT :=$(if $(PLAT),$(PLAT),$(if ${shell uname | egrep -i linux},linux,))
+PLAT :=$(if $(PLAT),$(PLAT),$(if ${shell uname | egrep -i darwin},mac,))
+PLAT :=$(if $(PLAT),$(PLAT),$(if ${shell uname | egrep -i cygwin},mingw,))
+PLAT :=$(if $(PLAT),$(PLAT),linux)
 
 # architecture
 ifeq ($(ARCH),)
 
-ARCH := $(if $(findstring mingw,$(PLAT)),x86,$(ARCH))
-ARCH := $(if $(findstring mac,$(PLAT)),x$(shell getconf LONG_BIT),$(ARCH))
-ARCH := $(if $(findstring linux,$(PLAT)),x$(shell getconf LONG_BIT),$(ARCH))
-ARCH := $(if $(findstring x32,$(ARCH)),x86,$(ARCH))
-ARCH := $(if $(findstring ios,$(PLAT)),armv7,$(ARCH))
-ARCH := $(if $(findstring android,$(PLAT)),armv7,$(ARCH))
+ARCH :=$(if $(findstring mingw,$(PLAT)),x86,$(ARCH))
+ARCH :=$(if $(findstring mac,$(PLAT)),x$(shell getconf LONG_BIT),$(ARCH))
+ARCH :=$(if $(findstring linux,$(PLAT)),x$(shell getconf LONG_BIT),$(ARCH))
+ARCH :=$(if $(findstring x32,$(ARCH)),x86,$(ARCH))
+ARCH :=$(if $(findstring ios,$(PLAT)),armv7,$(ARCH))
+ARCH :=$(if $(findstring android,$(PLAT)),armv7,$(ARCH))
 
 endif
 
 # debug
-DEBUG := $(if $(DEBUG),$(DEBUG),y)
+DEBUG :=$(if $(DEBUG),$(DEBUG),y)
 
 # debug type
-DTYPE := $(if $(findstring y,$(DEBUG)),d,r)
+DTYPE :=$(if $(findstring y,$(DEBUG)),d,r)
 
 # small
-SMALL := $(if $(SMALL),$(SMALL),y)
+SMALL :=$(if $(SMALL),$(SMALL),y)
 
 # demo
-DEMO := $(if $(DEMO),$(DEMO),y)
+DEMO :=$(if $(DEMO),$(DEMO),y)
 
 # profile
-PROF := $(if $(PROF),$(PROF),n)
+PROF :=$(if $(PROF),$(PROF),n)
 
-# core
-CORE := $(if $(CORE),$(CORE),gbox)
+# gl
+GL :=$(if $(GL),$(GL),n)
+
+# png
+PNG :=$(if $(PNG),$(PNG),n)
+
+# jpg
+JPG :=$(if $(JPG),$(JPG),n)
+
+# skia
+SKIA :=$(if $(SKIA),$(SKIA),n)
+
+# freetype
+FREETYPE :=$(if $(FREETYPE),$(FREETYPE),n)
+
+# arm
+ARM :=$(if $(findstring arm,$(ARCH)),y,n)
+
+# x86
+x86 :=$(if $(findstring x86,$(ARCH)),y,n)
+
+# x64
+x64 :=$(if $(findstring x64,$(ARCH)),y,n)
+
+# sh4
+SH4 :=$(if $(findstring sh4,$(ARCH)),y,n)
+
+# mips
+MIPS :=$(if $(findstring mips,$(ARCH)),y,n)
 
 # project
-PRO_DIR 	:= ${shell pwd}
-PRO_NAME 	:= ${shell basename ${shell pwd}}
+PRO_DIR 	:=${shell pwd}
+PRO_NAME 	:=${shell basename ${shell pwd}}
 
 # ccache
 ifeq ($(CCACHE),n)
 CCACHE 		:= 
 else
-CCACHE 		:= ${shell if [ -f "/usr/bin/ccache" ]; then echo "ccache"; elif [ -f "/usr/local/bin/ccache" ]; then echo "ccache"; else echo ""; fi }
+CCACHE 		:=${shell if [ -f "/usr/bin/ccache" ]; then echo "ccache"; elif [ -f "/usr/local/bin/ccache" ]; then echo "ccache"; else echo ""; fi }
 endif
 
 # distcc
 ifeq ($(DISTCC),y)
-DISTCC 		:= ${shell if [ -f "/usr/bin/distcc" ]; then echo "distcc"; elif [ -f "/usr/local/bin/distcc" ]; then echo "distcc"; else echo ""; fi }
+DISTCC 		:=${shell if [ -f "/usr/bin/distcc" ]; then echo "distcc"; elif [ -f "/usr/local/bin/distcc" ]; then echo "distcc"; else echo ""; fi }
 else
 DISTCC 		:= 
 endif
@@ -196,7 +244,11 @@ config : .null
 	@echo "config: arch:     " 							$(ARCH)
 	@echo "config: demo:     " 							$(DEMO)
 	@echo "config: prof:     " 							$(PROF)
-	@echo "config: core:     " 							$(CORE)
+	@echo "config: gl:       " 							$(GL)
+	@echo "config: png:      " 							$(PNG)
+	@echo "config: jpg:      " 							$(JPG)
+	@echo "config: skia:     " 							$(SKIA)
+	@echo "config: freetype: " 							$(FREETYPE)
 	@echo "config: debug:    " 							$(DEBUG)
 	@echo "config: small:    " 							$(SMALL)
 	@echo "config: prefix:   " 							$(PREFIX)
@@ -207,45 +259,63 @@ config : .null
 	@echo "config: ==================================================================="
 
 	@echo "# config"                      				> .config.mak
-	@echo "IS_CONFIG = y" 								>> .config.mak
+	@echo "IS_CONFIG =y" 								>> .config.mak
 	@echo ""                              				>> .config.mak
 	@echo "# project"              						>> .config.mak
-	@echo "PRO_DIR =" $(PRO_DIR) 						>> .config.mak
-	@echo "PRO_NAME =" $(PRO_NAME) 						>> .config.mak
+	@echo "PRO_DIR ="$(PRO_DIR) 						>> .config.mak
+	@echo "PRO_NAME ="$(PRO_NAME) 						>> .config.mak
 	@echo ""                              				>> .config.mak
 	@echo "# profile"              						>> .config.mak
-	@echo "PROF =" $(PROF) 								>> .config.mak
+	@echo "PROF ="$(PROF) 								>> .config.mak
 	@echo ""                              				>> .config.mak
 	@echo "# debug"              						>> .config.mak
-	@echo "DEBUG =" $(DEBUG) 							>> .config.mak
-	@echo "DTYPE =" $(DTYPE) 							>> .config.mak
+	@echo "DEBUG ="$(DEBUG) 							>> .config.mak
+	@echo "DTYPE ="$(DTYPE) 							>> .config.mak
 	@echo ""                              				>> .config.mak
 	@echo "# small"              						>> .config.mak
-	@echo "SMALL =" $(SMALL) 							>> .config.mak
+	@echo "SMALL ="$(SMALL) 							>> .config.mak
 	@echo ""                              				>> .config.mak
 	@echo "# prefix"              						>> .config.mak
-	@echo "PREFIX =" $(PREFIX) 							>> .config.mak
+	@echo "PREFIX ="$(PREFIX) 							>> .config.mak
 	@echo ""                              				>> .config.mak
 	@echo "# platform"      	          				>> .config.mak
-	@echo "PLAT =" $(PLAT) 								>> .config.mak
+	@echo "PLAT ="$(PLAT) 								>> .config.mak
 	@echo ""                              				>> .config.mak
 	@echo "# architecture"                				>> .config.mak
-	@echo "ARCH =" $(ARCH) 								>> .config.mak
+	@echo "ARCH ="$(ARCH) 								>> .config.mak
+	@echo "ARM ="$(ARM) 								>> .config.mak
+	@echo "x86 ="$(x86) 								>> .config.mak
+	@echo "x64 ="$(x64) 								>> .config.mak
+	@echo "SH4 ="$(SH4) 								>> .config.mak
+	@echo "MIPS ="$(MIPS) 								>> .config.mak
+	@echo "SPARC ="$(SPARC) 							>> .config.mak
 	@echo ""                              				>> .config.mak
 	@echo "# demo" 			               				>> .config.mak
-	@echo "DEMO =" $(DEMO) 								>> .config.mak
+	@echo "DEMO ="$(DEMO) 								>> .config.mak
 	@echo ""                              				>> .config.mak
-	@echo "# core" 			               				>> .config.mak
-	@echo "CORE =" $(CORE) 								>> .config.mak
+	@echo "# gl" 			               				>> .config.mak
+	@echo "GL =" $(GL) 									>> .config.mak
+	@echo ""                              				>> .config.mak
+	@echo "# png" 			               				>> .config.mak
+	@echo "PNG =" $(PNG) 								>> .config.mak
+	@echo ""                              				>> .config.mak
+	@echo "# jpg" 			               				>> .config.mak
+	@echo "JPG =" $(JPG) 								>> .config.mak
+	@echo ""                              				>> .config.mak
+	@echo "# skia" 			               				>> .config.mak
+	@echo "SKIA =" $(SKIA) 								>> .config.mak
+	@echo ""                              				>> .config.mak
+	@echo "# freetype" 			               			>> .config.mak
+	@echo "FREETYPE =" $(FREETYPE) 						>> .config.mak
 	@echo ""                              				>> .config.mak
 	@echo "# toolchain"            						>> .config.mak
-	@echo "SDK =" $(SDK) 								>> .config.mak
-	@echo "NDK =" $(NDK) 								>> .config.mak
-	@echo "BIN =" $(BIN) 								>> .config.mak
-	@echo "PRE =" $(PRE) 								>> .config.mak
-	@echo "HOST =" $(HOST) 								>> .config.mak
-	@echo "CCACHE =" $(CCACHE) 							>> .config.mak
-	@echo "DISTCC =" $(DISTCC) 							>> .config.mak
+	@echo "SDK ="$(SDK) 								>> .config.mak
+	@echo "NDK ="$(NDK) 								>> .config.mak
+	@echo "BIN ="$(BIN) 								>> .config.mak
+	@echo "PRE ="$(PRE) 								>> .config.mak
+	@echo "HOST ="$(HOST) 								>> .config.mak
+	@echo "CCACHE ="$(CCACHE) 							>> .config.mak
+	@echo "DISTCC ="$(DISTCC) 							>> .config.mak
 	@echo ""                              				>> .config.mak
 	@echo "# export"									>> .config.mak
 	@echo "export PRO_DIR" 		 						>> .config.mak
@@ -255,9 +325,19 @@ config : .null
 	@echo "export SMALL" 			 					>> .config.mak
 	@echo "export PLAT"					 				>> .config.mak
 	@echo "export ARCH"					 				>> .config.mak
+	@echo "export ARM"					 				>> .config.mak
+	@echo "export x86"					 				>> .config.mak
+	@echo "export x64"					 				>> .config.mak
+	@echo "export SH4"					 				>> .config.mak
+	@echo "export MIPS"					 				>> .config.mak
+	@echo "export SPARC"								>> .config.mak
 	@echo "export PROF"					 				>> .config.mak
 	@echo "export DEMO"					 				>> .config.mak
-	@echo "export CORE" 			 					>> .config.mak
+	@echo "export GL" 				 					>> .config.mak
+	@echo "export PNG" 			 						>> .config.mak
+	@echo "export JPG" 			 						>> .config.mak
+	@echo "export SKIA" 		 						>> .config.mak
+	@echo "export FREETYPE" 			 				>> .config.mak
 	@echo "export SDK" 				 					>> .config.mak
 	@echo "export NDK" 				 					>> .config.mak
 	@echo "export BIN" 				 					>> .config.mak

@@ -38,14 +38,19 @@ g2_image_decoder_t* g2_image_decoder_init(tb_size_t pixfmt, tb_gstream_t* gst)
 	// init the image decoder list
 	static g2_image_decoder_t* (*init[])(tb_size_t , tb_gstream_t* ) =
 	{
-		g2_jpg_decoder_init
+		tb_null
+#ifdef TB_CONFIG_JPG
+	,	g2_jpg_decoder_init
+#endif
+#ifdef TB_CONFIG_PNG
 	,	g2_png_decoder_init
+#endif
 	,	g2_bmp_decoder_init
 	,	g2_gif_decoder_init
 	};
 
 	// try initing it
-	tb_size_t i = 0;
+	tb_size_t i = 1;
 	tb_size_t n = tb_arrayn(init);
 	g2_image_decoder_t* decoder = tb_null;
 	for (i = 0; i < n; i++)

@@ -29,10 +29,10 @@
 #define G2_DEMO_HEIGHT 			(480)
 
 // pixfmt
-#if defined(__g2_core_skia__)
+#if defined(TB_CONFIG_SKIA)
 //# 	define G2_DEMO_PIXFMT 			(G2_PIXFMT_RGB565 | G2_PIXFMT_NENDIAN)
 # 	define G2_DEMO_PIXFMT 			(G2_PIXFMT_ARGB8888 | G2_PIXFMT_NENDIAN)
-#elif defined(__g2_core_gl__) || defined(__g2_core_gles__)
+#elif defined(TB_CONFIG_GL)
 # 	define G2_DEMO_PIXFMT 			(G2_PIXFMT_RGB565 | G2_PIXFMT_LENDIAN)
 //# 	define G2_DEMO_PIXFMT 			(G2_PIXFMT_RGB888 | G2_PIXFMT_BENDIAN)
 //# 	define G2_DEMO_PIXFMT 			(G2_PIXFMT_RGBA5551 | G2_PIXFMT_LENDIAN)
@@ -149,7 +149,7 @@ static tb_void_t g2_demo_gl_display()
 	if (g_bm) g2_load_matrix(g_painter);
 
 	// draw
-#if defined(__g2_core_skia__) || defined(__g2_core_gbox__)
+#if defined(TB_CONFIG_SKIA) || !defined(TB_CONFIG_GL)
 	if (g_surface)
 	{
 		tb_size_t width 	= g2_bitmap_width(g_surface);
@@ -201,7 +201,7 @@ static tb_void_t g2_demo_gl_display()
 }
 static tb_void_t g2_demo_gl_reshape(tb_int_t w, tb_int_t h)
 {
-#if defined(__g2_core_skia__) || defined(__g2_core_gbox__)
+#if defined(TB_CONFIG_SKIA) || !defined(TB_CONFIG_GL)
 	// init viewport
 	glViewport(0, 0, w, h);
 	glMatrixMode(GL_PROJECTION);
@@ -312,7 +312,6 @@ static tb_bool_t g2_demo_gl_init(tb_int_t argc, tb_char_t** argv)
 /* ////////////////////////////////////////////////////////////////////////
  * gbox2
  */
-#if defined(__g2_core_gl__) || defined(__g2_core_gles__)
 static tb_void_t g2_demo_gbox2_init_gl()
 {
 	// load interfaces for common
@@ -352,11 +351,7 @@ static tb_void_t g2_demo_gbox2_init_gl()
 	G2_GL_INTERFACE_LOAD_S(glLoadMatrixf);
 	G2_GL_INTERFACE_LOAD_S(glMatrixMode);
 	G2_GL_INTERFACE_LOAD_S(glMultMatrixf);
-# 	ifdef __g2_core_gles__
-	G2_GL_INTERFACE_LOAD_S(glOrthof);
-# 	else
 	G2_GL_INTERFACE_LOAD_S(glOrtho);
-# 	endif
 	G2_GL_INTERFACE_LOAD_S(glPopMatrix);
 	G2_GL_INTERFACE_LOAD_S(glPushMatrix);
 	G2_GL_INTERFACE_LOAD_S(glRotatef);
@@ -367,7 +362,6 @@ static tb_void_t g2_demo_gbox2_init_gl()
 	G2_GL_INTERFACE_LOAD_S(glVertexPointer);
 
 	// load interfaces for gl >= 2.0
-#if !G2_CONFIG_GL_VERSION || G2_CONFIG_GL_VERSION >= 0x20
 	G2_GL_INTERFACE_LOAD_S(glAttachShader);
 	G2_GL_INTERFACE_LOAD_S(glCompileShader);
 	G2_GL_INTERFACE_LOAD_S(glCreateProgram);
@@ -389,23 +383,15 @@ static tb_void_t g2_demo_gbox2_init_gl()
 	G2_GL_INTERFACE_LOAD_S(glUseProgram);
 	G2_GL_INTERFACE_LOAD_S(glVertexAttrib4f);
 	G2_GL_INTERFACE_LOAD_S(glVertexAttribPointer);
-#endif
 }
-#endif
 static tb_bool_t g2_demo_gbox2_init(tb_int_t argc, tb_char_t** argv)
 {
-	// init context
-#if defined(__g2_core_gl__) || defined(__g2_core_gles__)
+	// init gl
 	g2_demo_gbox2_init_gl();
-	g_context = g2_context_init_gl(G2_DEMO_PIXFMT, G2_DEMO_WIDTH, G2_DEMO_HEIGHT, G2_CONFIG_GL_VERSION);
+
+	// init context
+	g_context = g2_context_init(G2_DEMO_PIXFMT, tb_null, G2_DEMO_WIDTH, G2_DEMO_HEIGHT, 0);
 	tb_assert_and_check_return_val(g_context, tb_false);
-#elif defined(__g2_core_skia__)
-	g_context = g2_context_init_skia(G2_DEMO_PIXFMT, tb_null, G2_DEMO_WIDTH, G2_DEMO_HEIGHT, 0);
-	tb_assert_and_check_return_val(g_context, tb_false);
-#else
-	g_context = g2_context_init_gbox(G2_DEMO_PIXFMT, tb_null, G2_DEMO_WIDTH, G2_DEMO_HEIGHT, 0);
-	tb_assert_and_check_return_val(g_context, tb_false);
-#endif
 
 	// init surface
 	g_surface = g2_context_surface(g_context);

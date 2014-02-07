@@ -35,5 +35,18 @@
 #include "fixed30.h"
 #include "fixed.h"
 
+/* ///////////////////////////////////////////////////////////////////////
+ * interfaces
+ */
+
+/*! init math 
+ *
+ * @return 		tb_true or tb_false
+ */
+tb_bool_t 		tb_math_init(tb_noarg_t);
+
+/// exit math 
+tb_void_t 		tb_math_exit(tb_noarg_t);
+
 #endif
 

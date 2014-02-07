@@ -32,7 +32,8 @@
 #include "png.h"
 #include "decoder.h"
 #include "../../../gbox2.h"
-#include "../../../third/png/png.h"
+#define PNG_SKIP_SETJMP_CHECK
+#include <png.h>
 
 /* ///////////////////////////////////////////////////////////////////////
  * types

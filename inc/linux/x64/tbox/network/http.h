@@ -256,16 +256,16 @@ tb_void_t 				tb_http_exit(tb_handle_t handle);
 
 /*! wait the http 
  *
- * blocking wait the single event object, so need not aipp 
+ * blocking wait the single event object, so need not aiop 
  * return the event type if ok, otherwise return 0 for timeout
  *
  * @param handle 		the http handle 
- * @param etype 		the waited event type, return the needed event type if TB_AIOO_ETYPE_NONE
+ * @param aioe 			the aioe
  * @param timeout 		the timeout value, return immediately if 0, infinity if -1
  *
  * @return 				the event type, return 0 if timeout, return -1 if error
  */
-tb_long_t 				tb_http_wait(tb_handle_t handle, tb_size_t etype, tb_long_t timeout);
+tb_long_t 				tb_http_wait(tb_handle_t handle, tb_size_t aioe, tb_long_t timeout);
 
 /*! async open, allow multiple called before closing 
  *
@@ -289,7 +289,7 @@ tb_bool_t 				tb_http_bopen(tb_handle_t handle);
  *
  * @return 				ok: 1, continue: 0, fail: -1
  */
-tb_long_t 				tb_http_aclose(tb_handle_t handle);
+tb_long_t 				tb_http_aclos(tb_handle_t handle);
 
 /*! block close, allow multiple called
  *
@@ -297,7 +297,7 @@ tb_long_t 				tb_http_aclose(tb_handle_t handle);
  *
  * @return 				tb_true or tb_false
  */
-tb_bool_t 				tb_http_bclose(tb_handle_t handle);
+tb_bool_t 				tb_http_bclos(tb_handle_t handle);
 
 /*! async seek
  *
@@ -325,7 +325,7 @@ tb_bool_t 				tb_http_bseek(tb_handle_t handle, tb_hize_t offset);
  *
  * @return 				ok: real size, continue: 0, fail: -1
  */
-tb_long_t 				tb_http_awrit(tb_handle_t handle, tb_byte_t* data, tb_size_t size);
+tb_long_t 				tb_http_awrit(tb_handle_t handle, tb_byte_t const* data, tb_size_t size);
 
 /*! block writ
  *
@@ -335,7 +335,7 @@ tb_long_t 				tb_http_awrit(tb_handle_t handle, tb_byte_t* data, tb_size_t size)
  *
  * @return 				tb_true or tb_false
  */
-tb_bool_t 				tb_http_bwrit(tb_handle_t handle, tb_byte_t* data, tb_size_t size);
+tb_bool_t 				tb_http_bwrit(tb_handle_t handle, tb_byte_t const* data, tb_size_t size);
 
 /*! async read
  *
@@ -365,7 +365,7 @@ tb_bool_t 				tb_http_bread(tb_handle_t handle, tb_byte_t* data, tb_size_t size)
  *
  * @return 				ok: 1, continue: 0, failed: -1
  */
-tb_long_t 				tb_http_afwrit(tb_handle_t handle, tb_byte_t* data, tb_size_t size);
+tb_long_t 				tb_http_afwrit(tb_handle_t handle, tb_byte_t const* data, tb_size_t size);
 
 /*! block flush writ
  *
@@ -375,7 +375,7 @@ tb_long_t 				tb_http_afwrit(tb_handle_t handle, tb_byte_t* data, tb_size_t size
  *
  * @return 				tb_true or tb_false
  */
-tb_bool_t 				tb_http_bfwrit(tb_handle_t handle, tb_byte_t* data, tb_size_t size);
+tb_bool_t 				tb_http_bfwrit(tb_handle_t handle, tb_byte_t const* data, tb_size_t size);
 
 /*! the http option
  *

@@ -271,7 +271,7 @@ g2_svg_element_t* g2_svg_element_init(tb_handle_t reader)
 	iterator.comp = g2_svg_element_entry_comp;
 
 	// find it by the binary search
-	tb_size_t 		itor = tb_binary_find_all(&iterator, name);
+	tb_size_t 		itor = tb_binary_find_all(&iterator, name, tb_null);
 
 	// ok?
 	if (itor != tb_iterator_tail(&iterator))

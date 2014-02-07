@@ -94,9 +94,12 @@ typedef tb_int32_t 					tb_wchar_t;
 #endif
 
 // int64
-#ifdef TB_COMPILER_IS_MSVC
+#if defined(TB_COMPILER_IS_MSVC)
 typedef __int64						tb_int64_t;
 typedef unsigned __int64 			tb_uint64_t;
+#elif (TB_CPU_BITSIZE == 64)
+typedef signed long 				tb_int64_t;
+typedef unsigned long 				tb_uint64_t;
 #else
 typedef signed long long 			tb_int64_t;
 typedef unsigned long long 			tb_uint64_t;
@@ -108,18 +111,8 @@ typedef tb_sint64_t					tb_hong_t;
 typedef tb_uint64_t					tb_hize_t;
 
 // long & size
-#if 0
-#if (TB_CPU_BITSIZE == 64)
-typedef tb_sint64_t					tb_long_t;
-typedef tb_uint64_t					tb_ulong_t;
-#else
-typedef tb_sint32_t					tb_long_t;
-typedef tb_uint32_t					tb_ulong_t;
-#endif
-#else
 typedef signed long					tb_long_t;
 typedef unsigned long				tb_ulong_t;
-#endif
 typedef tb_ulong_t					tb_size_t;
 
 // double
@@ -135,7 +128,11 @@ typedef tb_int32_t 					tb_fixed30_t;
 typedef tb_fixed16_t 				tb_fixed_t;
 
 // the atomic type
-typedef __tb_volatile__ tb_size_t 	tb_atomic_t;
+typedef __tb_volatile__ tb_long_t 	tb_atomic_t;
+typedef __tb_volatile__ tb_hong_t 	tb_atomic64_t;
+
+// the spinlock type
+typedef tb_atomic_t 				tb_spinlock_t;
 
 /// the time type
 typedef tb_hong_t 					tb_time_t;

@@ -46,9 +46,7 @@ tb_handle_t g2_gl_program_init_bitmap()
 
 	// the vertex shader
 	tb_char_t const* vshader = 
-#ifdef __g2_core_gles__
 		"precision mediump float; 															\n"
-#endif
 		" 																					\n"
 		"attribute vec4 aColor; 															\n"
 		"attribute vec4 aTexcoords; 														\n"
@@ -69,9 +67,7 @@ tb_handle_t g2_gl_program_init_bitmap()
 	
 	// the fragment shader
 	tb_char_t const* fshader = 
-#ifdef __g2_core_gles__
 		"precision mediump float; 															\n"
-#endif
 		" 																					\n"
 		"varying vec4 vColors; 																\n"
 		"varying vec4 vTexcoords; 															\n"

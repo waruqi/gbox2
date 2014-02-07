@@ -36,11 +36,9 @@
 
 /*! init event
  * 
- * @param name 		the event name
- *
  * @return 			the event handle
  */
-tb_handle_t 		tb_event_init(tb_char_t const* name);
+tb_handle_t 		tb_event_init(tb_noarg_t);
 
 /*! exit event
  * 
@@ -48,13 +46,15 @@ tb_handle_t 		tb_event_init(tb_char_t const* name);
  */
 tb_void_t 			tb_event_exit(tb_handle_t handle);
 
-/*! init event
+/*! post event
  * 
  * @param handle 	the event handle
+ *
+ * @return 			tb_true or tb_false
  */
-tb_void_t 			tb_event_post(tb_handle_t handle);
+tb_bool_t 			tb_event_post(tb_handle_t handle);
 
-/*! init event
+/*! wait event
  * 
  * @param handle 	the event handle
  * @param timeout 	the timeout

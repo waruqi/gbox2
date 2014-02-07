@@ -51,7 +51,7 @@ CXFLAGS_RELEASE 	= \
 					-fvisibility=hidden
 
 CXFLAGS_DEBUG 		= -g -D__tb_debug__
-CXFLAGS 			= -arch $(ARCH) -D__tb_arch_$(ARCH)__ -D__g2_core_$(CORE)__ -c -Wall  \
+CXFLAGS 			= -arch $(ARCH) -c -Wall  \
 					-mthumb $(CPU_CXFLAGS) -miphoneos-version-min=$(SDK) \
 					-fmessage-length=0  -Wreturn-type -Wunused-variable \
 					-pipe -Wno-trigraphs -fpascal-strings \
@@ -86,7 +86,7 @@ MXFLAGS_RELEASE 	= \
 					-fvisibility=hidden
 
 MXFLAGS_DEBUG 		= -g -DDEBUG=1
-MXFLAGS 			= -arch $(ARCH) -D__tb_arch_$(ARCH)__ -D__g2_core_$(CORE)__ -c -Wall  \
+MXFLAGS 			= -arch $(ARCH) -c -Wall  \
 					-mthumb $(CPU_CXFLAGS) -miphoneos-version-min=$(SDK) \
 					-fmessage-length=0  -Wreturn-type -Wunused-variable \
 					-pipe -Wno-trigraphs -fpascal-strings \

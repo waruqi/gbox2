@@ -83,7 +83,7 @@ g2_named_color_t const* g2_color_from_name(tb_char_t const* name)
 	iterator.comp = g2_named_color_comp;
 
 	// find it by the binary search
-	tb_size_t 		itor = tb_binary_find_all(&iterator, name);
+	tb_size_t 		itor = tb_binary_find_all(&iterator, name, tb_null);
 
 	// ok?
 	return (itor != tb_iterator_tail(&iterator))? (g2_named_color_t const*)tb_iterator_item(&iterator, itor) : tb_null;

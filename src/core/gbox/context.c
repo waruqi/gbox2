@@ -34,7 +34,7 @@
 /* ///////////////////////////////////////////////////////////////////////
  * implementation
  */
-tb_handle_t g2_context_init_gbox(tb_size_t pixfmt, tb_pointer_t data, tb_size_t width, tb_size_t height, tb_size_t lpitch)
+tb_handle_t g2_context_init(tb_size_t pixfmt, tb_pointer_t data, tb_size_t width, tb_size_t height, tb_size_t lpitch)
 {
 	tb_trace_noimpl();
 	return tb_null;

@@ -32,27 +32,87 @@
  * macros
  */
 
-#if defined(__tb_arch_x86__)
+/* arch
+ *
+ * gcc builtin macros for gcc -dM -E - < /dev/null
+ *
+ * .e.g gcc -m64 -dM -E - < /dev/null | grep 64
+ * .e.g gcc -m32 -dM -E - < /dev/null | grep 86
+ * .e.g gcc -march=armv6 -dM -E - < /dev/null | grep ARM
+ */
+#if defined(__i386) \
+	|| defined(__i686) \
+	|| defined(__i386__) \
+	|| defined(__i686__)
 # 	define TB_ARCH_x86
-#elif defined(__tb_arch_x64__)
+#elif defined(__x86_64) \
+	|| defined(__amd64__) \
+	|| defined(__amd64)
 # 	define TB_ARCH_x64
-#elif defined(__tb_arch_arm__) \
-	|| defined(__tb_arch_armv5__) \
-	|| defined(__tb_arch_armv5te__) \
-	|| defined(__tb_arch_armv6__) \
-	|| defined(__tb_arch_armv7__) \
-	|| defined(__tb_arch_armv7s__)
+#elif defined(__arm__)
 # 	define TB_ARCH_ARM
-#elif defined(__tb_arch_sh4__)
-# 	define TB_ARCH_SH4
-#elif defined(__tb_arch_mips__)
+# 	if defined(__ARM_ARCH)
+# 		define TB_ARCH_ARM_VERSION 		__ARM_ARCH
+# 		if __ARM_ARCH >= 7
+# 			define TB_ARCH_ARM_v7
+# 		elif __ARM_ARCH >= 6
+# 			define TB_ARCH_ARM_v6
+# 		else
+# 			define TB_ARCH_ARM_v5
+# 		endif
+# 	elif defined(__ARM_ARCH_7A__)
+# 		define TB_ARCH_ARM_VERSION 		(7)
+# 		define TB_ARCH_ARM_v7A
+# 	elif defined(__ARM_ARCH_7__)
+# 		define TB_ARCH_ARM_VERSION 		(7)
+# 		define TB_ARCH_ARM_v7
+# 	elif defined(__ARM_ARCH_6__)
+# 		define TB_ARCH_ARM_VERSION 		(6)
+# 		define TB_ARCH_ARM_v6
+# 	elif defined(__ARM_ARCH_5TE__)
+# 		define TB_ARCH_ARM_VERSION 		(5)
+# 		define TB_ARCH_ARM_v5te
+# 	elif defined(__ARM_ARCH_5__)
+# 		define TB_ARCH_ARM_VERSION 		(5)
+# 		define TB_ARCH_ARM_v5
+# 	else 
+# 		error unknown arm arch version
+# 	endif
+# 	if defined(__thumb__)
+# 		define TB_ARCH_ARM_THUMB
+# 	endif
+# 	if defined(__ARM_NEON__)
+# 		define TB_ARCH_ARM_NEON
+# 	endif 
+#elif defined(mips) \
+	|| defined(_mips) \
+	|| defined(__mips__)
 # 	define TB_ARCH_MIPS
-#elif defined(__tb_arch_sparc__)
-# 	define TB_ARCH_SPARC
-#elif defined(__tb_arch_ppc__)
-# 	define TB_ARCH_PPC
 #else
+//# 	define TB_ARCH_SPARC
+//# 	define TB_ARCH_PPC
+//# 	define TB_ARCH_SH4
 # 	error unknown arch
+#endif
+
+// sse
+#if defined(TB_ARCH_x86) || defined(TB_ARCH_x64)
+# 	if defined(__SSE__)
+# 		define TB_ARCH_SSE
+# 	endif
+# 	if defined(__SSE2__)
+# 		define TB_ARCH_SSE2
+# 	endif
+#endif
+
+// vfp
+#if defined(__VFP_FP__)
+# 	define TB_ARCH_VFP
+#endif
+
+// elf
+#if defined(__ELF__)
+# 	define TB_ARCH_ELF
 #endif
 
 #endif

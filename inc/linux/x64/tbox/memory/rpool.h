@@ -110,6 +110,30 @@ tb_pointer_t 		tb_rpool_memdup(tb_handle_t handle, tb_cpointer_t data);
  */
 tb_bool_t 			tb_rpool_free(tb_handle_t handle, tb_pointer_t data);
 
+/*! walk regular pool item
+ *
+ * @code
+ * tb_bool_t tb_rpool_item_func(tb_pointer_t item, tb_pointer_t data)
+ * {
+ * 		// is tail?
+ * 		if (!item) ;
+ *
+ * 		// ok
+ * 		return tb_true;
+ *
+ * fail:
+ * 		// break
+ * 		return tb_false;
+ * }
+ * @endcode
+ *
+ * @param handle 	the pool handle
+ * @param func 		the walk func
+ * @param data 		the walk data
+ *
+ */
+tb_void_t 			tb_rpool_walk(tb_handle_t handle, tb_bool_t (*func)(tb_pointer_t item, tb_pointer_t data), tb_pointer_t data);
+
 /*! dump regular pool
  *
  * @param handle 	the pool handle

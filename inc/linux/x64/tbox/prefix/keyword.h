@@ -87,6 +87,16 @@
 # 	define __tb_unlikely__(x) 		(x)
 #endif
 
+#ifdef __tb_debug__
+# 	define __tb_debug_decl__ 		, tb_char_t const* func_, tb_size_t line_, tb_char_t const* file_
+# 	define __tb_debug_vals__ 		, __tb_func__, __tb_line__, __tb_file__
+# 	define __tb_debug_args__ 		, func_, line_, file_
+#else 
+# 	define __tb_debug_decl__ 
+# 	define __tb_debug_vals__ 
+# 	define __tb_debug_args__ 
+#endif
+
 
 #endif
 

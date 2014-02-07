@@ -42,11 +42,10 @@ extern "C" {
 #include "string/string.h"
 #include "object/object.h"
 #include "utils/utils.h"
-#include "third/third.h"
 #include "math/math.h"
 #include "libc/libc.h"
 #include "libm/libm.h"
-#include "aio/aio.h"
+#include "asio/asio.h"
 #include "xml/xml.h"
 #include "zip/zip.h"
 

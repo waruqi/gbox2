@@ -253,7 +253,7 @@ tb_void_t g2_gl_context_shader_del(g2_gl_context_t* context, g2_gl_shader_t cons
 /* ///////////////////////////////////////////////////////////////////////
  * implementation
  */
-tb_handle_t g2_context_init_gl(tb_size_t pixfmt, tb_size_t width, tb_size_t height, tb_byte_t version)
+tb_handle_t g2_context_init(tb_size_t pixfmt, tb_pointer_t data, tb_size_t width, tb_size_t height, tb_size_t lpitch)
 {
 	// check
 	tb_assert_and_check_return_val(G2_PIXFMT_OK(pixfmt) && width && height, tb_null);
@@ -265,17 +265,16 @@ tb_handle_t g2_context_init_gl(tb_size_t pixfmt, tb_size_t width, tb_size_t heig
 									|| 	(pixfmt == (G2_PIXFMT_RGBA4444 | G2_PIXFMT_LENDIAN))
 									|| 	(pixfmt == (G2_PIXFMT_RGBA5551 | G2_PIXFMT_LENDIAN)), tb_null);
 
-	// check interfaces
-	tb_check_return_val(g2_gl_interface_check(version), tb_null);
-
 	// alloc
 	g2_gl_context_t* gcontext = tb_malloc0(sizeof(g2_gl_context_t));
 	tb_assert_and_check_return_val(gcontext, tb_null);
 
 	// init version 
-	tb_byte_t gversion = g2_gl_context_version();
-	gcontext->version = version? version : gversion;
+	gcontext->version = g2_gl_context_version();
 	tb_assert_and_check_goto(gcontext->version >= 0x10, fail);
+
+	// check interfaces
+	tb_check_return_val(g2_gl_interface_check(gcontext->version), tb_null);
 
 	// init extensions
 	g2_gl_context_extensions(gcontext);
